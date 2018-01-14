@@ -1,0 +1,16 @@
+{
+  "modListVersion": 2,
+  "modList": [{
+    "modid": "orbis",
+    "name": "Orbis",
+    "description": "Orbis is a new tool and platform being developed by Gilded Games. It will allow both us and the community to develop structures with procedurally generated elements much easier, and implement them into our projects.\n\nOrbis wouldn't be possible without our supporters on Patreon! Consider supporting development at: https://patreon.com/GildedGames\n\nView the source code and contribute to the Orbis project on our official GitLab here: https://git.gildedgames.com/GildedGames/Orbis\n\nWe also have an official Discord server! https://aether.gildedgames.com/discord\n\nRunning into issues or have a question? Check out our support page here: https://orbis.gildedgames.com/support",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "authorList": [ "Brandon Pearce", "Emile van Krieken" ],
+    "url": "https://orbis.gildedgames.com",
+    "credits": "Designed and developed by Gilded Games with <3. Made possible thanks to our supporters on Patreon, and with special thanks to our project reporters, contributors, and moderation team.",
+    "logoFile": "/assets/orbis/full-logo.png",
+    "requiredMods": [ ],
+    "useDependencyInformation": true
+  }]
+}
