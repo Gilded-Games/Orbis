@@ -1,0 +1,44 @@
+package com.gildedgames.orbis.common.player.godmode.selection_types;
+
+import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.shapes.ConeShape;
+import com.gildedgames.orbis.client.godmode.selection_types.ISelectionTypeClient;
+import com.gildedgames.orbis.client.godmode.selection_types.SelectionTypeClientCone;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+
+public class SelectionTypeCone implements ISelectionType
+{
+	private ISelectionTypeClient client;
+
+	@Override
+	public void write(final NBTTagCompound tag)
+	{
+
+	}
+
+	@Override
+	public void read(final NBTTagCompound tag)
+	{
+
+	}
+
+	@Override
+	public ISelectionTypeClient getClient()
+	{
+		if (OrbisCore.isClient() && this.client == null)
+		{
+			this.client = new SelectionTypeClientCone();
+		}
+
+		return this.client;
+	}
+
+	@Override
+	public IShape createShape(final BlockPos start, final BlockPos end, final PlayerOrbis playerOrbis, final boolean centered)
+	{
+		return new ConeShape(start, end, centered);
+	}
+}

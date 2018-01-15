@@ -1,0 +1,12 @@
+# Items
+item.orbis.block_chunk.name=Block Chunk
+item.orbis.block_palette.name=Block Palette
+item.orbis.blueprint.name=Blueprint
+item.orbis.blueprint_palette.name=Blueprint Palette
+
+# Commands
+gameMode.developer=Developer Mode
+
+# Key Bindings
+keybindings.control=Control
+keybindings.findPower=Switch Power

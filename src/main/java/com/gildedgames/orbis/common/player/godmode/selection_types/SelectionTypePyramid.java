@@ -1,0 +1,44 @@
+package com.gildedgames.orbis.common.player.godmode.selection_types;
+
+import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.shapes.PyramidShape;
+import com.gildedgames.orbis.client.godmode.selection_types.ISelectionTypeClient;
+import com.gildedgames.orbis.client.godmode.selection_types.SelectionTypeClientPyramid;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+
+public class SelectionTypePyramid implements ISelectionType
+{
+	private ISelectionTypeClient client;
+
+	@Override
+	public void write(final NBTTagCompound tag)
+	{
+
+	}
+
+	@Override
+	public void read(final NBTTagCompound tag)
+	{
+
+	}
+
+	@Override
+	public ISelectionTypeClient getClient()
+	{
+		if (OrbisCore.isClient() && this.client == null)
+		{
+			this.client = new SelectionTypeClientPyramid();
+		}
+
+		return this.client;
+	}
+
+	@Override
+	public IShape createShape(final BlockPos start, final BlockPos end, final PlayerOrbis playerOrbis, final boolean centered)
+	{
+		return new PyramidShape(start, end, centered);
+	}
+}

@@ -1,0 +1,197 @@
+package com.gildedgames.orbis.common.network.packets.blueprints;
+
+import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.management.IData;
+import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
+import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.network.MessageHandlerClient;
+import com.gildedgames.orbis.common.network.MessageHandlerServer;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.network.util.PacketMultipleParts;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+
+public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
+{
+
+	private IDataIdentifier id;
+
+	private int worldObjectId, layerIndex;
+
+	private String displayName;
+
+	public PacketBlueprintAddScheduleLayer()
+	{
+
+	}
+
+	private PacketBlueprintAddScheduleLayer(final byte[] data)
+	{
+		super(data);
+	}
+
+	public PacketBlueprintAddScheduleLayer(final IDataIdentifier id, final String displayName)
+	{
+		this.id = id;
+		this.displayName = displayName;
+		this.layerIndex = -1;
+	}
+
+	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName)
+	{
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.displayName = displayName;
+		this.layerIndex = -1;
+	}
+
+	public PacketBlueprintAddScheduleLayer(final IDataIdentifier id, final String displayName, final int layerIndex)
+	{
+		this.id = id;
+		this.displayName = displayName;
+		this.layerIndex = layerIndex;
+	}
+
+	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName, final int layerIndex)
+	{
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.displayName = displayName;
+		this.layerIndex = layerIndex;
+	}
+
+	@Override
+	public void read(final ByteBuf buf)
+	{
+		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.id = funnel.get("id");
+		this.worldObjectId = tag.getInteger("worldObjectId");
+		this.layerIndex = tag.getInteger("layerIndex");
+		this.displayName = tag.getString("displayName");
+	}
+
+	@Override
+	public void write(final ByteBuf buf)
+	{
+		final NBTTagCompound tag = new NBTTagCompound();
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		funnel.set("id", this.id);
+		tag.setInteger("worldObjectId", this.worldObjectId);
+		tag.setInteger("layerIndex", this.layerIndex);
+		tag.setString("displayName", this.displayName);
+
+		ByteBufUtils.writeTag(buf, tag);
+	}
+
+	@Override
+	public PacketMultipleParts createPart(final byte[] data)
+	{
+		return new PacketBlueprintAddScheduleLayer(data);
+	}
+
+	public static class HandlerClient extends MessageHandlerClient<PacketBlueprintAddScheduleLayer, IMessage>
+	{
+		@Override
+		public IMessage onMessage(final PacketBlueprintAddScheduleLayer message, final EntityPlayer player)
+		{
+			if (player == null || player.world == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				final IData data;
+
+				if (message.id == null)
+				{
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+
+					data = worldObject.getData();
+				}
+				else
+				{
+					data = OrbisCore.getProjectManager().findData(message.id);
+				}
+
+				if (data instanceof BlueprintData)
+				{
+					final BlueprintData bData = (BlueprintData) data;
+
+					bData.setScheduleLayer(message.layerIndex, new ScheduleLayer(message.displayName, bData, ScheduleDataType.FILL));
+				}
+			}
+			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+
+			return null;
+		}
+	}
+
+	public static class HandlerServer extends MessageHandlerServer<PacketBlueprintAddScheduleLayer, IMessage>
+	{
+		@Override
+		public IMessage onMessage(final PacketBlueprintAddScheduleLayer message, final EntityPlayer player)
+		{
+			if (player == null || player.world == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				final IData data;
+
+				if (message.id == null)
+				{
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+
+					data = worldObject.getData();
+				}
+				else
+				{
+					data = OrbisCore.getProjectManager().findData(message.id);
+				}
+
+				if (data instanceof BlueprintData)
+				{
+					final BlueprintData bData = (BlueprintData) data;
+
+					final int index = bData.getScheduleLayers().size();
+
+					bData.addScheduleLayer(new ScheduleLayer(message.displayName, bData, ScheduleDataType.FILL));
+
+					// TODO: Send just to people who have downloaded this project
+					// Should probably make it so IProjects track what players have
+					// it downloaded on the client and up to date. That way we can
+					// just send it to those players. Along with this, addNew a helper
+					// method in NetworkingOrbis to sendPacketToProjectUsers
+					if (player.world.getMinecraftServer().isDedicatedServer())
+					{
+						NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.id, message.displayName, index));
+					}
+				}
+			}
+			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+
+			return null;
+		}
+	}
+}
