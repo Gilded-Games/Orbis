@@ -150,13 +150,16 @@ public class OrbisDeveloperEventsClient
 					NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(reach - 1));
 				}
 
-				if (select.getSelectedRegion() != null && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
+				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
 						&& OrbisKeyBindings.keyBindCopy.isPressed())
 				{
-					final ItemStack item = new ItemStack(ItemsOrbis.block_chunk);
+					if (select.getSelectedRegion() != null)
+					{
+						final ItemStack item = new ItemStack(ItemsOrbis.block_chunk);
 
-					NetworkingOrbis.sendPacketToServer(new PacketSetBlockDataContainerInHand(item, select.getSelectedRegion()));
-					mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, item);
+						NetworkingOrbis.sendPacketToServer(new PacketSetBlockDataContainerInHand(item, select.getSelectedRegion()));
+						mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, item);
+					}
 				}
 
 				if (OrbisKeyBindings.keyBindDelete.isPressed())
