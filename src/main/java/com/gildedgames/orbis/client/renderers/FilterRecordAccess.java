@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.api.block.BlockFilter;
+import com.gildedgames.orbis.api.data.schedules.IPositionRecord;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -10,29 +12,23 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 
-public class SingleStateAccess implements IBlockAccess
+import java.util.Random;
+
+public class FilterRecordAccess implements IBlockAccess
 {
-	protected final IBlockAccess world;
+	protected final World world;
 
-	protected IBlockState state;
+	private IPositionRecord<BlockFilter> record;
 
-	private BlockPos pos;
+	private BlockPos min;
 
-	public SingleStateAccess(final IBlockState state, final World worldIn, final BlockPos pos)
+	private Random rand = new Random();
+
+	public FilterRecordAccess(final World worldIn, IPositionRecord<BlockFilter> record, BlockPos min)
 	{
-		this.state = state;
 		this.world = worldIn;
-		this.pos = pos;
-	}
-
-	public void setState(final IBlockState state)
-	{
-		this.state = state;
-	}
-
-	public void setPos(final BlockPos pos)
-	{
-		this.pos = pos;
+		this.record = record;
+		this.min = min;
 	}
 
 	@Override
@@ -50,9 +46,20 @@ public class SingleStateAccess implements IBlockAccess
 	@Override
 	public IBlockState getBlockState(final BlockPos pos)
 	{
-		if (this.pos.equals(pos))
+		int x = pos.getX() - this.min.getX();
+		int y = pos.getY() - this.min.getY();
+		int z = pos.getZ() - this.min.getZ();
+
+		if (x < this.record.getWidth() && y < this.record.getHeight() && z < this.record.getLength() && x >= 0 && y >= 0 && z >= 0)
 		{
-			return this.state;
+			this.rand.setSeed((long) x * 341873128712L + (long) y * 23289687541L + (long) z * 132897987541L);
+
+			BlockFilter filter = this.record.get(x, y, z);
+
+			if (filter != null)
+			{
+				return filter.getSample(this.world, this.rand, Blocks.AIR.getDefaultState());
+			}
 		}
 
 		return Blocks.AIR.getDefaultState();

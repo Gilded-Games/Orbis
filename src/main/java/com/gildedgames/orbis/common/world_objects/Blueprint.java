@@ -6,16 +6,17 @@ import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.IBlueprintDataListener;
 import com.gildedgames.orbis.api.data.region.*;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.IScheduleLayerHolder;
+import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintEditing;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Blueprint extends AbstractRegion implements IWorldObject, IMutableRegion, IRotateable, IColored, IBlueprintDataListener,
 		IScheduleLayerHolder
@@ -33,7 +35,9 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 
 	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
 
-	private final List<IBlueprintListener> listeners = Lists.newArrayList();
+	private final List<IScheduleLayerHolderListener> listeners = Lists.newArrayList();
+
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	protected Rotation rotation = Rotation.NONE;
 
@@ -81,17 +85,39 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 		this.data.listen(this);
 	}
 
-	public void listen(final IBlueprintListener listener)
+	@Override
+	public void listen(final IScheduleLayerHolderListener listener)
 	{
-		if (!this.listeners.contains(listener))
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
 		{
-			this.listeners.add(listener);
+			if (!this.listeners.contains(listener))
+			{
+				this.listeners.add(listener);
+			}
+		}
+		finally
+		{
+			w.unlock();
 		}
 	}
 
-	public boolean stopListening(final IBlueprintListener listener)
+	@Override
+	public boolean unlisten(final IScheduleLayerHolderListener listener)
 	{
-		return this.listeners.remove(listener);
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			return this.listeners.remove(listener);
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	@Override
@@ -107,9 +133,22 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 	@Override
 	public void setCurrentScheduleLayerIndex(final int index)
 	{
+		int oldIndex = this.currentScheduleLayer;
+		IScheduleLayer oldLayer = this.getData().getScheduleLayers().get(oldIndex);
+
 		this.currentScheduleLayer = index;
 
-		this.listeners.forEach(l -> l.onSetCurrentScheduleLayer(index));
+		Lock w = this.lock.readLock();
+		w.lock();
+
+		try
+		{
+			this.listeners.forEach(l -> l.onChangeScheduleLayer(oldLayer, oldIndex, this.getCurrentScheduleLayer(), this.currentScheduleLayer));
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	@Override

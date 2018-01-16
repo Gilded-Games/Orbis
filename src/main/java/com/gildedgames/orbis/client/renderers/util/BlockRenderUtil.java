@@ -134,9 +134,10 @@ public class BlockRenderUtil
 			final BakedQuad bakedquad = (BakedQuad) list.get(i);
 			this.fillQuadBounds(stateIn, bakedquad.getVertexData(), bakedquad.getFace(), quadBounds, bitSet);
 			aoFace.updateVertexBrightness(blockAccessIn, stateIn, posIn, bakedquad.getFace(), quadBounds, bitSet);
+
 			buffer.addVertexData(bakedquad.getVertexData());
+
 			buffer.putBrightness4(aoFace.vertexBrightness[0], aoFace.vertexBrightness[1], aoFace.vertexBrightness[2], aoFace.vertexBrightness[3]);
-			buffer.putColor4(0x40FFFFFF);
 
 			if (bakedquad.shouldApplyDiffuseLighting())
 			{
@@ -146,6 +147,7 @@ public class BlockRenderUtil
 				aoFace.vertexColorMultiplier[2] *= diffuse;
 				aoFace.vertexColorMultiplier[3] *= diffuse;
 			}
+
 			if (bakedquad.hasTintIndex())
 			{
 				int k = this.blockColors.colorMultiplier(stateIn, blockAccessIn, posIn, bakedquad.getTintIndex());

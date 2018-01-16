@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
@@ -26,12 +27,12 @@ public class RenderScheduleLayer implements IWorldRenderer
 
 	private boolean disabled;
 
-	public RenderScheduleLayer(final IScheduleLayer layer, final IWorldObject parentObject)
+	public RenderScheduleLayer(final IScheduleLayer layer, IScheduleLayerHolder holder, final IWorldObject parentObject)
 	{
 		this.layer = layer;
 		this.parentObject = parentObject;
 
-		final RenderPositionRecord renderPositionRecord = new RenderPositionRecord(this.layer.getDataRecord(), this.parentObject);
+		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getDataRecord(), holder, this.parentObject);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();

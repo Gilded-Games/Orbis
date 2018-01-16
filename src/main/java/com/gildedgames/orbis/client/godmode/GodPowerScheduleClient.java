@@ -1,20 +1,16 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.client.gui.GuiRightClickBlueprint;
+import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSchedule;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 
@@ -85,27 +81,6 @@ public class GodPowerScheduleClient implements IGodPowerClient
 	@Override
 	public boolean onRightClickShape(final PlayerOrbis playerOrbis, final IShape selectedShape, final MouseEvent event)
 	{
-		final EntityPlayer entity = playerOrbis.getEntity();
-
-		final int x = MathHelper.floor(entity.posX);
-		final int y = MathHelper.floor(entity.posY);
-		final int z = MathHelper.floor(entity.posZ);
-
-		if (selectedShape instanceof Blueprint)
-		{
-			final boolean playerInside = selectedShape.contains(x, y, z) || selectedShape.contains(x, MathHelper.floor(entity.posY + entity.height), z);
-
-			if (entity.world.isRemote && !playerInside)
-			{
-				if (System.currentTimeMillis() - GuiRightClickBlueprint.lastCloseTime > 200)
-				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickBlueprint((Blueprint) selectedShape));
-				}
-			}
-
-			return false;
-		}
-
 		return true;
 	}
 }

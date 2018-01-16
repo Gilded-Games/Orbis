@@ -2,9 +2,9 @@ package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis.common.world_objects.IBlueprintListener;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -15,7 +15,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderBlueprintEditing implements IWorldRenderer, IBlueprintListener
+public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHolderListener
 {
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -35,7 +35,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IBlueprintListene
 
 		this.blueprint.listen(this);
 
-		this.onSetCurrentScheduleLayer(this.blueprint.getCurrentScheduleLayerIndex());
+		this.onChangeScheduleLayer(null, -1, this.blueprint.getCurrentScheduleLayer(), this.blueprint.getCurrentScheduleLayerIndex());
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IBlueprintListene
 	@Override
 	public void onRemoved()
 	{
-		this.blueprint.stopListening(this);
+		this.blueprint.unlisten(this);
 	}
 
 	@Override
@@ -100,14 +100,14 @@ public class RenderBlueprintEditing implements IWorldRenderer, IBlueprintListene
 	}
 
 	@Override
-	public void onSetCurrentScheduleLayer(final int index)
+	public void onChangeScheduleLayer(IScheduleLayer prevLayer, int prevIndex, IScheduleLayer newLayer, int newIndex)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
 
 		try
 		{
-			final IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(index);
+			final IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(newIndex);
 
 			if (layer != null)
 			{
@@ -119,7 +119,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IBlueprintListene
 				}
 
 				this.prevLayer = layer;
-				this.prevRender = new RenderScheduleLayer(this.prevLayer, this.blueprint);
+				this.prevRender = new RenderScheduleLayer(this.prevLayer, this.blueprint, this.blueprint);
 
 				this.subRenderers.add(this.prevRender);
 			}
