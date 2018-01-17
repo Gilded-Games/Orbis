@@ -233,7 +233,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-		//GlStateManager.enableLighting();
+		//GlStateManager.enableLighting();//
 
 		//RenderHelper.disableStandardItemLighting();
 
