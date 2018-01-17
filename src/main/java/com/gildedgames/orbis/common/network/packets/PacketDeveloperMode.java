@@ -38,7 +38,7 @@ public class PacketDeveloperMode implements IMessage
 		@Override
 		public IMessage onMessage(final PacketDeveloperMode message, final EntityPlayer player)
 		{
-			if (player == null || player.world == null || !player.isCreative())
+			if (player == null || player.world == null || !player.getServer().getPlayerList().canSendCommands(player.getGameProfile()))
 			{
 				return null;
 			}
