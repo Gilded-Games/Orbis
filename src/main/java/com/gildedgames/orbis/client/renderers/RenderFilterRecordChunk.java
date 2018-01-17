@@ -123,7 +123,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 					int yDif = y + chunkY;
 					int zDif = z + chunkZ;
 
-					if (xDif < maxX - minX && yDif < maxY - minY && zDif < maxZ - minZ)
+					if (xDif <= maxX - minX && yDif <= maxY - minY && zDif <= maxZ - minZ)
 					{
 						BlockFilter filter = this.positionRecord.get(xDif, yDif, zDif);
 
@@ -157,12 +157,10 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 		if (state != null && !BlockUtil.isAir(state) && !BlockUtil.isVoid(state) && state.getRenderType() != EnumBlockRenderType.INVISIBLE)
 		{
+			GlStateManager.enableLighting();
+
 			this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 			RenderHelper.disableStandardItemLighting();
-
-			GlStateManager.enableNormalize();
-			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
 			GlStateManager.enableCull();
 
@@ -235,7 +233,9 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-		GlStateManager.enableAlpha();
+		//GlStateManager.enableLighting();
+
+		//RenderHelper.disableStandardItemLighting();
 
 		GlStateManager.callList(this.glIndex);
 
