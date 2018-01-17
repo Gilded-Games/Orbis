@@ -154,7 +154,7 @@ public class BlockFilterHelper
 
 	public static BlockFilterLayer getNewFillLayer(final ItemStack stack)
 	{
-		if (!(stack.getItem() instanceof ItemBlock) && !(stack.getItem() instanceof ItemBucket))
+		if (!(ItemBlock.class.isAssignableFrom(stack.getItem().getClass())) && !(stack.getItem() instanceof ItemBucket))
 		{
 			throw new NullPointerException("ItemStack given to getNewFillLayer() is not a Block. Aborting.");
 		}
