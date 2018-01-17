@@ -408,7 +408,6 @@ public class RenderShape implements IWorldRenderer
 			GlStateManager.enableDepth();
 		}
 
-		GlStateManager.depthMask(true);
 		GlStateManager.enableLighting();
 		GlStateManager.enableAlpha();
 
@@ -446,7 +445,7 @@ public class RenderShape implements IWorldRenderer
 			GlStateManager.disableDepth();
 		}
 
-		GlStateManager.depthMask(false);
+		GlStateManager.depthMask(true);
 
 		GlStateManager.glLineWidth(2.0F);
 
@@ -464,7 +463,7 @@ public class RenderShape implements IWorldRenderer
 			GlStateManager.enableDepth();
 		}
 
-		GlStateManager.depthMask(true);
+		GlStateManager.disableLighting();
 
 		GlStateManager.popMatrix();
 
