@@ -24,10 +24,7 @@ public class Graph<NODE,EDGE>
 
 	public Set<EDGE> edgesOf(NODE n)
 	{
-		int a = n.hashCode();
-		Set<EDGE> b = this.connections.get(n);
-		boolean c = this.connections.containsKey(n);
-		return b;
+		return this.connections.get(n);
 	}
 
 	public Set<EDGE> edgeSet()

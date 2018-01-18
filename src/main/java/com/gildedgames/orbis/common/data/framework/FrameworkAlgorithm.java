@@ -1,24 +1,27 @@
 package com.gildedgames.orbis.common.data.framework;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.data.framework.generation.*;
+import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.common.data.framework.generation.FDGenUtil;
+import com.gildedgames.orbis.common.data.framework.generation.FailedToGenerateException;
+import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.DeprecatedFDGD;
+import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.FruchtermanReingold;
+import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.IGDAlgorithm;
 import com.gildedgames.orbis.common.data.pathway.PathwayData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 
 public class FrameworkAlgorithm
 {
 	private final FrameworkData framework;
 
 	private Graph<FDGDNode, FDGDEdge> fdgdGraph;
-
-	private boolean finished;
 
 	private Phase phase = Phase.CSP;
 
@@ -34,25 +37,15 @@ public class FrameworkAlgorithm
 
 	//	private List<FrameworkFragment> fragments;
 
-	private FrameworkParams params;
-
-	private ComputedParamFac paramFac;
-
 	private Random random;
 
-	public FrameworkAlgorithm(FrameworkData data, ComputedParamFac params, World world)
+	private IGDAlgorithm gdAlgorithm = new FruchtermanReingold();
+
+	public FrameworkAlgorithm(FrameworkData data, World world)
 	{
 		this.framework = data;
-		this.paramFac = params;
 		this.world = world;
-		if (world == null)
-		{
-			this.random = new Random();
-		}
-		else
-		{
-			this.random = world.rand;
-		}
+		this.random = world == null ? new Random() : world.rand;
 	}
 
 	public GeneratedFramework computeFully() throws FailedToGenerateException
@@ -82,67 +75,48 @@ public class FrameworkAlgorithm
 			this.initialGraph();
 			//			this.assignConnections();
 			this.phase = Phase.FDGD;
-			this.params = this.paramFac.createParams(this.fdgdGraph, this.framework.getType());
-			OrbisCore.LOGGER.info(this.params);
+			this.gdAlgorithm.initialize(this.fdgdGraph, this.framework.getType(), this.random);
 			return false;
 		}
 
 		if (this.phase == Phase.FDGD)
 		{
-			this.iterationFDGD(this.fdgdGraph, this.framework.getType(), false);
+			this.iterationFDGD();
 			this.fdgdIterations++;
 
-			if (this.fdgdIterations < this.params.fdgdMaxIterations())
+			this.phase = this.gdAlgorithm.inEquilibrium(this.fdgdGraph, this.framework.getType(), this.fdgdIterations);
+
+			if(this.phase == Phase.PATHWAYS && !FDGenUtil.hasCollision(this.fdgdGraph))
 			{
-				//Maximum distance between a node in the previous step and in the current one.
-				float equilibriumState = 0;
-				for (final FDGDNode node : this.fdgdGraph.vertexSet())
+				if (this.framework.getType() == FrameworkType.CUBES || !FDGenUtil.hasEdgeIntersections(this.fdgdGraph))
 				{
-					equilibriumState = Math.max(equilibriumState, FDGenUtil.euclidian(
-							node.getPrevX(), node.getPrevY(), node.getPrevZ(), node.getX(), node.getY(), node.getZ()));
+					//TODO: Might need to be uncommented? Seeing issues
+					for (final FDGDNode node : this.fdgdGraph.vertexSet())
+					{
+						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
+					}
+
+					this.phase = Phase.PATHWAYS;
+
+					//						this.fragments = new ArrayList<FrameworkFragment>(this.fdgdGraph.vertexSet().size());
+					//						for (FDGDNode node : this.fdgdGraph.vertexSet())
+					//						{
+					//							this.fragments.add(new FrameworkFragment(node.getData(), node.getRotation(), node.getMin()));
+					//						}
+					//						this.edgeIterator = this.fdgdGraph.edgeSet().iterator();
+					//
+					//						FDGDEdge edge = this.edgeIterator.next();
+					//						PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments, this.params);
+					//						this.pathfindingSolver = new StepAStar<PathwayNode>(problem, this.params.heuristicWeight());
+					//						this.pathfindingSolver.step();
 				}
-
-				final boolean inEquilibrium = this.escapePhase && equilibriumState < this.params.acceptEquilibriumEsc()
-						|| equilibriumState < this.params.acceptEquilibrium();
-				final boolean checkCollis = equilibriumState > 0.15f || this.fdgdIterations > this.params.iterationsToEscape();
-
-				if (inEquilibrium && (!checkCollis || !FDGenUtil.hasCollision(this.fdgdGraph)))
+				else
 				{
-					if (this.framework.getType() == FrameworkType.CUBES || !FDGenUtil.hasEdgeIntersections(this.fdgdGraph))
-					{
-						//TODO: Might need to be uncommented? Seeing issues
-						for (final FDGDNode node : this.fdgdGraph.vertexSet())
-						{
-							node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
-						}
-
-						this.phase = Phase.PATHWAYS;
-
-						//						this.fragments = new ArrayList<FrameworkFragment>(this.fdgdGraph.vertexSet().size());
-						//						for (FDGDNode node : this.fdgdGraph.vertexSet())
-						//						{
-						//							this.fragments.add(new FrameworkFragment(node.getData(), node.getRotation(), node.getMin()));
-						//						}
-						//						this.edgeIterator = this.fdgdGraph.edgeSet().iterator();
-						//
-						//						FDGDEdge edge = this.edgeIterator.next();
-						//						PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments, this.params);
-						//						this.pathfindingSolver = new StepAStar<PathwayNode>(problem, this.params.heuristicWeight());
-						//						this.pathfindingSolver.step();
-					}
-					else
-					{
-						this.phase = Phase.REBUILD1;
-					}
+					this.phase = Phase.REBUILD1;
 				}
-
-				this.escapePhase =
-						this.escapePhase || equilibriumState < this.params.toEscapeEquilibrium() || this.fdgdIterations > this.params.iterationsToEscape();
 			}
 			else
-			{
-				this.phase = Phase.REBUILD1;
-			}
+				this.phase = Phase.FDGD;
 			return false;
 		}
 
@@ -209,7 +183,7 @@ public class FrameworkAlgorithm
 			BlueprintData data = node.possibleValues(this.random).get(0);
 			if (data != null)
 			{
-				final FDGDNode newNode = new FDGDNode(data, node.approxPosition(), this.world);
+				final FDGDNode newNode = new FDGDNode(data, BlockPos.ORIGIN, this.world);
 				this.fdgdGraph.addVertex(newNode);
 				nodeLookup.put(node, newNode);
 			}
@@ -282,104 +256,9 @@ public class FrameworkAlgorithm
 	//		}
 	//	}
 
-	private void iterationFDGD(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type, boolean escapePhase)
+	private void iterationFDGD()
 	{
-		final float repulsion = this.params.repulsion();
-		final float stiffness = this.params.stiffness();
-		final float naturalLength = this.params.naturalLength();
-		final int nodeDistance = this.params.nodeDistance();
-		final float collisionEsc = this.params.collisionEscape();
-		final float maxForce = 1000;
-		final float c = this.params.C();
-		for (final FDGDNode v : graph.vertexSet())
-		{
-			float forceX = 0, forceY = 0, forceZ = 0;
-
-			if (!escapePhase)
-			{
-				final Set<FDGDEdge> adjacentEdges = graph.edgesOf(v);
-				for (final FDGDEdge edge : adjacentEdges)
-				{
-					final FDGDNode u = edge.getOpposite(v);
-					final float dx = edge.xOf(u) - edge.xOf(v);
-					final float dz = edge.zOf(u) - edge.zOf(v);
-					float stiffModifier;
-
-					if (type == FrameworkType.RECTANGLES)
-					{
-						float duv = Math.abs(dx) + Math.abs(dz);
-						if (duv == 0)
-							duv = this.random.nextBoolean() ? 100 : -100;
-						stiffModifier = stiffness * (duv - naturalLength) / duv;
-					}
-					else
-					{
-						final float dy = edge.yOf(u) - edge.yOf(v);
-						float duv = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
-						if (duv == 0)
-							duv = this.random.nextBoolean() ? 100 : -100;
-						stiffModifier = stiffness * (duv - naturalLength) / duv;
-						forceY += stiffModifier * dy;
-					}
-					forceX += stiffModifier * dx;
-					forceZ += stiffModifier * dz;
-				}
-			}
-
-			final IRegion rect1 = RegionHelp.expand(v, nodeDistance);
-
-			for (final FDGDNode u : graph.vertexSet())
-			{
-				if (u.equals(v))
-				{
-					continue;
-				}
-				final float dx = u.getX() - v.getX();
-				final float dz = u.getZ() - v.getZ();
-				if (type == FrameworkType.RECTANGLES)
-				{
-					final float duv = Math.abs(dx) + Math.abs(dz);
-					float trepulsion = repulsion / (float) Math.pow(duv, 3);
-					if (escapePhase && RegionHelp.intersects2D(rect1, RegionHelp.expand(u, nodeDistance)))
-					{
-						continue;
-					}
-					else if (escapePhase)
-					{
-						trepulsion *= collisionEsc;
-					}
-					forceX -= MathHelper.clamp(trepulsion * dx, -maxForce, maxForce);
-					forceZ -= MathHelper.clamp(trepulsion * dz, -maxForce, maxForce);
-				}
-				else
-				{
-					final float dy = u.getY() - v.getY();
-					final float duv = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
-					float trepulsion = repulsion / (float) Math.pow(duv, 3);
-					if (escapePhase && RegionHelp.intersects(rect1, RegionHelp.expand(u, nodeDistance)))
-						continue;
-					else if (escapePhase)
-						trepulsion *= collisionEsc;
-					forceX -= MathHelper.clamp(trepulsion * dx, -maxForce, maxForce);
-					forceY -= MathHelper.clamp(trepulsion * dy, -maxForce, maxForce);
-					forceZ -= MathHelper.clamp(trepulsion * dz, -maxForce, maxForce);
-				}
-			}
-
-			if (Float.isNaN(forceX) || Float.isNaN(forceY) || Float.isNaN(forceZ) || Float.isInfinite(forceX) || Float.isInfinite(forceY) || Float
-					.isInfinite(forceZ))
-			{
-				forceX = 0;
-				forceY = 0;
-				forceZ = 0;
-			}
-
-			v.setForce(forceX * c, forceY * c, forceZ * c);
-		}
-
-		// After computing the forces, apply them to the nodes
-		graph.vertexSet().forEach(FDGDNode::applyForce);
-		graph.edgeSet().forEach(FDGDEdge::applyForce);
+		this.gdAlgorithm.step(this.fdgdGraph, this.framework.getType(), this.random, this.fdgdIterations);
 
 		// Shift all nodes so that the minima are 0
 	}

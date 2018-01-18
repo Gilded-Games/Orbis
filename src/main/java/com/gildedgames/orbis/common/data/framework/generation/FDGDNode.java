@@ -111,6 +111,20 @@ public class FDGDNode extends Blueprint
 		this.forceZ = z;
 	}
 
+	public void addForce(float x, float y, float z)
+	{
+		this.forceX += x;
+		this.forceY += y;
+		this.forceZ += z;
+	}
+
+	public void subtrForce(float x, float y, float z)
+	{
+		this.forceX -= x;
+		this.forceY -= y;
+		this.forceZ -= z;
+	}
+
 	public void applyForce()
 	{
 		this.setPosition(this.posX + this.forceX, this.posY + this.forceY, this.posZ + this.forceZ);

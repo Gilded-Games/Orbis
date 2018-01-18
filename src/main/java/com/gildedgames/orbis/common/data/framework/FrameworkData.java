@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.data.framework;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.common.data.framework.generation.ComputedParamFac;
+import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.ComputedParamFac;
 import com.gildedgames.orbis.common.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.common.data.pathway.PathwayData;
 import net.minecraft.util.math.BlockPos;
@@ -68,12 +68,6 @@ public class FrameworkData implements IFrameworkNode
 	 * The list of all conditions on the nodes.
 	 */
 //	protected final List<Condition<Object>> conditions = new ArrayList<Condition<Object>>();
-
-	/**
-	 * Creates the parameters for the algorithm.
-	 */
-	private final ComputedParamFac paramFac = new ComputedParamFac();
-
 	/**
 	 * A map that contains what blueprint to use when two pathways intersect. This is only necessary
 	 * when {@link #type the FrameworkType} is {@link FrameworkType#RECTANGLES Rectangles}.
@@ -90,7 +84,6 @@ public class FrameworkData implements IFrameworkNode
 	 * @param world The world we want to generate this Framework in. Used for checking conditions
 	 * and as the height map.
 	 * @param pos Not sure yet :/
-	 * @param options The options for generation.
 	 * @return The list with chosen blueprints and positions for them.
 	 */
 	public GeneratedFramework prepare(World world, BlockPos pos)
@@ -98,25 +91,10 @@ public class FrameworkData implements IFrameworkNode
 		//TODO: What really does the pos here represent? We need the pos to make sure the Framework
 		//shapes well around the terrain, but where can it actually generate at all?
 
-		final FrameworkAlgorithm algorithm = new FrameworkAlgorithm(this, this.paramFac, world);
+		final FrameworkAlgorithm algorithm = new FrameworkAlgorithm(this, world);
 		return algorithm.computeFully();
 	}
 
-	/**
-	 * Finds the node with the given BlockPos as its approximate position. 
-	 * @see FrameworkNode#approxPosition()
-	 */
-	public FrameworkNode nodeAt(BlockPos approxPos)
-	{
-		for (final FrameworkNode node : this.graph.vertexSet())
-		{
-			if (node.approxPosition().equals(approxPos))
-			{
-				return node;
-			}
-		}
-		return null;
-	}
 
 	public FrameworkEdge edgeBetween(FrameworkNode node1, FrameworkNode node2)
 	{
@@ -132,18 +110,11 @@ public class FrameworkData implements IFrameworkNode
 	 * unless it is the very first one. After the node is added, 
 	 * 
 	 * @param data The data inside of this node. Right now, this can be
-	 * a {@link ScheduleData ScheduleData} or another Framework.
-	 * @param approxPos See {@link FrameworkNode#approxPosition() here}.
 	 * @return The created FrameworkNode
 	 */
-	public FrameworkNode addNode(IFrameworkNode data, BlockPos approxPos)
+	public FrameworkNode addNode(IFrameworkNode data)
 	{
-		final FrameworkNode oldNode = this.nodeAt(approxPos);
-		if (oldNode != null)
-		{
-			throw new IllegalStateException("Tried to add a node on a position that's already taken");
-		}
-		final FrameworkNode newNode = new FrameworkNode(data, approxPos);
+		final FrameworkNode newNode = new FrameworkNode(data);
 		this.graph.addVertex(newNode);
 		return newNode;
 	}
@@ -167,6 +138,11 @@ public class FrameworkData implements IFrameworkNode
 		final FrameworkEdge edge = new FrameworkEdge(node1, node2);
 		this.graph.addEdge(node1, node2, edge);
 		return true;
+	}
+
+	public FrameworkEdge edgeAt(FrameworkNode n1, FrameworkNode n2)
+	{
+		return this.graph.getEdge(n1, n2);
 	}
 
 	/**

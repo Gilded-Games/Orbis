@@ -1,8 +1,10 @@
-package com.gildedgames.orbis.common.data.framework.generation;
+package com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.common.data.framework.FrameworkType;
 import com.gildedgames.orbis.common.data.framework.Graph;
+import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
 import com.gildedgames.orbis.common.data.pathway.PathwayData;
 
 import java.util.ArrayList;
