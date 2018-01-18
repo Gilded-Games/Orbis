@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.data.BlueprintData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BlueprintDataset
 {
@@ -15,6 +16,16 @@ public class BlueprintDataset
 		b.add(blueprint1());
 		b.add(blueprint2());
 		b.add(blueprint3());
+		return new ScheduleData(b);
+	}
+
+	public static ScheduleData randomSchedule(Random random)
+	{
+		List<BlueprintData> b = new ArrayList<>();
+		int min = 5, max = 80;
+		final BlockDataContainer container = new BlockDataContainer(random.nextInt(max) + min, random.nextInt(max) + min, random.nextInt(max) + min);
+		BlueprintData blueprint = new BlueprintData(container);
+		b.add(blueprint);
 		return new ScheduleData(b);
 	}
 

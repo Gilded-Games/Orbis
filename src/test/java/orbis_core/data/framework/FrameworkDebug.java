@@ -5,7 +5,7 @@ import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.common.data.framework.FrameworkAlgorithm;
 import com.gildedgames.orbis.common.data.framework.FrameworkData;
 import com.gildedgames.orbis.common.data.framework.Graph;
-import com.gildedgames.orbis.common.data.framework.generation.ComputedParamFac;
+import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.ComputedParamFac;
 import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
 import net.minecraft.init.Bootstrap;
@@ -15,6 +15,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+
+import java.security.Key;
+import java.util.Random;
 
 /**
  * Visualises the Framework and pathway algorithms
@@ -26,15 +29,15 @@ import org.lwjgl.opengl.GL11;
  */
 public class FrameworkDebug
 {
-	private final FrameworkData toDebug = FrameworkDataset.framework1();
+	private FrameworkData toDebug = FrameworkDataset.randomFramework(new Random());
 
-	private final FrameworkAlgorithm algorithm;
+	private FrameworkAlgorithm algorithm;
 
 	private static double left = -200, right = 200, bottom = -200, top = 200;
 
 	public FrameworkDebug()
 	{
-		this.algorithm = new FrameworkAlgorithm(this.toDebug, new ComputedParamFac(), null);
+		this.algorithm = new FrameworkAlgorithm(this.toDebug, null);
 	}
 
 	public static void main(String[] args)
@@ -120,6 +123,12 @@ public class FrameworkDebug
 			left -= ddx;
 		}
 
+		if (Keyboard.isKeyDown(Keyboard.KEY_R))
+		{
+			this.toDebug = FrameworkDataset.randomFramework(new Random());
+			this.algorithm = new FrameworkAlgorithm(this.toDebug, null);
+		}
+
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(left, right, bottom, top, 1, -1);
@@ -156,11 +165,15 @@ public class FrameworkDebug
 	{
 		GL11.glBegin(GL11.GL_LINES);
 		GL11.glColor3f(1.0f, 0.2f, 1.0f);
-		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
-		GL11.glVertex2f(edge.entrance2X(), edge.entrance2Z());
+		float x1 = edge.node1().getX(), z1 = edge.node1().getZ();
+		float x2 = edge.node2().getX(), z2 = edge.node2().getZ();
+//		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
+//		GL11.glVertex2f(edge.entrance2X(), edge.entrance2Z());
+		GL11.glVertex2f(x1, z1);
+		GL11.glVertex2f(x2, z2);
 		GL11.glEnd();
-		glDrawRegion(new Region(new BlockPos(edge.entrance1X() - 1, 0, edge.entrance1Z() - 1), new BlockPos(edge.entrance1X() + 1, 0, edge.entrance1Z() + 1)), 0.5f, 1.0f, 0.5f);
-		glDrawRegion(new Region(new BlockPos(edge.entrance2X() - 1, 0, edge.entrance2Z() - 1), new BlockPos(edge.entrance2X() + 1, 0, edge.entrance2Z() + 1)), 0.5f, 1.0f, 0.5f);
+		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
+		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
 	}
 
 	public static void glDrawRegion(IRegion region, float r, float g, float b)
