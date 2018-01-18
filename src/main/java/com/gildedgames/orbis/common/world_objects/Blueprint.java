@@ -43,9 +43,9 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 
 	private IWorldRenderer renderer;
 
-	private BlueprintData data;
+	protected BlueprintData data;
 
-	private BlockPos min = BlockPos.ORIGIN, max = BlockPos.ORIGIN;
+	protected BlockPos min = BlockPos.ORIGIN, max = BlockPos.ORIGIN;
 
 	private int currentScheduleLayer;
 
@@ -195,6 +195,13 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 		builder.append(this.min.hashCode());
 
 		return builder.toHashCode();
+	}
+
+	//TODO: These two methods are very confusing. The current .hashCode() implementation has
+	//very unintuitive results.
+	protected int realHashCode()
+	{
+		return super.hashCode();
 	}
 
 	@Override
