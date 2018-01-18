@@ -47,6 +47,19 @@ public class RenderScheduleLayer implements IWorldRenderer
 		}
 	}
 
+	public void setFocused(boolean focused)
+	{
+		for (IWorldRenderer r : this.subRenderers)
+		{
+			if (r instanceof RenderFilterRecord)
+			{
+				RenderFilterRecord f = (RenderFilterRecord) r;
+
+				((RenderFilterRecord) r).setFocused(focused);
+			}
+		}
+	}
+
 	@Override
 	public boolean isDisabled()
 	{
@@ -63,7 +76,7 @@ public class RenderScheduleLayer implements IWorldRenderer
 	@Override
 	public Object getRenderedObject()
 	{
-		return null;
+		return this.layer;
 	}
 
 	@Override

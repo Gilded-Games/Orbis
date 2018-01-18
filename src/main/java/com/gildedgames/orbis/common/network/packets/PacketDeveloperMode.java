@@ -4,6 +4,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.MessageHandlerClient;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PacketDeveloperMode implements IMessage
@@ -38,7 +39,8 @@ public class PacketDeveloperMode implements IMessage
 		@Override
 		public IMessage onMessage(final PacketDeveloperMode message, final EntityPlayer player)
 		{
-			if (player == null || player.world == null || !player.getServer().getPlayerList().canSendCommands(player.getGameProfile()))
+			if (player == null || player.world == null || (player instanceof EntityPlayerMP && !player.getServer().getPlayerList()
+					.canSendCommands(player.getGameProfile())))
 			{
 				return null;
 			}

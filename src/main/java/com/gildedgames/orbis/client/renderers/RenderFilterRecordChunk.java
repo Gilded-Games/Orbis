@@ -59,6 +59,8 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 	private int glIndex = -1;
 
+	private boolean shouldRedraw, focused;
+
 	public RenderFilterRecordChunk(final IPositionRecord<BlockFilter> positionRecord, final IWorldObject parentObject, BlockPos chunkPos)
 	{
 		this.positionRecord = positionRecord;
@@ -66,6 +68,23 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 		this.chunkPos = chunkPos;
 		this.stateAccess = new FilterRecordAccess(mc.world, positionRecord, parentObject.getPos());
+	}
+
+	public void setFocused(boolean focused)
+	{
+		boolean willRedraw = this.focused != focused;
+
+		this.focused = focused;
+
+		if (willRedraw)
+		{
+			this.redraw();
+		}
+	}
+
+	public void redraw()
+	{
+		this.shouldRedraw = true;
 	}
 
 	protected void bindTexture(final ResourceLocation location)
@@ -166,7 +185,8 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 			final IBakedModel modelBaked = mc.getBlockRendererDispatcher().getModelForState(state);
 
-			blockRenderer.renderModel(this.stateAccess, modelBaked, state, renderPos, buffer, true, MathHelper.getPositionRandom(renderPos));
+			blockRenderer.renderModel(this.stateAccess, modelBaked, state, renderPos, buffer, true, MathHelper.getPositionRandom(renderPos),
+					this.focused ? 0xFFFFFFFF : 0x80FFFFFF);
 		}
 	}
 
@@ -203,6 +223,12 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 			this.lastPos = this.parentObject.getPos();
 		}
 
+		if (this.shouldRedraw)
+		{
+			this.onRemoved();
+			this.shouldRedraw = false;
+		}
+
 		if (this.glIndex == -1)
 		{
 			this.cacheRenderedBlocks();
@@ -233,11 +259,9 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-		//GlStateManager.enableLighting();dd
-
-		//RenderHelper.disableStandardItemLighting();
-
 		GlStateManager.callList(this.glIndex);
+
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		GlStateManager.translate(0, 0, 0);
 

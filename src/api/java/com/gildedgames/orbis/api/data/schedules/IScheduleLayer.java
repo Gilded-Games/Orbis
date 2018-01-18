@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.schedules;
 
+import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.util.mc.NBT;
 
@@ -14,7 +15,7 @@ public interface IScheduleLayer extends NBT
 
 	String displayName();
 
-	IPositionRecord getDataRecord();
+	IPositionRecord<BlockFilter> getDataRecord();
 
 	void setDimensions(IDimensions dimensions);
 

@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -38,15 +39,15 @@ public class BlockRenderUtil
 	}
 
 	public boolean renderModel(final IBlockAccess worldIn, final IBakedModel modelIn, final IBlockState stateIn, final BlockPos posIn,
-			final BufferBuilder buffer, final boolean checkSides, final long rand)
+			final BufferBuilder buffer, final boolean checkSides, final long rand, int color)
 	{
 		final boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getLightValue() == 0 && modelIn.isAmbientOcclusion();
 
 		try
 		{
 			return flag ?
-					this.renderModelSmooth(worldIn, modelIn, stateIn, posIn, buffer, checkSides, rand) :
-					this.renderModelFlat(worldIn, modelIn, stateIn, posIn, buffer, checkSides, rand);
+					this.renderModelSmooth(worldIn, modelIn, stateIn, posIn, buffer, checkSides, rand, color) :
+					this.renderModelFlat(worldIn, modelIn, stateIn, posIn, buffer, checkSides, rand, color);
 		}
 		catch (final Throwable throwable)
 		{
@@ -60,7 +61,7 @@ public class BlockRenderUtil
 
 	public boolean renderModelSmooth(
 			final IBlockAccess worldIn, final IBakedModel modelIn, final IBlockState stateIn, final BlockPos posIn, final BufferBuilder buffer,
-			final boolean checkSides, final long rand)
+			final boolean checkSides, final long rand, int color)
 	{
 		boolean flag = false;
 		final float[] afloat = new float[EnumFacing.values().length * 2];
@@ -73,7 +74,7 @@ public class BlockRenderUtil
 
 			if (!list.isEmpty() && (!checkSides || stateIn.shouldSideBeRendered(worldIn, posIn, enumfacing)))
 			{
-				this.renderQuadsSmooth(worldIn, stateIn, posIn, buffer, list, afloat, bitset, blockmodelrenderer$ambientocclusionface);
+				this.renderQuadsSmooth(worldIn, stateIn, posIn, buffer, list, afloat, bitset, blockmodelrenderer$ambientocclusionface, color);
 				flag = true;
 			}
 		}
@@ -82,7 +83,7 @@ public class BlockRenderUtil
 
 		if (!list1.isEmpty())
 		{
-			this.renderQuadsSmooth(worldIn, stateIn, posIn, buffer, list1, afloat, bitset, blockmodelrenderer$ambientocclusionface);
+			this.renderQuadsSmooth(worldIn, stateIn, posIn, buffer, list1, afloat, bitset, blockmodelrenderer$ambientocclusionface, color);
 			flag = true;
 		}
 
@@ -91,7 +92,7 @@ public class BlockRenderUtil
 
 	public boolean renderModelFlat(
 			final IBlockAccess worldIn, final IBakedModel modelIn, final IBlockState stateIn, final BlockPos posIn, final BufferBuilder buffer,
-			final boolean checkSides, final long rand)
+			final boolean checkSides, final long rand, int color)
 	{
 		boolean flag = false;
 		final BitSet bitset = new BitSet(3);
@@ -103,7 +104,7 @@ public class BlockRenderUtil
 			if (!list.isEmpty() && (!checkSides || stateIn.shouldSideBeRendered(worldIn, posIn, enumfacing)))
 			{
 				final int i = stateIn.getPackedLightmapCoords(worldIn, posIn.offset(enumfacing));
-				this.renderQuadsFlat(worldIn, stateIn, posIn, i, false, buffer, list, bitset);
+				this.renderQuadsFlat(worldIn, stateIn, posIn, i, false, buffer, list, bitset, color);
 				flag = true;
 			}
 		}
@@ -112,7 +113,7 @@ public class BlockRenderUtil
 
 		if (!list1.isEmpty())
 		{
-			this.renderQuadsFlat(worldIn, stateIn, posIn, -1, true, buffer, list1, bitset);
+			this.renderQuadsFlat(worldIn, stateIn, posIn, -1, true, buffer, list1, bitset, color);
 			flag = true;
 		}
 
@@ -121,7 +122,7 @@ public class BlockRenderUtil
 
 	private void renderQuadsSmooth(
 			final IBlockAccess blockAccessIn, final IBlockState stateIn, final BlockPos posIn, final BufferBuilder buffer, final List<BakedQuad> list,
-			final float[] quadBounds, final BitSet bitSet, final BlockRenderUtil.AmbientOcclusionFace aoFace)
+			final float[] quadBounds, final BitSet bitSet, final BlockRenderUtil.AmbientOcclusionFace aoFace, int color)
 	{
 		final Vec3d vec3d = stateIn.getOffset(blockAccessIn, posIn);
 		final double d0 = (double) posIn.getX() + vec3d.x;
@@ -136,8 +137,9 @@ public class BlockRenderUtil
 			aoFace.updateVertexBrightness(blockAccessIn, stateIn, posIn, bakedquad.getFace(), quadBounds, bitSet);
 
 			buffer.addVertexData(bakedquad.getVertexData());
-
 			buffer.putBrightness4(aoFace.vertexBrightness[0], aoFace.vertexBrightness[1], aoFace.vertexBrightness[2], aoFace.vertexBrightness[3]);
+
+			LightUtil.renderQuadColor(buffer, bakedquad, color);
 
 			if (bakedquad.shouldApplyDiffuseLighting())
 			{
@@ -249,7 +251,7 @@ public class BlockRenderUtil
 	}
 
 	private void renderQuadsFlat(final IBlockAccess blockAccessIn, final IBlockState stateIn, final BlockPos posIn, int brightnessIn,
-			final boolean ownBrightness, final BufferBuilder buffer, final List<BakedQuad> list, final BitSet bitSet)
+			final boolean ownBrightness, final BufferBuilder buffer, final List<BakedQuad> list, final BitSet bitSet, int color)
 	{
 		final Vec3d vec3d = stateIn.getOffset(blockAccessIn, posIn);
 		final double d0 = (double) posIn.getX() + vec3d.x;
@@ -270,6 +272,8 @@ public class BlockRenderUtil
 
 			buffer.addVertexData(bakedquad.getVertexData());
 			buffer.putBrightness4(brightnessIn, brightnessIn, brightnessIn, brightnessIn);
+
+			LightUtil.renderQuadColor(buffer, bakedquad, color);
 
 			if (bakedquad.hasTintIndex())
 			{

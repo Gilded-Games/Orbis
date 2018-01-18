@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.schedules;
 
+import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
@@ -15,7 +16,7 @@ public class ScheduleLayer implements IScheduleLayer
 
 	private IDimensions dimensions;
 
-	private IPositionRecord positionRecord;
+	private IPositionRecord<BlockFilter> positionRecord;
 
 	private ScheduleDataType dataType;
 
@@ -61,7 +62,7 @@ public class ScheduleLayer implements IScheduleLayer
 	}
 
 	@Override
-	public IPositionRecord getDataRecord()
+	public IPositionRecord<BlockFilter> getDataRecord()
 	{
 		return this.positionRecord;
 	}

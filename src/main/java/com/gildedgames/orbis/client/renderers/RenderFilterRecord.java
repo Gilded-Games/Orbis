@@ -59,6 +59,19 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 		}
 	}
 
+	public void setFocused(boolean focused)
+	{
+		for (IWorldRenderer r : this.subRenderers)
+		{
+			if (r instanceof RenderFilterRecordChunk)
+			{
+				RenderFilterRecordChunk c = (RenderFilterRecordChunk) r;
+
+				c.setFocused(focused);
+			}
+		}
+	}
+
 	@Override
 	public boolean isDisabled()
 	{
@@ -169,6 +182,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 
 		try
 		{
+			chunk.setFocused(true);
 			this.subRenderers.add(chunk);
 		}
 		finally

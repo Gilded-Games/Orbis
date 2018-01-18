@@ -25,15 +25,35 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 	private boolean disabled = false;
 
-	private IScheduleLayer prevLayer;
+	private IScheduleLayer focusedLayer;
 
-	private RenderScheduleLayer prevRender;
+	private RenderScheduleLayer focusedRender;
 
 	public RenderBlueprintEditing(final Blueprint blueprint)
 	{
 		this.blueprint = blueprint;
 
 		this.blueprint.listen(this);
+
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			for (Integer id : this.blueprint.getData().getScheduleLayers().keySet())
+			{
+				IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(id);
+
+				if (layer != null)
+				{
+					this.subRenderers.add(new RenderScheduleLayer(layer, this.blueprint, this.blueprint));
+				}
+			}
+		}
+		finally
+		{
+			w.unlock();
+		}
 
 		this.onChangeScheduleLayer(null, -1, this.blueprint.getCurrentScheduleLayer(), this.blueprint.getCurrentScheduleLayerIndex());
 	}
@@ -111,17 +131,41 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 			if (layer != null)
 			{
-				if (this.prevLayer != null && this.prevRender != null)
-				{
-					this.prevRender.onRemoved();
+				RenderScheduleLayer found = null;
 
-					this.subRenderers.remove(this.prevRender);
+				for (IWorldRenderer r : this.subRenderers)
+				{
+					if (r instanceof RenderScheduleLayer)
+					{
+						RenderScheduleLayer s = (RenderScheduleLayer) r;
+
+						if (s.getRenderedObject() == layer)
+						{
+							found = s;
+							break;
+						}
+					}
 				}
 
-				this.prevLayer = layer;
-				this.prevRender = new RenderScheduleLayer(this.prevLayer, this.blueprint, this.blueprint);
+				if (this.focusedLayer != null && this.focusedRender != null)
+				{
+					this.focusedRender.setFocused(false);
+				}
 
-				this.subRenderers.add(this.prevRender);
+				this.focusedLayer = layer;
+
+				if (found == null)
+				{
+					this.focusedRender = new RenderScheduleLayer(this.focusedLayer, this.blueprint, this.blueprint);
+					this.focusedRender.setFocused(true);
+
+					this.subRenderers.add(this.focusedRender);
+				}
+				else
+				{
+					this.focusedRender = found;
+					this.focusedRender.setFocused(true);
+				}
 			}
 		}
 		finally
