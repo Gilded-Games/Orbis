@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.data.framework.generation;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.common.data.framework.Graph;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,39 @@ public class FDGenUtil
 		{
 			for (final FDGDNode node2 : graph.vertexSet())
 			{
-				if (RegionHelp.intersects(node1, node2))
+				if (node1 != node2 && RegionHelp.intersects(node1, node2))
 				{
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private static float ESCAPE_DIST = 5f;
+	public static float[] pointOfForce(float vPosX, float vPosZ, FDGDNode u)
+	{
+		//WATCH OUT: The 0 here is wrong.
+		float uPosX = 0, uPosZ = 0;
+		if(RegionHelp.contains(u, vPosX, 0, vPosZ))
+		{
+			// Find the vector between the center of gravity of both bodies.
+			// Then, move the center of gravity ESCAPE_DIST close to the body we are
+			// going to apply the force onto.
+			float dx = vPosX - u.getX();
+			float dz = vPosZ - u.getZ();
+			float length = (float) Math.sqrt(dx * dx + dz * dz);
+			dx = dx / length * ESCAPE_DIST;
+			dz = dz / length * ESCAPE_DIST;
+			uPosX = vPosX - dx;
+			uPosZ = vPosZ - dz;
+		}
+		else
+		{
+			uPosX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
+			uPosZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
+		}
+		return new float[]{uPosX, 0, uPosZ};
 	}
 
 	public static boolean hasEdgeIntersections(Graph<FDGDNode, FDGDEdge> graph)

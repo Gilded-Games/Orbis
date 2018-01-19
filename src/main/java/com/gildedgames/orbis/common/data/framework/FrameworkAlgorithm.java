@@ -90,11 +90,11 @@ public class FrameworkAlgorithm
 			{
 				if (this.framework.getType() == FrameworkType.CUBES || !FDGenUtil.hasEdgeIntersections(this.fdgdGraph))
 				{
-					//TODO: Might need to be uncommented? Seeing issues
-					for (final FDGDNode node : this.fdgdGraph.vertexSet())
-					{
-						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
-					}
+//					//TODO: Might need to be uncommented? Seeing issues
+//					for (final FDGDNode node : this.fdgdGraph.vertexSet())
+//					{
+//						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
+//					}
 
 					this.phase = Phase.PATHWAYS;
 
@@ -115,21 +115,19 @@ public class FrameworkAlgorithm
 					this.phase = Phase.REBUILD1;
 				}
 			}
-			else
-				this.phase = Phase.FDGD;
 			return false;
 		}
 
 		if (this.phase == Phase.REBUILD1)
 		{
-			this.assignConnections();
+//			this.assignConnections();
 			this.phase = Phase.REBUILD2;
 			return false;
 		}
 
 		if (this.phase == Phase.REBUILD2)
 		{
-			this.doSpiderWeb();
+//			this.doSpiderWeb();
 			this.phase = Phase.REBUILD3;
 			return false;
 		}
@@ -137,8 +135,8 @@ public class FrameworkAlgorithm
 		if (this.phase == Phase.REBUILD3)
 		{
 			//TODO: Make sure this second connection assignment is helpful at all
-			this.assignConnections();
-			this.phase = Phase.FDGD;
+//			this.assignConnections();
+//			this.phase = Phase.FDGD;
 			this.fdgdIterations = 0;
 			return false;
 		}

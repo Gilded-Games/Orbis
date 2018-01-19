@@ -139,10 +139,7 @@ public class FrameworkDebug
 		{
 			return;
 		}
-		if (this.algorithm.getPhase() != FrameworkAlgorithm.Phase.PATHWAYS)
-		{
-			graph.vertexSet().forEach(node -> glDrawRegion(node, 0.5f, 0.5f, 1.0f));
-		}
+		graph.vertexSet().forEach(node -> glDrawRegion(node, 0.5f, 0.5f, 1.0f));
 //		else
 //		{
 //			final List<FrameworkFragment> fragments = this.algorithm.getFragments();

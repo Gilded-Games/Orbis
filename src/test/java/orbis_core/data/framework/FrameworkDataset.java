@@ -46,7 +46,7 @@ public class FrameworkDataset
 	public static FrameworkData randomFramework(Random random)
 	{
 		FrameworkData frameworkData = new FrameworkData();
-		int amt_nodes = random.nextInt(60) + 1;
+		int amt_nodes = random.nextInt(90) + 1;
 		List<FrameworkNode> nodes  = new ArrayList<>();
 		for(int i = 0; i < amt_nodes; i++)
 			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random)));
@@ -62,7 +62,7 @@ public class FrameworkDataset
 				connectedNodes.add(n1);
 			}
 		}
-		float probability = 0;//1 / amt_nodes;
+		float probability = 0.3f / amt_nodes;
 		for (FrameworkNode n1 : nodes)
 		{
 			for (FrameworkNode n2 : nodes)

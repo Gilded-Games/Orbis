@@ -22,7 +22,7 @@ public class BlueprintDataset
 	public static ScheduleData randomSchedule(Random random)
 	{
 		List<BlueprintData> b = new ArrayList<>();
-		int min = 5, max = 80;
+		int min = 5, max = 140;
 		final BlockDataContainer container = new BlockDataContainer(random.nextInt(max) + min, random.nextInt(max) + min, random.nextInt(max) + min);
 		BlueprintData blueprint = new BlueprintData(container);
 		b.add(blueprint);

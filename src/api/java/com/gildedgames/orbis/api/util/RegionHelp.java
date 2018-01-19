@@ -86,7 +86,7 @@ public class RegionHelp
 		return contains(region, pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public static boolean contains(final IRegion region, final int x, final int y, final int z)
+	public static boolean contains(final IRegion region, final float x, final float y, final float z)
 	{
 		final BlockPos min = region.getMin();
 		final BlockPos max = region.getMax();

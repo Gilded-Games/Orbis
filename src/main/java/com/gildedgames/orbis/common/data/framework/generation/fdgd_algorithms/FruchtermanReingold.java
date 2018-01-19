@@ -1,24 +1,32 @@
 package com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms;
 
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.data.framework.FrameworkAlgorithm;
 import com.gildedgames.orbis.common.data.framework.FrameworkType;
 import com.gildedgames.orbis.common.data.framework.Graph;
 import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.common.data.framework.generation.FDGenUtil;
 
 import java.util.Random;
 
 public class FruchtermanReingold implements IGDAlgorithm
 {
 
-	private static int UN_MAX_ITERATIONS = 300;
+	private static int UN_MAX_ITERATIONS = 100;
 
-	private static int UP_MAX_ITERATIONS = 1500;
+	private static int UP_MAX_ITERATIONS = 1800;
 
-	private static float END_SPEED = 3f;
+	private static float END_SPEED = 24f;
 
-	private static float START_SPEED = 35;
+	private static float MIN_START_SPEED = 40;
+
+	private static float MAX_START_SPEED = 105;
+
+	private static float C = 0.16f;
+
+	private static float BOUNCE_MOD = 1f;
 
 	private float cooling;
 
@@ -51,8 +59,9 @@ public class FruchtermanReingold implements IGDAlgorithm
 		this.W = (float) graph.vertexSet().stream().mapToDouble(FDGDNode::getWidth ).sum();
 		this.L = (float) graph.vertexSet().stream().mapToDouble(FDGDNode::getLength).sum();
 		this.area = this.W * this.L;
-		this.k = (float) Math.sqrt(this.area / graph.vertexSet().size());
-		this.s = START_SPEED;
+		this.k = C * (float) Math.sqrt(this.area / graph.vertexSet().size());
+		this.s = MIN_START_SPEED +
+				(int)(((MAX_START_SPEED - MIN_START_SPEED)/100f) * Math.min(100, graph.vertexSet().size()));
 
 		this.cooling = (float) Math.pow(END_SPEED / this.s, 1.0 / this.max_iterations);
 		OrbisCore.LOGGER.info(this.cooling);
@@ -71,13 +80,19 @@ public class FruchtermanReingold implements IGDAlgorithm
 			{
 				if(u != v)
 				{
-					float dx = v.getX() - u.getX();
-					float dz = v.getZ() - u.getZ();
+					float[] uPos = FDGenUtil.pointOfForce(v.getX(), v.getZ(), u);
+					float dx = v.getX() - uPos[0];
+					float dz = v.getZ() - uPos[2];
 					float dist = this.euclid(dx, 0, dz);
-					float rep = this.fr(dist);
-					if (dist > 0f)
-//						v.addForce((dx / dist) * rep, 0, (dz / dist) * rep);
-						v.addForce(Math.signum(dx) * this.fr(Math.abs(dx)), 0, Math.signum(dz) * this.fr(Math.abs(dz)));
+					if(dist > 0.01)
+					{
+						float repr = this.fr(dist) / dist;
+						v.addForce(
+								dx * repr,
+								0,
+								dz * repr
+						);
+					}
 				}
 			}
 		}
@@ -86,31 +101,31 @@ public class FruchtermanReingold implements IGDAlgorithm
 			float dx = e.node1().getX() - e.node2().getX();
 			float dz = e.node1().getZ() - e.node2().getZ();
 			float dist = this.euclid(dx, 0, dz);
-			float atr = this.fa(dist);
-//			float fx = (dx / dist) * atr;
-//			float fz = (dz / dist) * atr;
-			float fx = Math.signum(dx) * this.fa(Math.abs(dx));
-			float fz = Math.signum(dz) * this.fa(Math.abs(dz));
-			if(dist > 0f)
+			if(dist > 0.01)
+			{
+				float atr = this.fa(dist) / dist;
+				float fx = dx * atr;
+				float fz = dz * atr;
 				e.node1().subtrForce(fx, 0, fz);
 				e.node2().addForce(fx, 0, fz);
+			}
 		}
 		for (FDGDNode v : graph.vertexSet())
 		{
 			float str_f = this.euclid(v.getForceX(), 0, v.getForceZ());
 			if(str_f > 0)
 			{
-//				float newX = v.getX() + (v.getForceX() / str_f) * Math.min(v.getForceX(), this.s);
-//				float newZ = v.getZ() + (v.getForceZ() / str_f) * Math.min(v.getForceZ(), this.s);
-				float newX = v.getX() + Math.signum(v.getForceX()) * Math.min(Math.abs(v.getForceX()), this.s);
-				float newZ = v.getZ() + Math.signum(v.getForceZ()) * Math.min(Math.abs(v.getForceZ()), this.s);
+				float prop_f = Math.min(str_f, this.s) / str_f;
+				float newX = v.getX() + v.getForceX() * prop_f;
+				float newZ = v.getZ() + v.getForceZ() * prop_f;
 				float random_border = random.nextFloat() * 0.01f;
 				newX = Math.min(this.W / 2f + random_border, Math.max(-this.W / 2f - random_border, newX));
 				newZ = Math.min(this.L / 2f + random_border, Math.max(-this.L / 2f - random_border, newZ));
 				v.setPosition(newX, v.getY(), newZ);
 			}
 		}
-		this.s *= this.cooling;
+		if (fdgdIterations < this.max_iterations)
+			this.s *= this.cooling;
 	}
 
 	@Override
@@ -118,8 +133,18 @@ public class FruchtermanReingold implements IGDAlgorithm
 	{
 		if (fdgdIterations > this.max_iterations)
 		{
-			OrbisCore.LOGGER.info("END OF FDGD");
-			return FrameworkAlgorithm.Phase.PATHWAYS;
+			if(FDGenUtil.hasCollision(graph))
+			{
+				OrbisCore.LOGGER.info("INCREASING REPULSION");
+				this.k *= 1.01; // After the max iterations, increase the repulsive force until there are no collisions.
+				this.s /= this.cooling;
+			}
+			else
+			{
+				OrbisCore.LOGGER.info(this.k);
+				OrbisCore.LOGGER.info("END OF FDGD");
+				return FrameworkAlgorithm.Phase.PATHWAYS;
+			}
 		}
 		return FrameworkAlgorithm.Phase.FDGD;
 	}
