@@ -1,7 +1,7 @@
 package orbis_core.data.framework;
 
-import com.gildedgames.orbis.common.data.framework.FrameworkData;
-import com.gildedgames.orbis.common.data.framework.FrameworkNode;
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
+import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import jdk.nashorn.internal.ir.Block;
 import net.minecraft.util.math.BlockPos;
 import orbis_core.data.BlueprintDataset;
@@ -46,7 +46,7 @@ public class FrameworkDataset
 	public static FrameworkData randomFramework(Random random)
 	{
 		FrameworkData frameworkData = new FrameworkData();
-		int amt_nodes = random.nextInt(90) + 1;
+		int amt_nodes = random.nextInt(140) + 1;
 		List<FrameworkNode> nodes  = new ArrayList<>();
 		for(int i = 0; i < amt_nodes; i++)
 			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random)));

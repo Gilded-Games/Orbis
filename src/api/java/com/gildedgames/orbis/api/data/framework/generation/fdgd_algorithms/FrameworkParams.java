@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms;
+package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
 public class FrameworkParams
 {

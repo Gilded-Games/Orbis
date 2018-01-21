@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.common.data.pathway;
+package com.gildedgames.orbis.api.data.pathway;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
 

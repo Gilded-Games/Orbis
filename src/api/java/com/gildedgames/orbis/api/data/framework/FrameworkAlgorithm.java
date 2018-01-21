@@ -1,14 +1,14 @@
-package com.gildedgames.orbis.common.data.framework;
+package com.gildedgames.orbis.api.data.framework;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
-import com.gildedgames.orbis.common.data.framework.generation.FDGenUtil;
-import com.gildedgames.orbis.common.data.framework.generation.FailedToGenerateException;
-import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.DeprecatedFDGD;
-import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.FruchtermanReingold;
-import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.IGDAlgorithm;
-import com.gildedgames.orbis.common.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
+import com.gildedgames.orbis.api.data.framework.generation.FailedToGenerateException;
+import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.DeprecatedFDGD;
+import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.FruchtermanReingold;
+import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.IGDAlgorithm;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

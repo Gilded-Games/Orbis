@@ -1,7 +1,7 @@
-package com.gildedgames.orbis.common.data.framework.generation;
+package com.gildedgames.orbis.api.data.framework.generation;
 
-import com.gildedgames.orbis.common.data.pathway.Entrance;
-import com.gildedgames.orbis.common.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import net.minecraft.util.math.BlockPos;
 
 public class FDGDEdge

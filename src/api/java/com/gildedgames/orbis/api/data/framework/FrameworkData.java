@@ -1,9 +1,9 @@
-package com.gildedgames.orbis.common.data.framework;
+package com.gildedgames.orbis.api.data.framework;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.ComputedParamFac;
-import com.gildedgames.orbis.common.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis.common.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.ComputedParamFac;
+import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

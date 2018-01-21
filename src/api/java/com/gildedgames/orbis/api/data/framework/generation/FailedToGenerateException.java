@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.common.data.framework.generation;
+package com.gildedgames.orbis.api.data.framework.generation;
 
 public class FailedToGenerateException extends RuntimeException
 {

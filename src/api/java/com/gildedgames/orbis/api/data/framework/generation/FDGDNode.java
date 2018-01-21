@@ -1,9 +1,9 @@
-package com.gildedgames.orbis.common.data.framework.generation;
+package com.gildedgames.orbis.api.data.framework.generation;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.RotationHelp;
-import com.gildedgames.orbis.common.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Tuple;

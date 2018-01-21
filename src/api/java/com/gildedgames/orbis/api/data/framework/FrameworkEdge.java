@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.common.data.framework;
+package com.gildedgames.orbis.api.data.framework;
 
 public class FrameworkEdge
 {

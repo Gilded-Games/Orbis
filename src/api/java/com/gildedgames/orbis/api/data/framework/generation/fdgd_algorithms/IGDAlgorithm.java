@@ -1,10 +1,10 @@
-package com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms;
+package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
-import com.gildedgames.orbis.common.data.framework.FrameworkAlgorithm;
-import com.gildedgames.orbis.common.data.framework.FrameworkType;
-import com.gildedgames.orbis.common.data.framework.Graph;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
+import com.gildedgames.orbis.api.data.framework.FrameworkType;
+import com.gildedgames.orbis.api.data.framework.Graph;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
 
 import java.util.Random;
 

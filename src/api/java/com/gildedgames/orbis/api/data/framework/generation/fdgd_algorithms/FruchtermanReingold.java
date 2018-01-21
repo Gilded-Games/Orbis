@@ -1,28 +1,28 @@
-package com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms;
+package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.data.framework.FrameworkAlgorithm;
-import com.gildedgames.orbis.common.data.framework.FrameworkType;
-import com.gildedgames.orbis.common.data.framework.Graph;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
-import com.gildedgames.orbis.common.data.framework.generation.FDGenUtil;
+import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
+import com.gildedgames.orbis.api.data.framework.FrameworkType;
+import com.gildedgames.orbis.api.data.framework.Graph;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
 
 import java.util.Random;
 
 public class FruchtermanReingold implements IGDAlgorithm
 {
 
-	private static int UN_MAX_ITERATIONS = 100;
+	private static int UN_MAX_ITERATIONS = 70;
 
-	private static int UP_MAX_ITERATIONS = 1800;
+	private static int UP_MAX_ITERATIONS = 2600;
 
-	private static float END_SPEED = 24f;
+	private static float END_SPEED = 22f;
 
-	private static float MIN_START_SPEED = 40;
+	private static float MIN_START_SPEED = 32;
 
-	private static float MAX_START_SPEED = 105;
+	private static float MAX_START_SPEED = 805;
 
 	private static float C = 0.16f;
 
@@ -54,7 +54,7 @@ public class FruchtermanReingold implements IGDAlgorithm
 	public void initialize(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type, Random random)
 	{
 		this.max_iterations = UN_MAX_ITERATIONS +
-				(int)(((UP_MAX_ITERATIONS - UN_MAX_ITERATIONS)/100f) * Math.min(100, graph.vertexSet().size()));
+				(int)(((UP_MAX_ITERATIONS - UN_MAX_ITERATIONS)/150f) * Math.min(150, graph.vertexSet().size()));
 
 		this.W = (float) graph.vertexSet().stream().mapToDouble(FDGDNode::getWidth ).sum();
 		this.L = (float) graph.vertexSet().stream().mapToDouble(FDGDNode::getLength).sum();
@@ -136,7 +136,7 @@ public class FruchtermanReingold implements IGDAlgorithm
 			if(FDGenUtil.hasCollision(graph))
 			{
 				OrbisCore.LOGGER.info("INCREASING REPULSION");
-				this.k *= 1.01; // After the max iterations, increase the repulsive force until there are no collisions.
+				this.k *= 1.005; // After the max iterations, increase the repulsive force until there are no collisions.
 				this.s /= this.cooling;
 			}
 			else

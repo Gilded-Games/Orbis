@@ -2,12 +2,12 @@ package orbis_core.data.framework;
 
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.common.data.framework.FrameworkAlgorithm;
-import com.gildedgames.orbis.common.data.framework.FrameworkData;
-import com.gildedgames.orbis.common.data.framework.Graph;
-import com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms.ComputedParamFac;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
+import com.gildedgames.orbis.api.data.framework.Graph;
+import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.ComputedParamFac;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.LWJGLException;

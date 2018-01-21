@@ -1,7 +1,7 @@
-package com.gildedgames.orbis.common.data.framework.generation;
+package com.gildedgames.orbis.api.data.framework.generation;
 
 import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.common.data.framework.Graph;
+import com.gildedgames.orbis.api.data.framework.Graph;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 

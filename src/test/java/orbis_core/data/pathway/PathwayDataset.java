@@ -1,7 +1,7 @@
 package orbis_core.data.pathway;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.common.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
 
 public class PathwayDataset
 {

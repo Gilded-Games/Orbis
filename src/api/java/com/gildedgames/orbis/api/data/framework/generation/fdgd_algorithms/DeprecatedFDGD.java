@@ -1,14 +1,14 @@
-package com.gildedgames.orbis.common.data.framework.generation.fdgd_algorithms;
+package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.data.framework.FrameworkAlgorithm;
-import com.gildedgames.orbis.common.data.framework.FrameworkType;
-import com.gildedgames.orbis.common.data.framework.Graph;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDEdge;
-import com.gildedgames.orbis.common.data.framework.generation.FDGDNode;
-import com.gildedgames.orbis.common.data.framework.generation.FDGenUtil;
+import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
+import com.gildedgames.orbis.api.data.framework.FrameworkType;
+import com.gildedgames.orbis.api.data.framework.Graph;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
+import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;

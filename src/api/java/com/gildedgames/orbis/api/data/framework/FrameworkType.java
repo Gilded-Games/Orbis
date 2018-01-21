@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.common.data.framework;
+package com.gildedgames.orbis.api.data.framework;
 
 /**
  * Determines the type of generation for the {@link FrameworkData FrameworkData} it's in.
