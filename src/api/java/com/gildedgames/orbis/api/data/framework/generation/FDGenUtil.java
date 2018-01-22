@@ -115,6 +115,14 @@ public class FDGenUtil
 		return false;
 	}
 
+	public static boolean hasEdgeIntersections(Graph<FDGDNode, FDGDEdge> graph, FDGDEdge edge)
+	{
+		for (FDGDEdge e : graph.edgeSet())
+			if (isIntersecting(edge, e))
+				return true;
+		return false;
+	}
+
 	// Returns true if the two edges have an intersection somewhere.
 	public static boolean isIntersecting(FDGDEdge edge1, FDGDEdge edge2)
 	{

@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class Graph<NODE,EDGE> implements NBT
 {
@@ -70,7 +71,7 @@ public class Graph<NODE,EDGE> implements NBT
 		return null;
 	}
 
-	public boolean canReach(NODE n1, NODE n2)
+	public boolean canReach(NODE n1, NODE n2, Predicate<NODE> predicate)
 	{
 		Set<NODE> visitedNodes = new HashSet<>();
 		Stack<NODE> unvisitedNodes = new Stack<>();
@@ -78,17 +79,21 @@ public class Graph<NODE,EDGE> implements NBT
 		while(unvisitedNodes.size() > 0)
 		{
 			NODE activeNode = unvisitedNodes.pop();
-			if(activeNode == n1)
-				return true;
 			for (EDGE e : this.edgesOf(activeNode))
 			{
 				NODE n = this.getOpposite(activeNode, e);
-				if(!visitedNodes.contains(n))
+				if(n == n1)
+					return true;
+				if(!visitedNodes.contains(n) && predicate.test(n))
 					unvisitedNodes.add(n);
 			}
 			visitedNodes.add(activeNode);
 		}
 		return false;
+	}
+	public boolean canReach(NODE n1, NODE n2)
+	{
+		return this.canReach(n1, n2, n -> true);
 	}
 
 	public boolean containsVertex(NODE node1)
@@ -115,5 +120,13 @@ public class Graph<NODE,EDGE> implements NBT
 	public void read(NBTTagCompound tag)
 	{
 
+	}
+
+	public void removeVertice(NODE n)
+	{
+		if (this.connections.get(n).size() != 0)
+			throw new IllegalArgumentException("Cannot remove vertice with active edges.");
+		this.connections.remove(n);
+		this.vertices.remove(n);
 	}
 }

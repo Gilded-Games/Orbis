@@ -234,4 +234,9 @@ public class FrameworkData implements IFrameworkNode, IData
 	public void read(NBTTagCompound tag) {
 
 	}
+
+	public Graph<FrameworkNode, FrameworkEdge> getGraph()
+	{
+		return this.graph;
+	}
 }

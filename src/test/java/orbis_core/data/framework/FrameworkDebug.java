@@ -35,6 +35,8 @@ public class FrameworkDebug
 
 	private static double left = -200, right = 200, bottom = -200, top = 200;
 
+	private boolean showYellow = false, showPurple = true;
+
 	public FrameworkDebug()
 	{
 		this.algorithm = new FrameworkAlgorithm(this.toDebug, null);
@@ -58,7 +60,7 @@ public class FrameworkDebug
 			{
 				screen.update();
 				Display.update();
-				Display.sync(60);
+				Display.sync(120);
 			}
 		}
 		catch (final LWJGLException e)
@@ -80,6 +82,10 @@ public class FrameworkDebug
 			this.algorithm.step();
 		if (Keyboard.isKeyDown(Keyboard.KEY_Z) && this.algorithm.getPhase() == FrameworkAlgorithm.Phase.FDGD)
 			this.algorithm.step();
+		while (Keyboard.next())
+			if (Keyboard.getEventKey() == Keyboard.KEY_Y)
+				if (Keyboard.getEventKeyState())
+					this.showYellow = !this.showYellow;
 
 		double dx = right - left;
 		double dy = top - bottom;
@@ -155,18 +161,29 @@ public class FrameworkDebug
 //				glDrawRegion(new Region(new BlockPos(node.endConnection.getX() - 1, 0, node.endConnection.getZ() - 1), new BlockPos(node.endConnection.getX() + 1, 0, node.endConnection.getZ() + 1)), 0.5f, 1.0f, 0.5f);
 //			}
 //		}
-		graph.edgeSet().forEach(FrameworkDebug::glDrawEdge);
+		if (showYellow)
+			this.toDebug.getGraph().edgeSet().forEach(e -> glDrawEdge(this.algorithm._nodeMap.get(e.node1()), this.algorithm._nodeMap.get(e.node2()), false));
+		if (showPurple)
+			graph.edgeSet().forEach(e -> glDrawEdge(e, true));
 		glDrawRegion(new Region(new BlockPos(-2, -2, -2), new BlockPos(2, 2, 2)), 1.0f, 1.0f, 0.5f);
 	}
 
-	public static void glDrawEdge(FDGDEdge edge)
+	public static void glDrawEdge(FDGDEdge edge, boolean c)
+	{
+		glDrawEdge(edge.node1(), edge.node2(), c);
+	}
+
+	public static void glDrawEdge(FDGDNode n1, FDGDNode n2, boolean c)
 	{
 		GL11.glBegin(GL11.GL_LINES);
-		GL11.glColor3f(1.0f, 0.2f, 1.0f);
-		float x1 = edge.node1().getX(), z1 = edge.node1().getZ();
-		float x2 = edge.node2().getX(), z2 = edge.node2().getZ();
-//		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
-//		GL11.glVertex2f(edge.entrance2X(), edge.entrance2Z());
+		if (c)
+			GL11.glColor3f(1.0f, 0.2f, 1.0f);
+		else
+			GL11.glColor3f(1.0f, 1.0f, 0.2f);
+		float x1 = n1.getX(), z1 = n1.getZ();
+		float x2 = n2.getX(), z2 = n2.getZ();
+		//		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
+		//		GL11.glVertex2f(edge.entrance2X(), edge.entrance2Z());
 		GL11.glVertex2f(x1, z1);
 		GL11.glVertex2f(x2, z2);
 		GL11.glEnd();

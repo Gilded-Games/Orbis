@@ -18,7 +18,7 @@ import java.util.*;
 public class FrameworkAlgorithm
 {
 	// How quickly the algorithm adds nodes on intersections of edges
-	private final static float graphGrowth = 0.3f, graphDestroy = 0.3f;
+	private final static float spiderwebGrowth = 0.5f, graphDestroy = 0.3f;
 
 	// We can only add edges during the create/destroy phase when
 	// the two nodes are within addEdgeDistanceRatio of the
@@ -28,6 +28,8 @@ public class FrameworkAlgorithm
 	private final FrameworkData framework;
 
 	private Graph<FDGDNode, FDGDEdge> fdgdGraph;
+
+	public Map<FrameworkNode, FDGDNode> _nodeMap; // Used for debugging
 
 	private Phase phase = Phase.CSP;
 
@@ -180,6 +182,8 @@ public class FrameworkAlgorithm
 		this.fdgdGraph = new Graph<>();
 		final Map<FrameworkNode, FDGDNode> nodeLookup = new HashMap<>(this.framework.graph.vertexSet().size());
 
+		this._nodeMap = nodeLookup; // temperorary;
+
 		//Create all nodes, which are now fixed size
 		for (FrameworkNode node : this.framework.graph.vertexSet())
 		{
@@ -286,15 +290,89 @@ public class FrameworkAlgorithm
 		}
 	}
 
+	private void clearUselessIntersections(List<FDGDEdge> edges)
+	{
+		for (int p = 0; p < edges.size(); p++)
+		{
+			FDGDEdge edge = edges.get(p);
+			FDGDNode n1 = edge.node1();
+			FDGDNode n2 = edge.node2();
+			if (n1.isIntersection() || n2.isIntersection())
+			{
+				this.fdgdGraph.removeEdge(edge);
+				FDGDNode start = n1.isIntersection() ? n1 : n2;
+				FDGDNode end = edge.getOpposite(start);
+				// If we can remove the edge between two intersections and still
+				// reach the two intersections by JUST going over other intersections,
+				// we can savely remove it.
+				if (!this.fdgdGraph.canReach(end, start, FDGDNode::isIntersection))
+					this.fdgdGraph.addEdge(n1, n2, edge);
+				else
+				{
+					edges.remove(p);
+					p--;
+				}
+			}
+		}
+
+		final List<FDGDNode> nodes = new ArrayList<>(this.fdgdGraph.vertices);
+		for (int p = 0; p < nodes.size(); p++)
+		{
+			FDGDNode n = nodes.get(p);
+			Set<FDGDEdge> edgesOut = this.fdgdGraph.edgesOf(n);
+			if(n.isIntersection() && edgesOut.size() < 3)
+			{
+				List<FDGDEdge> edgesOutL = new ArrayList<>(edgesOut);
+				if (edgesOut.size() == 2)
+				{
+					FDGDEdge e1 = edgesOutL.get(0);
+					FDGDEdge e2 = edgesOutL.get(1);
+					FDGDNode n1 = e1.getOpposite(n);
+					FDGDNode n2 = e2.getOpposite(n);
+					FDGDEdge eNew = new FDGDEdge(n1, n2, e1.pathway());
+					this.fdgdGraph.addEdge(n1, n2, eNew);
+				}
+				for (int q = 0; q < edgesOutL.size(); q++)
+				{
+					FDGDEdge e = edgesOutL.get(q);
+					this.fdgdGraph.removeEdge(e);
+					edges.remove(e);
+				}
+				this.fdgdGraph.removeVertice(n);
+				nodes.remove(p);
+				p--;
+			}
+		}
+	}
+
+
 	private boolean doSpiderWeb()
 	{
 		boolean sFinished = true;
 
 		final List<FDGDEdge> edges = new ArrayList<>(this.fdgdGraph.edgeSet());
+		Collections.shuffle(edges);
 		//TODO: Make sure this is always larger than edges.size()
-		final int maxAmount = (int) Math.pow(edges.size(), graphGrowth);
+		final int maxAmount = (int) Math.pow(edges.size(), spiderwebGrowth);
 		OrbisAPI.LOGGER.info(maxAmount);
 
+//		for (int j = 0; j < nodes.size(); j++)
+//		{
+//			FDGDNode n = nodes.get(j);
+//			if (n.isIntersection())
+//			{
+//				FDGDEdge e1 = n.getOldEdge1();
+//				FDGDEdge e2 = n.getOldEdge2();
+//				if (!FDGenUtil.isIntersecting(e1, e2) &&
+//						!FDGenUtil.hasEdgeIntersections(this.fdgdGraph, e1) &&
+//						!FDGenUtil.hasEdgeIntersections(this.fdgdGraph, e2))
+//				{
+//
+//				}
+//			}
+//		}
+
+		this.clearUselessIntersections(edges);
 		int i = 0;
 		outerloop:
 		while (i < maxAmount)
@@ -314,9 +392,14 @@ public class FrameworkAlgorithm
 					final FDGDNode e2S = edge2.node1();
 					final FDGDNode e2T = edge2.node2();
 
+
 					// Filter intersections that happen because the edges have the same origin
 					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
 						continue;
+//					final int amtIntersections = (e1S.isIntersection() ? 1 : 0) +
+//							(e1T.isIntersection() ? 1 : 0) +
+//							(e2S.isIntersection() ? 1 : 0) +
+//							(e2T.isIntersection() ? 1 : 0);
 
 					if (!FDGenUtil.isIntersecting(edge1, edge2))
 						continue;
@@ -378,7 +461,7 @@ public class FrameworkAlgorithm
 					this.fdgdGraph.removeEdge(edge2);
 
 					//Add new node and edges, with the intersection blueprint as data.
-					final FDGDNode node = new FDGDNode(intersectionTFD, new BlockPos(x, y, z));
+					final FDGDNode node = new FDGDNode(intersectionTFD, new BlockPos(x, y, z), edge1, edge2);
 					this.fdgdGraph.addVertex(node);
 
 					final FDGDEdge nEdge1 = new FDGDEdge(node, edge1.node1(), edge1.pathway());
@@ -406,6 +489,7 @@ public class FrameworkAlgorithm
 			if (sFinished) //There are no longer any intersecting edges left
 				break;
 		}
+		this.clearUselessIntersections(edges);
 		return sFinished;
 	}
 

@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.framework.generation;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
@@ -22,6 +23,10 @@ public class FDGDNode extends BlueprintRegion
 
 	private float forceX, forceY, forceZ;
 
+	private boolean isIntersection = false;
+
+	private FDGDEdge oldEdge1, oldEdge2;
+
 	public FDGDNode(BlueprintData data, BlockPos pos)
 	{
 		super(pos, data);
@@ -37,6 +42,15 @@ public class FDGDNode extends BlueprintRegion
 		super(BlockPos.ORIGIN, rotation, data);
 		this.data = data;
 		this.rotation = rotation;
+	}
+
+	public FDGDNode(BlueprintData intersection, BlockPos pos, FDGDEdge oldEdge1, FDGDEdge oldEdge2)
+	{
+		this(intersection, pos);
+		OrbisAPI.LOGGER.info(pos);
+		this.isIntersection = true;
+		this.oldEdge1 = oldEdge1;
+		this.oldEdge2 = oldEdge2;
 	}
 
 	private void computeMinMax()
@@ -260,4 +274,18 @@ public class FDGDNode extends BlueprintRegion
 		return new BlockPos((int) this.posX, (int) this.posY, (int) this.posZ);
 	}
 
+	public boolean isIntersection()
+	{
+		return this.isIntersection;
+	}
+
+	public FDGDEdge getOldEdge1()
+	{
+		return this.oldEdge1;
+	}
+
+	public FDGDEdge getOldEdge2()
+	{
+		return this.oldEdge2;
+	}
 }
