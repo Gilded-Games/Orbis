@@ -40,9 +40,10 @@ public class FDGenUtil
 	}
 
 	private static float ESCAPE_DIST = 5f;
-	public static float[] pointOfForce(float vPosX, float vPosZ, FDGDNode u)
+	public static float[] pointOfForce(FDGDNode v, FDGDNode u)
 	{
 		//WATCH OUT: The 0 here is wrong.
+		float vPosX = v.getX(), vPosZ = v.getZ();
 		float uPosX = 0, uPosZ = 0;
 		if(RegionHelp.contains(u, vPosX, 0, vPosZ))
 		{
@@ -57,10 +58,36 @@ public class FDGenUtil
 			uPosX = vPosX - dx;
 			uPosZ = vPosZ - dz;
 		}
+		else if (RegionHelp.intersects(v, u))
+		{
+			float edgeClampX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
+			float edgeClampZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
+			float dx = vPosX - edgeClampX;
+			float dz = vPosZ - edgeClampZ;
+			float length = (float) Math.sqrt(dx * dx + dz * dz);
+			dx = dx / length * ESCAPE_DIST;
+			dz = dz / length * ESCAPE_DIST;
+			uPosX = vPosX - dx;
+			uPosZ = vPosZ - dz;
+		}
 		else
 		{
-			uPosX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
-			uPosZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
+//			uPosX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
+//			uPosZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
+			float edgeClampUX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
+			float edgeClampUZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
+			float edgeClampVX = MathHelper.clamp(edgeClampUX, v.getMin().getX(), v.getMax().getX());
+			float edgeClampVZ = MathHelper.clamp(edgeClampUZ, v.getMin().getZ(), v.getMax().getZ());
+			float dx = vPosX - edgeClampUX;
+			float dz = vPosZ - edgeClampUZ;
+			float dxClamp = edgeClampVX - edgeClampUX;
+			float dzClamp = edgeClampVZ - edgeClampUZ;
+			float targetLength = (float) Math.sqrt(dxClamp * dxClamp + dzClamp * dzClamp);
+			float length = (float) Math.sqrt(dx * dx + dz * dz);
+			dx = dx / length * targetLength;
+			dz = dz / length * targetLength;
+			uPosX = vPosX - dx;
+			uPosZ = vPosZ - dz;
 		}
 		return new float[]{uPosX, 0, uPosZ};
 	}

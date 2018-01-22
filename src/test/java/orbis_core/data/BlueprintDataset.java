@@ -25,9 +25,9 @@ public class BlueprintDataset
 	public static ScheduleData randomSchedule(Random random, PathwayData pathway)
 	{
 		List<BlueprintData> b = new ArrayList<>();
-		int min = 5, max = 200;
+		int min = 5, max = 300;
 		int rEntrances = 6;
-		if (random.nextFloat() <  0.001)
+		if (random.nextFloat() <  0.01)
 			max = 1000;
 		final BlockDataContainer container = new BlockDataContainer(random.nextInt(max) + min, 1, random.nextInt(max) + min);
 		BlueprintData blueprint = new BlueprintData(container);

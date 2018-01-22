@@ -16,7 +16,7 @@ public class FruchtermanReingold implements IGDAlgorithm
 
 	private static int UN_MAX_ITERATIONS = 70;
 
-	private static int UP_MAX_ITERATIONS = 1800;
+	private static int UP_MAX_ITERATIONS = 1500;
 
 //	private static int UN_SPIDER_MAX_ITERATIONS = 15;
 //
@@ -40,13 +40,15 @@ public class FruchtermanReingold implements IGDAlgorithm
 
 	private static float END_SPEED_SPIDER = 20f;
 
-	private static float MIN_START_SPEED_SPIDER = 29;
+	private static float MIN_START_SPEED_SPIDER = 34;
 
-	private static float MAX_START_SPEED_SPIDER = 80;
+	private static float MAX_START_SPEED_SPIDER = 120;
 
-	private static float AREA_MODIFIER = 1.4f;
+	private static float ESCAPE_MODIFIER = 1.002f;
 
-	private static float C = 0.12f;
+	private static float AREA_MODIFIER = 1.2f;
+
+	private static float C = 0.06f;
 
 	private static float BOUNCE_MOD = 1f;
 
@@ -105,7 +107,7 @@ public class FruchtermanReingold implements IGDAlgorithm
 			{
 				if(u != v)
 				{
-					float[] uPos = FDGenUtil.pointOfForce(v.getX(), v.getZ(), u);
+					float[] uPos = FDGenUtil.pointOfForce(v, u);
 					float dx = v.getX() - uPos[0];
 					float dz = v.getZ() - uPos[2];
 					float dist = this.euclid(dx, 0, dz);
@@ -161,8 +163,8 @@ public class FruchtermanReingold implements IGDAlgorithm
 			if(FDGenUtil.hasCollision(graph))
 			{
 				OrbisAPI.LOGGER.info("INCREASING REPULSION");
-				this.k *= 1.005; // After the max iterations, increase the repulsive force until there are no collisions.
-				this.s /= this.cooling;
+				this.k *= ESCAPE_MODIFIER; // After the max iterations, increase the repulsive force until there are no collisions.
+//				this.s /= this.cooling;
 			}
 			else
 			{

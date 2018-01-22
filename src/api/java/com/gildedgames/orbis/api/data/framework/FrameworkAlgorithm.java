@@ -131,8 +131,8 @@ public class FrameworkAlgorithm
 
 		if (this.phase == Phase.REBUILD2)
 		{
-//			this.doSpiderWeb();
-			this.doEdgeDestroy();
+			this.doSpiderWeb();
+//			this.doEdgeDestroy();
 			this.gdAlgorithm.resetOnSpiderweb(this.fdgdGraph, this.framework.getType(), this.fdgdIterations);
 			this.phase = Phase.REBUILD3;
 			return false;
