@@ -1,16 +1,13 @@
 package com.gildedgames.orbis.common.world_objects;
 
-import com.gildedgames.orbis.api.block.BlockData;
-import com.gildedgames.orbis.api.block.BlockDataContainer;
+import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.IBlueprintDataListener;
-import com.gildedgames.orbis.api.data.region.*;
+import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
-import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.util.RotationHelp;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
@@ -28,10 +25,10 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class Blueprint extends AbstractRegion implements IWorldObject, IMutableRegion, IRotateable, IColored, IBlueprintDataListener,
+public class Blueprint extends BlueprintRegion implements IWorldObject, IColored, IBlueprintDataListener,
 		IScheduleLayerHolder
 {
-	private final World world;
+	private World world;
 
 	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
 
@@ -39,49 +36,34 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	protected Rotation rotation = Rotation.NONE;
-
 	private IWorldRenderer renderer;
-
-	protected BlueprintData data;
-
-	protected BlockPos min = BlockPos.ORIGIN, max = BlockPos.ORIGIN;
 
 	private int currentScheduleLayer;
 
 	private Blueprint(final World world)
 	{
+		super(world);
 		this.world = world;
 	}
 
 	public Blueprint(final World world, final IRegion region)
 	{
+		super(region);
 		this.world = world;
-		this.data = new BlueprintData(region);
-
 		this.setBounds(region);
-
-		this.data.listen(this);
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final BlueprintData data)
 	{
+		super(pos, data);
 		this.world = world;
-		this.data = data;
-
-		this.setPos(pos);
-
 		this.data.listen(this);
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
 	{
+		super(pos, rotation, data);
 		this.world = world;
-		this.data = data;
-		this.rotation = rotation;
-
-		this.setPos(pos);
-
 		this.data.listen(this);
 	}
 
@@ -164,30 +146,6 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 	}
 
 	@Override
-	public Rotation getRotation()
-	{
-		return this.rotation;
-	}
-
-	public BlockData getBlock(final BlockPos pos)
-	{
-		final BlockPos transformed = this.transformForBlueprint(pos);
-		return this.getBlockDataContainer().get(transformed);
-	}
-
-	public BlockPos transformForBlueprint(final BlockPos pos)
-	{
-		final Rotation transformRot =
-				this.rotation == Rotation.CLOCKWISE_90 ?
-						Rotation.COUNTERCLOCKWISE_90 :
-						this.rotation == Rotation.COUNTERCLOCKWISE_90 ? Rotation.CLOCKWISE_90 : this.rotation;
-		final BlockPos rotated = RotationHelp.rotate(pos, this, transformRot);
-		final IRegion rotatedRegion = RotationHelp.rotate(this, transformRot);
-		return new BlockPos(rotated.getX() - rotatedRegion.getMin().getX(), rotated.getY() - rotatedRegion.getMin().getY(),
-				rotated.getZ() - rotatedRegion.getMin().getZ());
-	}
-
-	@Override
 	public int hashCode()
 	{
 		final HashCodeBuilder builder = new HashCodeBuilder();
@@ -195,13 +153,6 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 		builder.append(this.min.hashCode());
 
 		return builder.toHashCode();
-	}
-
-	//TODO: These two methods are very confusing. The current .hashCode() implementation has
-	//very unintuitive results.
-	protected int realHashCode()
-	{
-		return super.hashCode();
 	}
 
 	@Override
@@ -232,24 +183,6 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 	}
 
 	@Override
-	public int getWidth()
-	{
-		return this.data.getWidth();
-	}
-
-	@Override
-	public int getHeight()
-	{
-		return this.data.getHeight();
-	}
-
-	@Override
-	public int getLength()
-	{
-		return this.data.getLength();
-	}
-
-	@Override
 	public void trackGroup(final IWorldObjectGroup group)
 	{
 		if (!this.trackedGroups.contains(group))
@@ -268,21 +201,6 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 	public World getWorld()
 	{
 		return this.world;
-	}
-
-	@Override
-	public BlockPos getPos()
-	{
-		return this.min;
-	}
-
-	@Override
-	public void setPos(final BlockPos pos)
-	{
-		this.min = pos;
-		this.max = RegionHelp.getMax(this.min, this.getWidth(), this.getHeight(), this.getLength());
-
-		this.notifyDataChange();
 	}
 
 	@Override
@@ -322,72 +240,19 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 	}
 
 	@Override
-	public BlockPos getMin()
-	{
-		return this.min;
-	}
-
-	@Override
-	public BlockPos getMax()
-	{
-		return this.max;
-	}
-
-	@Override
 	public void write(final NBTTagCompound tag)
 	{
-		final NBTFunnel funnel = new NBTFunnel(tag);
-
-		funnel.setPos("min", this.min);
-
-		tag.setString("rotation", this.rotation.name());
-
-		funnel.set("state", this.data);
-
+		super.write(tag);
 		tag.setInteger("currentScheduleLayer", this.currentScheduleLayer);
 	}
 
 	@Override
 	public void read(final NBTTagCompound tag)
 	{
-		final NBTFunnel funnel = new NBTFunnel(tag);
-
-		this.min = funnel.getPos("min");
-
-		this.rotation = Rotation.valueOf(tag.getString("rotation"));
-
-		this.data = funnel.get("state");
-
-		this.max = RegionHelp.getMax(this.min, this.getWidth(), this.getHeight(), this.getLength());
-
-		this.notifyDataChange();
-
+		super.read(tag);
 		this.data.listen(this);
 
 		this.currentScheduleLayer = tag.getInteger("currentScheduleLayer");
-	}
-
-	@Override
-	public void setBounds(final IRegion region)
-	{
-		this.min = region.getMin();
-		this.max = region.getMax();
-
-		this.notifyDataChange();
-	}
-
-	@Override
-	public void setBounds(final BlockPos corner1, final BlockPos corner2)
-	{
-		this.min = RegionHelp.getMin(corner1, corner2);
-		this.max = RegionHelp.getMax(corner1, corner2);
-
-		this.notifyDataChange();
-	}
-
-	public BlockDataContainer getBlockDataContainer()
-	{
-		return this.data.getBlockDataContainer();
 	}
 
 	@Override

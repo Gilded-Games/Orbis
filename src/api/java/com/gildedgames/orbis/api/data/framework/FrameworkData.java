@@ -3,15 +3,21 @@ package com.gildedgames.orbis.api.data.framework;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.ComputedParamFac;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.api.data.management.IData;
+import com.gildedgames.orbis.api.data.management.IDataMetadata;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObject;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
 
 /**
- * <p> A Framework is a <strong>connected graph based data structure</strong> that can be generated using
- * Orbis's special Framework algorithm. This can be used to model large
+ * <p> A Framework is a <strong>connected graph-based data structure</strong> that can be generated using
+ * Orbis's Framework algorithm. This can be used to model large
  * collections of structures, such as cities or dungeons.
  * 
  * <p> The graph is build up off of <strong>nodes and edges</strong> connecting the nodes. 
@@ -20,14 +26,11 @@ import java.util.*;
  * saved in the {@link FrameworkNode FrameworkNode} class. First of
  * all, they have some sort of data inside of them. Right now, this can
  * be a <tt>ScheduleData</tt> or another <tt>FrameworkData</tt>.
- * The nodes also have an approximate position. This gives their position
- * in 3D space at the start of the algorithm. If these positions are
- * accurate, in that they form an optimally drawn graph, it can greatly 
- * improve the performance and quality of the end result.
  * 
  * <p> This class contains Conditions on how the various nodes are going to
  * turn out. This can be used to model relations such as that each node
- * needs to choose a different <tt>BlueprintData</tt>.
+ * needs to choose a different <tt>BlueprintData</tt>, or that some building
+ * should only generate once.
  * 
  * <p> There are two {@link FrameworkType types} of Frameworks, a 2D one
  * called rectangles and a 3D one called cubes.  
@@ -53,7 +56,7 @@ import java.util.*;
  * @see PathwayData
  *
  */
-public class FrameworkData implements IFrameworkNode
+public class FrameworkData implements IFrameworkNode, IData
 {
 
 	private final FrameworkType type = FrameworkType.RECTANGLES;
@@ -62,7 +65,7 @@ public class FrameworkData implements IFrameworkNode
 	 * The underlying graph of a Framework. It is an undirected graph with at most
 	 * one edge between its nodes.  
 	 */
-	protected final Graph<FrameworkNode, FrameworkEdge> graph = new Graph<FrameworkNode, FrameworkEdge>();
+	protected final Graph<FrameworkNode, FrameworkEdge> graph = new Graph<>();
 
 	/**
 	 * The list of all conditions on the nodes.
@@ -71,9 +74,8 @@ public class FrameworkData implements IFrameworkNode
 	/**
 	 * A map that contains what blueprint to use when two pathways intersect. This is only necessary
 	 * when {@link #type the FrameworkType} is {@link FrameworkType#RECTANGLES Rectangles}.
-	 * All <tt>BlueprintData</tt> in this map need at least 4 {@link Entrance connections}.
 	 */
-//	private final DoubleKeyMap<PathwayData, BlueprintData> intersections = new DoubleKeyMap<PathwayData, BlueprintData>();
+	private final Map<Tuple<PathwayData, PathwayData>, BlueprintData> intersections = new HashMap<>();
 
 	/**
 	 * Executes the Framework algorithm and returns a list with blueprints and positions
@@ -152,11 +154,11 @@ public class FrameworkData implements IFrameworkNode
 	 */
 	public void addIntersection(PathwayData pathway1, PathwayData pathway2, BlueprintData blueprint)
 	{
-//		if (blueprint.entrances().size() < 4)
-//		{
-//			throw new IllegalArgumentException("Can only have intersection blueprints with 4 or more entrances");
-//		}
-//		this.intersections.put(pathway1, pathway2, blueprint);
+		if (blueprint.entrances().size() < 4)
+		{
+			throw new IllegalArgumentException("Can only have intersection blueprints with 4 or more entrances");
+		}
+		this.intersections.put(new Tuple<>(pathway1, pathway2), blueprint);
 	}
 
 	public FrameworkType getType()
@@ -171,10 +173,14 @@ public class FrameworkData implements IFrameworkNode
 		return 100;
 	}
 
-//	public BlueprintData getIntersection(PathwayData pathway1, PathwayData pathway2)
-//	{
-//		return this.intersections.get(pathway1, pathway2);
-//	}
+	public BlueprintData getIntersection(PathwayData pathway1, PathwayData pathway2)
+	{
+		for (Tuple<PathwayData, PathwayData> t : this.intersections.keySet())
+			if(t.getFirst() == pathway1 && t.getSecond() == pathway2 ||
+					t.getFirst() == pathway2 && t.getSecond() == pathway1)
+				return this.intersections.get(t);
+		return null;
+	}
 
 	private final static Object stub = "aweoigh";
 
@@ -182,18 +188,50 @@ public class FrameworkData implements IFrameworkNode
 	public List<BlueprintData> possibleValues(Random random)
 	{
 		//TODO
-		return new ArrayList<BlueprintData>();
+		return new ArrayList<>();
 	}
 
 	@Override
 	public Collection<PathwayData> pathways()
 	{
-		final Set<PathwayData> schedules = new HashSet<PathwayData>();
+		final Set<PathwayData> schedules = new HashSet<>();
 		for (final FrameworkNode node : this.graph.vertexSet())
-		{
 			schedules.addAll(node.pathways());
-		}
 		return schedules;
 	}
 
+	@Override
+	public void preSaveToDisk(IWorldObject object)
+	{
+
+	}
+
+	@Override
+	public IData clone() {
+		return null;
+	}
+
+	@Override
+	public String getFileExtension() {
+		return null;
+	}
+
+	@Override
+	public IDataMetadata getMetadata() {
+		return null;
+	}
+
+	@Override
+	public void write(NBTTagCompound tag)
+	{
+		//TODO
+		NBTFunnel funnel = new NBTFunnel(tag);
+		tag.setInteger("type", this.type.ordinal());
+
+	}
+
+	@Override
+	public void read(NBTTagCompound tag) {
+
+	}
 }

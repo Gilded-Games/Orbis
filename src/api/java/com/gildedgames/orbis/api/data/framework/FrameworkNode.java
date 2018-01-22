@@ -3,6 +3,9 @@ package com.gildedgames.orbis.api.data.framework;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.util.mc.NBT;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,10 +13,12 @@ import java.util.Random;
 
 public class FrameworkNode implements IFrameworkNode
 {
-	private final IFrameworkNode schedule;
+	private IFrameworkNode schedule;
 
+	// Not sure what this is about tbh lol.
+	private static boolean isNullAllowed = false;
 
-	private final boolean isNullAllowed = false;
+//	private final boolean isNullAllowed = false;
 
 	public FrameworkNode(IFrameworkNode schedule)
 	{
@@ -36,10 +41,8 @@ public class FrameworkNode implements IFrameworkNode
 	public List<BlueprintData> possibleValues(Random random)
 	{
 		final List<BlueprintData> superPossibleValues = this.schedule.possibleValues(random);
-		if (this.isNullAllowed && !superPossibleValues.contains(null))
-		{
+		if (isNullAllowed && !superPossibleValues.contains(null))
 			superPossibleValues.add(null);
-		}
 		return superPossibleValues;
 	}
 
@@ -49,4 +52,17 @@ public class FrameworkNode implements IFrameworkNode
 		return this.schedule.pathways();
 	}
 
+	@Override
+	public void write(NBTTagCompound tag)
+	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+		funnel.set("schedule", this.schedule);
+	}
+
+	@Override
+	public void read(NBTTagCompound tag)
+	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+		this.schedule = funnel.get("schedule");
+	}
 }

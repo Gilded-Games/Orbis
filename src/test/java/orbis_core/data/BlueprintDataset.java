@@ -3,6 +3,9 @@ package orbis_core.data;
 
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +22,33 @@ public class BlueprintDataset
 		return new ScheduleData(b);
 	}
 
-	public static ScheduleData randomSchedule(Random random)
+	public static ScheduleData randomSchedule(Random random, PathwayData pathway)
 	{
 		List<BlueprintData> b = new ArrayList<>();
 		int min = 5, max = 200;
-		final BlockDataContainer container = new BlockDataContainer(random.nextInt(max) + min, random.nextInt(max) + min, random.nextInt(max) + min);
+		int rEntrances = 6;
+		if (random.nextFloat() <  0.001)
+			max = 1000;
+		final BlockDataContainer container = new BlockDataContainer(random.nextInt(max) + min, 1, random.nextInt(max) + min);
 		BlueprintData blueprint = new BlueprintData(container);
 		b.add(blueprint);
+		int amtE = random.nextInt(rEntrances) + 1;
+		for (int i = 0; i < amtE; i++)
+		{
+			int x, z, y = 0;
+			if (random.nextBoolean())
+			{
+				x = random.nextBoolean() ? 0 : blueprint.getWidth() - 1;
+				z = random.nextInt(blueprint.getLength());
+			}
+			else
+			{
+				x = random.nextInt(blueprint.getWidth());
+				z = random.nextBoolean() ? 0 : blueprint.getLength() - 1;
+			}
+			Entrance e = new Entrance(new BlockPos(x, y, z), pathway);
+			blueprint.addEntrance(e);
+		}
 		return new ScheduleData(b);
 	}
 

@@ -1,24 +1,30 @@
 package com.gildedgames.orbis.api.data.framework;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
 import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
 import com.gildedgames.orbis.api.data.framework.generation.FailedToGenerateException;
-import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.DeprecatedFDGD;
 import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.FruchtermanReingold;
 import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.IGDAlgorithm;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.region.Region;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class FrameworkAlgorithm
 {
+	// How quickly the algorithm adds nodes on intersections of edges
+	private final static float graphGrowth = 0.3f, graphDestroy = 0.3f;
+
+	// We can only add edges during the create/destroy phase when
+	// the two nodes are within addEdgeDistanceRatio of the
+	// length of the diagonal of the surrounding boundingbox.
+	private final static float addEdgeDistanceRatio = 0.4f;
+
 	private final FrameworkData framework;
 
 	private Graph<FDGDNode, FDGDEdge> fdgdGraph;
@@ -81,7 +87,7 @@ public class FrameworkAlgorithm
 
 		if (this.phase == Phase.FDGD)
 		{
-			this.iterationFDGD();
+			this.gdAlgorithm.step(this.fdgdGraph, this.framework.getType(), this.random, this.fdgdIterations);
 			this.fdgdIterations++;
 
 			this.phase = this.gdAlgorithm.inEquilibrium(this.fdgdGraph, this.framework.getType(), this.fdgdIterations);
@@ -111,9 +117,7 @@ public class FrameworkAlgorithm
 					//						this.pathfindingSolver.step();
 				}
 				else
-				{
 					this.phase = Phase.REBUILD1;
-				}
 			}
 			return false;
 		}
@@ -128,6 +132,8 @@ public class FrameworkAlgorithm
 		if (this.phase == Phase.REBUILD2)
 		{
 //			this.doSpiderWeb();
+			this.doEdgeDestroy();
+			this.gdAlgorithm.resetOnSpiderweb(this.fdgdGraph, this.framework.getType(), this.fdgdIterations);
 			this.phase = Phase.REBUILD3;
 			return false;
 		}
@@ -136,8 +142,7 @@ public class FrameworkAlgorithm
 		{
 			//TODO: Make sure this second connection assignment is helpful at all
 //			this.assignConnections();
-//			this.phase = Phase.FDGD;
-			this.fdgdIterations = 0;
+			this.phase = Phase.FDGD;
 			return false;
 		}
 
@@ -181,7 +186,7 @@ public class FrameworkAlgorithm
 			BlueprintData data = node.possibleValues(this.random).get(0);
 			if (data != null)
 			{
-				final FDGDNode newNode = new FDGDNode(data, BlockPos.ORIGIN, this.world);
+				final FDGDNode newNode = new FDGDNode(data, BlockPos.ORIGIN);
 				this.fdgdGraph.addVertex(newNode);
 				nodeLookup.put(node, newNode);
 			}
@@ -190,8 +195,11 @@ public class FrameworkAlgorithm
 		//Create the edges between them, which now have a chosen PathwayData for them
 		for (FrameworkEdge edge : this.framework.graph.edgeSet())
 		{
-			final PathwayData pathway = new PathwayData();  // TODO: Proper init
-			//edge.node1().pathways().iterator().next();
+			PathwayData pathway = null;
+			for (PathwayData p1 : edge.node1().pathways())
+				for(PathwayData p2 : edge.node2().pathways())
+					if (p1 == p2)
+						pathway = p1;
 			if (pathway != null)
 			{
 				final FDGDNode node1 = nodeLookup.get(edge.node1());
@@ -254,13 +262,6 @@ public class FrameworkAlgorithm
 	//		}
 	//	}
 
-	private void iterationFDGD()
-	{
-		this.gdAlgorithm.step(this.fdgdGraph, this.framework.getType(), this.random, this.fdgdIterations);
-
-		// Shift all nodes so that the minima are 0
-	}
-
 	private void assignConnections()
 	{
 		for (final FDGDNode node : this.fdgdGraph.vertexSet())
@@ -285,118 +286,216 @@ public class FrameworkAlgorithm
 		}
 	}
 
-	private void doSpiderWeb()
+	private boolean doSpiderWeb()
 	{
-		//		final boolean sFinished = false;
-		//		int i = 0;
-		//
-		//		final List<FDGDEdge> edges = new ArrayList<>(this.fdgdGraph.edgeSet());
-		//		final int maxAmount = (int) Math.pow(edges.size(), this.params.graphGrowth());
-		//
-		//		while (i < maxAmount)
-		//		{
-		//			i++;
-		//			for (int p = 0; p < edges.size(); p++)
-		//			{
-		//				for (int q = 0; q < edges.size(); q++)
-		//				{
-		//					final FDGDEdge edge1 = edges.get(p);
-		//					final FDGDEdge edge2 = edges.get(q);
-		//
-		//					final FDGDNode e1S = edge1.node1();
-		//					final FDGDNode e1T = edge1.node2();
-		//
-		//					final FDGDNode e2S = edge2.node1();
-		//					final FDGDNode e2T = edge2.node2();
-		//
-		//					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
-		//					{
-		//						continue;
-		//					}
-		//
-		//					BlockPos connE1S = edge1.connectionOf1().getPos();
-		//					BlockPos connE1T = edge1.connectionOf2().getPos();
-		//
-		//					BlockPos connE2S = edge2.connectionOf1().getPos();
-		//					BlockPos connE2T = edge2.connectionOf2().getPos();
-		//
-		//					if (!FDGenUtil.isIntersecting(edge1, edge2))
-		//					{
-		//						continue;
-		//					}
-		//
-		//					//Find intersection point of the two lines
-		//					if (connE1S.getX() > connE1T.getX())
-		//					{
-		//						final BlockPos temp = connE1S;
-		//						connE1S = connE1T;
-		//						connE1T = temp;
-		//					}
-		//
-		//					if (connE2S.getX() > connE2T.getX())
-		//					{
-		//						final BlockPos temp = connE2S;
-		//						connE2S = connE2T;
-		//						connE2T = temp;
-		//					}
-		//					final long x1 = connE1S.getX();
-		//					final long z1 = connE1S.getZ();
-		//
-		//					final long x2 = connE1T.getX();
-		//					final long z2 = connE1T.getZ();
-		//
-		//					final long x3 = connE2S.getX();
-		//					final long z3 = connE2S.getZ();
-		//
-		//					final long x4 = connE2T.getX();
-		//					final long z4 = connE2T.getZ();
-		//
-		//					final long product1 = x1 * z2 - z1 * x2;
-		//					final long product2 = x3 * z4 - z3 * x4;
-		//
-		//					final float denominator = (x1 - x2) * (z3 - z4) - (z1 - z2) * (x3 - x4);
-		//
-		//					final long nominX = product1 * (x3 - x4) - (x1 - x2) * product2;
-		//					final long nominZ = product1 * (z3 - z4) - (z1 - z2) * product2;
-		//
-		//					final float x = nominX / denominator;
-		//					final float y = (connE1S.getY() + connE1T.getY() + connE2S.getY() + connE2T.getY()) / 4f;
-		//					final float z = nominZ / denominator;
-		//
-		//					// Find the intersection blueprint
-		//					final BlueprintData intersectionTFD = this.framework.getIntersection(edge1.pathway(), edge2.pathway());
-		//
-		//					//Remove old edges
-		//					edges.remove(edge1);
-		//					edges.remove(edge2);
-		//
-		//					this.fdgdGraph.removeEdge(edge1);
-		//					this.fdgdGraph.removeEdge(edge2);
-		//
-		//					//Add new node and edges, with the intersection blueprint as data.
-		//					final FDGDNode node = new FDGDNode(intersectionTFD, new BlockPos(x, y, z));
-		//					this.fdgdGraph.addVertex(node);
-		//
-		//					final FDGDEdge nEdge1 = new FDGDEdge(node, edge1.node1(), edge1.pathway());
-		//					this.fdgdGraph.addEdge(node, edge1.node1(), nEdge1);
-		//					final FDGDEdge nEdge2 = new FDGDEdge(node, edge1.node2(), edge1.pathway());
-		//					this.fdgdGraph.addEdge(node, edge1.node2(), nEdge2);
-		//
-		//					final FDGDEdge nEdge3 = new FDGDEdge(node, edge2.node1(), edge2.pathway());
-		//					this.fdgdGraph.addEdge(node, edge2.node1(), nEdge3);
-		//					final FDGDEdge nEdge4 = new FDGDEdge(node, edge2.node2(), edge2.pathway());
-		//					this.fdgdGraph.addEdge(node, edge2.node2(), nEdge4);
-		//
-		//					//TODO: Should I add the edges to the open edge list?
-		//
-		//					//Reasoning behind this: p will be the lowest of the two. The edge it was currently
-		//					//looking at with index p is now removed so on index p there's the next edge.
-		//					//We want to continue by looking from that edge.
-		//					p--;
-		//					break;
-		//				}
-		//			}
-		//		}
+		boolean sFinished = true;
+
+		final List<FDGDEdge> edges = new ArrayList<>(this.fdgdGraph.edgeSet());
+		//TODO: Make sure this is always larger than edges.size()
+		final int maxAmount = (int) Math.pow(edges.size(), graphGrowth);
+		OrbisAPI.LOGGER.info(maxAmount);
+
+		int i = 0;
+		outerloop:
+		while (i < maxAmount)
+		{
+			sFinished = true;
+			// Not using foreach loops here because we remove the contents of the edges in the loop.
+			for (int p = 0; p < edges.size(); p++)
+			{
+				for (int q = 0; q < edges.size(); q++)
+				{
+					final FDGDEdge edge1 = edges.get(p);
+					final FDGDEdge edge2 = edges.get(q);
+
+					final FDGDNode e1S = edge1.node1();
+					final FDGDNode e1T = edge1.node2();
+
+					final FDGDNode e2S = edge2.node1();
+					final FDGDNode e2T = edge2.node2();
+
+					// Filter intersections that happen because the edges have the same origin
+					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
+						continue;
+
+					if (!FDGenUtil.isIntersecting(edge1, edge2))
+						continue;
+
+					sFinished = false;
+					BlockPos connE1S = edge1.node1().centerAsBP();//.connectionOf1().getPos();
+					BlockPos connE1T = edge1.node2().centerAsBP();//connectionOf2().getPos();
+
+					BlockPos connE2S = edge2.node1().centerAsBP();//connectionOf1().getPos();
+					BlockPos connE2T = edge2.node2().centerAsBP();//connectionOf2().getPos();
+
+					//Find intersection point of the two lines
+					if (connE1S.getX() > connE1T.getX())
+					{
+						final BlockPos temp = connE1S;
+						connE1S = connE1T;
+						connE1T = temp;
+					}
+
+					if (connE2S.getX() > connE2T.getX())
+					{
+						final BlockPos temp = connE2S;
+						connE2S = connE2T;
+						connE2T = temp;
+					}
+
+					final long x1 = connE1S.getX();
+					final long z1 = connE1S.getZ();
+
+					final long x2 = connE1T.getX();
+					final long z2 = connE1T.getZ();
+
+					final long x3 = connE2S.getX();
+					final long z3 = connE2S.getZ();
+
+					final long x4 = connE2T.getX();
+					final long z4 = connE2T.getZ();
+
+					final long product1 = x1 * z2 - z1 * x2;
+					final long product2 = x3 * z4 - z3 * x4;
+
+					final float denominator = (x1 - x2) * (z3 - z4) - (z1 - z2) * (x3 - x4);
+
+					final long nominX = product1 * (x3 - x4) - (x1 - x2) * product2;
+					final long nominZ = product1 * (z3 - z4) - (z1 - z2) * product2;
+
+					final float x = nominX / denominator;
+					final float y = (connE1S.getY() + connE1T.getY() + connE2S.getY() + connE2T.getY()) / 4f;
+					final float z = nominZ / denominator;
+
+					// Find the intersection blueprint
+					final BlueprintData intersectionTFD = this.framework.getIntersection(edge1.pathway(), edge2.pathway());
+
+					//Remove old edges
+					edges.remove(edge1);
+					edges.remove(edge2);
+
+					this.fdgdGraph.removeEdge(edge1);
+					this.fdgdGraph.removeEdge(edge2);
+
+					//Add new node and edges, with the intersection blueprint as data.
+					final FDGDNode node = new FDGDNode(intersectionTFD, new BlockPos(x, y, z));
+					this.fdgdGraph.addVertex(node);
+
+					final FDGDEdge nEdge1 = new FDGDEdge(node, edge1.node1(), edge1.pathway());
+					this.fdgdGraph.addEdge(node, edge1.node1(), nEdge1);
+					final FDGDEdge nEdge2 = new FDGDEdge(node, edge1.node2(), edge1.pathway());
+					this.fdgdGraph.addEdge(node, edge1.node2(), nEdge2);
+
+					final FDGDEdge nEdge3 = new FDGDEdge(node, edge2.node1(), edge2.pathway());
+					this.fdgdGraph.addEdge(node, edge2.node1(), nEdge3);
+					final FDGDEdge nEdge4 = new FDGDEdge(node, edge2.node2(), edge2.pathway());
+					this.fdgdGraph.addEdge(node, edge2.node2(), nEdge4);
+
+					//TODO: Should I add the edges to the open edge list?
+
+					//Reasoning behind this: p will be the lowest of the two. The edge it was currently
+					//looking at with index p is now removed so on index p there's the next edge.
+					//We want to continue by looking from that edge.
+					p--;
+					i++;
+					if(i >= maxAmount)
+						break outerloop;
+					break;
+				}
+			}
+			if (sFinished) //There are no longer any intersecting edges left
+				break;
+		}
+		return sFinished;
+	}
+
+	private void doEdgeDestroy()
+	{
+		final List<FDGDEdge> edges = new ArrayList<>(this.fdgdGraph.edgeSet());
+		//TODO: Make sure this is always larger than edges.size()
+		final int maxAmount = (int) Math.pow(edges.size(), graphDestroy);
+		OrbisAPI.LOGGER.info(maxAmount);
+
+		int i = 0;
+		FDGDEdge removed = null;
+		outerloop:
+		while (i < maxAmount)
+		{
+			if(removed != null)
+				edges.remove(removed);
+			// Not using foreach loops here because we remove the contents of the edges in the loop.
+			for (FDGDEdge edge1 : edges)
+			{
+				for (FDGDEdge edge2 : edges)
+				{
+					final FDGDNode e1S = edge1.node1();
+					final FDGDNode e1T = edge1.node2();
+
+					final FDGDNode e2S = edge2.node1();
+					final FDGDNode e2T = edge2.node2();
+
+					// Filter intersections that happen because the edges have the same origin
+					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
+						continue;
+
+					if (!FDGenUtil.isIntersecting(edge1, edge2))
+						continue;
+
+					final FDGDEdge toRemove = this.random.nextBoolean() ? edge1 : edge2;
+					//Remove the edge, and make sure we can still reach the nodes it connected
+					this.fdgdGraph.removeEdge(toRemove);
+					if (this.fdgdGraph.canReach(toRemove.node1(), toRemove.node2()))
+					{
+						removed = toRemove;
+						i++;
+						// TODO This is an inefficient way to go over the loop
+						continue outerloop;
+					}
+					// This doesn't happen to be possible. Put it back.
+					this.fdgdGraph.addEdge(toRemove.node1(), toRemove.node2(), toRemove);
+				}
+			}
+			// We haven't found any edges we could remove. Let's stop trying.
+			break;
+		}
+		Region bbx = FDGenUtil.boundingBox(this.fdgdGraph);
+		float diagonal = FDGenUtil.euclidian(bbx.getMin(), bbx.getMax());
+		outerloop:
+		for (int j = 0; j < i; j++)
+		{
+			List<FDGDNode> vertices = new ArrayList<>(this.fdgdGraph.vertices);
+			Collections.shuffle(vertices);
+			for (FDGDNode n : vertices)
+				//TODO: Add amount of entrances constraint here
+				for (FDGDNode n2 : vertices)
+					if (this.fdgdGraph.edgesOf(n).size() < 3 &&
+							this.fdgdGraph.edgesOf(n2).size() < 3 &&
+							n != n2 && this.fdgdGraph.getEdge(n, n2) == null)
+					{
+						float dist = FDGenUtil.euclidian(n.centerAsBP(), n2.centerAsBP());
+						if(dist < diagonal * addEdgeDistanceRatio)
+						{
+							// TODO: Properly choose pathway
+							PathwayData p = n.getData().entrances().get(0).toConnectTo();
+							FDGDEdge e = new FDGDEdge(n, n2, p);
+							// Make sure this added edge does not intersect with any
+							// edges already in the graph
+							boolean isIntersectingOthers = false;
+							for (FDGDEdge e2 : this.fdgdGraph.edgeSet())
+								if(FDGenUtil.isIntersecting(e, e2))
+								{
+									isIntersectingOthers = true;
+									break;
+								}
+							if (!isIntersectingOthers)
+							{
+								OrbisAPI.LOGGER.info("Adding edge");
+								this.fdgdGraph.addEdge(n, n2, e);
+								continue outerloop;
+							}
+						}
+					}
+		}
 	}
 
 	public Graph<FDGDNode, FDGDEdge> getFDGDDebug()

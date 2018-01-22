@@ -1,27 +1,41 @@
 package com.gildedgames.orbis.api.data.framework.generation;
 
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.data.framework.Graph;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FDGenUtil
 {
+	public static Region boundingBox(Graph<FDGDNode, FDGDEdge> graph)
+	{
+		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+		for (FDGDNode n : graph.vertexSet())
+		{
+			BlockPos min = n.getMin();
+			BlockPos max = n.getMax();
+			minX = Math.min(minX, min.getX());
+			minY = Math.min(minY, min.getY());
+			minZ = Math.min(minZ, min.getZ());
+
+			maxX = Math.max(maxX, max.getX());
+			maxY = Math.max(maxY, max.getY());
+			maxZ = Math.max(maxZ, max.getZ());
+		}
+		return new Region(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
+	}
+
+
 	public static boolean hasCollision(Graph<FDGDNode, FDGDEdge> graph)
 	{
 		for (final FDGDNode node1 : graph.vertexSet())
-		{
 			for (final FDGDNode node2 : graph.vertexSet())
-			{
 				if (node1 != node2 && RegionHelp.intersects(node1, node2))
-				{
 					return true;
-				}
-			}
-		}
 		return false;
 	}
 
@@ -53,10 +67,9 @@ public class FDGenUtil
 
 	public static boolean hasEdgeIntersections(Graph<FDGDNode, FDGDEdge> graph)
 	{
-		final List<FDGDEdge> edges = new ArrayList<FDGDEdge>(graph.edgeSet());
+		final List<FDGDEdge> edges = new ArrayList<>(graph.edgeSet());
 
 		for (int i = 0; i < edges.size(); i++)
-		{
 			for (int x = i + 1; x < edges.size(); x++)
 			{
 				final FDGDEdge edge1 = edges.get(i);
@@ -69,39 +82,40 @@ public class FDGenUtil
 				final FDGDNode e2T = edge2.node2();
 
 				if (e1T != e2T && e1T != e2S && e1S != e2T && e1S != e2S)
-				{
 					if (isIntersecting(edge1, edge2))
-					{
 						return true;
-					}
-				}
 			}
-		}
 		return false;
 	}
 
+	// Returns true if the two edges have an intersection somewhere.
 	public static boolean isIntersecting(FDGDEdge edge1, FDGDEdge edge2)
 	{
+		final float line1X = edge1.node2().getX() - edge1.node1().getX();
+		final float line1Z = edge1.node2().getZ() - edge1.node1().getZ();
+
+		final float line2X = edge2.node2().getX() - edge2.node1().getX();
+		final float line2Z = edge2.node2().getZ() - edge2.node1().getZ();
+
+		final float diffX = edge1.node1().getX() - edge2.node1().getX();
+		final float diffZ = edge1.node1().getZ() - edge2.node1().getZ();
+
 		//e1s, e1t, e2s, e2t
-		final float line1X = edge1.entrance2X() - edge1.entrance1X();
-		final float line1Z = edge1.entrance2Z() - edge1.entrance1Z();
-
-		final float line2X = edge2.entrance2X() - edge2.entrance1X();
-		final float line2Z = edge2.entrance2Z() - edge2.entrance1Z();
-
+//		final float line1X = edge1.entrance2X() - edge1.entrance1X();
+//		final float line1Z = edge1.entrance2Z() - edge1.entrance1Z();
+//
+//		final float line2X = edge2.entrance2X() - edge2.entrance1X();
+//		final float line2Z = edge2.entrance2Z() - edge2.entrance1Z();
+//
+//		final float diffX = edge1.entrance1X() - edge2.entrance1X();
+//		final float diffZ = edge1.entrance1Z() - edge2.entrance1Z();
 		final float denom = line1X * line2Z - line2X * line1Z;
-		final float diffX = edge1.entrance1X() - edge2.entrance1X();
-		final float diffZ = edge1.entrance1Z() - edge2.entrance1Z();
 
 		final float s = (line1X * diffZ - line1Z * diffX) / denom;
 		final float t = (line2X * diffZ - line2Z * diffX) / denom;
 
-		if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-		{
-			return true;
-		}
+		return s > 0 && s < 1 && t > 0 && t < 1;
 
-		return false;
 	}
 
 	public static int euclidian(BlockPos from, BlockPos to)

@@ -24,4 +24,5 @@ public class FrameworkEdge
 	{
 		return node == this.node1 ? this.node2 : node == this.node2 ? this.node1 : null;
 	}
+
 }

@@ -24,13 +24,9 @@ public class FDGDEdge
 	public Entrance getConnection(FDGDNode node)
 	{
 		if (node.equals(this.node1))
-		{
 			return this.connection1;
-		}
 		if (node.equals(this.node2))
-		{
 			return this.connection2;
-		}
 		throw new IllegalArgumentException();
 	}
 
@@ -53,9 +49,7 @@ public class FDGDEdge
 			this.ent2Z = pos.getZ();
 		}
 		else
-		{
 			throw new IllegalArgumentException();
-		}
 	}
 
 	public FDGDNode getOpposite(FDGDNode node)

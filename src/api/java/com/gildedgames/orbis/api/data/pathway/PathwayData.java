@@ -1,11 +1,14 @@
 package com.gildedgames.orbis.api.data.pathway;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.util.mc.NBT;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathwayData
+public class PathwayData implements NBT
 {
 
 	private List<BlueprintData> pieces = new ArrayList<>();
@@ -21,21 +24,13 @@ public class PathwayData
 
 		this.pieces = new ArrayList<>(pieces);
 
-		for (final BlueprintData b : pieces)
-		{
-//			if (b.entrances().size() < 2)
-//			{
-//				this.pieces.remove(b);
-//			}
-		}
+		this.pieces.removeIf(b-> b.entrances().size() < 2);
 	}
 
 	public void addPiece(BlueprintData piece)
 	{
-//		if (piece.entrances().size() < 2)
-//		{
-//			throw new IllegalStateException("You can only add blueprints with at least two entrances to a pathway");
-//		}
+		if (piece.entrances().size() < 2)
+			throw new IllegalStateException("You can only add blueprints with at least two entrances to a pathway");
 		this.pieces.add(piece);
 	}
 
@@ -44,4 +39,17 @@ public class PathwayData
 		return this.pieces;
 	}
 
+	@Override
+	public void write(NBTTagCompound tag)
+	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+		funnel.setList("blueprints", this.pieces);
+	}
+
+	@Override
+	public void read(NBTTagCompound tag)
+	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+		this.pieces = funnel.getList("blueprints");
+	}
 }

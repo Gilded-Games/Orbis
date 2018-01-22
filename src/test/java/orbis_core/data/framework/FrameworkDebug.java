@@ -77,9 +77,10 @@ public class FrameworkDebug
 		GL11.glColor3f(0.5f, 0.5f, 1.0f);
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-		{
 			this.algorithm.step();
-		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_Z) && this.algorithm.getPhase() == FrameworkAlgorithm.Phase.FDGD)
+			this.algorithm.step();
+
 		double dx = right - left;
 		double dy = top - bottom;
 

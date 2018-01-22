@@ -1,17 +1,38 @@
 package orbis_core.data.framework;
 
+import com.gildedgames.orbis.api.block.BlockDataContainer;
+import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import jdk.nashorn.internal.ir.Block;
 import net.minecraft.util.math.BlockPos;
 import orbis_core.data.BlueprintDataset;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class FrameworkDataset
 {
+	private static BlueprintData pathwayB = null;
+
+	public static BlueprintData getPathwayB(PathwayData pathway)
+	{
+		if (pathwayB == null)
+		{
+			BlueprintData b1 = new BlueprintData(new BlockDataContainer(5, 5, 5));
+			b1.addEntrance(new Entrance(new BlockPos(0, 0, 2), pathway));
+			b1.addEntrance(new Entrance(new BlockPos(4, 0, 2), pathway));
+			b1.addEntrance(new Entrance(new BlockPos(2, 0, 0), pathway));
+			b1.addEntrance(new Entrance(new BlockPos(2, 0, 4), pathway));
+			pathwayB = b1;
+		}
+		return pathwayB;
+	}
+
 	public static FrameworkData framework1()
 	{
 		final FrameworkData frameworkData = new FrameworkData();
@@ -43,13 +64,24 @@ public class FrameworkDataset
 		return frameworkData;
 	}
 
+	private static PathwayData pathway(Random random)
+	{
+		PathwayData pathway = new PathwayData();
+
+		pathway.addPiece(getPathwayB(pathway));
+		return pathway;
+	}
+
 	public static FrameworkData randomFramework(Random random)
 	{
 		FrameworkData frameworkData = new FrameworkData();
+		PathwayData pathway = pathway(random);
+		frameworkData.addIntersection(pathway, pathway, getPathwayB(pathway));
+
 		int amt_nodes = random.nextInt(140) + 1;
 		List<FrameworkNode> nodes  = new ArrayList<>();
 		for(int i = 0; i < amt_nodes; i++)
-			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random)));
+			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway)));
 		List<FrameworkNode> connectedNodes = new ArrayList<>();
 		for (FrameworkNode n1 : nodes)
 		{
@@ -62,20 +94,12 @@ public class FrameworkDataset
 				connectedNodes.add(n1);
 			}
 		}
-		float probability = 0.3f / amt_nodes;
+		float probability = 0.5f / amt_nodes;
 		for (FrameworkNode n1 : nodes)
-		{
 			for (FrameworkNode n2 : nodes)
-			{
 				if(n1 != n2 && frameworkData.edgeAt(n1, n2) == null)
-				{
 					if (random.nextFloat() < probability)
-					{
 						frameworkData.addEdge(n1, n2);
-					}
-				}
-			}
-		}
 		return frameworkData;
 	}
 

@@ -2,6 +2,7 @@ package com.gildedgames.orbis.api.data.framework.interfaces;
 
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.util.mc.NBT;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Random;
  * @author Emile
  *
  */
-public interface IFrameworkNode
+public interface IFrameworkNode extends NBT
 {
 
 	/**

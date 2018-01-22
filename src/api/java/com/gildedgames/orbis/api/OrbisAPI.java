@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.api;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This OrbisAPI allows mod developers to integrate
@@ -11,6 +13,8 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 public class OrbisAPI
 {
 	private static IOrbisServices services;
+
+	public static final Logger LOGGER = LogManager.getLogger("OrbisAPI");
 
 	private OrbisAPI()
 	{

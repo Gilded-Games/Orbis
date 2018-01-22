@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.api.data.framework.generation;
 
+import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class FDGDNode extends Blueprint
+public class FDGDNode extends BlueprintRegion
 {
 	//This is the center
 	private float posX, posY, posZ;
@@ -22,9 +22,9 @@ public class FDGDNode extends Blueprint
 
 	private float forceX, forceY, forceZ;
 
-	public FDGDNode(BlueprintData data, BlockPos pos, World world)
+	public FDGDNode(BlueprintData data, BlockPos pos)
 	{
-		super(world, pos, data);
+		super(pos, data);
 		this.data = data;
 		this.posX = pos.getX();
 		this.posY = pos.getY();
@@ -32,9 +32,9 @@ public class FDGDNode extends Blueprint
 		this.computeMinMax();
 	}
 
-	public FDGDNode(BlueprintData data, Rotation rotation, World world)
+	public FDGDNode(BlueprintData data, Rotation rotation)
 	{
-		super(world, BlockPos.ORIGIN, rotation, data);
+		super(BlockPos.ORIGIN, rotation, data);
 		this.data = data;
 		this.rotation = rotation;
 	}
@@ -260,9 +260,4 @@ public class FDGDNode extends Blueprint
 		return new BlockPos((int) this.posX, (int) this.posY, (int) this.posZ);
 	}
 
-	@Override
-	public int hashCode()
-	{
-		return super.realHashCode();
-	}
 }

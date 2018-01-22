@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
 import com.gildedgames.orbis.api.data.framework.FrameworkType;
 import com.gildedgames.orbis.api.data.framework.Graph;
@@ -26,7 +26,7 @@ public class DeprecatedFDGD implements IGDAlgorithm
 	public void initialize(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type, Random random)
 	{
 		this.params = this.paramFac.createParams(graph, type);
-		OrbisCore.LOGGER.info(this.params);
+		OrbisAPI.LOGGER.info(this.params);
 	}
 
 	@Override
@@ -147,5 +147,11 @@ public class DeprecatedFDGD implements IGDAlgorithm
 
 		}
 		return FrameworkAlgorithm.Phase.REBUILD1;
+	}
+
+	@Override
+	public void resetOnSpiderweb(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type, int fdgdIterations)
+	{
+
 	}
 }

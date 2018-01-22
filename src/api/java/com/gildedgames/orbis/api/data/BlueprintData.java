@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataMetadata;
 import com.gildedgames.orbis.api.data.management.impl.DataMetadata;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IRotateable;
@@ -25,10 +26,11 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>
+public class BlueprintData implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>
 {
 	private final List<IBlueprintDataListener> listeners = Lists.newArrayList();
 
@@ -37,6 +39,8 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 	private BlockDataContainer dataContainer;
 
 	private Map<Integer, IScheduleLayer> scheduleLayers = Maps.newHashMap();
+
+	private List<Entrance> entrances = new ArrayList<>();
 
 	private BlueprintData()
 	{
@@ -117,6 +121,23 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		return -1;
 	}
 
+	public void addEntrance(final Entrance entrance)
+	{
+		BlockPos ePos = entrance.getPos();
+		boolean properEntrance = ePos.getX() == 0 || ePos.getX() == this.getWidth() - 1 ||
+				//TODO: This should be uncommented when using the entrance in 3D generation.
+//								 ePos.getY() == 0 || ePos.getY() == this.getHeight() - 1 ||
+				 				 ePos.getZ() == 0 || ePos.getZ() == this.getLength() - 1;
+		if (!properEntrance)
+			throw new IllegalArgumentException("Entrance can only be placed on the edges of blueprints");
+		this.entrances.add(entrance);
+	}
+
+	public List<Entrance> entrances()
+	{
+		return this.entrances;
+	}
+
 	@Override
 	public int getWidth()
 	{
@@ -174,6 +195,7 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		funnel.set("dataContainer", this.dataContainer);
 		funnel.set("metadata", this.metadata);
 		funnel.setIntMap("scheduleLayers", this.scheduleLayers);
+		funnel.setList("entrances", this.entrances);
 	}
 
 	@Override
@@ -189,6 +211,8 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 
 		this.scheduleLayers.values().forEach(l -> l.listen(this));
 		this.scheduleLayers.values().forEach(l -> l.getDataRecord().listen(this));
+
+		this.entrances = funnel.getList("entrances");
 	}
 
 	public void fetchBlocksInside(final IShape shape, final World world, final Rotation rotation)

@@ -30,4 +30,6 @@ public interface IGDAlgorithm
 	 * @return
 	 */
 	FrameworkAlgorithm.Phase inEquilibrium(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type, int fdgdIterations);
+
+	void resetOnSpiderweb(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type, int fdgdIterations);
 }
