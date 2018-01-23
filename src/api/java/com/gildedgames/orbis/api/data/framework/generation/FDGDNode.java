@@ -174,10 +174,10 @@ public class FDGDNode extends BlueprintRegion
 				bestRotation = rotation;
 			}
 		}
+		if(bestResult == null)
+			OrbisAPI.LOGGER.info("?????");
 		for (final Entry<FDGDEdge, Entrance> edge : bestResult.entrySet())
-		{
 			edge.getKey().setConnection(this, edge.getValue());
-		}
 		this.rotation = bestRotation;
 		this.computeMinMax();
 	}
@@ -213,32 +213,24 @@ public class FDGDNode extends BlueprintRegion
 	private Tuple<Map<FDGDEdge, Entrance>, Integer> bestEntrances(List<FDGDEdge> edges, List<Entrance> entrancesLeft, int edgeIndex, int cost, int best)
 	{
 		if (edgeIndex >= edges.size())
-		{
 			return new Tuple<>(new HashMap<>(edges.size()), cost);
-		}
 		final FDGDEdge edge = edges.get(edgeIndex);
 		Tuple<Map<FDGDEdge, Entrance>, Integer> bestInDepth = null;
 		final FDGDNode opposite = edge.getOpposite(this);
 		final Map<Entrance, Integer> costMap = new HashMap<>(entrancesLeft.size());
 		for (final Entrance entrance : entrancesLeft)
-		{
 			costMap.put(entrance, cost + FDGenUtil.euclidian(entrance.getPos(), (int) opposite.getX(), (int) opposite.getY(), (int) opposite.getZ()));
-		}
 
 		//TODO: See if the heuristic has noticeable performance improvements
 		entrancesLeft.sort(Comparator.comparing(costMap::get));
 		for (final Entrance entrance : entrancesLeft)
 		{
 			if (!edge.pathway().equals(entrance.toConnectTo()))
-			{
 				continue;
-			}
 			final int newCost = costMap.get(entrance);
 			//Prune branch if we already found a solution with a lower total cost
 			if (newCost >= best)
-			{
 				continue;
-			}
 			final List<Entrance> copy = new ArrayList<>(entrancesLeft);
 			copy.remove(entrance);
 
@@ -256,14 +248,15 @@ public class FDGDNode extends BlueprintRegion
 
 	private List<Entrance> getEntrances(Rotation rotation)
 	{
-		final List<Entrance> newList = new ArrayList<Entrance>();
+		final List<Entrance> newList = new ArrayList<>();
 		final BlockPos position = this.centerAsBP();
-//		for (final Entrance beforeTrans : this.data.entrances())
-//		{
-//			final BlockPos finalBP = beforeTrans.getPos().add((int) this.posX - this.data.getWidth() / 2, this.posY, (int) this.posZ - this.data.getLength() / 2);
-//			final BlockPos trans = RotationHelp.rotate(finalBP, position, rotation, this.getWidth(), this.getLength());
-//			newList.add(new Entrance(trans, beforeTrans.toConnectTo()));
-//		}
+		for (final Entrance beforeTrans : this.data.entrances())
+		{
+			// TODO: Incorrect y coordinate
+			final BlockPos finalBP = beforeTrans.getPos().add((int) this.posX - this.data.getWidth() / 2, this.posY, (int) this.posZ - this.data.getLength() / 2);
+			final BlockPos trans = RotationHelp.rotate(finalBP, position, rotation, this.getWidth(), this.getLength());
+			newList.add(new Entrance(trans, beforeTrans.toConnectTo()));
+		}
 		return newList;
 	}
 

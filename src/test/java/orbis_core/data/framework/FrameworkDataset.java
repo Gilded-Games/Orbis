@@ -3,7 +3,9 @@ package orbis_core.data.framework;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
+import com.gildedgames.orbis.api.data.framework.FrameworkEdge;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
+import com.gildedgames.orbis.api.data.framework.Graph;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import jdk.nashorn.internal.ir.Block;
@@ -21,7 +23,7 @@ public class FrameworkDataset
 
 	public static BlueprintData getPathwayB(PathwayData pathway)
 	{
-		if (pathwayB == null)
+		if (pathwayB == null || pathwayB.entrances().get(0).toConnectTo() != pathway)
 		{
 			BlueprintData b1 = new BlueprintData(new BlockDataContainer(5, 5, 5));
 			b1.addEntrance(new Entrance(new BlockPos(0, 0, 2), pathway));
@@ -83,21 +85,32 @@ public class FrameworkDataset
 		for(int i = 0; i < amt_nodes; i++)
 			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway)));
 		List<FrameworkNode> connectedNodes = new ArrayList<>();
+		Graph<FrameworkNode, FrameworkEdge> graph = frameworkData.getGraph();
 		for (FrameworkNode n1 : nodes)
 		{
 			if (connectedNodes.size() == 0)
 				connectedNodes.add(n1);
 			else
 			{
-				FrameworkNode n2 = connectedNodes.get(random.nextInt(connectedNodes.size()));
-				frameworkData.addEdge(n1, n2);
-				connectedNodes.add(n1);
+				while(true)
+				{
+					FrameworkNode n2 = connectedNodes.get(random.nextInt(connectedNodes.size()));
+					if(graph.edgesOf(n2).size() < n2.maxEdges())
+					{
+						frameworkData.addEdge(n1, n2);
+						connectedNodes.add(n1);
+						break;
+					}
+				}
 			}
 		}
 		float probability = 0.5f / amt_nodes;
 		for (FrameworkNode n1 : nodes)
 			for (FrameworkNode n2 : nodes)
-				if(n1 != n2 && frameworkData.edgeAt(n1, n2) == null)
+				if(n1 != n2
+						&& frameworkData.edgeAt(n1, n2) == null
+						&& graph.edgesOf(n1).size() < n1.maxEdges()
+						&& graph.edgesOf(n2).size() < n2.maxEdges())
 					if (random.nextFloat() < probability)
 						frameworkData.addEdge(n1, n2);
 		return frameworkData;

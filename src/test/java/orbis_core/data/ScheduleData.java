@@ -17,9 +17,12 @@ public class ScheduleData implements IFrameworkNode
 		this.blueprints = blueprints;
 	}
 	@Override
+	//TODO: This might not be correct.
 	public int maxEdges()
 	{
-		return 100;
+		return this.blueprints.stream()
+				.mapToInt(b -> b.entrances().size())
+				.max().getAsInt();
 	}
 
 	@Override

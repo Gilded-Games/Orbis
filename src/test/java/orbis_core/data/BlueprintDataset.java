@@ -26,13 +26,13 @@ public class BlueprintDataset
 	{
 		List<BlueprintData> b = new ArrayList<>();
 		int min = 5, max = 300;
-		int rEntrances = 6;
+		int rEntrances = 7;
 		if (random.nextFloat() <  0.01)
 			max = 1000;
 		final BlockDataContainer container = new BlockDataContainer(random.nextInt(max) + min, 1, random.nextInt(max) + min);
 		BlueprintData blueprint = new BlueprintData(container);
 		b.add(blueprint);
-		int amtE = random.nextInt(rEntrances) + 1;
+		int amtE = random.nextInt(rEntrances) + 2;
 		for (int i = 0; i < amtE; i++)
 		{
 			int x, z, y = 0;

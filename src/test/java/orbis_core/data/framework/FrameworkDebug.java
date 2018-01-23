@@ -8,6 +8,7 @@ import com.gildedgames.orbis.api.data.framework.Graph;
 import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.ComputedParamFac;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
+import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.LWJGLException;
@@ -83,9 +84,26 @@ public class FrameworkDebug
 		if (Keyboard.isKeyDown(Keyboard.KEY_Z) && this.algorithm.getPhase() == FrameworkAlgorithm.Phase.FDGD)
 			this.algorithm.step();
 		while (Keyboard.next())
+		{
 			if (Keyboard.getEventKey() == Keyboard.KEY_Y)
+			{
 				if (Keyboard.getEventKeyState())
+				{
+					OrbisCore.LOGGER.info("Showing yellow");
 					this.showYellow = !this.showYellow;
+				}
+			}
+			else if (Keyboard.getEventKey() == Keyboard.KEY_F
+					&& Keyboard.getEventKeyState())
+			{
+				OrbisCore.LOGGER.info("Starting computation");
+				long startTime = System.currentTimeMillis();
+				this.algorithm.computeFully();
+				long endTime = System.currentTimeMillis();
+				long totalTime = endTime - startTime;
+				OrbisCore.LOGGER.info("Full computation took " + (totalTime / 1000d) + "seconds");
+			}
+		}
 
 		double dx = right - left;
 		double dy = top - bottom;
@@ -196,13 +214,15 @@ public class FrameworkDebug
 	public static void glDrawEntrance(FDGDEdge edge)
 	{
 		GL11.glColor3f(0.2f, 1.0f, 1.0f);
-		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
-		GL11.glVertex2f(edge.entrance2X(), edge.entrance2Z());
+		float x1 = edge.entrance1X(), z1 = edge.entrance1Z();
+		float x2 = edge.entrance2X(), z2 = edge.entrance2Z();
+		GL11.glVertex2f(x1, z1);
+		GL11.glVertex2f(x2, z2);
 //		GL11.glVertex2f(x1, z1);
 //		GL11.glVertex2f(x2, z2);
 		GL11.glEnd();
-//		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
-//		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
+		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
+		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
 	}
 
 	public static void glDrawRegion(IRegion region, float r, float g, float b)

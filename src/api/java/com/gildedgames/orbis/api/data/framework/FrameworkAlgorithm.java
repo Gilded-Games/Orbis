@@ -105,6 +105,7 @@ public class FrameworkAlgorithm
 //					}
 
 					this.phase = Phase.PATHWAYS;
+					return true;
 
 					//						this.fragments = new ArrayList<FrameworkFragment>(this.fdgdGraph.vertexSet().size());
 					//						for (FDGDNode node : this.fdgdGraph.vertexSet())
