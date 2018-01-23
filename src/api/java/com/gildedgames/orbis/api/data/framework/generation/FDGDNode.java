@@ -4,11 +4,13 @@ import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -27,7 +29,11 @@ public class FDGDNode extends BlueprintRegion
 
 	private FDGDEdge oldEdge1, oldEdge2;
 
-	public FDGDNode(BlueprintData data, BlockPos pos)
+	// The bounding box of the FDGD node is increased by toleranceDist
+	// to make sure there's always room for the pathways.
+	private final int toleranceDist;
+
+	public FDGDNode(BlueprintData data, BlockPos pos, int toleranceDist)
 	{
 		super(pos, data);
 		this.data = data;
@@ -35,18 +41,12 @@ public class FDGDNode extends BlueprintRegion
 		this.posY = pos.getY();
 		this.posZ = pos.getZ();
 		this.computeMinMax();
+		this.toleranceDist = data.entrances().get(0).toConnectTo().getToleranceDist();
 	}
 
-	public FDGDNode(BlueprintData data, Rotation rotation)
+	public FDGDNode(BlueprintData intersection, BlockPos pos, FDGDEdge oldEdge1, FDGDEdge oldEdge2, int toleranceDist)
 	{
-		super(BlockPos.ORIGIN, rotation, data);
-		this.data = data;
-		this.rotation = rotation;
-	}
-
-	public FDGDNode(BlueprintData intersection, BlockPos pos, FDGDEdge oldEdge1, FDGDEdge oldEdge2)
-	{
-		this(intersection, pos);
+		this(intersection, pos, toleranceDist);
 		OrbisAPI.LOGGER.info(pos);
 		this.isIntersection = true;
 		this.oldEdge1 = oldEdge1;
@@ -55,9 +55,9 @@ public class FDGDNode extends BlueprintRegion
 
 	private void computeMinMax()
 	{
-		final IRegion region = RotationHelp.regionFromCenter((int) this.posX, (int) this.posY, (int) this.posZ, this.data, this.rotation);
-		this.min = region.getMin();
-		this.max = region.getMax();
+		final IRegion region = this.getRegionForBlueprint();
+		this.min = region.getMin().subtract(new Vec3i(toleranceDist, toleranceDist, toleranceDist));
+		this.max = region.getMax().add(new Vec3i(toleranceDist, toleranceDist, toleranceDist));
 	}
 
 	public float getX()
@@ -160,14 +160,12 @@ public class FDGDNode extends BlueprintRegion
 		int best = Integer.MAX_VALUE;
 		Map<FDGDEdge, Entrance> bestResult = null;
 		Rotation bestRotation = Rotation.NONE;
-		final List<FDGDEdge> edgesL = new ArrayList<FDGDEdge>(edges);
+		final List<FDGDEdge> edgesL = new ArrayList<>(edges);
 		for (final Rotation rotation : Rotation.values())
 		{
 			final List<Entrance> entrances = this.getEntrances(rotation);
 			if (entrances.size() < edges.size())
-			{
 				throw new IllegalStateException();
-			}
 			final Tuple<Map<FDGDEdge, Entrance>, Integer> result = this.bestEntrances(edgesL, entrances, 0, 0, best);
 			if (result != null)
 			{
@@ -287,5 +285,10 @@ public class FDGDNode extends BlueprintRegion
 	public FDGDEdge getOldEdge2()
 	{
 		return this.oldEdge2;
+	}
+
+	public IRegion getRegionForBlueprint()
+	{
+		return RotationHelp.regionFromCenter((int) this.posX, (int) this.posY, (int) this.posZ, this.data, this.rotation);
 	}
 }

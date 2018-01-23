@@ -146,7 +146,8 @@ public class FrameworkDebug
 		{
 			return;
 		}
-		graph.vertexSet().forEach(node -> glDrawRegion(node, 0.5f, 0.5f, 1.0f));
+		graph.vertexSet().forEach(node -> glDrawRegion(node, 0.2f, 0.2f, 0.5f));
+		graph.vertexSet().forEach(node -> glDrawRegion(node.getRegionForBlueprint(), 0.5f, 0.5f, 1.0f));
 //		else
 //		{
 //			final List<FrameworkFragment> fragments = this.algorithm.getFragments();
@@ -171,6 +172,7 @@ public class FrameworkDebug
 	public static void glDrawEdge(FDGDEdge edge, boolean c)
 	{
 		glDrawEdge(edge.node1(), edge.node2(), c);
+		glDrawEntrance(edge);
 	}
 
 	public static void glDrawEdge(FDGDNode n1, FDGDNode n2, boolean c)
@@ -189,6 +191,18 @@ public class FrameworkDebug
 		GL11.glEnd();
 		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
 		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
+	}
+
+	public static void glDrawEntrance(FDGDEdge edge)
+	{
+		GL11.glColor3f(0.2f, 1.0f, 1.0f);
+		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
+		GL11.glVertex2f(edge.entrance2X(), edge.entrance2Z());
+//		GL11.glVertex2f(x1, z1);
+//		GL11.glVertex2f(x2, z2);
+		GL11.glEnd();
+//		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
+//		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
 	}
 
 	public static void glDrawRegion(IRegion region, float r, float g, float b)

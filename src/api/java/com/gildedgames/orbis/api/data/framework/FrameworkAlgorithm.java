@@ -81,7 +81,7 @@ public class FrameworkAlgorithm
 		{
 			//			this.solveCSP();
 			this.initialGraph();
-			//			this.assignConnections();
+			this.assignConnections();
 			this.phase = Phase.FDGD;
 			this.gdAlgorithm.initialize(this.fdgdGraph, this.framework.getType(), this.random);
 			return false;
@@ -126,7 +126,7 @@ public class FrameworkAlgorithm
 
 		if (this.phase == Phase.REBUILD1)
 		{
-//			this.assignConnections();
+			this.assignConnections();
 			this.phase = Phase.REBUILD2;
 			return false;
 		}
@@ -143,7 +143,7 @@ public class FrameworkAlgorithm
 		if (this.phase == Phase.REBUILD3)
 		{
 			//TODO: Make sure this second connection assignment is helpful at all
-//			this.assignConnections();
+			this.assignConnections();
 			this.phase = Phase.FDGD;
 			return false;
 		}
@@ -190,7 +190,8 @@ public class FrameworkAlgorithm
 			BlueprintData data = node.possibleValues(this.random).get(0);
 			if (data != null)
 			{
-				final FDGDNode newNode = new FDGDNode(data, BlockPos.ORIGIN);
+				//TODO: Proper tolerance dist
+				final FDGDNode newNode = new FDGDNode(data, BlockPos.ORIGIN, 0);
 				this.fdgdGraph.addVertex(newNode);
 				nodeLookup.put(node, newNode);
 			}
@@ -396,11 +397,6 @@ public class FrameworkAlgorithm
 					// Filter intersections that happen because the edges have the same origin
 					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
 						continue;
-//					final int amtIntersections = (e1S.isIntersection() ? 1 : 0) +
-//							(e1T.isIntersection() ? 1 : 0) +
-//							(e2S.isIntersection() ? 1 : 0) +
-//							(e2T.isIntersection() ? 1 : 0);
-
 					if (!FDGenUtil.isIntersecting(edge1, edge2))
 						continue;
 
@@ -461,7 +457,8 @@ public class FrameworkAlgorithm
 					this.fdgdGraph.removeEdge(edge2);
 
 					//Add new node and edges, with the intersection blueprint as data.
-					final FDGDNode node = new FDGDNode(intersectionTFD, new BlockPos(x, y, z), edge1, edge2);
+					//TODO: Proper tolerance dist
+					final FDGDNode node = new FDGDNode(intersectionTFD, new BlockPos(x, y, z), edge1, edge2, 0);
 					this.fdgdGraph.addVertex(node);
 
 					final FDGDEdge nEdge1 = new FDGDEdge(node, edge1.node1(), edge1.pathway());

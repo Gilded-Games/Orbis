@@ -52,4 +52,10 @@ public class PathwayData implements NBT
 		NBTFunnel funnel = new NBTFunnel(tag);
 		this.pieces = funnel.getList("blueprints");
 	}
+
+	//TODO: Properly compute a logical tolerance dist;
+	public int getToleranceDist()
+	{
+		return pieces.get(0).getWidth();
+	}
 }

@@ -29,7 +29,6 @@ public class FDGenUtil
 		return new Region(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
 	}
 
-
 	public static boolean hasCollision(Graph<FDGDNode, FDGDEdge> graph)
 	{
 		for (final FDGDNode node1 : graph.vertexSet())
