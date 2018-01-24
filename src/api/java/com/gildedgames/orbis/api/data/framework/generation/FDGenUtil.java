@@ -122,34 +122,40 @@ public class FDGenUtil
 		return false;
 	}
 
-	// Returns true if the two edges have an intersection somewhere.
-	public static boolean isIntersecting(FDGDEdge edge1, FDGDEdge edge2)
+	public static boolean isIntersecting(float edge1n1X, float edge1n1Z, float edge1n2X, float edge1n2Z,
+										 float edge2n1X, float edge2n1Z, float edge2n2X, float edge2n2Z)
 	{
-		final float line1X = edge1.node2().getX() - edge1.node1().getX();
-		final float line1Z = edge1.node2().getZ() - edge1.node1().getZ();
+		final float line1X = edge1n2X - edge1n1X;
+		final float line1Z = edge1n2Z - edge1n1Z;
 
-		final float line2X = edge2.node2().getX() - edge2.node1().getX();
-		final float line2Z = edge2.node2().getZ() - edge2.node1().getZ();
+		final float line2X = edge2n2X - edge2n1X;
+		final float line2Z = edge2n2Z - edge2n1Z;
 
-		final float diffX = edge1.node1().getX() - edge2.node1().getX();
-		final float diffZ = edge1.node1().getZ() - edge2.node1().getZ();
+		final float diffX = edge1n1X - edge2n1X;
+		final float diffZ = edge1n1Z - edge2n1Z;
 
 		//e1s, e1t, e2s, e2t
-//		final float line1X = edge1.entrance2X() - edge1.entrance1X();
-//		final float line1Z = edge1.entrance2Z() - edge1.entrance1Z();
-//
-//		final float line2X = edge2.entrance2X() - edge2.entrance1X();
-//		final float line2Z = edge2.entrance2Z() - edge2.entrance1Z();
-//
-//		final float diffX = edge1.entrance1X() - edge2.entrance1X();
-//		final float diffZ = edge1.entrance1Z() - edge2.entrance1Z();
+		//		final float line1X = edge1.entrance2X() - edge1.entrance1X();
+		//		final float line1Z = edge1.entrance2Z() - edge1.entrance1Z();
+		//
+		//		final float line2X = edge2.entrance2X() - edge2.entrance1X();
+		//		final float line2Z = edge2.entrance2Z() - edge2.entrance1Z();
+		//
+		//		final float diffX = edge1.entrance1X() - edge2.entrance1X();
+		//		final float diffZ = edge1.entrance1Z() - edge2.entrance1Z();
 		final float denom = line1X * line2Z - line2X * line1Z;
 
 		final float s = (line1X * diffZ - line1Z * diffX) / denom;
 		final float t = (line2X * diffZ - line2Z * diffX) / denom;
 
 		return s > 0 && s < 1 && t > 0 && t < 1;
+	}
 
+	// Returns true if the two edges have an intersection somewhere.
+	public static boolean isIntersecting(FDGDEdge edge1, FDGDEdge edge2)
+	{
+		return isIntersecting(edge1.node1().getX(), edge1.node1().getZ(), edge1.node2().getX(), edge1.node2().getZ(),
+				edge2.node1().getX(), edge2.node1().getZ(), edge2.node2().getX(), edge2.node2().getZ());
 	}
 
 	public static int euclidian(BlockPos from, BlockPos to)

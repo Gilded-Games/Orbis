@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.framework.generation;
 
+import akka.dispatch.sysmsg.Failed;
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
@@ -47,7 +48,6 @@ public class FDGDNode extends BlueprintRegion
 	public FDGDNode(BlueprintData intersection, BlockPos pos, FDGDEdge oldEdge1, FDGDEdge oldEdge2, int toleranceDist)
 	{
 		this(intersection, pos, toleranceDist);
-		OrbisAPI.LOGGER.info(pos);
 		this.isIntersection = true;
 		this.oldEdge1 = oldEdge1;
 		this.oldEdge2 = oldEdge2;
@@ -175,11 +175,17 @@ public class FDGDNode extends BlueprintRegion
 			}
 		}
 		if(bestResult == null)
-			OrbisAPI.LOGGER.info("?????");
-		for (final Entry<FDGDEdge, Entrance> edge : bestResult.entrySet())
-			edge.getKey().setConnection(this, edge.getValue());
-		this.rotation = bestRotation;
-		this.computeMinMax();
+		{
+			OrbisAPI.LOGGER.info("Was unable to find a valid assignment of entrances to edges. This should not happen.");
+			OrbisAPI.LOGGER.info(best);
+		}
+		else
+		{
+			for (final Entry<FDGDEdge, Entrance> edge : bestResult.entrySet())
+				edge.getKey().setConnection(this, edge.getValue());
+			this.rotation = bestRotation;
+			this.computeMinMax();
+		}
 	}
 
 	/**
@@ -190,16 +196,47 @@ public class FDGDNode extends BlueprintRegion
 	public void assignConnectionsFixRot(Collection<FDGDEdge> edges)
 	{
 		final List<Entrance> entrances = this.getEntrances(this.rotation);
-		final List<FDGDEdge> edgesL = new ArrayList<FDGDEdge>(edges);
+		final List<FDGDEdge> edgesL = new ArrayList<>(edges);
 		if (entrances.size() < edges.size())
-		{
 			throw new IllegalStateException();
-		}
 		final Tuple<Map<FDGDEdge, Entrance>, Integer> result = this.bestEntrances(edgesL, entrances, 0, 0, Integer.MAX_VALUE);
+		if (result == null)
+			throw new FailedToGenerateException("Was not able to find a suitable connection assignment.");
 		for (final Entry<FDGDEdge, Entrance> edge : result.getFirst().entrySet())
-		{
 			edge.getKey().setConnection(this, edge.getValue());
+	}
+
+	/**
+	 * A collection of assignments of edges to entrance is valid iff
+	 * for each entrance e connecting to a node n, there are no two
+	 * other assigned entrances e1 and e2 for which the line e1-e2
+	 * intersects e-n.
+	 * @param solution
+	 * @return
+	 */
+	private boolean isValidConnectionAssignment(Tuple<Map<FDGDEdge, Entrance>, Integer> solution)
+	{
+		Map<FDGDEdge, Entrance> assignment = solution.getFirst();
+		for (FDGDEdge edge : assignment.keySet())
+		{
+			FDGDNode n = edge.getOpposite(this);
+			Entrance e = assignment.get(edge);
+			for (Entrance e1 : assignment.values())
+				for (Entrance e2 : assignment.values())
+					if (e != e1 && e2 != e && e1 != e2 &&
+						FDGenUtil.isIntersecting(n.getX(), n.getZ(), e.getPos().getX(), e.getPos().getZ(), // Edge n-e
+							 e1.getPos().getX(), e1.getPos().getZ(), e2.getPos().getX(), e2.getPos().getZ())) // Edge e1-e2
+						return false;
+			for (FDGDEdge edge2 : assignment.keySet())
+			{
+				FDGDNode n2 = edge2.getOpposite(this);
+				Entrance e2 = assignment.get(edge2);
+				if (FDGenUtil.isIntersecting(n.getX(), n.getZ(), e.getPos().getX(), e.getPos().getZ(),
+						n2.getX(), n2.getZ(), e2.getPos().getX(), e2.getPos().getZ()))
+					return false;
+			}
 		}
+		return true;
 	}
 
 	/**
@@ -236,7 +273,7 @@ public class FDGDNode extends BlueprintRegion
 
 			//Go into recursion
 			final Tuple<Map<FDGDEdge, Entrance>, Integer> result = this.bestEntrances(edges, copy, edgeIndex + 1, newCost, best);
-			if (result != null)
+			if (result != null && this.isValidConnectionAssignment(result))
 			{
 				bestInDepth = result;
 				best = result.getSecond();

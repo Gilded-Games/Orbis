@@ -162,7 +162,6 @@ public class FruchtermanReingold implements IGDAlgorithm
 		{
 			if(FDGenUtil.hasCollision(graph))
 			{
-				OrbisAPI.LOGGER.info("INCREASING REPULSION");
 				this.k *= ESCAPE_MODIFIER; // After the max iterations, increase the repulsive force until there are no collisions.
 //				this.s /= this.cooling;
 			}

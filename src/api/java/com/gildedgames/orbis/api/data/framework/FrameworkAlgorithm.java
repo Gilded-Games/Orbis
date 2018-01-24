@@ -81,7 +81,7 @@ public class FrameworkAlgorithm
 		{
 			//			this.solveCSP();
 			this.initialGraph();
-			this.assignConnections();
+//			this.assignConnections();
 			this.phase = Phase.FDGD;
 			this.gdAlgorithm.initialize(this.fdgdGraph, this.framework.getType(), this.random);
 			return false;
@@ -99,10 +99,8 @@ public class FrameworkAlgorithm
 				if (this.framework.getType() == FrameworkType.CUBES || !FDGenUtil.hasEdgeIntersections(this.fdgdGraph))
 				{
 //					//TODO: Might need to be uncommented? Seeing issues
-//					for (final FDGDNode node : this.fdgdGraph.vertexSet())
-//					{
-//						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
-//					}
+					for (final FDGDNode node : this.fdgdGraph.vertexSet())
+						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
 
 					this.phase = Phase.PATHWAYS;
 					return true;
