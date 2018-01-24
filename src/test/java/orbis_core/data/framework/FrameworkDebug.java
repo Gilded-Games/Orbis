@@ -1,5 +1,7 @@
 package orbis_core.data.framework;
 
+import com.gildedgames.orbis.api.data.framework.generation.FailedToGenerateException;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
@@ -36,7 +38,7 @@ public class FrameworkDebug
 
 	private static double left = -200, right = 200, bottom = -200, top = 200;
 
-	private boolean showYellow = false, showPurple = true;
+	private boolean showYellow = false, showPurple = true, showEntrances = true;
 
 	public FrameworkDebug()
 	{
@@ -80,29 +82,45 @@ public class FrameworkDebug
 		GL11.glColor3f(0.5f, 0.5f, 1.0f);
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		{
 			this.algorithm.step();
+		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_Z) && this.algorithm.getPhase() == FrameworkAlgorithm.Phase.FDGD)
+		{
 			this.algorithm.step();
+		}
 		while (Keyboard.next())
 		{
 			if (Keyboard.getEventKey() == Keyboard.KEY_Y)
 			{
 				if (Keyboard.getEventKeyState())
 				{
-					OrbisCore.LOGGER.info("Showing yellow");
 					this.showYellow = !this.showYellow;
 				}
 			}
 			else if (Keyboard.getEventKey() == Keyboard.KEY_F
 					&& Keyboard.getEventKeyState())
 			{
-				OrbisCore.LOGGER.info("Starting computation");
-				long startTime = System.currentTimeMillis();
-				this.algorithm.computeFully();
-				long endTime = System.currentTimeMillis();
-				long totalTime = endTime - startTime;
-				OrbisCore.LOGGER.info("Full computation took " + (totalTime / 1000d) + "seconds");
+				try
+				{
+					OrbisCore.LOGGER.info("Starting computation");
+					long startTime = System.currentTimeMillis();
+					this.algorithm.computeFully();
+					long endTime = System.currentTimeMillis();
+					long totalTime = endTime - startTime;
+					OrbisCore.LOGGER.info("Full computation took " + (totalTime / 1000d) + "seconds");
+				}
+				catch (FailedToGenerateException e)
+				{
+					e.printStackTrace();
+				}
 			}
+			else if (Keyboard.getEventKey() == Keyboard.KEY_P
+					&& Keyboard.getEventKeyState())
+			{
+				this.showPurple = !this.showPurple;
+			}
+
 		}
 
 		double dx = right - left;
@@ -164,42 +182,50 @@ public class FrameworkDebug
 		{
 			return;
 		}
-		graph.vertexSet().forEach(node -> glDrawRegion(node, 0.2f, 0.2f, 0.5f));
-		graph.vertexSet().forEach(node -> glDrawRegion(node.getRegionForBlueprint(), 0.5f, 0.5f, 1.0f));
-//		else
-//		{
-//			final List<FrameworkFragment> fragments = this.algorithm.getFragments();
-//			for (final FrameworkFragment fragment : fragments)
-//			{
-//				glDrawRegion(fragment, 0.5f, 0.5f, 1.0f);
-//			}
-//
-//			for (final PathwayNode node : this.algorithm.getPathfindingDebug())
-//			{
-//				glDrawRegion(node, 1.0f, 0.5f, 0.5f);
-//				glDrawRegion(new Region(new BlockPos(node.endConnection.getX() - 1, 0, node.endConnection.getZ() - 1), new BlockPos(node.endConnection.getX() + 1, 0, node.endConnection.getZ() + 1)), 0.5f, 1.0f, 0.5f);
-//			}
-//		}
-		if (showYellow)
-			this.toDebug.getGraph().edgeSet().forEach(e -> glDrawEdge(this.algorithm._nodeMap.get(e.node1()), this.algorithm._nodeMap.get(e.node2()), false));
-		if (showPurple)
-			graph.edgeSet().forEach(e -> glDrawEdge(e, true));
-		glDrawRegion(new Region(new BlockPos(-2, -2, -2), new BlockPos(2, 2, 2)), 1.0f, 1.0f, 0.5f);
+		graph.vertexSet().forEach(node -> this.glDrawRegion(node, 0.2f, 0.2f, 0.5f));
+		graph.vertexSet().forEach(this::glDrawNode);
+		//		else
+		//		{
+		//			final List<FrameworkFragment> fragments = this.algorithm.getFragments();
+		//			for (final FrameworkFragment fragment : fragments)
+		//			{
+		//				glDrawRegion(fragment, 0.5f, 0.5f, 1.0f);
+		//			}
+		//
+		//			for (final PathwayNode node : this.algorithm.getPathfindingDebug())
+		//			{
+		//				glDrawRegion(node, 1.0f, 0.5f, 0.5f);
+		//				glDrawRegion(new Region(new BlockPos(node.endConnection.getX() - 1, 0, node.endConnection.getZ() - 1), new BlockPos(node.endConnection.getX() + 1, 0, node.endConnection.getZ() + 1)), 0.5f, 1.0f, 0.5f);
+		//			}
+		//		}
+		if (this.showYellow)
+		{
+			this.toDebug.getGraph().edgeSet().forEach(e -> this.glDrawEdge(this.algorithm._nodeMap.get(e.node1()), this.algorithm._nodeMap.get(e.node2()), false));
+		}
+		graph.edgeSet().forEach(e -> this.glDrawEdge(e, true));
+		this.glDrawRegion(new Region(new BlockPos(-2, -2, -2), new BlockPos(2, 2, 2)), 1.0f, 1.0f, 0.5f);
 	}
 
-	public static void glDrawEdge(FDGDEdge edge, boolean c)
+	public void glDrawEdge(FDGDEdge edge, boolean c)
 	{
-		glDrawEdge(edge.node1(), edge.node2(), c);
-		glDrawEntrance(edge);
+		if (this.showPurple)
+		{
+			this.glDrawEdge(edge.node1(), edge.node2(), c);
+		}
+		this.glDrawEntrance(edge);
 	}
 
-	public static void glDrawEdge(FDGDNode n1, FDGDNode n2, boolean c)
+	public void glDrawEdge(FDGDNode n1, FDGDNode n2, boolean c)
 	{
 		GL11.glBegin(GL11.GL_LINES);
 		if (c)
+		{
 			GL11.glColor3f(1.0f, 0.2f, 1.0f);
+		}
 		else
+		{
 			GL11.glColor3f(1.0f, 1.0f, 0.2f);
+		}
 		float x1 = n1.getX(), z1 = n1.getZ();
 		float x2 = n2.getX(), z2 = n2.getZ();
 		//		GL11.glVertex2f(edge.entrance1X(), edge.entrance1Z());
@@ -207,11 +233,11 @@ public class FrameworkDebug
 		GL11.glVertex2f(x1, z1);
 		GL11.glVertex2f(x2, z2);
 		GL11.glEnd();
-		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
-		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
+		this.glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
+		this.glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
 	}
 
-	public static void glDrawEntrance(FDGDEdge edge)
+	public void glDrawEntrance(FDGDEdge edge)
 	{
 		GL11.glBegin(GL11.GL_LINES);
 		GL11.glColor3f(0.2f, 1.0f, 1.0f);
@@ -219,14 +245,27 @@ public class FrameworkDebug
 		float x2 = edge.entrance2X(), z2 = edge.entrance2Z();
 		GL11.glVertex2f(x1, z1);
 		GL11.glVertex2f(x2, z2);
-//		GL11.glVertex2f(x1, z1);
-//		GL11.glVertex2f(x2, z2);
+		//		GL11.glVertex2f(x1, z1);
+		//		GL11.glVertex2f(x2, z2);
 		GL11.glEnd();
-//		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
-//		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
+		//		glDrawRegion(new Region(new BlockPos(x1 - 1, 0, z1 - 1), new BlockPos(x1 + 1, 0, z1 + 1)), 0.5f, 1.0f, 0.5f);
+		//		glDrawRegion(new Region(new BlockPos(x2 - 1, 0, z2 - 1), new BlockPos(x2 + 1, 0, z2 + 1)), 0.5f, 1.0f, 0.5f);
 	}
 
-	public static void glDrawRegion(IRegion region, float r, float g, float b)
+	public void glDrawNode(FDGDNode n)
+	{
+		this.glDrawRegion(n.getRegionForBlueprint(), 0.5f, 0.5f, 1.0f);
+		if (this.showEntrances)
+		{
+			for(Entrance e : n.getEntrances(n.getRotation()))
+			{
+				float x = e.getPos().getX(), z = e.getPos().getZ();
+				this.glDrawRegion(new Region(new BlockPos(x - 1, 0, z - 1), new BlockPos(x + 1, 0, z + 1)), 0.5f, 1.0f, 0.5f);
+			}
+		}
+	}
+
+	public void glDrawRegion(IRegion region, float r, float g, float b)
 	{
 		GL11.glColor3f(r, g, b);
 		final BlockPos min = region.getMin();

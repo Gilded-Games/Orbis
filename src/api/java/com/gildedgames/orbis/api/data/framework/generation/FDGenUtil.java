@@ -125,6 +125,12 @@ public class FDGenUtil
 	public static boolean isIntersecting(float edge1n1X, float edge1n1Z, float edge1n2X, float edge1n2Z,
 										 float edge2n1X, float edge2n1Z, float edge2n2X, float edge2n2Z)
 	{
+		return isIntersecting(edge1n1X, edge1n1Z, edge1n2X, edge1n2Z, edge2n1X, edge2n1Z, edge2n2X, edge2n2Z, false);
+	}
+
+	public static boolean isIntersecting(float edge1n1X, float edge1n1Z, float edge1n2X, float edge1n2Z,
+			float edge2n1X, float edge2n1Z, float edge2n2X, float edge2n2Z, boolean exact)
+	{
 		final float line1X = edge1n2X - edge1n1X;
 		final float line1Z = edge1n2Z - edge1n1Z;
 
@@ -148,7 +154,10 @@ public class FDGenUtil
 		final float s = (line1X * diffZ - line1Z * diffX) / denom;
 		final float t = (line2X * diffZ - line2Z * diffX) / denom;
 
-		return s > 0 && s < 1 && t > 0 && t < 1;
+		if (exact)
+			return s >= 0 && s <= 1 && t >= 0 && t <= 1;
+		else
+			return s > 0 && s < 1 && t > 0 && t < 1;
 	}
 
 	// Returns true if the two edges have an intersection somewhere.

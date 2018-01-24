@@ -201,9 +201,13 @@ public class FDGDNode extends BlueprintRegion
 			throw new IllegalStateException();
 		final Tuple<Map<FDGDEdge, Entrance>, Integer> result = this.bestEntrances(edgesL, entrances, 0, 0, Integer.MAX_VALUE);
 		if (result == null)
-			throw new FailedToGenerateException("Was not able to find a suitable connection assignment.");
-		for (final Entry<FDGDEdge, Entrance> edge : result.getFirst().entrySet())
-			edge.getKey().setConnection(this, edge.getValue());
+		{
+			OrbisAPI.LOGGER.info("Was unable to find a valid assignment of entrances to edges. This should not happen.");
+		}
+//			throw new FailedToGenerateException("Was not able to find a suitable connection assignment.");
+		else
+			for (final Entry<FDGDEdge, Entrance> edge : result.getFirst().entrySet())
+				edge.getKey().setConnection(this, edge.getValue());
 	}
 
 	/**
@@ -223,16 +227,28 @@ public class FDGDNode extends BlueprintRegion
 			Entrance e = assignment.get(edge);
 			for (Entrance e1 : assignment.values())
 				for (Entrance e2 : assignment.values())
-					if (e != e1 && e2 != e && e1 != e2 &&
-						FDGenUtil.isIntersecting(n.getX(), n.getZ(), e.getPos().getX(), e.getPos().getZ(), // Edge n-e
-							 e1.getPos().getX(), e1.getPos().getZ(), e2.getPos().getX(), e2.getPos().getZ())) // Edge e1-e2
-						return false;
+					if (e != e1 && e2 != e && e1 != e2)
+					{
+						float e1X = e1.getPos().getX(), e1Z = e1.getPos().getZ();
+						float e2X = e2.getPos().getX(), e2Z = e2.getPos().getZ();
+						float dx1 = e1X - this.getX(), dz1 = e1Z - this.getZ();
+						float length1 = (float) Math.sqrt(dx1 * dx1 + dz1 * dz1);
+						e1X -= dx1 * 0.01 / length1;
+						e1Z -= dz1 * 0.01 / length1;
+						float dx2 = e2X - this.getX(), dz2 = e2Z - this.getZ();
+						float length2 = (float) Math.sqrt(dx2 * dx2 + dz2 * dz2);
+						e2X -= dx2 * 0.01 / length2;
+						e2Z -= dz2 * 0.01 / length2;
+						if(FDGenUtil.isIntersecting(n.getX(), n.getZ(), e.getPos().getX(), e.getPos().getZ(), // Edge n-e
+							 e1X, e1Z, e2X, e2Z, false)) // Edge e1-e2
+							return false;
+					}
 			for (FDGDEdge edge2 : assignment.keySet())
 			{
 				FDGDNode n2 = edge2.getOpposite(this);
 				Entrance e2 = assignment.get(edge2);
-				if (FDGenUtil.isIntersecting(n.getX(), n.getZ(), e.getPos().getX(), e.getPos().getZ(),
-						n2.getX(), n2.getZ(), e2.getPos().getX(), e2.getPos().getZ()))
+				if (edge != edge2 && FDGenUtil.isIntersecting(n.getX(), n.getZ(), e.getPos().getX(), e.getPos().getZ(),
+						n2.getX(), n2.getZ(), e2.getPos().getX(), e2.getPos().getZ(), false))
 					return false;
 			}
 		}
@@ -273,17 +289,22 @@ public class FDGDNode extends BlueprintRegion
 
 			//Go into recursion
 			final Tuple<Map<FDGDEdge, Entrance>, Integer> result = this.bestEntrances(edges, copy, edgeIndex + 1, newCost, best);
-			if (result != null && this.isValidConnectionAssignment(result))
+			if (result != null)
 			{
-				bestInDepth = result;
-				best = result.getSecond();
 				result.getFirst().put(edge, entrance);
+				if(this.isValidConnectionAssignment(result))
+				{
+					bestInDepth = result;
+					best = result.getSecond();
+				}
+				else
+					result.getFirst().remove(edge);
 			}
 		}
 		return bestInDepth;
 	}
 
-	private List<Entrance> getEntrances(Rotation rotation)
+	public List<Entrance> getEntrances(Rotation rotation)
 	{
 		final List<Entrance> newList = new ArrayList<>();
 		final BlockPos position = this.centerAsBP();
@@ -305,16 +326,6 @@ public class FDGDNode extends BlueprintRegion
 	public boolean isIntersection()
 	{
 		return this.isIntersection;
-	}
-
-	public FDGDEdge getOldEdge1()
-	{
-		return this.oldEdge1;
-	}
-
-	public FDGDEdge getOldEdge2()
-	{
-		return this.oldEdge2;
 	}
 
 	public IRegion getRegionForBlueprint()
