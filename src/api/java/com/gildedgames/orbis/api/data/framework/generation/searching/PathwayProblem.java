@@ -119,10 +119,11 @@ public class PathwayProblem extends PathwayProblemBase
 		//TODO: Kinda forgot what this did
 		for (PathwayNode visitedState : visitedStates)
 		{
-			if (visitedState != currentState.parent && RegionHelp.contains(visitedState, currentState.endConnection))
-			{
-				return true;
-			}
+			// Returns true if we have visited the  of the current state contains
+//			if (visitedState != currentState.parent && RegionHelp.contains(visitedState, currentState.endConnection))
+//			{
+//				return true;
+//			}
 		}
 		return false;
 	}

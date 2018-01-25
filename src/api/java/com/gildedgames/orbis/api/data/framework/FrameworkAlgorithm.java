@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FrameworkAlgorithm
 {
@@ -115,7 +116,8 @@ public class FrameworkAlgorithm
 					this.phase = Phase.PATHWAYS;
 
 					this.fragments = new ArrayList<>(this.fdgdGraph.vertexSet().size());
-					this.fragments.addAll(this.fdgdGraph.vertexSet());
+					this.fragments.addAll(this.fdgdGraph.vertexSet().stream()
+							.map(FDGDNode::getRegionForBlueprint).collect(Collectors.toList()));
 					this.edgeIterator = this.fdgdGraph.edgeSet().iterator();
 
 					FDGDEdge edge = this.edgeIterator.next();

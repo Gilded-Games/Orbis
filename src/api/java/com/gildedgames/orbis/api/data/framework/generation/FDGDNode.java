@@ -328,8 +328,9 @@ public class FDGDNode extends BlueprintRegion
 		return this.isIntersection;
 	}
 
-	public IRegion getRegionForBlueprint()
+	public BlueprintRegion getRegionForBlueprint()
 	{
-		return RotationHelp.regionFromCenter((int) this.posX, (int) this.posY, (int) this.posZ, this.data, this.rotation);
+		IRegion r =  RotationHelp.regionFromCenter((int) this.posX, (int) this.posY, (int) this.posZ, this.data, this.rotation);
+		return new BlueprintRegion(r.getMin(), this.rotation, this.data);
 	}
 }
