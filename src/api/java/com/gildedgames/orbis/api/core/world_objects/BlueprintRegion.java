@@ -96,7 +96,9 @@ public class BlueprintRegion extends AbstractRegion implements IMutableRegion, I
 	public void setPos(final BlockPos pos)
 	{
 		this.min = pos;
-		this.max = RegionHelp.getMax(this.min, this.getWidth(), this.getHeight(), this.getLength());
+		int width = this.rotation == Rotation.NONE || this.rotation == Rotation.CLOCKWISE_180 ? this.getWidth() : this.getLength();
+		int length = this.rotation == Rotation.NONE || this.rotation == Rotation.CLOCKWISE_180 ? this.getLength() : this.getWidth();
+		this.max = RegionHelp.getMax(this.min, width, this.getHeight(), length);
 
 		this.notifyDataChange();
 	}

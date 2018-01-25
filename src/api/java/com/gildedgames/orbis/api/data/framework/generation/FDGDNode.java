@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import net.minecraft.util.Rotation;
@@ -312,7 +313,9 @@ public class FDGDNode extends BlueprintRegion
 		{
 			// TODO: Incorrect y coordinate
 			final BlockPos finalBP = beforeTrans.getPos().add((int) this.posX - this.data.getWidth() / 2, this.posY, (int) this.posZ - this.data.getLength() / 2);
-			final BlockPos trans = RotationHelp.rotate(finalBP, position, rotation, this.getWidth(), this.getLength());
+			final BlockPos trans = RotationHelp.rotate(finalBP, position, rotation, this.data.getWidth(), this.data.getLength());
+			if(!RegionHelp.contains(this, trans))
+				OrbisAPI.LOGGER.info("This shouldnt happen");
 			newList.add(new Entrance(trans, beforeTrans.toConnectTo()));
 		}
 		return newList;
@@ -330,7 +333,7 @@ public class FDGDNode extends BlueprintRegion
 
 	public BlueprintRegion getRegionForBlueprint()
 	{
-		IRegion r =  RotationHelp.regionFromCenter((int) this.posX, (int) this.posY, (int) this.posZ, this.data, this.rotation);
+		IRegion r = RotationHelp.regionFromCenter((int) this.posX, (int) this.posY, (int) this.posZ, this.data, this.rotation);
 		return new BlueprintRegion(r.getMin(), this.rotation, this.data);
 	}
 }
