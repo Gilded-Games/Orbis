@@ -1,37 +1,14 @@
 package com.gildedgames.orbis.api.data.framework.generation.searching;
 
-public abstract class Node implements Comparable<Node>
+public interface Node extends Comparable<Node>
 {
-	private double g, h;
+	void setG(double g);
 
-	public void setG(double g)
-	{
-		this.g = g;
-	}
+	void setH(double h);
 
-	public void setH(double h)
-	{
-		this.h = h;
-	}
+	double getG();
 
-	public double getF()
-	{
-		return this.g + this.h;
-	}
+	double getH();
 
-	public double getG()
-	{
-		return this.g;
-	}
-
-	public double getH()
-	{
-		return this.h;
-	}
-
-	@Override
-	public int compareTo(Node o)
-	{
-		return Double.compare(this.getF(), o.getF());
-	}
+	double getF();
 }

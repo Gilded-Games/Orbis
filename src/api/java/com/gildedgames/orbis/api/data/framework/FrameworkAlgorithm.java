@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api.data.framework;
 
 import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
@@ -8,6 +9,9 @@ import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
 import com.gildedgames.orbis.api.data.framework.generation.FailedToGenerateException;
 import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.FruchtermanReingold;
 import com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms.IGDAlgorithm;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayProblem;
+import com.gildedgames.orbis.api.data.framework.generation.searching.StepAStar;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import com.gildedgames.orbis.api.data.region.Region;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +29,8 @@ public class FrameworkAlgorithm
 	// length of the diagonal of the surrounding boundingbox.
 	private final static float addEdgeDistanceRatio = 0.4f;
 
+	public static float heuristicWeight = 3;
+
 	private final FrameworkData framework;
 
 	private Graph<FDGDNode, FDGDEdge> fdgdGraph;
@@ -39,6 +45,8 @@ public class FrameworkAlgorithm
 
 	private World world;
 
+	private StepAStar<PathwayNode> pathfindingSolver;
+
 	//	private StepAStar<PathwayNode> pathfindingSolver;
 
 	private Iterator<FDGDEdge> edgeIterator;
@@ -48,6 +56,8 @@ public class FrameworkAlgorithm
 	private Random random;
 
 	private IGDAlgorithm gdAlgorithm = new FruchtermanReingold();
+
+	private List<BlueprintRegion> fragments;
 
 	public FrameworkAlgorithm(FrameworkData data, World world)
 	{
@@ -103,19 +113,16 @@ public class FrameworkAlgorithm
 						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
 
 					this.phase = Phase.PATHWAYS;
-					return true;
 
-					//						this.fragments = new ArrayList<FrameworkFragment>(this.fdgdGraph.vertexSet().size());
-					//						for (FDGDNode node : this.fdgdGraph.vertexSet())
-					//						{
-					//							this.fragments.add(new FrameworkFragment(node.getData(), node.getRotation(), node.getMin()));
-					//						}
-					//						this.edgeIterator = this.fdgdGraph.edgeSet().iterator();
-					//
-					//						FDGDEdge edge = this.edgeIterator.next();
-					//						PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments, this.params);
-					//						this.pathfindingSolver = new StepAStar<PathwayNode>(problem, this.params.heuristicWeight());
-					//						this.pathfindingSolver.step();
+					this.fragments = new ArrayList<>(this.fdgdGraph.vertexSet().size());
+					this.fragments.addAll(this.fdgdGraph.vertexSet());
+					this.edgeIterator = this.fdgdGraph.edgeSet().iterator();
+
+					FDGDEdge edge = this.edgeIterator.next();
+					PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments);
+					this.pathfindingSolver = new StepAStar<>(problem, heuristicWeight);
+					this.pathfindingSolver.step();
+					return true;
 				}
 				else
 					this.phase = Phase.REBUILD1;
@@ -149,29 +156,22 @@ public class FrameworkAlgorithm
 
 		//Pathways phase
 
-		//		if (this.pathfindingSolver == null || this.pathfindingSolver.isTerminated())
-		//		{
-		//			if (this.edgeIterator.hasNext())
-		//			{
-		//				for (PathwayNode node : this.pathfindingSolver.currentState().fullPath())
-		//				{
-		//					if (node.getFragment() != null)
-		//					{
-		//						this.fragments.add(node.getFragment());
-		//					}
-		//				}
-		//				FDGDEdge edge = this.edgeIterator.next();
-		//				PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments, this.params);
-		//				this.pathfindingSolver = new StepAStar<PathwayNode>(problem, this.params.heuristicWeight());
-		//			}
-		//			else
-		//			{
-		//				this.finished = true;
-		//				return true;
-		//			}
-		//		}
-		//
-		//		this.pathfindingSolver.step();
+		if (this.pathfindingSolver == null || this.pathfindingSolver.isTerminated())
+		{
+			if (this.edgeIterator.hasNext())
+			{
+				for (PathwayNode node : this.pathfindingSolver.currentState().fullPath())
+					if (node != null)
+						this.fragments.add(node);
+				FDGDEdge edge = this.edgeIterator.next();
+				PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments);
+				this.pathfindingSolver = new StepAStar<>(problem, heuristicWeight);
+			}
+			else
+				return true;
+		}
+
+		this.pathfindingSolver.step();
 
 		return false;
 	}
@@ -588,15 +588,15 @@ public class FrameworkAlgorithm
 		return this.fdgdIterations;
 	}
 
-	//	public List<FrameworkFragment> getFragments()
-	//	{
-	//		return this.fragments;
-	//	}
+	public List<BlueprintRegion> getFragments()
+	{
+		return this.fragments;
+	}
 
-	//	public Iterable<PathwayNode> getPathfindingDebug()
-	//	{
-	//		return this.pathfindingSolver.currentState().fullPath();
-	//	}
+	public Iterable<PathwayNode> getPathfindingDebug()
+	{
+		return this.pathfindingSolver.currentState().fullPath();
+	}
 
 	public Phase getPhase()
 	{

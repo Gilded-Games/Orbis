@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.api.data.framework.generation.searching;
 
+import com.gildedgames.orbis.api.OrbisAPI;
+
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
@@ -73,6 +75,8 @@ public class StepAStar<T extends Node>
 
 	public T currentState()
 	{
+		if(this.currentState == null)
+			OrbisAPI.LOGGER.info("?");
 		return this.currentState;
 	}
 }
