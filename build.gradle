@@ -100,34 +100,3 @@ artifacts {
 	archives jar
 	archives apiJar
 }
-
-apply plugin: 'maven-publish'
-
-
-repositories {
-	maven {
-		name = "maven-storage"
-		url "https://git.gildedgames.com/GildedGames/maven-storage/raw/master/"
-	}
-}
-
-task sourceJar(type: Jar) {
-	from sourceSets.main.allJava
-}
-
-publishing {
-    publications {
-        myPublication(MavenPublication) {
-            from components.java
-			artifact sourceJar {
-				classifier "source"
-			}
-        }
-    }
-
-    repositories {
-        maven {
-            url "file:/${project.projectDir}/maven"
-        }
-    }
-}
