@@ -57,7 +57,7 @@ public class OrbisCore
 
 	public static final String MOD_ID = "orbis";
 
-	public static final String MOD_VERSION = "1.11.2-1.0.0";
+	public static final String MOD_VERSION = "1.12.2-1.0.0";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
