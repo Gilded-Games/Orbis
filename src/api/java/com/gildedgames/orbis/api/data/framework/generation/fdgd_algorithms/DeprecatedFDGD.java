@@ -88,7 +88,7 @@ public class DeprecatedFDGD implements IGDAlgorithm
 				{
 					final float duv = Math.abs(dx) + Math.abs(dz);
 					float trepulsion = repulsion / (float) Math.pow(duv, 3);
-					if (this.escapePhase && RegionHelp.intersects2D(rect1, RegionHelp.expand(u, nodeDistance)))
+					if (this.escapePhase && RegionHelp.intersects(rect1, RegionHelp.expand(u, nodeDistance)))
 						continue;
 					else if (this.escapePhase)
 						trepulsion *= collisionEsc;

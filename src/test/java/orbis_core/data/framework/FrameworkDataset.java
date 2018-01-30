@@ -25,11 +25,11 @@ public class FrameworkDataset
 	{
 		if (pathwayB == null || pathwayB.entrances().get(0).toConnectTo() != pathway)
 		{
-			BlueprintData b1 = new BlueprintData(new BlockDataContainer(5, 5, 5));
-			b1.addEntrance(new Entrance(new BlockPos(0, 0, 2), pathway));
-			b1.addEntrance(new Entrance(new BlockPos(4, 0, 2), pathway));
+			BlueprintData b1 = new BlueprintData(new BlockDataContainer(5, 5, 7));
+			b1.addEntrance(new Entrance(new BlockPos(0, 0, 3), pathway));
+			b1.addEntrance(new Entrance(new BlockPos(4, 0, 3), pathway));
 			b1.addEntrance(new Entrance(new BlockPos(2, 0, 0), pathway));
-			b1.addEntrance(new Entrance(new BlockPos(2, 0, 4), pathway));
+			b1.addEntrance(new Entrance(new BlockPos(2, 0, 6), pathway));
 			pathwayB = b1;
 		}
 		return pathwayB;

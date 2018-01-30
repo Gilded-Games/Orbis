@@ -26,26 +26,8 @@ public class PathwayUtil
 
 	public static BlockPos adjacent(BlockPos pos, EnumFacing facing)
 	{
-		return new BlockPos(pos.getX() + facing.getDirectionVec().getX(), pos.getY() + facing.getDirectionVec().getY(), pos.getZ() + facing.getDirectionVec().getZ());
+		return new BlockPos(pos.getX() + facing.getDirectionVec().getX(), pos.getY() + facing.getDirectionVec().getY(),
+				pos.getZ() + facing.getDirectionVec().getZ());
 	}
 
-	public static BlockPos rotate(BlockPos pos, Region rect, EnumFacing facing)
-	{
-		if (facing == EnumFacing.NORTH)
-			return pos;
-		BlockPos center = rect.getCenter();
-
-		int relX = pos.getX() - center.getX();
-		int relZ = pos.getZ() - center.getZ();
-
-		if (facing == EnumFacing.WEST)
-		{
-			return new BlockPos(center.getX() + relZ, pos.getY(), center.getZ() - relX);
-		}
-		if (facing == EnumFacing.EAST)
-		{
-			return new BlockPos(center.getX() - relZ, pos.getY(), center.getZ() + relX);
-		}
-		return new BlockPos(center.getX() - relX, pos.getY(), center.getZ() - relZ);
-	}
 }

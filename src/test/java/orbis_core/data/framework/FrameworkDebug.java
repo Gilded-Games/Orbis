@@ -66,7 +66,7 @@ public class FrameworkDebug
 			{
 				screen.update();
 				Display.update();
-				Display.sync(120);
+				Display.sync(60);
 			}
 		}
 		catch (final LWJGLException e)

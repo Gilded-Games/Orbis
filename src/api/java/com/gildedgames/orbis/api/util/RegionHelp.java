@@ -57,18 +57,6 @@ public class RegionHelp
 		return max1.getX() >= min2.getX() && min1.getX() <= max2.getX() && max1.getZ() >= min2.getZ() && min1.getZ() <= max2.getZ();
 	}
 
-	public static boolean intersects2D(final IRegion region1, final IRegion region2)
-	{
-		final BlockPos min1 = region1.getMin();
-		final BlockPos min2 = region2.getMin();
-
-		final BlockPos max1 = region1.getMax();
-		final BlockPos max2 = region2.getMax();
-
-		return max1.getX() >= min2.getX() && min1.getX() <= max2.getX() && max1.getZ() >= min2.getZ() && min1.getZ() <= max2.getZ() && max1.getY() >= min2
-				.getY() && min1.getY() <= max2.getY();
-	}
-
 	public static boolean contains(final IRegion region1, final IRegion region2)
 	{
 		final BlockPos min1 = region1.getMin();

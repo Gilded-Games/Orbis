@@ -75,8 +75,6 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 		EnumFacing lastSide = parentState.sideOfConnection();
 		EnumFacing toConnect = lastSide.getOpposite();
 
-		boolean skipToConnectTest = parentState.parent == null;
-
 		currentPosition = PathwayUtil.adjacent(currentPosition, lastSide);
 
 		for (BlueprintData blueprint : this.pieces)
@@ -87,38 +85,39 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 			{
 				for (Entrance exit : blueprint.entrances())
 				{
-					if (entrance != exit)
+					if (entrance == exit)
+						continue;
+					EnumFacing sideOn = PathwayUtil.sideOfConnection(rect, entrance.getPos());
+					Rotation rotation = Rotation.NONE;
+					if(toConnect == EnumFacing.DOWN || toConnect == EnumFacing.UP
+					   || sideOn == EnumFacing.DOWN || sideOn == EnumFacing.UP)
 					{
-						for (Rotation rotation : Rotation.values())
-						{
-							BlockPos trEntrance = RotationHelp.rotate(entrance.getPos(), rect, rotation);
+						if (sideOn != toConnect)
+							continue;
+					}
+					else
+						rotation = RotationHelp.getRotated(RotationHelp.fromFacing(toConnect), RotationHelp.fromFacing(sideOn));
+					BlockPos trEntrance = RotationHelp.rotate(entrance.getPos(), rect, rotation);
 
-							IRegion trRect = RotationHelp.rotate(rect, rotation);
+					IRegion trRect = RotationHelp.rotate(rect, rotation);
 
-							EnumFacing entranceSide = PathwayUtil.sideOfConnection(trRect, trEntrance);
+					int dx = currentPosition.getX() - trEntrance.getX();
+					int dy = currentPosition.getY() - trEntrance.getY();
+					int dz = currentPosition.getZ() - trEntrance.getZ();
 
-							if (toConnect != entranceSide && !skipToConnectTest)
-								continue;
+					BlockPos trExit = RotationHelp.rotate(exit.getPos(), rect, rotation);
 
-							int dx = currentPosition.getX() - trEntrance.getX();
-							int dy = currentPosition.getY() - trEntrance.getY();
-							int dz = currentPosition.getZ() - trEntrance.getZ();
+					BlockPos endConnection = new BlockPos(trExit.getX() + dx, trExit.getY() + dy, trExit.getZ() + dz);
 
-							BlockPos trExit = RotationHelp.rotate(exit.getPos(), rect, rotation);
+					BlockPos fragmentMin = new BlockPos(dx + trRect.getMin().getX(), dy + trRect.getMin().getY(), dz + trRect.getMin().getZ());
 
-							BlockPos endConnection = new BlockPos(trExit.getX() + dx, trExit.getY() + dy, trExit.getZ() + dz);
+					BlueprintRegion fragment = new BlueprintRegion(fragmentMin, rotation, blueprint);
 
-							BlockPos fragmentMin = new BlockPos(dx + trRect.getMin().getX(), dy + trRect.getMin().getY(), dz + trRect.getMin().getZ());
+					PathwayNode node = new PathwayNode(parentState, fragment, endConnection);
 
-							BlueprintRegion fragment = new BlueprintRegion(fragmentMin, rotation, blueprint);
-
-							PathwayNode node = new PathwayNode(parentState, fragment, endConnection);
-
-							if (this.isSuccessor(node, parentState))
-							{
-								successors.add(node);
-							}
-						}
+					if (this.isSuccessor(node, parentState))
+					{
+						successors.add(node);
 					}
 				}
 			}
@@ -190,10 +189,10 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 		for (PathwayNode visitedState : visitedStates)
 		{
 			// Returns true if we have visited the  of the current state contains
-//			if (visitedState != currentState.parent && RegionHelp.contains(visitedState, currentState.endConnection))
-//			{
-//				return true;
-//			}
+			if (visitedState != currentState.parent && RegionHelp.contains(visitedState, currentState.endConnection))
+			{
+				return true;
+			}
 		}
 		return false;
 	}

@@ -314,8 +314,6 @@ public class FDGDNode extends BlueprintRegion
 			// TODO: Incorrect y coordinate
 			final BlockPos finalBP = beforeTrans.getPos().add((int) this.posX - this.data.getWidth() / 2, this.posY, (int) this.posZ - this.data.getLength() / 2);
 			final BlockPos trans = RotationHelp.rotate(finalBP, position, rotation, this.data.getWidth(), this.data.getLength());
-			if(!RegionHelp.contains(this, trans))
-				OrbisAPI.LOGGER.info("This shouldnt happen");
 			newList.add(new Entrance(trans, beforeTrans.toConnectTo()));
 		}
 		return newList;
