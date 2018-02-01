@@ -9,15 +9,17 @@ public class StepAStar<T extends Node>
 {
 	private final ISearchProblem<T> problem;
 
-	private final PriorityQueue<T> queue = new PriorityQueue<T>();
+	private final PriorityQueue<T> queue = new PriorityQueue<>();
 
-	private final HashSet<T> visitedStates = new HashSet<T>();
+	private final HashSet<T> visitedStates = new HashSet<>();
 
 	private final double hWeight;
 
 	private boolean terminated;
 
 	private T currentState;
+
+	private int statesExpanded = 0;
 
 	public StepAStar(ISearchProblem<T> problem, double hWeight)
 	{
@@ -32,7 +34,7 @@ public class StepAStar<T extends Node>
 		{
 			return;
 		}
-		if (this.queue.isEmpty())
+		if (this.queue.isEmpty() || this.statesExpanded > 5000) // NOTE: This is temporary
 		{
 			this.currentState = null;
 			this.terminated = true;
@@ -51,19 +53,22 @@ public class StepAStar<T extends Node>
 			//this.currentState = null;
 			return;
 		}
-
 		if (this.problem.contains(this.visitedStates, this.currentState))
 		{
+			this.step();
 			return;
 		}
+//		OrbisAPI.LOGGER.info(this.currentState.getG());
+//		OrbisAPI.LOGGER.info(this.currentState.getH());
+//		OrbisAPI.LOGGER.info(this.currentState.getF());
 
 		this.visitedStates.add(this.currentState);
+		this.statesExpanded += 1;
 
 		for (T state : this.problem.successors(this.currentState))
 		{
 			state.setG(this.problem.costBetween(this.currentState, state) + this.currentState.getG());
 			state.setH(this.hWeight * this.problem.heuristic(state));
-
 			this.queue.add(state);
 		}
 	}

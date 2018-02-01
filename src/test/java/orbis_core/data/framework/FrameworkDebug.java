@@ -15,12 +15,16 @@ import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
 import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.security.Key;
 import java.util.List;
 import java.util.Random;
@@ -123,7 +127,16 @@ public class FrameworkDebug
 			{
 				this.showPurple = !this.showPurple;
 			}
-
+			else if (Keyboard.getEventKey() == Keyboard.KEY_S
+					&& Keyboard.getEventKeyState())
+			{
+				this.algorithm.step();
+			}
+			else if (Keyboard.getEventKey() == Keyboard.KEY_N
+					&& Keyboard.getEventKeyState())
+			{
+//				this.algorithm.pat
+			}
 		}
 
 		double dx = right - left;
@@ -175,6 +188,7 @@ public class FrameworkDebug
 			this.algorithm = new FrameworkAlgorithm(this.toDebug, null);
 		}
 
+		GL11.glPushMatrix();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(left, right, bottom, top, 1, -1);
@@ -207,6 +221,24 @@ public class FrameworkDebug
 		}
 		graph.edgeSet().forEach(e -> this.glDrawEdge(e, true));
 		this.glDrawRegion(new Region(new BlockPos(-2, -2, -2), new BlockPos(2, 2, 2)), 1.0f, 1.0f, 0.5f);
+		GL11.glPopMatrix();
+
+		String text = "ABCD";
+		int s = 256; //Take whatever size suits you.
+		BufferedImage b = new BufferedImage(s, s, BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D g = b.createGraphics();
+		g.drawString(text, 0, 0);
+
+		int co = b.getColorModel().getNumComponents();
+
+		byte[] data = new byte[co * s * s];
+		b.getRaster().getDataElements(0, 0, s, s, data);
+
+		ByteBuffer pixels = BufferUtils.createByteBuffer(data.length);
+		pixels.put(data);
+		pixels.rewind();
+//		GL11.glTexImage2D(pixels);
+//		g.drawImage(b, );
 	}
 
 	public void glDrawEdge(FDGDEdge edge, boolean c)

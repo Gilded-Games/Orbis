@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.framework.generation.searching;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
@@ -14,7 +15,9 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class PathwayProblem implements ISearchProblem<PathwayNode>
 {
@@ -65,6 +68,13 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 		this.boundingBox = RegionHelp.expand(new Region(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ)), (int) (this.maxLength * pathwaysBoundingBox));
 	}
 
+	<T> List<T> shuffle(List<T> l)
+	{
+		List<T> ln = new ArrayList<>(l);
+		Collections.shuffle(ln);
+		return ln;
+	}
+
 	@Override
 	public List<PathwayNode> successors(PathwayNode parentState)
 	{
@@ -77,18 +87,19 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 
 		currentPosition = PathwayUtil.adjacent(currentPosition, lastSide);
 
-		for (BlueprintData blueprint : this.pieces)
+		for (BlueprintData blueprint : shuffle(this.pieces))
 		{
 			Region rect = new Region(new BlockPos(0, 0, 0), new BlockPos(blueprint.getWidth() - 1, blueprint.getHeight() - 1, blueprint.getLength() - 1));
 
-			for (Entrance entrance : blueprint.entrances())
+			for (Entrance entrance : shuffle(blueprint.entrances()))
 			{
-				for (Entrance exit : blueprint.entrances())
+				for (Entrance exit : shuffle(blueprint.entrances()))
 				{
 					if (entrance == exit)
 						continue;
 					EnumFacing sideOn = PathwayUtil.sideOfConnection(rect, entrance.getPos());
 					Rotation rotation = Rotation.NONE;
+					// TODO: Technically, all rotations are valid. Maybe randomize it? Add all possibilities?
 					if(toConnect == EnumFacing.DOWN || toConnect == EnumFacing.UP
 					   || sideOn == EnumFacing.DOWN || sideOn == EnumFacing.UP)
 					{
@@ -100,6 +111,9 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 					BlockPos trEntrance = RotationHelp.rotate(entrance.getPos(), rect, rotation);
 
 					IRegion trRect = RotationHelp.rotate(rect, rotation);
+					EnumFacing actualConn = PathwayUtil.sideOfConnection(trRect, trEntrance);
+					if(actualConn != toConnect)
+						OrbisAPI.LOGGER.info("THIS IS NOT RIGHT :(*");
 
 					int dx = currentPosition.getX() - trEntrance.getX();
 					int dy = currentPosition.getY() - trEntrance.getY();
@@ -110,11 +124,14 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 					BlockPos endConnection = new BlockPos(trExit.getX() + dx, trExit.getY() + dy, trExit.getZ() + dz);
 
 					BlockPos fragmentMin = new BlockPos(dx + trRect.getMin().getX(), dy + trRect.getMin().getY(), dz + trRect.getMin().getZ());
-
 					BlueprintRegion fragment = new BlueprintRegion(fragmentMin, rotation, blueprint);
 
 					PathwayNode node = new PathwayNode(parentState, fragment, endConnection);
 
+					if(!RegionHelp.contains(node, currentPosition))
+					{
+						OrbisAPI.LOGGER.info("ASDDF");
+					}
 					if (this.isSuccessor(node, parentState))
 					{
 						successors.add(node);
@@ -138,18 +155,18 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 
 		for (BlueprintRegion fragment : this.fragments)
 		{
-//			if (RegionHelp.intersects(fragment, node))
-//			{
-//				return false;
-//			}
+			if (RegionHelp.intersects(fragment, node))
+			{
+				return false;
+			}
 		}
 
 		for (PathwayNode s : parent.fullPath())
 		{
-//			if (RegionHelp.intersects(node, s))
-//			{
-//				return false;
-//			}
+			if (RegionHelp.intersects(node, s))
+			{
+				return false;
+			}
 		}
 		return true;
 	}
@@ -161,19 +178,36 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 		{
 			return 0;
 		}
+//		BlockPos exit = PathwayUtil.outside(state, state.endConnection);
 		BlockPos exit = state.endConnection;
-		return Math.abs(this.end.getX() - exit.getX()) + Math.abs(this.end.getY() - exit.getY()) + Math.abs(this.end.getZ() - exit.getZ());
+		float h = Math.abs(this.end.getX() - exit.getX()) +
+				Math.abs(this.end.getY() - exit.getY()) +
+				Math.abs(this.end.getZ() - exit.getZ());
+//		OrbisAPI.LOGGER.info(h);
+//		if(state.parent != null)
+//			OrbisAPI.LOGGER.info(state.parent.getH());
+		return h;
 	}
 
 	@Override
 	public double costBetween(PathwayNode parent, PathwayNode child)
 	{
 		BlockPos exit = child.endConnection;
+//		OrbisAPI.LOGGER.info("-----------");
+//		OrbisAPI.LOGGER.info(parent);
+//		OrbisAPI.LOGGER.info(parent.endConnection);
+//		OrbisAPI.LOGGER.info(child);
+//		OrbisAPI.LOGGER.info(child.endConnection);
+//		OrbisAPI.LOGGER.info(this.end);
 		if (this.isGoal(child))
-		{
 			return Math.abs(this.end.getX() - exit.getX()) + Math.abs(this.end.getY() - exit.getY()) + Math.abs(this.end.getZ() - exit.getZ());
-		}
-		return child.getWidth() + child.getHeight() + child.getLength();//TODO: Why was this not using the exit again, lol?
+		BlockPos entrance = parent.endConnection;
+		float g =  Math.abs(entrance.getX() - exit.getX()) +
+				Math.abs(entrance.getY() - exit.getY()) +
+				Math.abs(entrance.getZ() - exit.getZ());
+//		OrbisAPI.LOGGER.info(g);
+		return g;
+//		return child.getWidth() + child.getHeight() + child.getLength();//TODO: Why was this not using the exit again, lol?
 	}
 
 	@Override
@@ -189,7 +223,9 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 		for (PathwayNode visitedState : visitedStates)
 		{
 			// Returns true if we have visited the  of the current state contains
-			if (visitedState != currentState.parent && RegionHelp.contains(visitedState, currentState.endConnection))
+			if (visitedState.parent != currentState.parent && RegionHelp.contains(visitedState, currentState.endConnection)
+				|| visitedState.endConnection.equals(currentState.endConnection))
+//			if (visitedState.endConnection.equals(currentState.endConnection))
 			{
 				return true;
 			}
@@ -200,9 +236,7 @@ public class PathwayProblem implements ISearchProblem<PathwayNode>
 	@Override
 	public boolean isGoal(PathwayNode state)
 	{
-		return this.end.getX() >= state.getMin().getX() && this.end.getX() <= state.getMax().getX()
-				&& this.end.getY() >= state.getMin().getY() && this.end.getY() <= state.getMax().getY()
-				&& this.end.getZ() >= state.getMin().getZ() && this.end.getZ() <= state.getMax().getZ();
+		return RegionHelp.contains(state, this.end);
 	}
 
 }

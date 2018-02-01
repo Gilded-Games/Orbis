@@ -30,7 +30,7 @@ public class FrameworkAlgorithm
 	// length of the diagonal of the surrounding boundingbox.
 	private final static float addEdgeDistanceRatio = 0.4f;
 
-	public static float heuristicWeight = 3;
+	public static float heuristicWeight = 1.2f; // This is used for tie breaking when it's low
 
 	private final FrameworkData framework;
 
@@ -158,13 +158,14 @@ public class FrameworkAlgorithm
 
 		//Pathways phase
 
-		if (this.pathfindingSolver == null || this.pathfindingSolver.isTerminated())
+		if (this.pathfindingSolver.isTerminated())
 		{
 			if (this.edgeIterator.hasNext())
 			{
-				for (PathwayNode node : this.pathfindingSolver.currentState().fullPath())
-					if (node != null)
-						this.fragments.add(node);
+				if(this.pathfindingSolver.currentState() != null)
+					for (PathwayNode node : this.pathfindingSolver.currentState().fullPath())
+						if (node != null)
+							this.fragments.add(node);
 				FDGDEdge edge = this.edgeIterator.next();
 				PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments);
 				this.pathfindingSolver = new StepAStar<>(problem, heuristicWeight);
@@ -585,11 +586,6 @@ public class FrameworkAlgorithm
 		return this.fdgdGraph;
 	}
 
-	public int getIterations()
-	{
-		return this.fdgdIterations;
-	}
-
 	public List<BlueprintRegion> getFragments()
 	{
 		return this.fragments;
@@ -597,7 +593,13 @@ public class FrameworkAlgorithm
 
 	public Iterable<PathwayNode> getPathfindingDebug()
 	{
-		return this.pathfindingSolver.currentState().fullPath();
+		PathwayNode currentState = this.pathfindingSolver.currentState();
+		if (currentState == null)
+		{
+			OrbisAPI.LOGGER.info("No more states to expand. This is not supposed to happen");
+			return () -> (new ArrayList<PathwayNode>()).iterator();
+		}
+		return currentState.fullPath();
 	}
 
 	public Phase getPhase()

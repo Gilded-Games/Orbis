@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api.data.framework.generation.searching;
 
 import java.util.Iterator;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -113,6 +114,11 @@ public class PathwayNode extends BlueprintRegion implements Node
 	@Override
 	public int compareTo(Node o)
 	{
+		if(o.getF() == this.getF())
+		{
+//			return (new Random()).nextBoolean() ? 1 : -1;
+			return Double.compare(this.getH(), o.getH());
+		}
 		return Double.compare(this.getF(), o.getF());
 	}
 }
