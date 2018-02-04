@@ -31,9 +31,9 @@ public class OrbisRaytraceHelp
 
 	public static double getFinalExtendedReach(final EntityPlayer player)
 	{
-		final BlockPos airRaytrace = raytraceWithRegionSnapping(player);
+		final BlockPos airRaytrace = raytraceNoSnapping(player);
 
-		if (isSnappingToRegion(player) || isSelectingCorner(player))
+		/*if (isSnappingToRegion(player) || isSelectingCorner(player))
 		{
 			final double x1 = player.posX;
 			final double x2 = airRaytrace.getX();
@@ -45,7 +45,7 @@ public class OrbisRaytraceHelp
 			final double z2 = airRaytrace.getZ();
 
 			return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + +(z1 - z2) * (z1 - z2));
-		}
+		}*/
 
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 

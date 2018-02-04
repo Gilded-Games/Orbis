@@ -53,7 +53,7 @@ public class GodModeOverlay implements IOverlay
 		int width = (int) powerClient.getIcon().dim().originalState().width();
 		int height = (int) powerClient.getIcon().dim().originalState().height();
 
-		Gui.drawModalRectWithCustomSizedTexture(centerX - 7, centerZ + 5, 0, 0, width, height, width, height);
+		Gui.drawModalRectWithCustomSizedTexture(centerX - (width / 2), centerZ + 5, 0, 0, width, height, width, height);
 
 		final ISelectionTypeClient selectionClient = playerOrbis.selectionTypes().getCurrentSelectionType().getClient();
 

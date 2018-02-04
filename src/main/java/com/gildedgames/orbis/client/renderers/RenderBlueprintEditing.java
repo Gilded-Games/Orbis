@@ -1,10 +1,12 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.api.data.IBlueprintDataListener;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis.common.world_objects.IColored;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -15,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHolderListener
+public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHolderListener, IBlueprintDataListener
 {
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -34,6 +36,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 		this.blueprint = blueprint;
 
 		this.blueprint.listen(this);
+		this.blueprint.getData().listen(this);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -49,6 +52,8 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 					this.subRenderers.add(new RenderScheduleLayer(layer, this.blueprint, this.blueprint));
 				}
 			}
+
+			this.blueprint.getData().getEntrances().forEach(this::onAddEntrance);
 		}
 		finally
 		{
@@ -167,6 +172,77 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 					this.focusedRender.setFocused(true);
 				}
 			}
+		}
+		finally
+		{
+			w.unlock();
+		}
+	}
+
+	@Override
+	public void onRemoveScheduleLayer(IScheduleLayer layer, int index)
+	{
+
+	}
+
+	@Override
+	public void onAddScheduleLayer(IScheduleLayer layer, int index)
+	{
+
+	}
+
+	@Override
+	public void onDataChanged()
+	{
+
+	}
+
+	@Override
+	public void onAddEntrance(IRegion entrance)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			RenderShape shape = new RenderShape(entrance);
+
+			shape.useCustomColors = true;
+
+			if (entrance instanceof IColored)
+			{
+				shape.colorBorder = ((IColored) entrance).getColor();
+				shape.colorGrid = ((IColored) entrance).getColor();
+			}
+
+			this.subRenderers.add(shape);
+		}
+		finally
+		{
+			w.unlock();
+		}
+	}
+
+	@Override
+	public void onRemoveEntrance(IRegion entrance)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			IWorldRenderer toRemove = null;
+
+			for (IWorldRenderer renderer : this.subRenderers)
+			{
+				if (renderer.getRenderedObject() == entrance)
+				{
+					toRemove = renderer;
+					break;
+				}
+			}
+
+			this.subRenderers.remove(toRemove);
 		}
 		finally
 		{

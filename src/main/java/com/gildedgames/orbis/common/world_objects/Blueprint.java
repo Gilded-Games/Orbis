@@ -406,4 +406,16 @@ public class Blueprint extends AbstractRegion implements IWorldObject, IMutableR
 	{
 		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
 	}
+
+	@Override
+	public void onAddEntrance(IRegion entrance)
+	{
+		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+	}
+
+	@Override
+	public void onRemoveEntrance(IRegion entrance)
+	{
+		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+	}
 }

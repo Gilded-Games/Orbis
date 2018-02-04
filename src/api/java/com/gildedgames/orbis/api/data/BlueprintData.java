@@ -27,16 +27,23 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>
 {
 	private final List<IBlueprintDataListener> listeners = Lists.newArrayList();
+
+	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private IDataMetadata metadata;
 
 	private BlockDataContainer dataContainer;
 
 	private Map<Integer, IScheduleLayer> scheduleLayers = Maps.newHashMap();
+
+	private List<IRegion> entrances = Lists.newArrayList();
 
 	private BlueprintData()
 	{
@@ -62,6 +69,50 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		if (!this.listeners.contains(listener))
 		{
 			this.listeners.add(listener);
+		}
+	}
+
+	public List<IRegion> getEntrances()
+	{
+		return this.entrances;
+	}
+
+	public void addEntrance(IRegion region)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			this.entrances.add(region);
+
+			this.listeners.forEach(o -> o.onAddEntrance(region));
+		}
+		finally
+		{
+			w.unlock();
+		}
+	}
+
+	public boolean removeEntrance(IRegion region)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			boolean flag = this.entrances.remove(region);
+
+			if (flag)
+			{
+				this.listeners.forEach(o -> o.onRemoveEntrance(region));
+			}
+
+			return flag;
+		}
+		finally
+		{
+			w.unlock();
 		}
 	}
 
@@ -174,6 +225,7 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		funnel.set("dataContainer", this.dataContainer);
 		funnel.set("metadata", this.metadata);
 		funnel.setIntMap("scheduleLayers", this.scheduleLayers);
+		funnel.setList("entrances", this.entrances);
 	}
 
 	@Override
@@ -189,6 +241,8 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 
 		this.scheduleLayers.values().forEach(l -> l.listen(this));
 		this.scheduleLayers.values().forEach(l -> l.getDataRecord().listen(this));
+
+		this.entrances = funnel.getList("entrances");
 	}
 
 	public void fetchBlocksInside(final IShape shape, final World world, final Rotation rotation)

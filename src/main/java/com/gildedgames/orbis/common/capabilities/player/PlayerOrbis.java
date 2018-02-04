@@ -219,7 +219,7 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	public BlockPos raytraceWithRegionSnapping()
 	{
-		return OrbisRaytraceHelp.raytraceWithRegionSnapping(this.getEntity());
+		return OrbisRaytraceHelp.raytraceNoSnapping(this.getEntity());
 	}
 
 	public double getReach()

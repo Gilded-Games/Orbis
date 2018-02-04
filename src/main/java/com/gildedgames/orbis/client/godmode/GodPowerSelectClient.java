@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.GuiRightClickBlueprint;
 import com.gildedgames.orbis.client.gui.GuiRightClickSelector;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
