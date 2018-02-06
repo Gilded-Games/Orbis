@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
@@ -76,7 +77,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 		{
 			ColoredRegion entrance = new ColoredRegion(selectedShape.getBoundingBox()).setColor(GodPowerEntranceClient.SHAPE_COLOR);
 
-			b.getData().addEntrance(entrance);
+			b.getData().addEntrance(new Entrance(entrance, null));
 		}
 	}
 }
