@@ -222,9 +222,9 @@ public class RotationHelp
 		switch (facing)
 		{
 			case NORTH:
-				return Rotation.NONE;
-			case SOUTH:
 				return Rotation.CLOCKWISE_180;
+			case SOUTH:
+				return Rotation.NONE;
 			case EAST:
 				return Rotation.CLOCKWISE_90;
 			case WEST:
@@ -331,6 +331,27 @@ public class RotationHelp
 		}
 
 		return rotationAmount;
+	}
+
+	/**
+	 * Returns the Rotation difference between the two rotations.
+	 */
+	public static Rotation getRotated(Rotation rot1, Rotation rot2)
+	{
+		int rotAmount = indexDifference(rot1, rot2);
+		switch(rotAmount)
+		{
+			case 0: return Rotation.NONE;
+			case 1:
+			case -3:
+				return Rotation.COUNTERCLOCKWISE_90;
+			case 2:
+			case -2:
+				return Rotation.CLOCKWISE_180;
+			case -1:
+			case 3: return Rotation.CLOCKWISE_90;
+		}
+		throw new IllegalArgumentException();
 	}
 
 	public static boolean isOddDiffWithNeutral(final Rotation rot)

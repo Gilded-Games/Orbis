@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataMetadata;
 import com.gildedgames.orbis.api.data.management.impl.DataMetadata;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IRotateable;
@@ -14,7 +15,6 @@ import com.gildedgames.orbis.api.data.schedules.IPositionRecordListener;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerListener;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,13 +25,14 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>
+public class BlueprintData implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>
 {
 	private final List<IBlueprintDataListener> listeners = Lists.newArrayList();
 
@@ -43,7 +44,7 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 
 	private Map<Integer, IScheduleLayer> scheduleLayers = Maps.newHashMap();
 
-	private List<IRegion> entrances = Lists.newArrayList();
+	private List<Entrance> entrances = new ArrayList<>();
 
 	private BlueprintData()
 	{
@@ -72,21 +73,26 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		}
 	}
 
-	public List<IRegion> getEntrances()
-	{
-		return this.entrances;
-	}
-
-	public void addEntrance(IRegion region)
+	public void addEntrance(Entrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
 
 		try
 		{
-			this.entrances.add(region);
+			BlockPos ePos = entrance.getBounds().getMin();
+			boolean properEntrance = ePos.getX() == 0 || ePos.getX() == this.getWidth() - 1 ||
+					//TODO: This should be uncommented when using the entrance in 3D generation.
+					//								 ePos.getY() == 0 || ePos.getY() == this.getHeight() - 1 ||
+					ePos.getZ() == 0 || ePos.getZ() == this.getLength() - 1;
+			if (!properEntrance)
+			{
+				throw new IllegalArgumentException("Entrance can only be placed on the edges of blueprints");
+			}
 
-			this.listeners.forEach(o -> o.onAddEntrance(region));
+			this.entrances.add(entrance);
+
+			this.listeners.forEach(o -> o.onAddEntrance(entrance));
 		}
 		finally
 		{
@@ -94,18 +100,18 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		}
 	}
 
-	public boolean removeEntrance(IRegion region)
+	public boolean removeEntrance(Entrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
 
 		try
 		{
-			boolean flag = this.entrances.remove(region);
+			boolean flag = this.entrances.remove(entrance);
 
 			if (flag)
 			{
-				this.listeners.forEach(o -> o.onRemoveEntrance(region));
+				this.listeners.forEach(o -> o.onRemoveEntrance(entrance));
 			}
 
 			return flag;
@@ -166,6 +172,11 @@ public class BlueprintData implements IDimensions, NBT, IData, IScheduleLayerLis
 		}
 
 		return -1;
+	}
+
+	public List<Entrance> entrances()
+	{
+		return this.entrances;
 	}
 
 	@Override

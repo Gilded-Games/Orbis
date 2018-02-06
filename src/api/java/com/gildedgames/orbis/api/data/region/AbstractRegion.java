@@ -71,4 +71,12 @@ public abstract class AbstractRegion implements IRegion
 		this.dataChanged = true;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "Min: " +
+				this.getMin().toString() +
+				" Max: " +
+				this.getMax().toString();
+	}
 }

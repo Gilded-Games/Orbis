@@ -460,4 +460,16 @@ public class NBTFunnel
 		return readObjects;
 	}
 
+	public void setBlockPos(final String key, BlockPos pos)
+	{
+		NBTBase tag = NBTHelper.writeBlockPos(pos);
+		this.tag.setTag(key, tag);
+	}
+
+	public BlockPos getBlockPos(final String key)
+	{
+		NBTTagCompound tag = this.tag.getCompoundTag(key);
+		return NBTHelper.readBlockPos(tag);
+	}
+
 }

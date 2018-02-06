@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.api.data.IBlueprintDataListener;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
@@ -53,7 +54,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 				}
 			}
 
-			this.blueprint.getData().getEntrances().forEach(this::onAddEntrance);
+			this.blueprint.getData().entrances().forEach(this::onAddEntrance);
 		}
 		finally
 		{
@@ -198,14 +199,14 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	}
 
 	@Override
-	public void onAddEntrance(IRegion entrance)
+	public void onAddEntrance(Entrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
 
 		try
 		{
-			RenderShape shape = new RenderShape(entrance);
+			RenderShape shape = new RenderShape(entrance.getBounds());
 
 			shape.useCustomColors = true;
 
@@ -224,7 +225,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	}
 
 	@Override
-	public void onRemoveEntrance(IRegion entrance)
+	public void onRemoveEntrance(Entrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
