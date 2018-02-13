@@ -52,6 +52,8 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private boolean developerModeEnabled;
 
+	private IShape selectedRegion;
+
 	public PlayerOrbis()
 	{
 		this.entity = null;
@@ -199,7 +201,7 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	public IShape getSelectedRegion()
 	{
-		return OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, false);
+		return this.selectedRegion;
 	}
 
 	public void setDeveloperMode(final boolean flag)
@@ -255,6 +257,8 @@ public class PlayerOrbis implements IPlayerOrbis
 	@Override
 	public void onUpdate(LivingUpdateEvent event)
 	{
+		this.selectedRegion = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, false);
+
 		for (final PlayerOrbisModule module : this.modules)
 		{
 			module.onUpdate();

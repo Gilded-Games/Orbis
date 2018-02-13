@@ -43,7 +43,7 @@ public class RenderShape implements IWorldRenderer
 	 */
 	public boolean renderBorder = true, renderDimensionsAbove = true;
 
-	public float boxAlpha = 0.25F, gridAlpha = 0.65F;
+	public float boxAlpha = 0.25F;
 
 	public boolean useCustomColors = false, xyz_box = false, box = true;
 

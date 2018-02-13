@@ -23,6 +23,11 @@ public class BlueprintRegion extends AbstractRegion implements IMutableRegion, I
 
 	protected BlockPos min = BlockPos.ORIGIN, max = BlockPos.ORIGIN;
 
+	private BlueprintRegion()
+	{
+
+	}
+
 	protected BlueprintRegion(final World world)
 	{
 	}

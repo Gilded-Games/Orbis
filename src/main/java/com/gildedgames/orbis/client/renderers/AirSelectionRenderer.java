@@ -64,7 +64,8 @@ public class AirSelectionRenderer
 
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
 
-		if (!playerOrbis.inDeveloperMode())
+		if (!playerOrbis.inDeveloperMode() || (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower()
+				&& playerOrbis.getSelectedRegion() != null))
 		{
 			return;
 		}
@@ -86,7 +87,6 @@ public class AirSelectionRenderer
 			renderRegion.renderDimensionsAbove = false;
 
 			renderRegion.boxAlpha = fadeMax;
-			renderRegion.gridAlpha = 0.0F;
 		}
 
 		final IGodPowerClient powerClient = playerOrbis.powers().getCurrentPower().getClientHandler();

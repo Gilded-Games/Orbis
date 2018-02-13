@@ -7,9 +7,11 @@ import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.IColored;
 import com.google.common.collect.Lists;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -33,6 +35,8 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 	private RenderScheduleLayer focusedRender;
 
+	private RenderShape renderShape;
+
 	public RenderBlueprintEditing(final Blueprint blueprint)
 	{
 		this.blueprint = blueprint;
@@ -45,6 +49,15 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 		try
 		{
+			this.renderShape = new RenderShape(this.blueprint);
+
+			this.renderShape.useCustomColors = true;
+
+			this.renderShape.colorGrid = this.blueprint.getColor();
+			this.renderShape.colorBorder = this.blueprint.getColor();
+
+			this.subRenderers.add(this.renderShape);
+
 			for (Integer id : this.blueprint.getData().getScheduleLayers().keySet())
 			{
 				IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(id);
@@ -93,7 +106,30 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
+		PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
 
+		if (playerOrbis.getSelectedRegion() == this.blueprint && playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower())
+		{
+			boolean refresh = this.renderShape.boxAlpha == 0.25F;
+
+			this.renderShape.boxAlpha = 0.5F;
+
+			if (refresh)
+			{
+				this.renderShape.refresh();
+			}
+		}
+		else
+		{
+			boolean refresh = this.renderShape.boxAlpha == 0.5F;
+
+			this.renderShape.boxAlpha = 0.25F;
+
+			if (refresh)
+			{
+				this.renderShape.refresh();
+			}
+		}
 	}
 
 	@Override

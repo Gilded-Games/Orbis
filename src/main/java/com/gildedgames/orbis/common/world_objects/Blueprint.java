@@ -13,7 +13,6 @@ import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintEditing;
-import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
@@ -215,26 +214,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	{
 		if (OrbisCore.isClient() && this.renderer == null)
 		{
-			final RenderShape r = new RenderShape(this);
-
-			r.useCustomColors = true;
-
-			r.colorGrid = this.getColor();
-			r.colorBorder = this.getColor();
-
-			this.renderer = r;
-
-			final Lock w = this.renderer.getSubRenderersLock().writeLock();
-			w.lock();
-
-			try
-			{
-				this.renderer.getSubRenderers(this.getWorld()).add(new RenderBlueprintEditing(this));
-			}
-			finally
-			{
-				w.unlock();
-			}
+			this.renderer = new RenderBlueprintEditing(this);
 		}
 
 		return this.renderer;

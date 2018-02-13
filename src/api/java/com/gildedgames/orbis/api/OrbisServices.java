@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.block.*;
 import com.gildedgames.orbis.api.core.CreationData;
 import com.gildedgames.orbis.api.core.GameRegistrar;
 import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
+import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.management.IProject;
@@ -118,6 +119,7 @@ public class OrbisServices implements IOrbisServices
 			s.register(24, ScheduleLayer.class, new Instantiator<>(ScheduleLayer.class));
 			s.register(25, FilterRecord.class, new Instantiator<>(FilterRecord.class));
 			s.register(26, Entrance.class, new Instantiator<>(Entrance.class));
+			s.register(27, BlueprintRegion.class, new Instantiator<>(BlueprintRegion.class));
 
 			this.io.register(s);
 		}
