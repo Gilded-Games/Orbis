@@ -12,6 +12,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerEntrance;
 import com.gildedgames.orbis.common.util.ColoredRegion;
+import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -32,7 +33,27 @@ public class ShapeSelectorEntrance implements IShapeSelector
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
-		return held.isEmpty() || !(held.getItem() == ItemsOrbis.block_chunk || held.getItem() == ItemsOrbis.blueprint);
+		final WorldObjectManager manager = WorldObjectManager.get(world);
+		final IWorldObjectGroup group = manager.getGroup(0);
+
+		final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
+
+		Blueprint b = group.getIntersectingShape(Blueprint.class, endPos);
+
+		if (b == null)
+		{
+			return false;
+		}
+
+		boolean north = endPos.getX() == b.getMin().getX();
+		boolean south = endPos.getX() == b.getMax().getX();
+		boolean east = endPos.getZ() == b.getMax().getZ();
+		boolean west = endPos.getZ() == b.getMin().getZ();
+		boolean up = endPos.getY() == b.getMax().getY();
+		boolean down = endPos.getY() == b.getMin().getY();
+
+		return (north || south || east || west || up || down) && (held.isEmpty() || !(held.getItem() == ItemsOrbis.block_chunk
+				|| held.getItem() == ItemsOrbis.blueprint));
 	}
 
 	@Override
