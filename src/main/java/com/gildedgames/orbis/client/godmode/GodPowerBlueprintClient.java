@@ -27,7 +27,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 
-import java.util.Collections;
 import java.util.List;
 
 public class GodPowerBlueprintClient implements IGodPowerClient
@@ -110,12 +109,6 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 	@Override
 	public List<IWorldRenderer> getActiveRenderers(final PlayerOrbis playerOrbis, final World world)
 	{
-		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getPathwayPower()
-				&& playerOrbis.selectionInputs().getCurrentSelectionInput().getActiveSelection() != null)
-		{
-			return Collections.emptyList();
-		}
-
 		final List<IWorldRenderer> renderers = Lists.newArrayList();
 
 		if (this.prevBlueprintData != this.server.getPlacingBlueprint() || this.prevRotation != this.server.getPlacingRotation())
@@ -216,6 +209,40 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 
 			renderers.add(this.renderer);
 			renderers.add(this.renderShape);
+		}
+
+		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getPathwayPower()
+				&& playerOrbis.selectionInputs().getCurrentSelectionInput().getActiveSelection() != null)
+		{
+			if (this.renderer != null)
+			{
+				this.renderer.setDisabled(true);
+			}
+
+			if (this.renderShape != null)
+			{
+				this.renderShape.setDisabled(true);
+			}
+
+			for (IWorldRenderer r : this.paletteRenderers)
+			{
+				if (r != null)
+				{
+					r.setDisabled(true);
+				}
+			}
+		}
+		else
+		{
+			if (this.renderer != null)
+			{
+				this.renderer.setDisabled(false);
+			}
+
+			if (this.renderShape != null)
+			{
+				this.renderShape.setDisabled(false);
+			}
 		}
 
 		return renderers;
