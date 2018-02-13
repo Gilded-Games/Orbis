@@ -68,14 +68,15 @@ public class ShapeSelectorEntrance implements IShapeSelector
 		{
 			IRegion bb = shape.getBoundingBox();
 
-			if (bb.getLength() == 1 || bb.getWidth() == 1)
+			boolean up = bb.getMin().getY() == b.getMax().getY() && bb.getHeight() == 1;
+			boolean down = bb.getMin().getY() == b.getMin().getY() && bb.getHeight() == 1;
+
+			if (bb.getLength() == 1 || bb.getWidth() == 1 || up || down)
 			{
 				boolean north = bb.getMin().getX() == b.getMin().getX() && bb.getWidth() == 1;
 				boolean south = bb.getMax().getX() == b.getMax().getX() && bb.getWidth() == 1;
 				boolean east = bb.getMax().getZ() == b.getMax().getZ() && bb.getLength() == 1;
 				boolean west = bb.getMin().getZ() == b.getMin().getZ() && bb.getLength() == 1;
-				boolean up = bb.getMin().getY() == b.getMax().getY() && bb.getHeight() == 1;
-				boolean down = bb.getMin().getY() == b.getMin().getY() && bb.getHeight() == 1;
 
 				if (north || south || east || west || up || down)
 				{
