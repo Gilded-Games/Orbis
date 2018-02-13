@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SelectionInputDraggedClient implements ISelectionInputClient
@@ -42,6 +43,11 @@ public class SelectionInputDraggedClient implements ISelectionInputClient
 	@Override
 	public List<IWorldRenderer> getActiveRenderers(final ISelectionInput server, final PlayerOrbis playerOrbis, final World world)
 	{
+		if (!playerOrbis.powers().getCurrentPower().getClientHandler().shouldRenderSelection())
+		{
+			return Collections.emptyList();
+		}
+
 		final List<IWorldRenderer> renderers = Lists.newArrayList();
 
 		final IWorldObject activeSelection = playerOrbis.selectionInputs().getCurrentSelectionInput().getActiveSelection();

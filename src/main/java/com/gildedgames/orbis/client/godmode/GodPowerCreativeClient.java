@@ -77,4 +77,10 @@ public class GodPowerCreativeClient implements IGodPowerClient
 	{
 		return false;
 	}
+
+	@Override
+	public boolean shouldRenderSelection()
+	{
+		return true;
+	}
 }

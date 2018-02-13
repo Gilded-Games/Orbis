@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.client.godmode.selection_inputs;
 
 import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SelectionInputBrushClient implements ISelectionInputClient
@@ -44,6 +45,11 @@ public class SelectionInputBrushClient implements ISelectionInputClient
 	@Override
 	public List<IWorldRenderer> getActiveRenderers(final ISelectionInput server, final PlayerOrbis playerOrbis, final World world)
 	{
+		if (!playerOrbis.powers().getCurrentPower().getClientHandler().shouldRenderSelection())
+		{
+			return Collections.emptyList();
+		}
+
 		final List<IWorldRenderer> renderers = Lists.newArrayList();
 
 		if (this.activeSelection != server.getActiveSelection())

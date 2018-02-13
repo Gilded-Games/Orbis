@@ -7,12 +7,15 @@ import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.renderers.RenderPathway;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.items.ItemBlueprint;
+import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
 import com.gildedgames.orbis.common.player.godmode.selection_input.SelectionInputDragged;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -59,7 +62,9 @@ public class GodPowerPathwayClient implements IGodPowerClient
 	@Override
 	public boolean has3DCursor(final PlayerOrbis playerOrbis)
 	{
-		return true;
+		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+
+		return !held.isEmpty() && (held.getItem() instanceof ItemBlueprint || held.getItem() instanceof ItemBlueprintPalette);
 	}
 
 	@Override
@@ -120,5 +125,11 @@ public class GodPowerPathwayClient implements IGodPowerClient
 	public boolean onRightClickShape(final PlayerOrbis playerOrbis, final IShape selectedShape, final MouseEvent event)
 	{
 		return true;
+	}
+
+	@Override
+	public boolean shouldRenderSelection()
+	{
+		return false;
 	}
 }

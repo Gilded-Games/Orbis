@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -24,6 +24,8 @@ public interface IGodPowerClient
 	float minFade3DCursor(PlayerOrbis playerOrbis);
 
 	int getShapeColor(PlayerOrbis playerOrbis);
+
+	boolean shouldRenderSelection();
 
 	List<IWorldRenderer> getActiveRenderers(PlayerOrbis playerOrbis, World world);
 

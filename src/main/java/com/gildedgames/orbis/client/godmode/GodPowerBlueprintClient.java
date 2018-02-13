@@ -102,14 +102,21 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 	}
 
 	@Override
+	public boolean shouldRenderSelection()
+	{
+		return true;
+	}
+
+	@Override
 	public List<IWorldRenderer> getActiveRenderers(final PlayerOrbis playerOrbis, final World world)
 	{
-		final List<IWorldRenderer> renderers = Lists.newArrayList();
-
-		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getPathwayPower())
+		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getPathwayPower()
+				&& playerOrbis.selectionInputs().getCurrentSelectionInput().getActiveSelection() != null)
 		{
 			return Collections.emptyList();
 		}
+
+		final List<IWorldRenderer> renderers = Lists.newArrayList();
 
 		if (this.prevBlueprintData != this.server.getPlacingBlueprint() || this.prevRotation != this.server.getPlacingRotation())
 		{

@@ -83,4 +83,10 @@ public class GodPowerScheduleClient implements IGodPowerClient
 	{
 		return true;
 	}
+
+	@Override
+	public boolean shouldRenderSelection()
+	{
+		return true;
+	}
 }

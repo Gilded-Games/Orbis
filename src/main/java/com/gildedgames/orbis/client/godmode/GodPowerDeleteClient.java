@@ -79,4 +79,10 @@ public class GodPowerDeleteClient implements IGodPowerClient
 	{
 		return true;
 	}
+
+	@Override
+	public boolean shouldRenderSelection()
+	{
+		return true;
+	}
 }
