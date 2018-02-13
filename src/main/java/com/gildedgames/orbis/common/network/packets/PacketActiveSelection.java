@@ -11,11 +11,16 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import javax.annotation.Nullable;
+
 public class PacketActiveSelection implements IMessage
 {
+	private BlockPos start, end;
+
 	private IShape shape;
 
 	private NBTFunnel funnel;
@@ -25,9 +30,11 @@ public class PacketActiveSelection implements IMessage
 
 	}
 
-	public PacketActiveSelection(final IShape shape)
+	public PacketActiveSelection(final IShape shape, @Nullable BlockPos start, @Nullable BlockPos end)
 	{
 		this.shape = shape;
+		this.start = start;
+		this.end = end;
 	}
 
 	@Override
@@ -45,6 +52,8 @@ public class PacketActiveSelection implements IMessage
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		funnel.set("shape", this.shape);
+		funnel.setPos("s", this.start);
+		funnel.setPos("e", this.end);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -61,6 +70,9 @@ public class PacketActiveSelection implements IMessage
 
 			final IShape shape = message.funnel.get(player.world, "shape");
 
+			BlockPos start = message.funnel.getPos("s");
+			BlockPos end = message.funnel.getPos("e");
+
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 			final ISelectionInput selectionInput = playerOrbis.selectionInputs().getCurrentSelectionInput();
 
@@ -75,7 +87,7 @@ public class PacketActiveSelection implements IMessage
 				selector = (IShapeSelector) held.getItem();
 			}
 
-			selector.onSelect(playerOrbis, shape, player.world);
+			selector.onSelect(playerOrbis, shape, player.world, start, end);
 
 			return null;
 		}

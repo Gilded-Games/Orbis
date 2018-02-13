@@ -1,18 +1,19 @@
 package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
 import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.data.framework.FrameworkAlgorithm;
 import com.gildedgames.orbis.api.data.framework.FrameworkType;
 import com.gildedgames.orbis.api.data.framework.Graph;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
 import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
+import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 import java.util.Set;
+
 public class DeprecatedFDGD implements IGDAlgorithm
 {
 
@@ -57,7 +58,9 @@ public class DeprecatedFDGD implements IGDAlgorithm
 					{
 						float duv = Math.abs(dx) + Math.abs(dz);
 						if (duv == 0)
+						{
 							duv = random.nextBoolean() ? 100 : -100;
+						}
 						stiffModifier = stiffness * (duv - naturalLength) / duv;
 					}
 					else
@@ -65,7 +68,9 @@ public class DeprecatedFDGD implements IGDAlgorithm
 						final float dy = edge.yOf(u) - edge.yOf(v);
 						float duv = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
 						if (duv == 0)
+						{
 							duv = random.nextBoolean() ? 100 : -100;
+						}
 						stiffModifier = stiffness * (duv - naturalLength) / duv;
 						forceY += stiffModifier * dy;
 					}
@@ -88,10 +93,14 @@ public class DeprecatedFDGD implements IGDAlgorithm
 				{
 					final float duv = Math.abs(dx) + Math.abs(dz);
 					float trepulsion = repulsion / (float) Math.pow(duv, 3);
-					if (this.escapePhase && RegionHelp.intersects(rect1, RegionHelp.expand(u, nodeDistance)))
+					if (this.escapePhase && RegionHelp.intersects2D(rect1, RegionHelp.expand(u, nodeDistance)))
+					{
 						continue;
+					}
 					else if (this.escapePhase)
+					{
 						trepulsion *= collisionEsc;
+					}
 					forceX -= MathHelper.clamp(trepulsion * dx, -maxForce, maxForce);
 					forceZ -= MathHelper.clamp(trepulsion * dz, -maxForce, maxForce);
 				}
@@ -100,10 +109,14 @@ public class DeprecatedFDGD implements IGDAlgorithm
 					final float dy = u.getY() - v.getY();
 					final float duv = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
 					float trepulsion = repulsion / (float) Math.pow(duv, 3);
-					if (this.escapePhase && RegionHelp.intersects(rect1, RegionHelp.expand(u, nodeDistance)))
+					if (this.escapePhase && RegionHelp.intersects2D(rect1, RegionHelp.expand(u, nodeDistance)))
+					{
 						continue;
+					}
 					else if (this.escapePhase)
+					{
 						trepulsion *= collisionEsc;
+					}
 					forceX -= MathHelper.clamp(trepulsion * dx, -maxForce, maxForce);
 					forceY -= MathHelper.clamp(trepulsion * dy, -maxForce, maxForce);
 					forceZ -= MathHelper.clamp(trepulsion * dz, -maxForce, maxForce);
@@ -143,7 +156,7 @@ public class DeprecatedFDGD implements IGDAlgorithm
 					|| equilibriumState < this.params.acceptEquilibrium();
 			this.escapePhase =
 					this.escapePhase || equilibriumState < this.params.toEscapeEquilibrium() || fdgdIterations > this.params.iterationsToEscape();
-			return inEquilibrium ? FrameworkAlgorithm.Phase.PATHWAYS :FrameworkAlgorithm.Phase.FDGD;
+			return inEquilibrium ? FrameworkAlgorithm.Phase.PATHWAYS : FrameworkAlgorithm.Phase.FDGD;
 
 		}
 		return FrameworkAlgorithm.Phase.REBUILD1;

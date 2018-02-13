@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.function.Function;
@@ -55,7 +56,7 @@ public class ShapeSelectorFilter implements IShapeSelector
 	}
 
 	@Override
-	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world)
+	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
 		if (world.isRemote)
 		{

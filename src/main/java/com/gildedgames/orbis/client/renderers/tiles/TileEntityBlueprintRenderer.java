@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -59,7 +60,6 @@ public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileE
 								final BlueprintData blueprint = OrbisCore.getProjectManager().findData(id);
 
 								final RenderBlueprintBlocks render = new RenderBlueprintBlocks(new Blueprint(mc.world, BlockPos.ORIGIN, blueprint), mc.world);
-								render.useCamera = false;
 
 								return Optional.of(render);
 							}
@@ -118,7 +118,12 @@ public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileE
 				blueprint.transformForGui();
 			}
 
-			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS);
+			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
+
+			for (IWorldRenderer renderer : blueprint.getSubRenderers(mc.world))
+			{
+				renderer.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
+			}
 
 			if (!inGuiContext)
 			{

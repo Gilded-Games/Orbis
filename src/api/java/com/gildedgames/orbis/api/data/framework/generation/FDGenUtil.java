@@ -1,15 +1,18 @@
 package com.gildedgames.orbis.api.data.framework.generation;
 
+import com.gildedgames.orbis.api.data.framework.Graph;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.data.framework.Graph;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FDGenUtil
 {
+	private static float ESCAPE_DIST = 5f;
+
 	public static Region boundingBox(Graph<FDGDNode, FDGDEdge> graph)
 	{
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
@@ -32,19 +35,24 @@ public class FDGenUtil
 	public static boolean hasCollision(Graph<FDGDNode, FDGDEdge> graph)
 	{
 		for (final FDGDNode node1 : graph.vertexSet())
+		{
 			for (final FDGDNode node2 : graph.vertexSet())
-				if (node1 != node2 && RegionHelp.intersects(node1, node2))
+			{
+				if (node1 != node2 && RegionHelp.intersects2D(node1, node2))
+				{
 					return true;
+				}
+			}
+		}
 		return false;
 	}
 
-	private static float ESCAPE_DIST = 5f;
 	public static float[] pointOfForce(FDGDNode v, FDGDNode u)
 	{
 		//WATCH OUT: The 0 here is wrong.
 		float vPosX = v.getX(), vPosZ = v.getZ();
 		float uPosX = 0, uPosZ = 0;
-		if(RegionHelp.contains(u, vPosX, 0, vPosZ))
+		if (RegionHelp.contains(u, vPosX, 0, vPosZ))
 		{
 			// Find the vector between the center of gravity of both bodies.
 			// Then, move the center of gravity ESCAPE_DIST close to the body we are
@@ -57,7 +65,7 @@ public class FDGenUtil
 			uPosX = vPosX - dx;
 			uPosZ = vPosZ - dz;
 		}
-		else if (RegionHelp.intersects(v, u))
+		else if (RegionHelp.intersects2D(v, u))
 		{
 			float edgeClampX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
 			float edgeClampZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
@@ -71,8 +79,8 @@ public class FDGenUtil
 		}
 		else
 		{
-//			uPosX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
-//			uPosZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
+			//			uPosX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
+			//			uPosZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
 			float edgeClampUX = MathHelper.clamp(vPosX, u.getMin().getX(), u.getMax().getX());
 			float edgeClampUZ = MathHelper.clamp(vPosZ, u.getMin().getZ(), u.getMax().getZ());
 			float edgeClampVX = MathHelper.clamp(edgeClampUX, v.getMin().getX(), v.getMax().getX());
@@ -88,7 +96,7 @@ public class FDGenUtil
 			uPosX = vPosX - dx;
 			uPosZ = vPosZ - dz;
 		}
-		return new float[]{uPosX, 0, uPosZ};
+		return new float[] { uPosX, 0, uPosZ };
 	}
 
 	public static boolean hasEdgeIntersections(Graph<FDGDNode, FDGDEdge> graph)
@@ -96,6 +104,7 @@ public class FDGenUtil
 		final List<FDGDEdge> edges = new ArrayList<>(graph.edgeSet());
 
 		for (int i = 0; i < edges.size(); i++)
+		{
 			for (int x = i + 1; x < edges.size(); x++)
 			{
 				final FDGDEdge edge1 = edges.get(i);
@@ -108,22 +117,31 @@ public class FDGenUtil
 				final FDGDNode e2T = edge2.node2();
 
 				if (e1T != e2T && e1T != e2S && e1S != e2T && e1S != e2S)
+				{
 					if (isIntersecting(edge1, edge2))
+					{
 						return true;
+					}
+				}
 			}
+		}
 		return false;
 	}
 
 	public static boolean hasEdgeIntersections(Graph<FDGDNode, FDGDEdge> graph, FDGDEdge edge)
 	{
 		for (FDGDEdge e : graph.edgeSet())
+		{
 			if (isIntersecting(edge, e))
+			{
 				return true;
+			}
+		}
 		return false;
 	}
 
 	public static boolean isIntersecting(float edge1n1X, float edge1n1Z, float edge1n2X, float edge1n2Z,
-										 float edge2n1X, float edge2n1Z, float edge2n2X, float edge2n2Z)
+			float edge2n1X, float edge2n1Z, float edge2n2X, float edge2n2Z)
 	{
 		return isIntersecting(edge1n1X, edge1n1Z, edge1n2X, edge1n2Z, edge2n1X, edge2n1Z, edge2n2X, edge2n2Z, false);
 	}
@@ -155,9 +173,13 @@ public class FDGenUtil
 		final float t = (line2X * diffZ - line2Z * diffX) / denom;
 
 		if (exact)
+		{
 			return s >= 0 && s <= 1 && t >= 0 && t <= 1;
+		}
 		else
+		{
 			return s > 0 && s < 1 && t > 0 && t < 1;
+		}
 	}
 
 	// Returns true if the two edges have an intersection somewhere.

@@ -56,7 +56,7 @@ public class DataPrimer
 
 			final IRegion chunkBB = new Region(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
 
-			this.create(def.getBlockDataContainer(), data, chunkBB);
+			this.create(null, def.getBlockDataContainer(), data, chunkBB);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class DataPrimer
 			final BlockPos max = new BlockPos(min.getX() + blocks.getWidth() - 1, min.getY() + blocks.getHeight() - 1,
 					min.getZ() + blocks.getLength() - 1);
 
-			for (final OrbisTuple<BlockPos, BlockPos> tuple : RotationHelp.getAllInBoxRotated(min, max, data.getRotation()))
+			for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : RotationHelp.getAllInBoxRotated(min, max, data.getRotation()))
 			{
 				final BlockPos beforeRot = tuple.getFirst();
 				final BlockPos rotated = tuple.getSecond();
@@ -162,7 +162,7 @@ public class DataPrimer
 			final BlockPos max = new BlockPos(min.getX() + blocks.getWidth() - 1, min.getY() + blocks.getHeight() - 1,
 					min.getZ() + blocks.getLength() - 1);
 
-			for (final OrbisTuple<BlockPos, BlockPos> tuple : RotationHelp.getAllInBoxRotated(min, max, data.getRotation()))
+			for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : RotationHelp.getAllInBoxRotated(min, max, data.getRotation()))
 			{
 				final BlockPos beforeRot = tuple.getFirst();
 				final BlockPos rotated = tuple.getSecond();
@@ -250,27 +250,24 @@ public class DataPrimer
 
 	public void create(final BlockDataContainer container, final ICreationData data)
 	{
-		this.create(container, data, null);
+		this.create(null, container, data, null);
 	}
 
-	public void create(final BlockDataContainer container, final ICreationData data, final IRegion insideRegion)
+	public void create(IRegion containerRegion, final BlockDataContainer container, final ICreationData data, final IRegion insideRegion)
 	{
-		final boolean xNeg = data.getPos().getX() < 0;
-		final boolean yNeg = data.getPos().getY() < 0;
-		final boolean zNeg = data.getPos().getZ() < 0;
-
-		final BlockPos min = data.getPos();//new BlockPos(Math.abs(data.getPos().getX()), Math.abs(data.getPos().getY()), Math.abs(data.getPos().getZ()));
-		final BlockPos max = new BlockPos(min.getX() + container.getWidth() - 1, min.getY() + container.getHeight() - 1,
+		final BlockPos min = data.getPos();
+		BlockPos max = new BlockPos(min.getX() + container.getWidth() - 1, min.getY() + container.getHeight() - 1,
 				min.getZ() + container.getLength() - 1);
 
 		final int rotAmount = Math.abs(RotationHelp.getRotationAmount(data.getRotation(), Rotation.NONE));
 
 		if (rotAmount != 0)
 		{
-			for (final OrbisTuple<BlockPos, BlockPos> tuple : RotationHelp.getAllInBoxRotated(min, max, data.getRotation()))
+			for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : RotationHelp
+					.getAllInBoxRotated(min, max, data.getRotation(), containerRegion))
 			{
-				final BlockPos beforeRot = tuple.getFirst();
-				final BlockPos rotated = tuple.getSecond();
+				final BlockPos.MutableBlockPos beforeRot = tuple.getFirst();
+				BlockPos.MutableBlockPos rotated = tuple.getSecond();
 
 				if (insideRegion == null || insideRegion.contains(rotated))
 				{
@@ -278,7 +275,7 @@ public class DataPrimer
 
 					toCreate = container.get(beforeRot.getX() - min.getX(), beforeRot.getY() - min.getY(), beforeRot.getZ() - min.getZ());
 
-					//this.create(toCreate, new BlockPos(), data);
+					this.create(toCreate, rotated, data);
 				}
 			}
 		}
@@ -300,6 +297,16 @@ public class DataPrimer
 					}
 				}
 			}
+		}
+	}
+
+	public void fill(final BlockData blockData, IRegion region, ICreationData data)
+	{
+		for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : RotationHelp.getAllInRegionRotated(region, data.getRotation()))
+		{
+			final BlockPos rotated = tuple.getSecond();
+
+			this.create(blockData, rotated, data);
 		}
 	}
 

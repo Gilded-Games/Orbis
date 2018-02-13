@@ -30,7 +30,11 @@ public interface IWorldRenderer extends NBT
 
 	IRegion getBoundingBox();
 
-	void render(World world, float partialTicks);
+	void render(World world, float partialTicks, boolean useCamera);
+
+	void preRenderSubs(World world, float partialTicks, boolean useCamera);
+
+	void postRenderSubs(World world, float partialTicks, boolean useCamera);
 
 	List<IWorldRenderer> getSubRenderers(World world);
 

@@ -65,7 +65,7 @@ public class ChunkRenderer implements IChunkRendererCapability
 	@Override
 	public boolean shouldHave(final IWorldRenderer renderer)
 	{
-		return RegionHelp.intersects(renderer.getBoundingBox(), this.boundingBox);
+		return RegionHelp.intersects2D(renderer.getBoundingBox(), this.boundingBox);
 	}
 
 	@Override

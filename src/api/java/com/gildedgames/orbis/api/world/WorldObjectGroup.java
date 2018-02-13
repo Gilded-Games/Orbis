@@ -226,7 +226,7 @@ public class WorldObjectGroup implements IWorldObjectGroup
 			{
 				final IShape area = (IShape) obj;
 
-				if (RegionHelp.intersects(area, shape))
+				if (RegionHelp.intersects2D(area, shape))
 				{
 					return area;
 				}
@@ -246,7 +246,7 @@ public class WorldObjectGroup implements IWorldObjectGroup
 			{
 				final IShape area = (IShape) obj;
 
-				if (RegionHelp.intersects(area, shape) && area.getClass() == shapeType)
+				if (RegionHelp.intersects2D(area, shape) && area.getClass() == shapeType)
 				{
 					return shapeType.cast(area);
 				}
@@ -267,7 +267,7 @@ public class WorldObjectGroup implements IWorldObjectGroup
 			{
 				final IShape area = (IShape) obj;
 
-				if (RegionHelp.intersects(area, shape) && area.getClass() == shapeType)
+				if (RegionHelp.intersects2D(area, shape) && area.getClass() == shapeType)
 				{
 					intersecting.add(shapeType.cast(area));
 				}

@@ -112,11 +112,12 @@ public class SelectionInputBrush implements ISelectionInput
 					{
 						this.prevPlacingPos = pos;
 
-						if (this.activeSelection != null && selector.canSelectShape(this.playerOrbis, this.activeSelection.getShape(), this.playerOrbis.getWorld()))
+						if (this.activeSelection != null && selector
+								.canSelectShape(this.playerOrbis, this.activeSelection.getShape(), this.playerOrbis.getWorld()))
 						{
 							if (this.playerOrbis.getWorld().isRemote)
 							{
-								NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape()));
+								NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), null, null));
 							}
 						}
 					}

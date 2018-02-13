@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.api;
 
-import com.gildedgames.orbis.api.util.io.IClassSerializerRegistry;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
+import com.gildedgames.orbis.api.util.io.IClassSerializerRegistry;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.util.mc.NBTHelper;
 import com.google.common.collect.BiMap;
@@ -57,7 +57,7 @@ public class IOHelper implements IClassSerializerRegistry
 			}
 		}
 
-		throw new RuntimeException("This object has not been registered to a serializer.");
+		throw new RuntimeException("This object has not been registered to a serializer: " + nbt);
 	}
 
 	@Override

@@ -1,12 +1,15 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.mc.BlockUtil;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.blueprint.BlueprintRenderCache;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis.common.world_objects.IColored;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -64,7 +67,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	 * useCamera: Set to false to render in a gui. TODO: Implement easier way
 	 * renderGridReferences: Set to false to unlisten rendering the grid in the regions of the References
 	 */
-	public boolean useCamera = true, renderGridReferences = true;
+	public boolean renderGridReferences = true;
 
 	/**
 	 * Number between 0.0f and 1.0f. Put lower to add transparency
@@ -76,15 +79,15 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	 */
 	public int color = 0x0000FF;
 
+	public Iterable<BlockPos.MutableBlockPos> shapeData;
+
 	private boolean disabled;
 
 	private BlockPos lastMin;
 
 	private int glIndex = -1;
 
-	private Iterable<BlockPos.MutableBlockPos> shapeData;
-
-	private Iterable<OrbisTuple<BlockPos, BlockPos>> rotatedData;
+	private Iterable<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>> rotatedData;
 
 	private Rotation lastRotation;
 
@@ -136,7 +139,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		return this.blueprint;
 	}
 
-	public void renderFully(final World world, final float partialTicks)
+	public void cacheRender(final World world, final float partialTicks, boolean useCamera)
 	{
 		if (!this.renderBlocks)
 		{
@@ -169,7 +172,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		if (this.rotatedData != null)
 		{
-			for (final OrbisTuple<BlockPos, BlockPos> tuple : this.rotatedData)
+			for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : this.rotatedData)
 			{
 				final BlockPos beforeRot = tuple.getFirst();
 				final BlockPos rotated = tuple.getSecond();
@@ -211,7 +214,24 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		GlStateManager.popMatrix();
 
-		this.render(world, partialTicks);
+		for (Entrance entrance : this.blueprint.getData().entrances())
+		{
+			Region r = new Region(entrance.getBounds());
+			r.add(this.blueprint.getPos().getX(), this.blueprint.getPos().getY(), this.blueprint.getPos().getZ());
+			RenderShape shape = new RenderShape(r);
+
+			shape.useCustomColors = true;
+
+			if (entrance.getBounds() instanceof IColored)
+			{
+				shape.colorBorder = ((IColored) entrance.getBounds()).getColor();
+				shape.colorGrid = ((IColored) entrance.getBounds()).getColor();
+			}
+
+			this.subRenderers.add(shape);
+		}
+
+		this.render(world, partialTicks, useCamera);
 	}
 
 	private void renderTileEntityIfPossible(final BlockPos pos, final float partialTicks, final int pass)
@@ -277,6 +297,11 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		return this.lock;
 	}
 
+	public int getGlIndex()
+	{
+		return this.glIndex;
+	}
+
 	public void transformForWorld()
 	{
 		int maxval = Math.max(this.blueprint.getWidth(), this.blueprint.getHeight());
@@ -313,7 +338,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	}
 
 	@Override
-	public void render(final World world, final float partialTicks)
+	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
 		if (this.lastRotation != this.blueprint.getRotation())
 		{
@@ -339,7 +364,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		if (this.glIndex == -1)
 		{
-			this.renderFully(world, partialTicks);
+			this.cacheRender(world, partialTicks, useCamera);
 			return;
 		}
 
@@ -349,7 +374,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		GlStateManager.pushMatrix();
 
-		if (this.useCamera)
+		if (useCamera)
 		{
 			if (!this.lastMin.equals(this.blueprint.getMin()))
 			{
@@ -365,13 +390,35 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		if (this.useCamera)
+		if (useCamera)
 		{
 			GlStateManager.translate(0, 0, 0);
 		}
 
 		GlStateManager.resetColor();
 
+		GlStateManager.popMatrix();
+	}
+
+	@Override
+	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+		GlStateManager.pushMatrix();
+
+		if (useCamera)
+		{
+			if (!this.lastMin.equals(this.blueprint.getMin()))
+			{
+				GlStateManager.translate(this.blueprint.getMin().getX() - this.lastMin.getX(),
+						this.blueprint.getMin().getY() - this.lastMin.getY(),
+						this.blueprint.getMin().getZ() - this.lastMin.getZ());
+			}
+		}
+	}
+
+	@Override
+	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
 		GlStateManager.popMatrix();
 	}
 

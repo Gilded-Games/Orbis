@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ShapeSelectorInvalid implements IShapeSelector
@@ -20,7 +21,7 @@ public class ShapeSelectorInvalid implements IShapeSelector
 	}
 
 	@Override
-	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world)
+	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
 
 	}

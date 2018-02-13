@@ -7,7 +7,12 @@ import java.util.Collection;
 
 public class RegionHelp
 {
-	public static boolean intersects(final IShape shape1, final IShape shape2)
+	public static boolean sameDim(IDimensions d1, IDimensions d2)
+	{
+		return d1.getLength() == d2.getLength() && d1.getWidth() == d2.getWidth() && d1.getHeight() == d2.getHeight();
+	}
+
+	public static boolean intersects2D(final IShape shape1, final IShape shape2)
 	{
 		for (final BlockPos pos : shape1.getShapeData())
 		{
@@ -47,7 +52,7 @@ public class RegionHelp
 	}
 
 	// Returns True if the two regions intersect IN 2D SPACE (!). This might need to be changed to 3D space.
-	public static boolean intersects(final IRegion region1, final IRegion region2)
+	public static boolean intersects2D(final IRegion region1, final IRegion region2)
 	{
 		final BlockPos min1 = region1.getMin();
 		final BlockPos min2 = region2.getMin();
@@ -56,6 +61,18 @@ public class RegionHelp
 		final BlockPos max2 = region2.getMax();
 
 		return max1.getX() >= min2.getX() && min1.getX() <= max2.getX()
+				&& max1.getZ() >= min2.getZ() && min1.getZ() <= max2.getZ();
+	}
+
+	public static boolean intersects(final IRegion region1, final IRegion region2)
+	{
+		final BlockPos min1 = region1.getMin();
+		final BlockPos min2 = region2.getMin();
+
+		final BlockPos max1 = region1.getMax();
+		final BlockPos max2 = region2.getMax();
+
+		return max1.getX() >= min2.getX() && min1.getX() <= max2.getX() && max1.getY() >= min2.getY() && min1.getY() <= max2.getY()
 				&& max1.getZ() >= min2.getZ() && min1.getZ() <= max2.getZ();
 	}
 
@@ -81,6 +98,18 @@ public class RegionHelp
 		final BlockPos min = region.getMin();
 		final BlockPos max = region.getMax();
 		return x <= max.getX() && x >= min.getX() && y <= max.getY() && y >= min.getY() && z <= max.getZ() && z >= min.getZ();
+	}
+
+	public static boolean containsIgnoreY(final IRegion region, final BlockPos pos)
+	{
+		return containsIgnoreY(region, pos.getX(), pos.getZ());
+	}
+
+	public static boolean containsIgnoreY(final IRegion region, final float x, final float z)
+	{
+		final BlockPos min = region.getMin();
+		final BlockPos max = region.getMax();
+		return x <= max.getX() && x >= min.getX() && z <= max.getZ() && z >= min.getZ();
 	}
 
 	public static boolean isACorner(final BlockPos pos, final IRegion region)
@@ -207,7 +236,7 @@ public class RegionHelp
 
 	public static IRegion intersection(final IRegion region1, final IRegion region2)
 	{
-		if (RegionHelp.intersects(region1, region2))
+		if (RegionHelp.intersects2D(region1, region2))
 		{
 			final BlockPos min1 = region1.getMin();
 			final BlockPos min2 = region2.getMin();

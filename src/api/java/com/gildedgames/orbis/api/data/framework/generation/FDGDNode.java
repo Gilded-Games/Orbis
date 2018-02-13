@@ -5,7 +5,6 @@ import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Tuple;
@@ -222,7 +221,7 @@ public class FDGDNode extends BlueprintRegion
 	 * A collection of assignments of edges to entrance is valid iff
 	 * for each entrance e connecting to a node n, there are no two
 	 * other assigned entrances e1 and e2 for which the line e1-e2
-	 * intersects e-n.
+	 * intersects2D e-n.
 	 * @param solution
 	 * @return
 	 */
@@ -333,17 +332,7 @@ public class FDGDNode extends BlueprintRegion
 
 	public List<Entrance> getEntrances(Rotation rotation)
 	{
-		final List<Entrance> newList = new ArrayList<>();
-		final BlockPos position = this.centerAsBP();
-		for (final Entrance beforeTrans : this.data.entrances())
-		{
-			// TODO: Incorrect y coordinate
-			final BlockPos finalBP = beforeTrans.getBounds().getMin()
-					.add((int) this.posX - this.data.getWidth() / 2, this.posY, (int) this.posZ - this.data.getLength() / 2);
-			final BlockPos trans = RotationHelp.rotate(finalBP, position, rotation, this.data.getWidth(), this.data.getLength());
-			newList.add(new Entrance(new Region(trans), beforeTrans.toConnectTo()));
-		}
-		return newList;
+		return RotationHelp.getEntrances(this.getData(), rotation, this.centerAsBP());
 	}
 
 	public BlockPos centerAsBP()

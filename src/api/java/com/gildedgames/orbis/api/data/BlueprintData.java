@@ -82,8 +82,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		{
 			BlockPos ePos = entrance.getBounds().getMin();
 			boolean properEntrance = ePos.getX() == 0 || ePos.getX() == this.getWidth() - 1 ||
-					//TODO: This should be uncommented when using the entrance in 3D generation.
-					//								 ePos.getY() == 0 || ePos.getY() == this.getHeight() - 1 ||
+					ePos.getY() == 0 || ePos.getY() == this.getHeight() - 1 ||
 					ePos.getZ() == 0 || ePos.getZ() == this.getLength() - 1;
 			if (!properEntrance)
 			{

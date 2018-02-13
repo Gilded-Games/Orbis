@@ -1,8 +1,10 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayUtil;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.client.godmode.GodPowerEntranceClient;
@@ -12,6 +14,8 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerEntrance;
 import com.gildedgames.orbis.common.util.ColoredRegion;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ShapeSelectorEntrance implements IShapeSelector
@@ -49,8 +53,10 @@ public class ShapeSelectorEntrance implements IShapeSelector
 				boolean south = bb.getMax().getX() == b.getMax().getX() && bb.getWidth() == 1;
 				boolean east = bb.getMax().getZ() == b.getMax().getZ() && bb.getLength() == 1;
 				boolean west = bb.getMin().getZ() == b.getMin().getZ() && bb.getLength() == 1;
+				boolean up = bb.getMin().getY() == b.getMax().getY() && bb.getHeight() == 1;
+				boolean down = bb.getMin().getY() == b.getMin().getY() && bb.getHeight() == 1;
 
-				if (north || south || east || west)
+				if (north || south || east || west || up || down)
 				{
 					return true;
 				}
@@ -61,7 +67,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 	}
 
 	@Override
-	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world)
+	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
 		if (world.isRemote)
 		{
@@ -75,9 +81,15 @@ public class ShapeSelectorEntrance implements IShapeSelector
 
 		if (b != null)
 		{
-			ColoredRegion entrance = new ColoredRegion(selectedShape.getBoundingBox()).setColor(GodPowerEntranceClient.SHAPE_COLOR);
+			Region r = new Region(selectedShape.getBoundingBox());
 
-			b.getData().addEntrance(new Entrance(entrance, null));
+			EnumFacing[] facings = PathwayUtil.sidesOfConnection(b, r);
+
+			r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
+
+			ColoredRegion entrance = new ColoredRegion(r).setColor(GodPowerEntranceClient.SHAPE_COLOR);
+
+			b.getData().addEntrance(new Entrance(entrance, null, facings));
 		}
 	}
 }

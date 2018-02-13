@@ -119,7 +119,8 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 
 		final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
 
-		if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
+		if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()) && playerOrbis.powers().getCurrentPower()
+				.canInteractWithItems(playerOrbis))
 		{
 			playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 

@@ -55,7 +55,6 @@ public class TileEntityBlockDataContainerRenderer extends TileEntitySpecialRende
 							final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
 									new Blueprint(mc.world, BlockPos.ORIGIN, new BlueprintData(container)),
 									mc.world);
-							blueprint.useCamera = false;
 
 							return Optional.of(blueprint);
 						}
@@ -107,7 +106,7 @@ public class TileEntityBlockDataContainerRenderer extends TileEntitySpecialRende
 				blueprint.transformForGui();
 			}
 
-			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS);
+			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
 
 			if (!inGuiContext)
 			{

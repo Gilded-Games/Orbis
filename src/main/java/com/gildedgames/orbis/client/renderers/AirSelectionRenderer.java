@@ -197,7 +197,7 @@ public class AirSelectionRenderer
 				renderRegion.boxAlpha > 0 && OrbisKeyBindings.keyBindControl.isKeyDown()
 						&& playerOrbis.selectionInputs().getCurrentSelectionInput().getActiveSelection() == null;
 
-		renderRegion.renderFully(mc.world, PARTIAL_TICKS);
+		renderRegion.renderFully(mc.world, PARTIAL_TICKS, true);
 		renderRegion.onRemoved();
 
 		GlStateManager.enableDepth();

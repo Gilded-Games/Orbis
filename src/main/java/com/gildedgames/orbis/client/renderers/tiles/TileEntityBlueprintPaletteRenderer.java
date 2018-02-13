@@ -101,7 +101,7 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 				blueprint.transformForGui();
 			}
 
-			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS);
+			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
 
 			if (!inGuiContext)
 			{

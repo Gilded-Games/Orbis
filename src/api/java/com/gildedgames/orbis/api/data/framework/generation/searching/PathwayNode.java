@@ -1,32 +1,30 @@
 package com.gildedgames.orbis.api.data.framework.generation.searching;
 
-import java.util.Iterator;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.google.common.collect.AbstractIterator;
-
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+
+import java.util.Iterator;
 
 public class PathwayNode extends BlueprintRegion implements Node
 {
 
 	public final PathwayNode parent;
 
-	public final BlockPos endConnection;
+	public final IRegion endConnection;
 
 	private double h, g;
 
-	public PathwayNode(PathwayNode parent, BlueprintRegion rect, BlockPos endConnection)
+	private EnumFacing[] sidesOfConnection;
+
+	public PathwayNode(PathwayNode parent, BlueprintRegion rect, IRegion endConnection, EnumFacing[] sidesOfConnection)
 	{
 		super(rect.getMin(), rect.getRotation(), rect.getData());
 		this.parent = parent;
 
 		this.endConnection = endConnection;
+		this.sidesOfConnection = sidesOfConnection;
 	}
 
 	public Iterable<PathwayNode> fullPath()
@@ -43,15 +41,15 @@ public class PathwayNode extends BlueprintRegion implements Node
 					@Override
 					protected PathwayNode computeNext()
 					{
-						if (node == null)
+						if (this.node == null)
 						{
-							node = PathwayNode.this;
-							return node;
+							this.node = PathwayNode.this;
+							return this.node;
 						}
-						if (node.parent != null)
+						if (this.node.parent != null)
 						{
-							node = node.parent;
-							return node;
+							this.node = this.node.parent;
+							return this.node;
 						}
 						return this.endOfData();
 					}
@@ -64,33 +62,23 @@ public class PathwayNode extends BlueprintRegion implements Node
 	public boolean equals(Object obj)
 	{
 		if (!(obj instanceof PathwayNode))
+		{
 			return false;
+		}
 
-		BlockPos p = ((PathwayNode) obj).endConnection;
+		IRegion p = ((PathwayNode) obj).endConnection;
 		return p.equals(this.endConnection);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return endConnection.hashCode();
+		return this.endConnection.hashCode();
 	}
 
-	public EnumFacing sideOfConnection()
+	public EnumFacing[] sidesOfConnection()
 	{
-		return PathwayUtil.sideOfConnection(this, this.endConnection);
-	}
-
-	@Override
-	public void setG(double g)
-	{
-		this.g = g;
-	}
-
-	@Override
-	public void setH(double h)
-	{
-		this.h = h;
+		return this.sidesOfConnection;
 	}
 
 	@Override
@@ -100,9 +88,21 @@ public class PathwayNode extends BlueprintRegion implements Node
 	}
 
 	@Override
+	public void setG(double g)
+	{
+		this.g = g;
+	}
+
+	@Override
 	public double getH()
 	{
 		return this.h;
+	}
+
+	@Override
+	public void setH(double h)
+	{
+		this.h = h;
 	}
 
 	@Override
@@ -114,9 +114,9 @@ public class PathwayNode extends BlueprintRegion implements Node
 	@Override
 	public int compareTo(Node o)
 	{
-		if(o.getF() == this.getF())
+		if (o.getF() == this.getF())
 		{
-//			return (new Random()).nextBoolean() ? 1 : -1;
+			//			return (new Random()).nextBoolean() ? 1 : -1;
 			return Double.compare(this.getH(), o.getH());
 		}
 		return Double.compare(this.getF(), o.getF());

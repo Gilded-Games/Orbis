@@ -92,7 +92,7 @@ public class RenderShape implements IWorldRenderer
 		this.shouldRefresh = true;
 	}
 
-	public void renderFully(final World world, final float partialTicks)
+	public void renderFully(final World world, final float partialTicks, boolean useCamera)
 	{
 		if (this.shouldRefresh || this.lastMin == null)
 		{
@@ -131,7 +131,7 @@ public class RenderShape implements IWorldRenderer
 
 		GlStateManager.popMatrix();
 
-		this.render(world, partialTicks);
+		this.render(world, partialTicks, useCamera);
 	}
 
 	protected void setLightmapDisabled(final boolean disabled)
@@ -338,7 +338,7 @@ public class RenderShape implements IWorldRenderer
 	}
 
 	@Override
-	public void render(final World world, final float partialTicks)
+	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
 		this.world = world;
 
@@ -364,7 +364,7 @@ public class RenderShape implements IWorldRenderer
 
 		if (this.glIndex == -1)
 		{
-			this.renderFully(world, partialTicks);
+			this.renderFully(world, partialTicks, useCamera);
 			return;
 		}
 
@@ -374,14 +374,17 @@ public class RenderShape implements IWorldRenderer
 
 		GlStateManager.pushMatrix();
 
-		if (!this.lastMin.equals(this.shape.getBoundingBox().getMin()))
+		if (useCamera)
 		{
-			GlStateManager.translate(this.shape.getBoundingBox().getMin().getX() - this.lastMin.getX(),
-					this.shape.getBoundingBox().getMin().getY() - this.lastMin.getY(),
-					this.shape.getBoundingBox().getMin().getZ() - this.lastMin.getZ());
-		}
+			if (!this.lastMin.equals(this.shape.getBoundingBox().getMin()))
+			{
+				GlStateManager.translate(this.shape.getBoundingBox().getMin().getX() - this.lastMin.getX(),
+						this.shape.getBoundingBox().getMin().getY() - this.lastMin.getY(),
+						this.shape.getBoundingBox().getMin().getZ() - this.lastMin.getZ());
+			}
 
-		GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+		}
 
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
 
@@ -417,7 +420,10 @@ public class RenderShape implements IWorldRenderer
 
 		GlStateManager.pushMatrix();
 
-		GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+		if (useCamera)
+		{
+			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+		}
 
 		BlockPos min = this.shape.getBoundingBox().getMin();
 		BlockPos max = this.shape.getBoundingBox().getMax();
@@ -486,6 +492,18 @@ public class RenderShape implements IWorldRenderer
 
 			RenderUtil.renderTextAbove(this.shape.getBoundingBox(), "World ID: " + String.valueOf(this.worldObjectID), 2.0D, partialTicks);
 		}*/
+	}
+
+	@Override
+	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
 	}
 
 	@Override

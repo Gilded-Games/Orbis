@@ -116,9 +116,9 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectGr
 	{
 		if (!renderer.isDisabled())
 		{
-			if (RegionHelp.intersects(renderer.getBoundingBox(), encompassing))
+			if (RegionHelp.intersects2D(renderer.getBoundingBox(), encompassing))
 			{
-				renderer.render(world, partialTicks);
+				renderer.render(world, partialTicks, true);
 			}
 
 			final Lock w = renderer.getSubRenderersLock().readLock();
@@ -126,10 +126,14 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectGr
 
 			try
 			{
+				renderer.preRenderSubs(world, partialTicks, true);
+
 				for (final IWorldRenderer sub : renderer.getSubRenderers(world))
 				{
 					this.render(world, sub, partialTicks, encompassing);
 				}
+
+				renderer.postRenderSubs(world, partialTicks, true);
 			}
 			finally
 			{

@@ -2,6 +2,7 @@ package orbis_core.data;
 
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayUtil;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import com.gildedgames.orbis.api.data.region.Region;
@@ -47,14 +48,28 @@ public class BlueprintDataset
 			if (random.nextBoolean())
 			{
 				x = random.nextBoolean() ? 0 : blueprint.getWidth() - 1;
-				z = random.nextInt(blueprint.getLength());
+				z = random.nextInt(blueprint.getLength()) - 1;
+
+				if (z == 0)
+				{
+					z = 1;
+				}
 			}
 			else
 			{
-				x = random.nextInt(blueprint.getWidth());
+				x = random.nextInt(blueprint.getWidth()) - 1;
 				z = random.nextBoolean() ? 0 : blueprint.getLength() - 1;
+
+				if (x == 0)
+				{
+					x = 1;
+				}
 			}
-			Entrance e = new Entrance(new Region(new BlockPos(x, y, z)), pathway);
+
+			Region r = new Region(new BlockPos(x, y, z), new BlockPos(x, y + 1, z));
+			Region br = new Region(new BlockPos(0, 0, 0), new BlockPos(blueprint.getWidth() - 1, blueprint.getHeight() - 1, blueprint.getLength() - 1));
+
+			Entrance e = new Entrance(r, pathway, PathwayUtil.sidesOfConnection(br, r));
 			blueprint.addEntrance(e);
 		}
 		return new ScheduleData(b);

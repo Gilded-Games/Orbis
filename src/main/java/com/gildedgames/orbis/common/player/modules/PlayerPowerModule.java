@@ -34,6 +34,8 @@ public class PlayerPowerModule extends PlayerOrbisModule
 
 	private final GodPowerEntrance entrancePower;
 
+	private final GodPowerPathway pathwayPower;
+
 	private int currentPowerIndex;
 
 	public PlayerPowerModule(final PlayerOrbis playerOrbis)
@@ -49,6 +51,7 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		this.spectatorPower = new GodPowerSpectator(this.getWorld());
 		this.schedulePower = new GodPowerSchedule(this.getWorld());
 		this.entrancePower = new GodPowerEntrance(this.getWorld());
+		this.pathwayPower = new GodPowerPathway(this.getWorld());
 
 		final Collection<IGodPower> powers = new ArrayList<>();
 
@@ -60,9 +63,15 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		powers.add(this.selectPower);
 		powers.add(this.schedulePower);
 		powers.add(this.entrancePower);
+		powers.add(this.pathwayPower);
 		powers.add(this.spectatorPower);
 
 		this.powers = powers.toArray(new IGodPower[powers.size()]);
+	}
+
+	public GodPowerPathway getPathwayPower()
+	{
+		return this.pathwayPower;
 	}
 
 	public GodPowerEntrance getEntrancePower()
@@ -115,6 +124,11 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		return this.powers[this.currentPowerIndex];
 	}
 
+	public void setCurrentPower(final int powerIndex)
+	{
+		this.currentPowerIndex = powerIndex;
+	}
+
 	public void setCurrentPower(final Class<? extends IGodPower> clazz)
 	{
 		int foundIndex = -1;
@@ -139,11 +153,6 @@ public class PlayerPowerModule extends PlayerOrbisModule
 				NetworkingOrbis.sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
 			}
 		}
-	}
-
-	public void setCurrentPower(final int powerIndex)
-	{
-		this.currentPowerIndex = powerIndex;
 	}
 
 	public int getCurrentPowerIndex()

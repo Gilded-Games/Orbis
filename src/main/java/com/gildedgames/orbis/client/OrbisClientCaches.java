@@ -36,7 +36,6 @@ public class OrbisClientCaches
 								final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
 										new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, data),
 										Minecraft.getMinecraft().world);
-								blueprint.useCamera = false;
 
 								return Optional.of(blueprint);
 							}

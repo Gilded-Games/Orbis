@@ -98,7 +98,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	}
 
 	@Override
-	public void render(final World world, final float partialTicks)
+	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
 		if (this.layerHolder != null)
 		{
@@ -122,6 +122,18 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 		{
 			w.unlock();
 		}
+	}
+
+	@Override
+	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
 	}
 
 	@Override

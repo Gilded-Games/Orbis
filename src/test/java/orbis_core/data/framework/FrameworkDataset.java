@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.framework.FrameworkEdge;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.framework.Graph;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayUtil;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import com.gildedgames.orbis.api.data.region.Region;
@@ -24,14 +25,23 @@ public class FrameworkDataset
 	{
 		if (pathwayB == null || pathwayB.entrances().get(0).toConnectTo() != pathway)
 		{
-			BlueprintData b1 = new BlueprintData(new BlockDataContainer(5, 5, 7));
-			b1.addEntrance(new Entrance(new Region(new BlockPos(0, 0, 3)), pathway));
-			b1.addEntrance(new Entrance(new Region(new BlockPos(4, 0, 3)), pathway));
-			b1.addEntrance(new Entrance(new Region(new BlockPos(2, 0, 0)), pathway));
-			b1.addEntrance(new Entrance(new Region(new BlockPos(2, 0, 6)), pathway));
+			BlueprintData b1 = new BlueprintData(new BlockDataContainer(10, 2, 15));
+
+			addEntrance(b1, pathway, new Region(new BlockPos(0, 0, 5), new BlockPos(0, 1, 10)));
+			addEntrance(b1, pathway, new Region(new BlockPos(9, 0, 5), new BlockPos(9, 1, 10)));
+			addEntrance(b1, pathway, new Region(new BlockPos(2, 0, 0), new BlockPos(7, 1, 0)));
+			addEntrance(b1, pathway, new Region(new BlockPos(2, 0, 14), new BlockPos(7, 1, 14)));
+
 			pathwayB = b1;
 		}
 		return pathwayB;
+	}
+
+	private static void addEntrance(BlueprintData b, PathwayData pathway, Region region)
+	{
+		Region br = new Region(new BlockPos(0, 0, 0), new BlockPos(b.getWidth() - 1, b.getHeight() - 1, b.getLength() - 1));
+
+		b.addEntrance(new Entrance(region, pathway, PathwayUtil.sidesOfConnection(br, region)));
 	}
 
 	public static FrameworkData framework1()

@@ -216,7 +216,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 	}
 
 	@Override
-	public void render(final World world, final float partialTicks)
+	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
 		if (this.lastPos == null)
 		{
@@ -240,14 +240,17 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 		GlStateManager.pushMatrix();
 
-		if (!this.lastPos.equals(this.parentObject.getPos()))
+		if (useCamera)
 		{
-			GlStateManager.translate(this.parentObject.getPos().getX() - this.lastPos.getX(),
-					this.parentObject.getPos().getY() - this.lastPos.getY(),
-					this.parentObject.getPos().getZ() - this.lastPos.getZ());
-		}
+			if (!this.lastPos.equals(this.parentObject.getPos()))
+			{
+				GlStateManager.translate(this.parentObject.getPos().getX() - this.lastPos.getX(),
+						this.parentObject.getPos().getY() - this.lastPos.getY(),
+						this.parentObject.getPos().getZ() - this.lastPos.getZ());
+			}
 
-		GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+		}
 
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
 
@@ -263,11 +266,26 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		GlStateManager.translate(0, 0, 0);
+		if (useCamera)
+		{
+			GlStateManager.translate(0, 0, 0);
+		}
 
 		GlStateManager.resetColor();
 
 		GlStateManager.popMatrix();
+	}
+
+	@Override
+	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
 	}
 
 	@Override

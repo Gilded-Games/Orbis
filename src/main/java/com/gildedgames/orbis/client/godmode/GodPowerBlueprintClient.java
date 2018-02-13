@@ -27,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GodPowerBlueprintClient implements IGodPowerClient
@@ -104,6 +105,11 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 	public List<IWorldRenderer> getActiveRenderers(final PlayerOrbis playerOrbis, final World world)
 	{
 		final List<IWorldRenderer> renderers = Lists.newArrayList();
+
+		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getPathwayPower())
+		{
+			return Collections.emptyList();
+		}
 
 		if (this.prevBlueprintData != this.server.getPlacingBlueprint() || this.prevRotation != this.server.getPlacingRotation())
 		{

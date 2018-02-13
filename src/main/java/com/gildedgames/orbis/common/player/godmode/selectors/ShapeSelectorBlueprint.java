@@ -9,6 +9,7 @@ import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ShapeSelectorBlueprint implements IShapeSelector
@@ -38,7 +39,7 @@ public class ShapeSelectorBlueprint implements IShapeSelector
 	}
 
 	@Override
-	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world)
+	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 		final IWorldObjectGroup group = manager.getGroup(0);

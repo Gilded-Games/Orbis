@@ -8,13 +8,14 @@ import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.impl.*;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.FilterRecord;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.api.data.shapes.*;
+import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
 import com.gildedgames.orbis.api.world.WorldObjectGroup;
 import com.google.common.collect.Maps;
@@ -36,17 +37,17 @@ import java.util.Map;
 
 public class OrbisServices implements IOrbisServices
 {
+	public final Logger logger = LogManager.getLogger("OrbisAPI");
+
 	private final Map<String, IOrbisDefinitionRegistry> idToRegistry = Maps.newHashMap();
 
 	private final String baseFolder = "orbis";
 
 	private final Map<String, IProject> loadedProjects = Maps.newHashMap();
 
-	private IOHelper io;
-
-	public final Logger logger = LogManager.getLogger("OrbisAPI");
-
 	private final GameRegistrar gameRegistrar = new GameRegistrar();
+
+	private IOHelper io;
 
 	@Override
 	public Logger log()
@@ -116,6 +117,7 @@ public class OrbisServices implements IOrbisServices
 			s.register(23, DataCache.class, new Instantiator<>(DataCache.class));
 			s.register(24, ScheduleLayer.class, new Instantiator<>(ScheduleLayer.class));
 			s.register(25, FilterRecord.class, new Instantiator<>(FilterRecord.class));
+			s.register(26, Entrance.class, new Instantiator<>(Entrance.class));
 
 			this.io.register(s);
 		}

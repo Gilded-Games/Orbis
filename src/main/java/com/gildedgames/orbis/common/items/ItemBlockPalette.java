@@ -20,6 +20,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -106,7 +107,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 	}
 
 	@Override
-	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world)
+	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 

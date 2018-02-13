@@ -86,7 +86,19 @@ public class RenderScheduleLayer implements IWorldRenderer
 	}
 
 	@Override
-	public void render(final World world, final float partialTicks)
+	public void render(final World world, final float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
 	{
 
 	}

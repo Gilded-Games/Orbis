@@ -11,6 +11,8 @@ import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.util.RegionHelp;
+import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.math.BlockPos;
@@ -205,13 +207,19 @@ public class FrameworkDebug
 			for (final BlueprintRegion fragment : fragments)
 			{
 				this.glDrawRegion(fragment, 0.5f, 0.5f, 1.0f);
+
+				for (Entrance e : RotationHelp.getEntrances(fragment.getData(), fragment.getRotation(), RegionHelp.getCenter(fragment)))
+				{
+					float x = e.getBounds().getMin().getX(), z = e.getBounds().getMin().getZ();
+					float maxX = e.getBounds().getMax().getX(), maxZ = e.getBounds().getMax().getZ();
+
+					this.glDrawRegion(e.getBounds(), 1.0f, 0.5f, 0.5f);
+				}
 			}
 
 			for (final PathwayNode node : this.algorithm.getPathfindingDebug())
 			{
 				this.glDrawRegion(node, 1.0f, 0.5f, 0.5f);
-				this.glDrawRegion(new Region(new BlockPos(node.endConnection.getX() - 1, 0, node.endConnection.getZ() - 1),
-						new BlockPos(node.endConnection.getX() + 1, 0, node.endConnection.getZ() + 1)), 0.5f, 1.0f, 0.5f);
 			}
 		}
 		if (this.showYellow)
@@ -295,7 +303,9 @@ public class FrameworkDebug
 			for (Entrance e : n.getEntrances(n.getRotation()))
 			{
 				float x = e.getBounds().getMin().getX(), z = e.getBounds().getMin().getZ();
-				this.glDrawRegion(new Region(new BlockPos(x - 1, 0, z - 1), new BlockPos(x + 1, 0, z + 1)), 0.5f, 1.0f, 0.5f);
+				float maxX = e.getBounds().getMax().getX(), maxZ = e.getBounds().getMax().getZ();
+
+				this.glDrawRegion(new Region(new BlockPos(x - 1, 0, z - 1), new BlockPos(maxX + 1, 0, maxZ + 1)), 1.0f, 0.5f, 0.5f);
 			}
 		}
 	}

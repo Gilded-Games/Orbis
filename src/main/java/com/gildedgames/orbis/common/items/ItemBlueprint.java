@@ -134,7 +134,9 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 			return;
 		}
 
-		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
+		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null && playerOrbis.powers()
+				.getCurrentPower()
+				.canInteractWithItems(playerOrbis))
 		{
 			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
 

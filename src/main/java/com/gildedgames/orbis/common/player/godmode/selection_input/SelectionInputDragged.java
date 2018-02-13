@@ -42,6 +42,16 @@ public class SelectionInputDragged implements ISelectionInput
 		}
 	}
 
+	public BlockPos getPrevPos()
+	{
+		return this.prevPos;
+	}
+
+	public BlockPos getSelectPos()
+	{
+		return this.selectPos;
+	}
+
 	public SelectionInputDragged createFromCenter(final boolean flag)
 	{
 		this.createFromCenter = flag;
@@ -85,11 +95,11 @@ public class SelectionInputDragged implements ISelectionInput
 
 			if (selector.canSelectShape(playerOrbis, this.activeSelection.getShape(), playerOrbis.getWorld()))
 			{
-				this.selectPos = pos;
-
 				if (playerOrbis.getWorld().isRemote)
 				{
-					NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape()));
+					final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
+
+					NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 				}
 
 				this.activeSelection = null;
@@ -203,7 +213,9 @@ public class SelectionInputDragged implements ISelectionInput
 
 		if (this.player.getEntityWorld().isRemote && this.activeSelection != null)
 		{
-			NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape()));
+			final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(PlayerOrbis.get(this.player));
+
+			NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 		}
 	}
 

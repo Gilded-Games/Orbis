@@ -100,11 +100,11 @@ public class Region implements IMutableRegion
 	}
 
 	/**
-	 * Returns true if the given region intersects somewhere with this region
+	 * Returns true if the given region intersects2D somewhere with this region
 	 */
 	public boolean intersectsWith(final Region region)
 	{
-		return RegionHelp.intersects(this, region);
+		return RegionHelp.intersects2D(this, region);
 	}
 
 	/**

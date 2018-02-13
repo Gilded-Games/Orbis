@@ -1,5 +1,8 @@
 package com.gildedgames.orbis.api.util;
 
+import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayUtil;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
@@ -8,21 +11,45 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class RotationHelp
 {
-
-	public static Iterable<OrbisTuple<BlockPos, BlockPos>> getAllInRegionRotated(final IRegion region, final Rotation rotation)
+	public static List<Entrance> getEntrances(BlueprintData data, Rotation rotation, BlockPos center)
 	{
-		return getAllInBoxRotated(region.getMin(), region.getMax(), rotation);
+		final List<Entrance> newList = new ArrayList<>();
+		for (final Entrance beforeTrans : data.entrances())
+		{
+			// TODO: Incorrect y coordinate
+			final BlockPos finalBP = beforeTrans.getBounds().getMin()
+					.add(center.getX() - data.getWidth() / 2, center.getY(), center.getZ() - data.getLength() / 2);
+			final BlockPos trans = RotationHelp.rotate(finalBP, center, rotation, data.getWidth(), data.getLength());
+			newList.add(new Entrance(new Region(trans), beforeTrans.toConnectTo(), PathwayUtil.getRotated(beforeTrans.getFacings(), rotation)));
+		}
+		return newList;
+	}
+
+	public static Iterable<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>> getAllInRegionRotated(final IRegion region, final Rotation rotation)
+	{
+		return getAllInBoxRotated(region.getMin(), region.getMax(), rotation, null);
+	}
+
+	public static Iterable<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>> getAllInBoxRotated(final BlockPos from, final BlockPos to,
+			final Rotation rotation)
+	{
+		return getAllInBoxRotated(from, to, rotation, null);
 	}
 
 	/**
 	 * Returns a tuple with blockpositions. The first BlockPos is the BlockPos used for iterating through the region.
 	 * The second BlockPos is a rotated BlockPos
+	 * relocateTo moves all the rotated positions to that particular region.
 	 */
-	public static Iterable<OrbisTuple<BlockPos, BlockPos>> getAllInBoxRotated(final BlockPos from, final BlockPos to, final Rotation rotation)
+	public static Iterable<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>> getAllInBoxRotated(final BlockPos from, final BlockPos to,
+			final Rotation rotation, @Nullable IRegion relocateTo)
 	{
 		final boolean clockwise = getGoClockwise(rotation, Rotation.NONE);
 		final int rotAmount = Math.abs(getRotationAmount(rotation, Rotation.NONE));
@@ -41,32 +68,41 @@ public class RotationHelp
 		final int roundingX = getRounding(width);
 		final int roundingZ = getRounding(length);
 
-		return new Iterable<OrbisTuple<BlockPos, BlockPos>>()
+		return new Iterable<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>>()
 		{
 			@Override
-			public Iterator<OrbisTuple<BlockPos, BlockPos>> iterator()
+			public Iterator<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>> iterator()
 			{
-				return new AbstractIterator<OrbisTuple<BlockPos, BlockPos>>()
+				return new AbstractIterator<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>>()
 				{
 					private BlockPos.MutableBlockPos theBlockPos = null;
 
 					private BlockPos.MutableBlockPos rotated = null;
 
-					private OrbisTuple<BlockPos, BlockPos> theTuple;
+					private OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> theTuple;
 
 					void doRotate()
 					{
 						RotationHelp.setRotated(this.rotated, this.theBlockPos, center, roundingX, roundingZ, rotAmount, clockwise);
 					}
 
-					OrbisTuple<BlockPos, BlockPos> computeNext0()
+					OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> computeNext0()
 					{
 						if (this.theBlockPos == null)
 						{
 							this.theBlockPos = new BlockPos.MutableBlockPos(min.getX(), min.getY(), min.getZ());
 							this.rotated = new BlockPos.MutableBlockPos(0, 0, 0);
 							this.doRotate();
-							this.theTuple = new OrbisTuple<BlockPos, BlockPos>(this.theBlockPos, this.rotated);
+
+							if (relocateTo != null)
+							{
+								int xDif = (relocateTo.getMax().getX() - to.getX()) / 2;
+								int zDif = Math.abs(relocateTo.getMax().getZ() - to.getZ()) / 2;
+
+								this.rotated.setPos(this.rotated.getX() + xDif, this.rotated.getY(), this.rotated.getZ() + zDif);
+							}
+
+							this.theTuple = new OrbisTuple<>(this.theBlockPos, this.rotated);
 							return this.theTuple;
 						}
 						else if (this.theBlockPos.equals(max))
@@ -101,12 +137,20 @@ public class RotationHelp
 
 							this.doRotate();
 
+							if (relocateTo != null)
+							{
+								int xDif = (relocateTo.getMax().getX() - to.getX()) / 2;
+								int zDif = Math.abs(relocateTo.getMax().getZ() - to.getZ()) / 2;
+
+								this.rotated.setPos(this.rotated.getX() + xDif, this.rotated.getY(), this.rotated.getZ() + zDif);
+							}
+
 							return this.theTuple;
 						}
 					}
 
 					@Override
-					protected OrbisTuple<BlockPos, BlockPos> computeNext()
+					protected OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> computeNext()
 					{
 						return this.computeNext0();
 					}
@@ -336,12 +380,13 @@ public class RotationHelp
 	/**
 	 * Returns the Rotation difference between the two rotations.
 	 */
-	public static Rotation getRotated(Rotation rot1, Rotation rot2)
+	public static Rotation getRotationDifference(Rotation rot1, Rotation rot2)
 	{
 		int rotAmount = indexDifference(rot1, rot2);
-		switch(rotAmount)
+		switch (rotAmount)
 		{
-			case 0: return Rotation.NONE;
+			case 0:
+				return Rotation.NONE;
 			case 1:
 			case -3:
 				return Rotation.COUNTERCLOCKWISE_90;
@@ -349,7 +394,8 @@ public class RotationHelp
 			case -2:
 				return Rotation.CLOCKWISE_180;
 			case -1:
-			case 3: return Rotation.CLOCKWISE_90;
+			case 3:
+				return Rotation.CLOCKWISE_90;
 		}
 		throw new IllegalArgumentException();
 	}

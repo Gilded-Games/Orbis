@@ -3,6 +3,7 @@ package com.gildedgames.orbis.client.renderers;
 import com.gildedgames.orbis.api.data.IBlueprintDataListener;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
@@ -90,7 +91,19 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	}
 
 	@Override
-	public void render(final World world, final float partialTicks)
+	public void render(final World world, final float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
 	{
 
 	}
@@ -206,14 +219,16 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 		try
 		{
-			RenderShape shape = new RenderShape(entrance.getBounds());
+			Region r = new Region(entrance.getBounds());
+			r.add(this.blueprint.getPos().getX(), this.blueprint.getPos().getY(), this.blueprint.getPos().getZ());
+			RenderShape shape = new RenderShape(r);
 
 			shape.useCustomColors = true;
 
-			if (entrance instanceof IColored)
+			if (entrance.getBounds() instanceof IColored)
 			{
-				shape.colorBorder = ((IColored) entrance).getColor();
-				shape.colorGrid = ((IColored) entrance).getColor();
+				shape.colorBorder = ((IColored) entrance.getBounds()).getColor();
+				shape.colorGrid = ((IColored) entrance.getBounds()).getColor();
 			}
 
 			this.subRenderers.add(shape);
