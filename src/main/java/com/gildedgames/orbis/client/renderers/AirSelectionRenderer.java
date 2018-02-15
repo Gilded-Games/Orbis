@@ -11,7 +11,6 @@ import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -117,7 +116,7 @@ public class AirSelectionRenderer
 
 		final IBlockState state = mc.world.getBlockState(pos);
 
-		if (state != Blocks.AIR.getDefaultState())
+		/*if (state != Blocks.AIR.getDefaultState())
 		{
 			final int color = state.getBlock().getMapColor(state, mc.world, pos).colorValue;
 
@@ -128,7 +127,10 @@ public class AirSelectionRenderer
 		{
 			renderRegion.colorBorder = 0xFFFFFF;
 			renderRegion.colorGrid = 0xFFFFFF;
-		}
+		}*/
+
+		renderRegion.colorBorder = 0xFFFFFF;
+		renderRegion.colorGrid = 0xFFFFFF;
 
 		if (!pos.equals(prevPos) && has3DCursor)
 		{
