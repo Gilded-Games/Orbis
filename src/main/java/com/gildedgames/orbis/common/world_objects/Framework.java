@@ -32,6 +32,11 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 
 	private IWorldRenderer renderer;
 
+	private Framework()
+	{
+		
+	}
+
 	public Framework(World world, final IRegion region)
 	{
 		this.world = world;

@@ -28,6 +28,7 @@ import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionType
 import com.gildedgames.orbis.common.tiles.OrbisTileEntities;
 import com.gildedgames.orbis.common.util.ColoredRegion;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import net.minecraft.client.Minecraft;
@@ -285,6 +286,7 @@ public class OrbisCore
 		s.register(7, WorldShape.class, new Instantiator<>(WorldShape.class));
 		s.register(8, BlueprintPalette.class, new Instantiator<>(BlueprintPalette.class));
 		s.register(9, ColoredRegion.class, new Instantiator<>(ColoredRegion.class));
+		s.register(10, Framework.class, new Instantiator<>(Framework.class));
 
 		OrbisAPI.services().io().register(s);
 	}
