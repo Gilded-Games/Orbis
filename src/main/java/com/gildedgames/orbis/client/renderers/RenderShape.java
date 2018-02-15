@@ -9,7 +9,6 @@ import com.gildedgames.orbis.client.OrbisKeyBindings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
@@ -41,7 +40,7 @@ public class RenderShape implements IWorldRenderer
 	 * renderBorder: Set to false to unlisten rendering the border around the region
 	 * renderDimensionsAbove: Set to false to unlisten rendering the num x num x num above the region
 	 */
-	public boolean renderBorder = true, renderDimensionsAbove = true;
+	public boolean renderDimensionsAbove = true;
 
 	public float boxAlpha = 0.25F;
 
@@ -57,17 +56,15 @@ public class RenderShape implements IWorldRenderer
 
 	private boolean shouldRefresh = false;
 
-	private World world;
-
 	private Iterable<BlockPos.MutableBlockPos> shapeData;
 
 	private BlockPos lastMin;
 
 	private boolean disabled;
 
-	public RenderShape(final World world)
+	public RenderShape()
 	{
-		this.world = world;
+
 	}
 
 	public RenderShape(final IShape shape)
@@ -132,22 +129,6 @@ public class RenderShape implements IWorldRenderer
 		GlStateManager.popMatrix();
 
 		this.render(world, partialTicks, useCamera);
-	}
-
-	protected void setLightmapDisabled(final boolean disabled)
-	{
-		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-
-		if (disabled)
-		{
-			GlStateManager.disableTexture2D();
-		}
-		else
-		{
-			GlStateManager.enableTexture2D();
-		}
-
-		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 	}
 
 	private void renderBox(
@@ -340,8 +321,6 @@ public class RenderShape implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
-		this.world = world;
-
 		if (this.shape == null)
 		{
 			return;

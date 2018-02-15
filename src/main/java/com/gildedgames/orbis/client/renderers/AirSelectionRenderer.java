@@ -82,7 +82,7 @@ public class AirSelectionRenderer
 			region = new WorldRegion(new BlockPos(0, 0, 0), mc.world);
 			renderRegion = new RenderShape(region);
 
-			renderRegion.renderBorder = false;
+			renderRegion.box = false;
 			renderRegion.useCustomColors = true;
 			renderRegion.renderDimensionsAbove = false;
 

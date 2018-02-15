@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
+import com.gildedgames.orbis.api.data.shapes.CuboidShape;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -37,6 +38,8 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 	private RenderShape renderShape;
 
+	private RenderShape renderOutskirts;
+
 	public RenderBlueprintEditing(final Blueprint blueprint)
 	{
 		this.blueprint = blueprint;
@@ -57,6 +60,20 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 			this.renderShape.colorBorder = this.blueprint.getColor();
 
 			this.subRenderers.add(this.renderShape);
+
+			this.renderOutskirts = new RenderShape(new CuboidShape(this.blueprint.getMin().add(1, 1, 1), this.blueprint.getMax().add(-1, -1, -1), false));
+
+			this.renderOutskirts.useCustomColors = true;
+
+			this.renderOutskirts.colorGrid = 0x000000;
+			this.renderOutskirts.colorBorder = 0x000000;
+
+			this.renderOutskirts.box = false;
+
+			if (this.blueprint.getLength() >= 3 && this.blueprint.getWidth() >= 3)
+			{
+				this.subRenderers.add(this.renderOutskirts);
+			}
 
 			for (Integer id : this.blueprint.getData().getScheduleLayers().keySet())
 			{
@@ -107,6 +124,8 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
 		PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
+
+		this.renderOutskirts.setDisabled(playerOrbis.powers().getCurrentPower() != playerOrbis.powers().getEntrancePower());
 
 		if (playerOrbis.getSelectedRegion() == this.blueprint && playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower())
 		{
