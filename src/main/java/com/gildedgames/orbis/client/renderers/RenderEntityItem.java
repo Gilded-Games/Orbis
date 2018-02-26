@@ -142,7 +142,7 @@ public class RenderEntityItem implements IWorldRenderer
 		GlStateManager.disableTexture2D();
 		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 
-		//this.render(world, partialTicks, useCamera);
+		//this.renderSubRenderers(world, partialTicks, useCamera);
 	}
 
 	@Override

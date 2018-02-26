@@ -124,7 +124,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		this.forgeButton.dim().mod().pos(center).center(true).addY(52 - 6 - 102 + yOffset).addX(133 + xOffset).flush();
 
 		this.matrix = new GuiTexture(Dim2D.build().width(85).height(105).pos(center).addX(2 + xOffset).addY(-15 - 100 + yOffset).flush(), MATRIX_ICON);
-		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).x(this.width / 2 + 90 - 176 / 2).y(this.height / 2 + 6).flush(),
+		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).x(this.width / 2 + 90 - 176 / 2).y(this.height / 2 + 5).flush(),
 				BLUEPRINT_INVENTORY);
 		this.flow = new GuiTexture(Dim2D.build().width(20).height(14).pos(center).addX(95 + xOffset).addY(52 - 6 - 110 + yOffset).flush(), MERGE_ICON);
 

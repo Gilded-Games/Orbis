@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.renderers.tiles;
 
-import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderEntityItem;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemEntity;
 import com.gildedgames.orbis.common.tiles.TileEntityEntityItem;
 import com.gildedgames.orbis.common.util.OpenGLHelper;
+import com.gildedgames.orbis.common.util.WorldRenderHelp;
 import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import mcp.MethodsReturnNonnullByDefault;
@@ -104,10 +104,7 @@ public class TileEntityEntityItemRenderer extends TileEntitySpecialRenderer<Tile
 
 			entityItem.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
 
-			for (IWorldRenderer renderer : entityItem.getSubRenderers(mc.world))
-			{
-				renderer.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
-			}
+			WorldRenderHelp.renderSubRenderers(entityItem);
 
 			if (!inGuiContext)
 			{

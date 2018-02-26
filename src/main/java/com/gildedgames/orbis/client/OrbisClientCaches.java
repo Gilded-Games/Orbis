@@ -41,7 +41,7 @@ public class OrbisClientCaches
 							}
 							catch (final OrbisMissingDataException e)
 							{
-								OrbisCore.LOGGER.error("Missing in blueprint render cache: " + e);
+								OrbisCore.LOGGER.error("Missing in blueprint renderSubRenderers cache: " + e);
 							}
 
 							return Optional.absent();

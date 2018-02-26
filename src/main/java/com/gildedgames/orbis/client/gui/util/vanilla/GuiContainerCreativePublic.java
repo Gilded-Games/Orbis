@@ -991,7 +991,7 @@ public class GuiContainerCreativePublic extends InventoryEffectRenderer
 	}
 
 	/**
-	 * Renders the creative inventory hovering text if mouse is over it. Returns true if did render or false otherwise.
+	 * Renders the creative inventory hovering text if mouse is over it. Returns true if did renderSubRenderers or false otherwise.
 	 * Params: current creative tab to be checked, current mouse x position, current mouse y position.
 	 */
 	protected boolean renderCreativeInventoryHoveringText(CreativeTabs tab, int mouseX, int mouseY)
@@ -1337,7 +1337,7 @@ public class GuiContainerCreativePublic extends InventoryEffectRenderer
 		}
 
 		/**
-		 * Actualy only call when we want to render the white square effect over the slots. Return always True, except
+		 * Actualy only call when we want to renderSubRenderers the white square effect over the slots. Return always True, except
 		 * for the armor slot of the Donkey/Mule (we can't interact with the Undead and Skeleton horses)
 		 */
 		@Override

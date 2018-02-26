@@ -15,7 +15,7 @@ public class OpenGLHelper
 	 * solutions, just the current one that works
 	 * for me.
 	 * @return Whether or not the OpenGL state is
-	 * render in a GUI context.
+	 * renderSubRenderers in a GUI context.
 	 */
 	public static boolean isInGuiContext()
 	{

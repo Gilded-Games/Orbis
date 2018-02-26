@@ -4,6 +4,8 @@ import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.mc.BlockUtil;
@@ -32,6 +34,7 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -58,13 +61,13 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 	/**
 	 * doesRecolor: Set to true if you want to recolor the blocks you paint.
-	 * renderDimensions: Set to true to render the dimensions of the blueprint above it like x x y x z
-	 * renderBlocks : Set to false to unlisten rendering the blocks inside the blueprint and only render the references inside it
+	 * renderDimensions: Set to true to renderSubRenderers the dimensions of the blueprint above it like x x y x z
+	 * renderBlocks : Set to false to unlisten rendering the blocks inside the blueprint and only renderSubRenderers the references inside it
 	 */
 	public boolean doesRecolor = false, renderDimensions = true, renderBlocks = true;
 
 	/**
-	 * useCamera: Set to false to render in a gui. TODO: Implement easier way
+	 * useCamera: Set to false to renderSubRenderers in a gui. TODO: Implement easier way
 	 * renderGridReferences: Set to false to unlisten rendering the grid in the regions of the References
 	 */
 	public boolean renderGridReferences = true;
@@ -96,6 +99,30 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		this.blockRenderer = this.mc.getBlockRendererDispatcher();
 		this.blueprint = blueprint;
 		this.cache = new BlueprintRenderCache(blueprint, world);
+
+		this.blueprint.getData().getSchedules(ScheduleRegion.class).forEach(this::cacheSchedule);
+	}
+
+	private void cacheSchedule(ISchedule schedule)
+	{
+		if (schedule instanceof ScheduleRegion)
+		{
+			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
+
+			final Lock w = this.lock.writeLock();
+			w.lock();
+
+			try
+			{
+				RenderScheduleRegion r = new RenderScheduleRegion(this.blueprint, scheduleRegion);
+
+				this.subRenderers.add(r);
+			}
+			finally
+			{
+				w.unlock();
+			}
+		}
 	}
 
 	@Override
