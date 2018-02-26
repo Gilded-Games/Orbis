@@ -9,7 +9,10 @@ import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetTriggerId;
 import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -111,8 +114,8 @@ public class GuiEditScheduledRegion extends GuiFrame
 
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
-			this.scheduleRegion.setTriggerId(this.nameInput.getInner().getText());
-			//TODO: SAVE
+			Blueprint b = (Blueprint) this.scheduleRegion.getWorldObjectParent();
+			NetworkingOrbis.sendPacketToServer(new PacketSetTriggerId(b, b.getData().getScheduleId(this.scheduleRegion), this.nameInput.getInner().getText()));
 		}
 	}
 

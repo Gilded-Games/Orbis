@@ -283,6 +283,16 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		return removed;
 	}
 
+	public <T extends ISchedule> T getSchedule(int id, Class<T> clazz)
+	{
+		return (T) this.schedules.get(id);
+	}
+
+	public ISchedule getSchedule(int id)
+	{
+		return this.schedules.get(id);
+	}
+
 	public int getScheduleId(final ISchedule schedule)
 	{
 		for (Map.Entry<Integer, ISchedule> entry : this.schedules.entrySet())

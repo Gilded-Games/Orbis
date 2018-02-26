@@ -81,6 +81,8 @@ public class NetworkingOrbis
 				Side.SERVER);
 		instance.registerMessage(PacketRemoveSchedule.HandlerServer.class, PacketRemoveSchedule.class, discriminant++,
 				Side.SERVER);
+		instance.registerMessage(PacketSetTriggerId.HandlerServer.class, PacketSetTriggerId.class, discriminant++,
+				Side.SERVER);
 
 		// C L I E N T
 		instance.registerMessage(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, discriminant++, Side.CLIENT);
@@ -110,6 +112,8 @@ public class NetworkingOrbis
 		instance.registerMessage(PacketAddSchedule.HandlerClient.class, PacketAddSchedule.class, discriminant++,
 				Side.CLIENT);
 		instance.registerMessage(PacketRemoveSchedule.HandlerClient.class, PacketRemoveSchedule.class, discriminant++,
+				Side.CLIENT);
+		instance.registerMessage(PacketSetTriggerId.HandlerClient.class, PacketSetTriggerId.class, discriminant++,
 				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());

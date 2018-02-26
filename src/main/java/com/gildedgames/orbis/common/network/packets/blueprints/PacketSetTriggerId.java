@@ -1,0 +1,186 @@
+package com.gildedgames.orbis.common.network.packets.blueprints;
+
+import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.management.IData;
+import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.network.MessageHandlerClient;
+import com.gildedgames.orbis.common.network.MessageHandlerServer;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+
+public class PacketSetTriggerId implements IMessage
+{
+
+	private IDataIdentifier id;
+
+	private int worldObjectId;
+
+	private String triggerId;
+
+	private int scheduleId = -1;
+
+	private NBTFunnel funnel;
+
+	public PacketSetTriggerId()
+	{
+
+	}
+
+	public PacketSetTriggerId(IDataIdentifier id, int scheduleId, String triggerId)
+	{
+		this.id = id;
+		this.scheduleId = scheduleId;
+		this.triggerId = triggerId;
+	}
+
+	public PacketSetTriggerId(Blueprint blueprint, int scheduleId, String triggerId)
+	{
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.scheduleId = scheduleId;
+		this.triggerId = triggerId;
+	}
+
+	public PacketSetTriggerId(int worldObjectId, int scheduleId, String triggerId)
+	{
+		this.worldObjectId = worldObjectId;
+		this.scheduleId = scheduleId;
+		this.triggerId = triggerId;
+	}
+
+	@Override
+	public void fromBytes(final ByteBuf buf)
+	{
+		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.worldObjectId = tag.getInteger("worldObjectId");
+		this.id = funnel.get("id");
+		this.scheduleId = tag.getInteger("scheduleId");
+		this.triggerId = tag.getString("triggerId");
+	}
+
+	@Override
+	public void toBytes(final ByteBuf buf)
+	{
+		final NBTTagCompound tag = new NBTTagCompound();
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		tag.setInteger("worldObjectId", this.worldObjectId);
+		funnel.set("id", this.id);
+		tag.setInteger("scheduleId", this.scheduleId);
+		tag.setString("triggerId", this.triggerId);
+
+		ByteBufUtils.writeTag(buf, tag);
+	}
+
+	public static class HandlerClient extends MessageHandlerClient<PacketSetTriggerId, IMessage>
+	{
+		@Override
+		public IMessage onMessage(final PacketSetTriggerId message, final EntityPlayer player)
+		{
+			if (player == null || player.world == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				final IData data;
+
+				if (message.id == null)
+				{
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+
+					data = worldObject.getData();
+				}
+				else
+				{
+					data = OrbisCore.getProjectManager().findData(message.id);
+				}
+
+				if (data instanceof BlueprintData)
+				{
+					final BlueprintData bData = (BlueprintData) data;
+
+					bData.getSchedule(message.scheduleId, ScheduleRegion.class).setTriggerId(message.triggerId);
+				}
+			}
+			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+
+			return null;
+		}
+	}
+
+	public static class HandlerServer extends MessageHandlerServer<PacketSetTriggerId, IMessage>
+	{
+		@Override
+		public IMessage onMessage(final PacketSetTriggerId message, final EntityPlayer player)
+		{
+			if (player == null || player.world == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				final IData data;
+
+				if (message.id == null)
+				{
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+
+					data = worldObject.getData();
+				}
+				else
+				{
+					data = OrbisCore.getProjectManager().findData(message.id);
+				}
+
+				if (data instanceof BlueprintData)
+				{
+					final BlueprintData bData = (BlueprintData) data;
+
+					bData.getSchedule(message.scheduleId, ScheduleRegion.class).setTriggerId(message.triggerId);
+
+					// TODO: Send just to people who have downloaded this project
+					// Should probably make it so IProjects track what players have
+					// it downloaded on the client and up to date. That way we can
+					// just send it to those players. Along with this, addNew a helper
+					// method in NetworkingOrbis to sendPacketToProjectUsers
+					if (player.world.getMinecraftServer().isDedicatedServer())
+					{
+						if (message.id == null)
+						{
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketSetTriggerId(message.worldObjectId, message.scheduleId, message.triggerId));
+						}
+						else
+						{
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketSetTriggerId(message.id, message.scheduleId, message.triggerId));
+						}
+					}
+				}
+			}
+			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+
+			return null;
+		}
+	}
+}
