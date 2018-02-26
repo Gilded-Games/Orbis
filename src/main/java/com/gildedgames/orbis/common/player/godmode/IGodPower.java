@@ -11,7 +11,7 @@ public interface IGodPower extends NBT
 
 	void onUpdate(EntityPlayer player, PlayerOrbis playerOrbis, boolean isPowerActive);
 
-	boolean hasCustomGui();
+	boolean hasCustomGui(PlayerOrbis playerOrbis);
 
 	void onOpenGui(EntityPlayer player);
 

@@ -2,16 +2,8 @@ package com.gildedgames.orbis.api.data.framework.generation.csp;
 
 import com.gildedgames.orbis.api.data.framework.Graph;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-
 
 /**
  * Constrain satisfaction solver based on Artificial Intelligence,
@@ -40,17 +32,25 @@ public class CSPSolver
 			{
 				Collection<VAR> scope = constraint.scope();
 				if (!scope.contains(var))
+				{
 					continue;
+				}
 				//Remove impossible values
 				if (scope.size() == 1 && !reduceDomain(constraint, domain, new Object[1], 0))
+				{
 					return null;
+				}
 				if (scope.size() == 2 && !addedConstraints.contains(constraint))
 				{
 					addedConstraints.add(constraint);
 					VAR other = null;
 					for (VAR it : scope)
+					{
 						if (!it.equals(var))
+						{
 							other = it;
+						}
+					}
 					graph.addEdge(var, other, constraint);
 				}
 			}
@@ -73,7 +73,8 @@ public class CSPSolver
 		return !domain.isEmpty();
 	}
 
-	private static <VAR> Map<VAR, Object> backtrack(IConstraintProblem<VAR> problem, Map<VAR, List<Object>> domains, Graph<VAR, IConstraint<VAR>> graph, VAR lastAssigned)
+	private static <VAR> Map<VAR, Object> backtrack(IConstraintProblem<VAR> problem, Map<VAR, List<Object>> domains, Graph<VAR, IConstraint<VAR>> graph,
+			VAR lastAssigned)
 	{
 		Collection<? extends VAR> vars = problem.variables();
 
@@ -83,27 +84,39 @@ public class CSPSolver
 		{
 			int domainSize = domains.get(var).size();
 			if (domainSize == 0)
+			{
 				return null;
+			}
 			else if (domainSize == 1)
+			{
 				assigned.add(var);
+			}
 			else
+			{
 				unassigned.add(var);
+			}
 		}
 
 		if (unassigned.isEmpty())
 		{
 			Map<VAR, Object> result = new HashMap<VAR, Object>(vars.size());
 			for (VAR var : vars)
+			{
 				result.put(var, domains.get(var).get(0));
+			}
 			return result;
 		}
 
 		//Choose next var to assign
 		VAR var = null;
 		if (lastAssigned == null)
+		{
 			var = problem.firstVar(domains);
+		}
 		else
+		{
 			var = problem.selectNextVar(unassigned, domains, lastAssigned);
+		}
 		List<IConstraint<VAR>> toCheck = new ArrayList<>();
 
 		//Find the constraints that have this var in its scope
@@ -119,7 +132,9 @@ public class CSPSolver
 				}
 			}
 			if (hasAllVars)
+			{
 				toCheck.add(constraint);
+			}
 		}
 
 		for (Object value : problem.sortValues(domains.get(var)))
@@ -141,10 +156,14 @@ public class CSPSolver
 				}
 			}
 			if (!consistent)
+			{
 				continue;
+			}
 			Map<VAR, List<Object>> newDomains = new HashMap<VAR, List<Object>>(domains.size());
 			for (Entry<VAR, List<Object>> entry : domains.entrySet())
+			{
 				newDomains.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+			}
 
 			//Remove everything from the domain except the chosen value.
 			newDomains.get(var).removeIf(o -> o != value);
@@ -173,15 +192,21 @@ public class CSPSolver
 			}
 
 			if (!success)
+			{
 				continue;
+			}
 
 			//Assign the value and possibly do explicit propagation
 			if (!problem.allowedAssign(var, value, newDomains))
+			{
 				continue;
+			}
 
 			Map<VAR, Object> result = backtrack(problem, newDomains, graph, var);
 			if (result != null)
+			{
 				return result;
+			}
 		}
 		return null;
 	}

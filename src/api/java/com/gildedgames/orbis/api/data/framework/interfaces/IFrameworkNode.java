@@ -1,7 +1,8 @@
 package com.gildedgames.orbis.api.data.framework.interfaces;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.util.mc.NBT;
 
 import java.util.Collection;
@@ -20,6 +21,13 @@ import java.util.Random;
  */
 public interface IFrameworkNode extends NBT
 {
+
+	/**
+	 * Returns the largest possible dimension out of all
+	 * possible values that return from this node.
+	 * @return
+	 */
+	IDimensions largestPossibleDim();
 
 	/**
 	 * Returns the possible values this data can take. The data

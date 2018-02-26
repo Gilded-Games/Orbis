@@ -2,7 +2,7 @@ package com.gildedgames.orbis.api.core;
 
 import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.processing.IBlockAccessExtended;
 import net.minecraft.util.math.BlockPos;
 

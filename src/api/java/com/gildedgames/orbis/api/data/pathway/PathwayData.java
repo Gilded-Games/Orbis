@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.api.data.pathway;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,13 +24,15 @@ public class PathwayData implements NBT
 
 		this.pieces = new ArrayList<>(pieces);
 
-		this.pieces.removeIf(b-> b.entrances().size() < 2);
+		this.pieces.removeIf(b -> b.entrances().size() < 2);
 	}
 
 	public void addPiece(BlueprintData piece)
 	{
 		if (piece.entrances().size() < 2)
+		{
 			throw new IllegalStateException("You can only add blueprints with at least two entrances to a pathway");
+		}
 		this.pieces.add(piece);
 	}
 
@@ -56,6 +58,6 @@ public class PathwayData implements NBT
 	//TODO: Properly compute a logical tolerance dist;
 	public int getToleranceDist()
 	{
-		return pieces.get(0).getWidth();
+		return this.pieces.get(0).getWidth();
 	}
 }

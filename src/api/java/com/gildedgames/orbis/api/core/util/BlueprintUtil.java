@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.api.core.util;
 
 import com.gildedgames.orbis.api.core.ICreationData;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.processing.IBlockAccessExtended;

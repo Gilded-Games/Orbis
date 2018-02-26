@@ -80,12 +80,12 @@ public class GuiDirectoryNode extends GuiFrame
 		this.tick_icon.setVisible(false);
 		this.downloading_icon.setVisible(false);
 
-		this.addChild(this.icon);
-		this.addChild(this.nameplate);
+		this.addChildren(this.icon);
+		this.addChildren(this.nameplate);
 
-		this.addChild(this.cross_icon);
-		this.addChild(this.tick_icon);
-		this.addChild(this.downloading_icon);
+		this.addChildren(this.cross_icon);
+		this.addChildren(this.tick_icon);
+		this.addChildren(this.downloading_icon);
 	}
 
 	@Override

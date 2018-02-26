@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
@@ -172,7 +171,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 	{
 		this.rand.setSeed((long) renderPos.getX() * 341873128712L + (long) renderPos.getY() * 23289687541L + (long) renderPos.getZ() * 132897987541L);
 
-		final IBlockState state = filter.getSample(mc.world, this.rand, Blocks.AIR.getDefaultState());
+		final IBlockState state = filter.getSample(mc.world, this.rand, this.stateAccess.getBlockState(renderPos));
 
 		if (state != null && !BlockUtil.isAir(state) && !BlockUtil.isVoid(state) && state.getRenderType() != EnumBlockRenderType.INVISIBLE)
 		{

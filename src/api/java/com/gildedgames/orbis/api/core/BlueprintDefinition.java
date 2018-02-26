@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.api.core;
 
 import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.processing.CenterOffsetProcessor;
 import com.google.common.collect.Lists;
 

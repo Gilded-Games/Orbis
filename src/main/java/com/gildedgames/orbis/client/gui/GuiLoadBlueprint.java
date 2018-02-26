@@ -2,11 +2,12 @@ package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.DataCondition;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.management.IProject;
+import com.gildedgames.orbis.api.util.mc.InventoryHelper;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
@@ -22,7 +23,6 @@ import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerBlueprintInventory;
-import com.gildedgames.orbis.common.containers.slots.SlotForge;
 import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
@@ -31,7 +31,6 @@ import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis.common.util.InputHelper;
-import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -39,7 +38,6 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorListener
 {
@@ -73,23 +71,6 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		playerOrbis.getEntity().openContainer = this.inventorySlots;
 
 		this.allowUserInput = true;
-	}
-
-	private List<ItemStack> getItemStacksInForge()
-	{
-		final List<ItemStack> stacks = Lists.newArrayList();
-
-		for (int i = 0; i < this.container.slots.length; i++)
-		{
-			final SlotForge slot = this.container.slots[i];
-
-			if (slot.getStack() != null && !slot.getStack().isEmpty())
-			{
-				stacks.add(slot.getStack());
-			}
-		}
-
-		return stacks;
 	}
 
 	public void refreshNavigator()
@@ -133,7 +114,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
-		this.addChild(this.directoryViewer);
+		this.addChildren(this.directoryViewer);
 
 		final int xOffset = 15;
 		final int yOffset = 7;
@@ -143,28 +124,22 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		this.forgeButton.dim().mod().pos(center).center(true).addY(52 - 6 - 102 + yOffset).addX(133 + xOffset).flush();
 
 		this.matrix = new GuiTexture(Dim2D.build().width(85).height(105).pos(center).addX(2 + xOffset).addY(-15 - 100 + yOffset).flush(), MATRIX_ICON);
+		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).x(this.width / 2 + 90 - 176 / 2).y(this.height / 2 + 6).flush(),
+				BLUEPRINT_INVENTORY);
 		this.flow = new GuiTexture(Dim2D.build().width(20).height(14).pos(center).addX(95 + xOffset).addY(52 - 6 - 110 + yOffset).flush(), MERGE_ICON);
 
 		this.combineTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addX(44 + xOffset).addY(-49 - 9 - 47 + yOffset).flush(),
 				new Text(new TextComponentString("Group"), 1.0F));
 
-		this.addChild(this.matrix);
-		this.addChild(this.flow);
-		this.addChild(this.combineTitle);
-
-		this.addChild(this.forgeButton);
+		this.addChildren(this.matrix, this.flow, this.combineTitle, this.forgeButton, inventory);
 	}
 
 	@Override
 	public void drawScreen(final int mouseX, final int mouseY, final float partialTicks)
 	{
-		this.forgeButton.setEnabled(this.getItemStacksInForge().size() >= 2);
+		this.forgeButton.setEnabled(InventoryHelper.getItemStacks(this.container.slots).size() >= 2);
 
 		this.drawWorldBackground(0);
-
-		this.mc.renderEngine.bindTexture(BLUEPRINT_INVENTORY);
-
-		this.drawTexturedModalRect(this.width / 2 + 90 - 176 / 2, this.height / 2 - (166 / 2) + 12, 0, 0, 176, 166);
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
@@ -190,7 +165,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 			final BlueprintPalette palette = new BlueprintPalette();
 
-			for (final ItemStack s : this.getItemStacksInForge())
+			for (final ItemStack s : InventoryHelper.getItemStacks(this.container.slots))
 			{
 				try
 				{

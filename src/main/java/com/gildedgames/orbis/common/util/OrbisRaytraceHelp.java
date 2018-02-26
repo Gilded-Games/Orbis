@@ -1,19 +1,22 @@
 package com.gildedgames.orbis.common.util;
 
+import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.ObjectFilter;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis.common.world_objects.WorldRegion;
+import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +24,61 @@ import java.util.List;
 public class OrbisRaytraceHelp
 {
 
+	public static final LocateWithPos<IShape> WORLD_OBJECT_LOCATOR = (world, pos) -> WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+
+	public static final LocateWithPos<IFrameworkNode> FRAMEWORK_NODE_LOCATOR = (world, pos) ->
+	{
+		IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+
+		if (shape instanceof Framework)
+		{
+			Framework framework = (Framework) shape;
+
+			return framework.findIntersectingNode(pos);
+		}
+
+		return null;
+	};
+
+	public static final LocateWithPos<ISchedule> SCHEDULE_LOCATOR = (world, pos) ->
+	{
+		IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+
+		if (shape instanceof Blueprint)
+		{
+			Blueprint blueprint = (Blueprint) shape;
+
+			return blueprint.findIntersectingSchedule(pos);
+		}
+
+		return null;
+	};
+
 	private static final List<Class<? extends IWorldObject>> blueprintClass;
 
 	static
 	{
 		blueprintClass = new ArrayList<>(1);
 		blueprintClass.add(Blueprint.class);
+	}
+
+	private static <T> T getRelevantRegionAt(World world, final List<Class<? extends IWorldObject>> dataType, final BlockPos pos,
+			final Vec3d endPosition, final RaytraceAction<T> action, LocateWithPos<T> shapeLocator)
+	{
+		final T foundRegion = shapeLocator.getIntersectingShape(world, pos);
+
+		final T result;
+
+		if (foundRegion != null)
+		{
+			result = action.onFoundShape(foundRegion, pos, endPosition);
+		}
+		else
+		{
+			result = action.onIterateOutsideRegion(pos, endPosition);
+		}
+
+		return result;
 	}
 
 	public static double getFinalExtendedReach(final EntityPlayer player)
@@ -69,12 +121,12 @@ public class OrbisRaytraceHelp
 		return new BlockPos(x, y, z);
 	}
 
-	public static boolean isSnappingToRegion(final EntityPlayer player)
+	public static boolean isSnappingToRegion(final EntityPlayer player, LocateWithPos shapeLocator)
 	{
 		final Vec3d positionVec = getPositionEyes(1.0F, player);
 		final Vec3d finalVec = getFinalVec(player);
 
-		final BlockPos pos = findSnapPos(player, blueprintClass, positionVec, finalVec);
+		final BlockPos pos = findSnapPos(player, blueprintClass, positionVec, finalVec, shapeLocator);
 
 		return pos != null;
 	}
@@ -104,7 +156,7 @@ public class OrbisRaytraceHelp
 	 * Does cool stuff like snap to the borders of regions and corners.
 	 * @return
 	 */
-	public static BlockPos raytraceWithRegionSnapping(final EntityPlayer player)
+	public static BlockPos raytraceWithRegionSnapping(final EntityPlayer player, LocateWithPos shapeLocator)
 	{
 		final Vec3d positionVec = getPositionEyes(1.0F, player);
 		final Vec3d finalVec = getFinalVec(player);
@@ -113,7 +165,7 @@ public class OrbisRaytraceHelp
 
 		if (pos == null)
 		{
-			pos = findSnapPos(player, blueprintClass, positionVec, finalVec);
+			pos = findSnapPos(player, blueprintClass, positionVec, finalVec, shapeLocator);
 		}
 
 		return pos != null ? pos : new BlockPos(finalVec);
@@ -127,14 +179,14 @@ public class OrbisRaytraceHelp
 		return raytraceRegionsCorners(player, positionVec, finalVec);
 	}
 
-	public static IShape raytraceShapes(final EntityPlayer player, final List<Class<? extends IWorldObject>> regionType, final double distance,
-			final float partialTicks, final boolean global)
+	public static <T> T raytraceShapes(final EntityPlayer player, final List<Class<? extends IWorldObject>> regionType, final double distance,
+			final float partialTicks, final LocateWithPos<T> shapeLocator)
 	{
 		final Vec3d playerPos = getPositionEyes(partialTicks, player);
 		final Vec3d look = player.getLook(partialTicks);
 		final Vec3d focus = playerPos.addVector(look.x * distance, look.y * distance, look.z * distance);
 
-		return raytraceRegions(player, regionType, playerPos, focus, global);
+		return raytraceRegions(player, regionType, playerPos, focus, shapeLocator);
 	}
 
 	private static Vec3d getFinalVec(final EntityPlayer player)
@@ -149,11 +201,11 @@ public class OrbisRaytraceHelp
 		return positionVec.addVector(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
 	}
 
-	public static IShape raytraceRegions(final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, final Vec3d currentPos,
+	public static <T> T raytraceRegions(final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, final Vec3d currentPos,
 			final Vec3d endPos,
-			final boolean global)
+			final LocateWithPos<T> shapeLocator)
 	{
-		return raytraceRegionsDo(player, dataType, currentPos, endPos, new RaytraceAction(), global);
+		return raytraceRegionsDo(player, dataType, currentPos, endPos, new RaytraceAction<>(), shapeLocator);
 	}
 
 	/**
@@ -161,24 +213,24 @@ public class OrbisRaytraceHelp
 	 * when it is at the regions edge and the region contains the datatype.
 	 * Used for snapping the players selector to edges of BlueprintRegions
 	 */
-	public static BlockPos findSnapPos(final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, final Vec3d currentPos,
-			final Vec3d endPos)
+	public static <T> BlockPos findSnapPos(final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, final Vec3d currentPos,
+			final Vec3d endPos, LocateWithPos<T> shapeLocator)
 	{
-		final IShape shape = raytraceRegionsDo(player, dataType, currentPos, endPos,
-				new RaytraceAction()
+		final T shape = raytraceRegionsDo(player, dataType, currentPos, endPos,
+				new RaytraceAction<T>()
 				{
 					private int tries;
 
 					private BlockPos cur;
 
 					@Override
-					public IShape onFoundShape(final IShape foundRegion, final BlockPos pos)
+					public T onFoundShape(final T foundRegion, final BlockPos pos)
 					{
 						return null;
 					}
 
 					@Override
-					public IShape onFoundShape(final IShape foundRegion, final BlockPos pos, final Vec3d endposition)
+					public T onFoundShape(final T foundRegion, final BlockPos pos, final Vec3d endposition)
 					{
 						final IRegion region = ObjectFilter.cast(foundRegion, IRegion.class);
 
@@ -209,16 +261,17 @@ public class OrbisRaytraceHelp
 					}
 
 					@Override
-					public IShape onIterateOutsideRegion(final BlockPos pos, final Vec3d endposition)
+					public T onIterateOutsideRegion(final BlockPos pos, final Vec3d endposition)
 					{
 						if (this.tries >= 1)
 						{
-							return new WorldRegion(this.cur, player.getEntityWorld());
+							//TODO:
+							//return new WorldRegion(this.cur, player.getEntityWorld());
 						}
 
 						return null;
 					}
-				}, false);
+				}, shapeLocator);
 		final IRegion region = ObjectFilter.cast(shape, IRegion.class);
 		return region != null ? region.getMin() : null;
 	}
@@ -256,9 +309,9 @@ public class OrbisRaytraceHelp
 		return null;
 	}
 
-	private static IShape raytraceRegionsDo(
-			final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, Vec3d currentPos, final Vec3d endPos, final RaytraceAction action,
-			final boolean allProjects)
+	private static <T> T raytraceRegionsDo(
+			final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, Vec3d currentPos, final Vec3d endPos, final RaytraceAction<T> action,
+			final LocateWithPos<T> shapeLocator)
 	{
 		if (player == null)
 		{
@@ -277,8 +330,8 @@ public class OrbisRaytraceHelp
 				int curZ = MathHelper.floor(currentPos.z);
 
 				final BlockPos curPos = new BlockPos(curX, curY, curZ);
-				IShape foundRegion = getRelevantRegionAt(player, dataType, curPos, endPos, action, allProjects);
-				final IShape result = action.onFoundShape(foundRegion, curPos);
+				T foundRegion = getRelevantRegionAt(player.world, dataType, curPos, endPos, action, shapeLocator);
+				final T result = action.onFoundShape(foundRegion, curPos);
 
 				if (result != null)
 				{
@@ -426,7 +479,7 @@ public class OrbisRaytraceHelp
 						--curZ;
 					}
 
-					foundRegion = getRelevantRegionAt(player, dataType, new BlockPos(curX, curY, curZ), endPos, action, allProjects);
+					foundRegion = getRelevantRegionAt(player.world, dataType, new BlockPos(curX, curY, curZ), endPos, action, shapeLocator);
 					if (foundRegion != null)
 					{
 						return foundRegion;
@@ -437,43 +490,24 @@ public class OrbisRaytraceHelp
 		return null;
 	}
 
-	private static IShape getRelevantRegionAt(final EntityPlayer player, final List<Class<? extends IWorldObject>> dataType, final BlockPos pos,
-			final Vec3d endPosition, final RaytraceAction action,
-			final boolean allProjects)
+	public interface LocateWithPos<T>
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(player.world);
-
-		final IShape foundRegion = allProjects ?
-				RegionHelper.getIntersectingWorldShapeGlobal(pos, player.getEntityWorld()) :
-				manager.getGroup(0).getIntersectingShape(pos);
-
-		final IShape result;
-
-		if (foundRegion != null)
-		{
-			result = action.onFoundShape(foundRegion, pos, endPosition);
-		}
-		else
-		{
-			result = action.onIterateOutsideRegion(pos, endPosition);
-		}
-
-		return result;
+		T getIntersectingShape(World world, BlockPos pos);
 	}
 
-	public static class RaytraceAction
+	public static class RaytraceAction<T>
 	{
-		public IShape onFoundShape(final IShape foundRegion, final BlockPos pos)
+		public T onFoundShape(final T foundRegion, final BlockPos pos)
 		{
 			return foundRegion;
 		}
 
-		public IShape onFoundShape(final IShape foundRegion, final BlockPos pos, final Vec3d endposition)
+		public T onFoundShape(final T foundRegion, final BlockPos pos, final Vec3d endposition)
 		{
 			return foundRegion;
 		}
 
-		public IShape onIterateOutsideRegion(final BlockPos pos, final Vec3d endposition)
+		public T onIterateOutsideRegion(final BlockPos pos, final Vec3d endposition)
 		{
 			return null;
 		}

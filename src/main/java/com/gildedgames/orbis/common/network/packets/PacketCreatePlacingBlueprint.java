@@ -1,7 +1,8 @@
 package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.api.core.CreationData;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.core.ICreationData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis.api.processing.DataPrimer;
@@ -75,7 +76,9 @@ public class PacketCreatePlacingBlueprint implements IMessage
 
 				final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(player.world));
 
-				primer.create(data.getBlockDataContainer(), new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false));
+				ICreationData creationData = new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false);
+
+				primer.create(data, creationData);
 			}
 
 			return null;

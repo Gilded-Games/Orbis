@@ -24,17 +24,10 @@ public class ShapeSelectorFilter implements IShapeSelector
 
 	private final boolean canSelectWithoutItems;
 
-	private boolean isEraser;
-
 	public ShapeSelectorFilter(final Function<EntityPlayer, BlockFilter> filterSupplier, final boolean canSelectWithoutItems)
 	{
 		this.filterSupplier = filterSupplier;
 		this.canSelectWithoutItems = canSelectWithoutItems;
-	}
-
-	public void setIsEraser(final boolean isEraser)
-	{
-		this.isEraser = isEraser;
 	}
 
 	@Override
@@ -51,8 +44,7 @@ public class ShapeSelectorFilter implements IShapeSelector
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 		final IWorldObjectGroup group = manager.getGroup(0);
 
-		return group.getIntersectingShapes(Blueprint.class, shape).size() == 1 || playerOrbis.powers().getSchedulePower() != playerOrbis.powers()
-				.getCurrentPower();
+		return group.getIntersectingShapes(Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
 	}
 
 	@Override
@@ -67,9 +59,7 @@ public class ShapeSelectorFilter implements IShapeSelector
 
 		final ICreationData creationData = new CreationDataOrbis(world, playerOrbis.getEntity());
 
-		creationData.schedules(playerOrbis.powers().getSchedulePower() == playerOrbis.powers().getCurrentPower());
-
-		creationData.erases(this.isEraser);
+		creationData.schedules(playerOrbis.powers().isScheduling());
 
 		filter.apply(selectedShape, world, creationData);
 	}

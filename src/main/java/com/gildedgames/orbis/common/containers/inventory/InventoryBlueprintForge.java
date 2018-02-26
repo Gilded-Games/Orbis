@@ -1,9 +1,8 @@
 package com.gildedgames.orbis.common.containers.inventory;
 
-import com.gildedgames.orbis.api.util.mc.NBT;
+import com.gildedgames.orbis.api.inventory.IInventoryNBT;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +13,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nonnull;
 
-public class InventoryBlueprintForge implements IInventory, NBT
+public class InventoryBlueprintForge implements IInventoryNBT
 {
 
 	private final EntityPlayer player;

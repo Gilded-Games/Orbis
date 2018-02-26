@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.api.data.framework;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
+import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.util.mc.NBT;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Collection;
@@ -13,12 +13,17 @@ import java.util.Random;
 
 public class FrameworkNode implements IFrameworkNode
 {
-	private IFrameworkNode schedule;
-
 	// Not sure what this is about tbh lol.
 	private static boolean isNullAllowed = false;
 
-//	private final boolean isNullAllowed = false;
+	private IFrameworkNode schedule;
+
+	//	private final boolean isNullAllowed = false;
+
+	private FrameworkNode()
+	{
+
+	}
 
 	public FrameworkNode(IFrameworkNode schedule)
 	{
@@ -30,7 +35,6 @@ public class FrameworkNode implements IFrameworkNode
 		return this.schedule;
 	}
 
-
 	@Override
 	public int maxEdges()
 	{
@@ -38,11 +42,19 @@ public class FrameworkNode implements IFrameworkNode
 	}
 
 	@Override
+	public IDimensions largestPossibleDim()
+	{
+		return this.schedule.largestPossibleDim();
+	}
+
+	@Override
 	public List<BlueprintData> possibleValues(Random random)
 	{
 		final List<BlueprintData> superPossibleValues = this.schedule.possibleValues(random);
 		if (isNullAllowed && !superPossibleValues.contains(null))
+		{
 			superPossibleValues.add(null);
+		}
 		return superPossibleValues;
 	}
 

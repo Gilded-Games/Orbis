@@ -55,7 +55,7 @@ public class GodPowerSpectator implements IGodPower
 	}
 
 	@Override
-	public boolean hasCustomGui()
+	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
 		return false;
 	}

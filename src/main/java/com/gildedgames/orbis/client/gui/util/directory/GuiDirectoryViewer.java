@@ -125,7 +125,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 		this.visibleFiles.clear();
 
 		this.visibleFiles.addAll(guiNodes);
-		this.visibleFiles.forEach(this::addChild);
+		this.visibleFiles.forEach(this::addChildren);
 
 		if (this.dropdownList != null)
 		{
@@ -225,11 +225,11 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 		final GuiTexture backdrop = new GuiTexture(Dim2D.buildWith(this).area().flush(), VIEWER_BACKDROP);
 
-		this.addChild(backdrop);
+		this.addChildren(backdrop);
 
-		this.addChild(this.refreshButton);
-		this.addChild(this.backButton);
-		this.addChild(this.forwardButton);
+		this.addChildren(this.refreshButton);
+		this.addChildren(this.backButton);
+		this.addChildren(this.forwardButton);
 
 		this.dropdownList = new GuiDropdownList(Pos2D.flush());
 

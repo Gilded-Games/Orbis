@@ -11,6 +11,9 @@ public class OrbisKeyBindings
 	public static KeyBinding keyBindControl = new KeyBinding("keybindings.control", Minecraft.IS_RUNNING_ON_MAC ? Keyboard.KEY_LMETA : Keyboard.KEY_LCONTROL,
 			"key.categories.misc");
 
+	public static KeyBinding keyBindAlt = new KeyBinding("keybindings.alt", Keyboard.KEY_LMENU,
+			"key.categories.misc");
+
 	public static KeyBinding keyBindFindPower = new KeyBinding("keybindings.findPower", Keyboard.KEY_TAB, "key.categories.misc");
 
 	public static KeyBinding keyBindRotate = new KeyBinding("keybindings.rotate", Keyboard.KEY_R, "key.categories.misc");
@@ -26,6 +29,7 @@ public class OrbisKeyBindings
 	public static void init()
 	{
 		ClientRegistry.registerKeyBinding(keyBindControl);
+		ClientRegistry.registerKeyBinding(keyBindAlt);
 		ClientRegistry.registerKeyBinding(keyBindFindPower);
 		ClientRegistry.registerKeyBinding(keyBindRotate);
 		ClientRegistry.registerKeyBinding(keyBindDelete);

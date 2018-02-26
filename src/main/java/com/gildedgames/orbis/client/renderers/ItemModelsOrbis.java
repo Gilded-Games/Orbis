@@ -23,6 +23,7 @@ public class ItemModelsOrbis
 		registerItemModels(ItemsOrbis.blueprint, "blueprint");
 		registerItemModels(ItemsOrbis.block_chunk, "block_chunk");
 		registerItemModels(ItemsOrbis.block_palette, "block_palette");
+		registerItemModels(ItemsOrbis.entity_item, "entity_item");
 	}
 
 	private static void registerItemModels(final Block block, final String path)

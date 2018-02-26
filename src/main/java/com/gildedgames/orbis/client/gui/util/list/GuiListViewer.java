@@ -177,7 +177,7 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 		this.visibleDeletes.clear();
 
 		this.visibleGuiNodes.addAll(guiNodes);
-		this.visibleGuiNodes.forEach(this::addChild);
+		this.visibleGuiNodes.forEach(this::addChildren);
 
 		this.visibleGuiNodes.forEach(g -> {
 			final GuiAbstractButton deleteButton = GuiFactory.createDeleteButton();
@@ -185,12 +185,12 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 			deleteButton.dim().mod().pos(Pos2D.flush(g.dim().originalState().x(), g.dim().originalState().y())).addX(g.dim().width()).flush();
 
 			this.visibleDeletes.add(deleteButton);
-			this.addChild(deleteButton);
+			this.addChildren(deleteButton);
 		});
 
 		if (this.addButton != null)
 		{
-			this.addChild(this.addButton);
+			this.addChildren(this.addButton);
 		}
 	}
 
@@ -209,7 +209,7 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 	{
 		final GuiTexture backdrop = new GuiTexture(Dim2D.buildWith(this).area().flush(), VIEWER_BACKDROP);
 
-		this.addChild(backdrop);
+		this.addChildren(backdrop);
 
 		this.refreshNodes();
 	}

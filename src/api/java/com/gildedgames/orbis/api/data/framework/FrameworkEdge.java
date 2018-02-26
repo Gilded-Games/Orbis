@@ -1,6 +1,9 @@
 package com.gildedgames.orbis.api.data.framework;
 
-public class FrameworkEdge
+import com.gildedgames.orbis.api.util.mc.NBT;
+import net.minecraft.nbt.NBTTagCompound;
+
+public class FrameworkEdge implements NBT
 {
 	private final FrameworkNode node1, node2;
 
@@ -25,4 +28,15 @@ public class FrameworkEdge
 		return node == this.node1 ? this.node2 : node == this.node2 ? this.node1 : null;
 	}
 
+	@Override
+	public void write(NBTTagCompound tag)
+	{
+
+	}
+
+	@Override
+	public void read(NBTTagCompound tag)
+	{
+
+	}
 }

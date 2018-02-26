@@ -73,9 +73,9 @@ public class GuiAbstractButton extends GuiFrame
 		this.hoveredState.dim().mod().center(false).resetPos().flush();
 		this.clickedState.dim().mod().center(false).resetPos().flush();
 
-		this.addChild(this.hoveredState);
-		this.addChild(this.clickedState);
-		this.addChild(this.defaultState);
+		this.addChildren(this.hoveredState);
+		this.addChildren(this.clickedState);
+		this.addChildren(this.defaultState);
 
 		if (this.disabledState != null)
 		{
@@ -90,7 +90,7 @@ public class GuiAbstractButton extends GuiFrame
 				this.disabledState.setVisible(false);
 			}
 
-			this.addChild(this.disabledState);
+			this.addChildren(this.disabledState);
 		}
 
 		this.defaultState.setVisible(true);

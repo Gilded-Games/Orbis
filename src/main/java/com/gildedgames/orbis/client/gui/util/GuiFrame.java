@@ -154,16 +154,25 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 	@Override
 	public void addChildNoMods(final IGuiFrame element)
 	{
-		this.addChild(element, false);
+		this.addChildren(element, false);
 	}
 
 	@Override
-	public void addChild(final IGuiFrame element)
+	public void addChildren(final IGuiFrame element)
 	{
-		this.addChild(element, true);
+		this.addChildren(element, true);
 	}
 
-	private void addChild(final IGuiFrame element, final boolean mods)
+	@Override
+	public void addChildren(final IGuiFrame... elements)
+	{
+		for (IGuiFrame element : elements)
+		{
+			this.addChildren(element, true);
+		}
+	}
+
+	private void addChildren(final IGuiFrame element, final boolean mods)
 	{
 		final RectHolder gui = ObjectFilter.cast(element, RectHolder.class);
 		final RectHolder parentModifier = ObjectFilter.cast(this, RectHolder.class);

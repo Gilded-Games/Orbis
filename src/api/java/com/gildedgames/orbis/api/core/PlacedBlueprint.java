@@ -5,8 +5,12 @@ import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.core.util.BlueprintUtil;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
+import com.google.common.collect.Lists;
+import net.minecraft.item.ItemMonsterPlacer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -15,12 +19,15 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PlacedBlueprint implements NBT
 {
 	private final World world;
 
 	private BlockDataChunk[] chunks;
+
+	private List<PlacedEntity> placedEntities = Lists.newArrayList();
 
 	private BlueprintDefinition def;
 
@@ -43,6 +50,7 @@ public class PlacedBlueprint implements NBT
 		this.data = data;
 
 		this.bakeChunks();
+		this.placeEntities();
 	}
 
 	public PlacedBlueprint(final World world, final NBTTagCompound tag)
@@ -52,6 +60,28 @@ public class PlacedBlueprint implements NBT
 		this.read(tag);
 
 		this.bakeChunks();
+		this.placeEntities();
+	}
+
+	private void placeEntities()
+	{
+		for (ScheduleRegion s : this.def.getData().getSchedules(ScheduleRegion.class))
+		{
+			for (int i = 0; i < s.getSpawnEggsInventory().getSizeInventory(); i++)
+			{
+				ItemStack stack = s.getSpawnEggsInventory().getStackInSlot(i);
+
+				if (stack.getItem() instanceof ItemMonsterPlacer)
+				{
+					BlockPos pos = this.getCreationData().getPos().add(s.getBounds().getMin());
+					pos.add(this.world.rand.nextInt(s.getBounds().getWidth()), 0, this.world.rand.nextInt(s.getBounds().getHeight()));
+
+					PlacedEntity placedEntity = new PlacedEntity(stack, pos);
+
+					this.placedEntities.add(placedEntity);
+				}
+			}
+		}
 	}
 
 	private void bakeChunks()
@@ -115,6 +145,11 @@ public class PlacedBlueprint implements NBT
 						.set(block, (iterPos.getX() + xDif) % 16, iterPos.getY(), (iterPos.getZ() + zDif) % 16);
 			}
 		}
+	}
+
+	public List<PlacedEntity> getPlacedEntities()
+	{
+		return this.placedEntities;
 	}
 
 	public BlueprintDefinition getDef()

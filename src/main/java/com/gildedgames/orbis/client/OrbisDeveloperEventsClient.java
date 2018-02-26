@@ -108,12 +108,12 @@ public class OrbisDeveloperEventsClient
 
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
 
-			if (playerOrbis.powers().getCurrentPower().hasCustomGui())
+			if (playerOrbis.powers().getCurrentPower().hasCustomGui(playerOrbis))
 			{
 				playerOrbis.powers().getCurrentPower().onOpenGui(mc.player);
 				playerOrbis.powers().getCurrentPower().getClientHandler().onOpenGui(mc.player);
 
-				NetworkingOrbis.sendPacketToServer(new PacketOpenGui());
+				NetworkingOrbis.sendPacketToServer(new PacketOpenPowerGui());
 
 				event.setCanceled(true);
 			}
@@ -137,6 +137,11 @@ public class OrbisDeveloperEventsClient
 				final GuiScreen current = Minecraft.getMinecraft().currentScreen;
 
 				final double reach = playerOrbis.getReach();
+
+				if (OrbisKeyBindings.keyBindAlt.isPressed())
+				{
+					NetworkingOrbis.sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
+				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
 				{

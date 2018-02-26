@@ -2,9 +2,8 @@ package com.gildedgames.orbis.common.network;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintAddScheduleLayer;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRemoveScheduleLayer;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
+import com.gildedgames.orbis.common.network.packets.blueprints.*;
+import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.projects.*;
 import com.gildedgames.orbis.common.network.util.IMessageMultipleParts;
 import com.google.common.collect.Maps;
@@ -48,7 +47,7 @@ public class NetworkingOrbis
 		instance.registerMessage(PacketWorldObjectRemove.HandlerServer.class, PacketWorldObjectRemove.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketActiveSelection.HandlerServer.class, PacketActiveSelection.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketChangePower.HandlerServer.class, PacketChangePower.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketOpenGui.HandlerServer.class, PacketOpenGui.class, discriminant++, Side.SERVER);
+		instance.registerMessage(PacketOpenPowerGui.HandlerServer.class, PacketOpenPowerGui.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketSetItemStack.HandlerServer.class, PacketSetItemStack.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketChangeSelectionType.HandlerServer.class, PacketChangeSelectionType.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketFilterShape.HandlerServer.class, PacketFilterShape.class, discriminant++, Side.SERVER);
@@ -67,10 +66,20 @@ public class NetworkingOrbis
 		instance.registerMessage(PacketCreateItemBlockDataContainer.HandlerServer.class, PacketCreateItemBlockDataContainer.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketCreatePlacingBlueprintPalette.HandlerServer.class, PacketCreatePlacingBlueprintPalette.class, discriminant++,
 				Side.SERVER);
+		instance.registerMessage(PacketOpenGui.HandlerServer.class, PacketOpenGui.class, discriminant++,
+				Side.SERVER);
 
 		instance.registerMessage(PacketBlueprintAddScheduleLayer.HandlerServer.class, PacketBlueprintAddScheduleLayer.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketBlueprintRemoveScheduleLayer.HandlerServer.class, PacketBlueprintRemoveScheduleLayer.class, discriminant++, Side.SERVER);
 		instance.registerMessage(PacketBlueprintSetCurrentScheduleLayer.HandlerServer.class, PacketBlueprintSetCurrentScheduleLayer.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketAddNode.HandlerServer.class, PacketAddNode.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketSetScheduling.HandlerServer.class, PacketSetScheduling.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketAddSchedule.HandlerServer.class, PacketAddSchedule.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketRemoveSchedule.HandlerServer.class, PacketRemoveSchedule.class, discriminant++,
 				Side.SERVER);
 
 		// C L I E N T
@@ -93,6 +102,14 @@ public class NetworkingOrbis
 		instance.registerMessage(PacketBlueprintAddScheduleLayer.HandlerClient.class, PacketBlueprintAddScheduleLayer.class, discriminant++, Side.CLIENT);
 		instance.registerMessage(PacketBlueprintRemoveScheduleLayer.HandlerClient.class, PacketBlueprintRemoveScheduleLayer.class, discriminant++, Side.CLIENT);
 		instance.registerMessage(PacketBlueprintSetCurrentScheduleLayer.HandlerClient.class, PacketBlueprintSetCurrentScheduleLayer.class, discriminant++,
+				Side.CLIENT);
+		instance.registerMessage(PacketAddNode.HandlerClient.class, PacketAddNode.class, discriminant++,
+				Side.CLIENT);
+		instance.registerMessage(PacketSetScheduling.HandlerClient.class, PacketSetScheduling.class, discriminant++,
+				Side.CLIENT);
+		instance.registerMessage(PacketAddSchedule.HandlerClient.class, PacketAddSchedule.class, discriminant++,
+				Side.CLIENT);
+		instance.registerMessage(PacketRemoveSchedule.HandlerClient.class, PacketRemoveSchedule.class, discriminant++,
 				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());

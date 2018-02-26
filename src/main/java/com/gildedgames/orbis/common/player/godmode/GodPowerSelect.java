@@ -40,7 +40,7 @@ public class GodPowerSelect implements IGodPower
 	}
 
 	@Override
-	public boolean hasCustomGui()
+	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
 		return false;
 	}

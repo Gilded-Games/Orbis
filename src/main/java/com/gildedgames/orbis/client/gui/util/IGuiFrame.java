@@ -31,7 +31,9 @@ public interface IGuiFrame extends RectHolder
 
 	void setEnabled(boolean flag);
 
-	void addChild(IGuiFrame child);
+	void addChildren(IGuiFrame... children);
+
+	void addChildren(IGuiFrame child);
 
 	void addChildNoMods(IGuiFrame child);
 

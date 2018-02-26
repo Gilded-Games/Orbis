@@ -5,15 +5,18 @@ import com.gildedgames.orbis.api.core.CreationData;
 import com.gildedgames.orbis.api.core.GameRegistrar;
 import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
-import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.DataCondition;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.impl.*;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.FilterRecord;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.data.shapes.*;
+import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -78,9 +81,9 @@ public class OrbisServices implements IOrbisServices
 
 	@Override
 	@Nullable
-	public IProject loadProject(final MinecraftServer server, final ResourceLocation location)
+	public IProject loadProject(final MinecraftServer server, final ResourceLocation location, Object mod, String archiveBaseName)
 	{
-		return this.get(server, location);
+		return this.get(server, location, mod, archiveBaseName);
 	}
 
 	@Override
@@ -120,6 +123,9 @@ public class OrbisServices implements IOrbisServices
 			s.register(25, FilterRecord.class, new Instantiator<>(FilterRecord.class));
 			s.register(26, Entrance.class, new Instantiator<>(Entrance.class));
 			s.register(27, BlueprintRegion.class, new Instantiator<>(BlueprintRegion.class));
+			s.register(28, FrameworkNode.class, new Instantiator<>(FrameworkNode.class));
+			s.register(29, ScheduleRegion.class, new Instantiator<>(ScheduleRegion.class));
+			s.register(30, InventorySpawnEggs.class, new Instantiator<>(InventorySpawnEggs.class));
 
 			this.io.register(s);
 		}
@@ -128,9 +134,9 @@ public class OrbisServices implements IOrbisServices
 	}
 
 	@Nullable
-	private IProject get(@Nullable final MinecraftServer server, final ResourceLocation templatePath)
+	private IProject get(@Nullable final MinecraftServer server, final ResourceLocation projectPath, Object mod, String archiveBaseName)
 	{
-		final String s = templatePath.getResourcePath();
+		final String s = projectPath.getResourcePath();
 
 		if (this.loadedProjects.containsKey(s))
 		{
@@ -140,11 +146,11 @@ public class OrbisServices implements IOrbisServices
 		{
 			if (server == null)
 			{
-				this.readProjectFromJar(templatePath);
+				this.readProjectFromJar(mod, archiveBaseName, projectPath);
 			}
 			else
 			{
-				this.readProject(templatePath);
+				this.readProject(mod, archiveBaseName, projectPath);
 			}
 
 			return this.loadedProjects.getOrDefault(s, null);
@@ -156,14 +162,14 @@ public class OrbisServices implements IOrbisServices
 	 * This first attempts get the template from an external folder.
 	 * If it isn't there then it attempts to take it from the minecraft jar.
 	 */
-	private boolean readProject(final ResourceLocation server)
+	private boolean readProject(Object mod, String archiveBaseName, final ResourceLocation server)
 	{
 		final String s = server.getResourcePath();
 		final File file1 = new File(this.baseFolder, s + File.separator + "project_data.project");
 
 		if (!file1.exists())
 		{
-			return this.readProjectFromJar(server);
+			return this.readProjectFromJar(mod, archiveBaseName, server);
 		}
 		else
 		{
@@ -173,7 +179,7 @@ public class OrbisServices implements IOrbisServices
 			try
 			{
 				inputstream = new FileInputStream(file1);
-				this.readProjectFromStream(s, inputstream, new File(this.baseFolder, s + "/").toURI());
+				this.readProjectFromStream(mod, archiveBaseName, s, inputstream, new File(this.baseFolder, s + "/").toURI());
 				return true;
 			}
 			catch (final Throwable var10)
@@ -192,7 +198,7 @@ public class OrbisServices implements IOrbisServices
 	/**
 	 * reads a template from the minecraft jar
 	 */
-	private boolean readProjectFromJar(final ResourceLocation id)
+	private boolean readProjectFromJar(Object mod, String archiveBaseName, final ResourceLocation id)
 	{
 		final String s = id.getResourceDomain();
 		final String s1 = id.getResourcePath();
@@ -202,7 +208,7 @@ public class OrbisServices implements IOrbisServices
 		try
 		{
 			inputstream = MinecraftServer.class.getResourceAsStream("/assets/" + s + "/orbis/" + s1 + "/project_data.project");
-			this.readProjectFromStream(s1, inputstream, URI.create("/assets/" + s + "/orbis/" + s1 + "/"));
+			this.readProjectFromStream(mod, archiveBaseName, s1, inputstream, URI.create("/assets/" + s + "/orbis/" + s1 + "/"));
 			return true;
 		}
 		catch (final IOException var10)
@@ -221,7 +227,7 @@ public class OrbisServices implements IOrbisServices
 	/**
 	 * reads a template from an inputstream
 	 */
-	private void readProjectFromStream(final String id, final InputStream stream, final URI location) throws IOException
+	private void readProjectFromStream(Object mod, String archiveBaseName, final String id, final InputStream stream, final URI location) throws IOException
 	{
 		final NBTTagCompound tag = CompressedStreamTools.readCompressed(stream);
 
@@ -230,7 +236,7 @@ public class OrbisServices implements IOrbisServices
 		final IProject project = funnel.get("project");
 
 		project.setJarLocation(location);
-		project.loadAndCacheData();
+		project.loadAndCacheData(mod, archiveBaseName);
 
 		this.loadedProjects.put(id, project);
 	}

@@ -2,7 +2,7 @@ package com.gildedgames.orbis.api.data.framework.generation.searching;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.data.region.IRegion;

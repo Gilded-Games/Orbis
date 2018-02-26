@@ -32,7 +32,10 @@ public class ShapeSelectorFramework implements IShapeSelector
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		return true;
+		final WorldObjectManager manager = WorldObjectManager.get(world);
+		final IWorldObjectGroup group = manager.getGroup(0);
+
+		return !group.isIntersectingShapes(shape);
 	}
 
 	@Override

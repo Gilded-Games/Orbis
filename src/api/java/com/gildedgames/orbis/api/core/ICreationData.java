@@ -27,8 +27,6 @@ public interface ICreationData extends NBT
 
 	ICreationData schedules(boolean schedules);
 
-	ICreationData erases(boolean erases);
-
 	/**
 	 * Should return the centered position if
 	 * this creation data returns true on isCentered()
@@ -48,8 +46,6 @@ public interface ICreationData extends NBT
 	boolean placeAir();
 
 	boolean schedules();
-
-	boolean erases();
 
 	ICreationData clone();
 

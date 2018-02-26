@@ -102,8 +102,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 		final IWorldObjectGroup group = manager.getGroup(0);
 
-		return group.getIntersectingShapes(Blueprint.class, shape).size() == 1 || playerOrbis.powers().getSchedulePower() != playerOrbis.powers()
-				.getCurrentPower();
+		return group.getIntersectingShapes(Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
 	}
 
 	@Override
@@ -113,10 +112,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		final CreationDataOrbis creationData = new CreationDataOrbis(world, playerOrbis.getEntity());
 
-		creationData.schedules(playerOrbis.powers().getSchedulePower() == playerOrbis.powers().getCurrentPower());
-
-		// TODO: Implement Eraser item for Schedule Power.
-		//creationData.erases(module.powers().isCurrentPower(module.powers().getSchedulePower()));
+		creationData.schedules(playerOrbis.powers().isScheduling());
 
 		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
 

@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.player.godmode;
 
 import com.gildedgames.orbis.api.block.BlockFilter;
+import com.gildedgames.orbis.api.inventory.InventoryBlockForge;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
+import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.client.godmode.GodPowerFillClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.containers.inventory.InventoryBlockForge;
-import com.gildedgames.orbis.common.containers.util.StagedInventory;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFilter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,8 +33,8 @@ public class GodPowerFill implements IGodPower
 		}
 
 		this.shapeSelector = new ShapeSelectorFilter(p -> new BlockFilter(BlockFilterHelper.getNewFillLayer(p.getHeldItemMainhand())), false);
-		this.stagedInventory = new StagedInventory<>(playerOrbis, () -> new InventoryBlockForge(playerOrbis.getEntity()),
-				m -> m.powers().getFillPower().getStagedInventory(), "blockForge");
+		this.stagedInventory = new StagedInventory<>(playerOrbis.getEntity(), () -> new InventoryBlockForge(playerOrbis.getEntity()),
+				m -> PlayerOrbis.get(m).powers().getFillPower().getStagedInventory(), "blockForge");
 	}
 
 	public StagedInventory<InventoryBlockForge> getStagedInventory()
@@ -66,7 +66,7 @@ public class GodPowerFill implements IGodPower
 	}
 
 	@Override
-	public boolean hasCustomGui()
+	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
 		return true;
 	}
@@ -74,7 +74,7 @@ public class GodPowerFill implements IGodPower
 	@Override
 	public void onOpenGui(final EntityPlayer player)
 	{
-		
+
 	}
 
 	@Override

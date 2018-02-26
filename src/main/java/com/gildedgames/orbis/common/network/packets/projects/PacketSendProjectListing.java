@@ -27,7 +27,7 @@ public class PacketSendProjectListing extends PacketMultipleParts
 
 	public PacketSendProjectListing()
 	{
-		OrbisCore.getProjectManager().refreshCache();
+		OrbisCore.getProjectManager().refreshCache(OrbisCore.INSTANCE, "Orbis");
 
 		this.projects = new ArrayList<>(OrbisCore.getProjectManager().getCachedProjects());
 		this.projectNames = Lists.newArrayList();
@@ -101,7 +101,7 @@ public class PacketSendProjectListing extends PacketMultipleParts
 				}
 			}
 
-			OrbisCore.getProjectManager().refreshCache();
+			OrbisCore.getProjectManager().refreshCache(OrbisCore.INSTANCE, "Orbis");
 
 			if (Minecraft.getMinecraft().currentScreen instanceof GuiEditBlueprint)
 			{

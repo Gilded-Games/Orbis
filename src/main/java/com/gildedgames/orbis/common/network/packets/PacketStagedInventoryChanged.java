@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.network.packets;
 
+import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.containers.util.StagedInventory;
 import com.gildedgames.orbis.common.network.MessageHandlerClient;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -97,9 +97,7 @@ public class PacketStagedInventoryChanged implements IMessage
 
 			if (entity != null && PlayerOrbis.hasCapability(entity))
 			{
-				final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
-
-				final IInventory inventory = StagedInventory.getLocator(message.locatorId).locate(playerOrbis).get();
+				final IInventory inventory = StagedInventory.getLocator(message.locatorId).locate(player).get();
 
 				for (final Pair<Integer, ItemStack> pair : message.changes)
 				{

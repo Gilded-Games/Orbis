@@ -1,11 +1,12 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.GuiRightClickBlueprint;
+import com.gildedgames.orbis.client.gui.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
@@ -249,7 +250,13 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 	}
 
 	@Override
-	public boolean onRightClickShape(final PlayerOrbis playerOrbis, final IShape selectedShape, final MouseEvent event)
+	public Object raytraceObject(PlayerOrbis playerOrbis)
+	{
+		return playerOrbis.getSelectedRegion();
+	}
+
+	@Override
+	public boolean onRightClickShape(final PlayerOrbis playerOrbis, final Object foundObject, final MouseEvent event)
 	{
 		final EntityPlayer entity = playerOrbis.getEntity();
 
@@ -257,19 +264,24 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 		final int y = MathHelper.floor(entity.posY);
 		final int z = MathHelper.floor(entity.posZ);
 
-		if (selectedShape instanceof Blueprint)
+		if (foundObject instanceof IShape)
 		{
-			final boolean playerInside = selectedShape.contains(x, y, z) || selectedShape.contains(x, MathHelper.floor(entity.posY + entity.height), z);
+			IShape selectedShape = (IShape) foundObject;
 
-			if (entity.world.isRemote && !playerInside)
+			if (selectedShape instanceof Blueprint)
 			{
-				if (System.currentTimeMillis() - GuiRightClickBlueprint.lastCloseTime > 200)
-				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickBlueprint((Blueprint) selectedShape));
-				}
-			}
+				final boolean playerInside = selectedShape.contains(x, y, z) || selectedShape.contains(x, MathHelper.floor(entity.posY + entity.height), z);
 
-			return false;
+				if (entity.world.isRemote && !playerInside)
+				{
+					if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
+					{
+						Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickBlueprint((Blueprint) selectedShape));
+					}
+				}
+
+				return false;
+			}
 		}
 
 		return true;

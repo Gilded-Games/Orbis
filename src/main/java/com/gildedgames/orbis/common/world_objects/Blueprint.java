@@ -1,11 +1,13 @@
 package com.gildedgames.orbis.common.world_objects;
 
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
-import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.api.data.IBlueprintDataListener;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.IBlueprintDataListener;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
@@ -51,6 +53,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		super(region);
 		this.world = world;
 		this.setBounds(region);
+		this.data.setWorldObjectParent(this);
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final BlueprintData data)
@@ -58,6 +61,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		super(pos, data);
 		this.world = world;
 		this.data.listen(this);
+		this.data.setWorldObjectParent(this);
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
@@ -65,6 +69,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		super(pos, rotation, data);
 		this.world = world;
 		this.data.listen(this);
+		this.data.setWorldObjectParent(this);
 	}
 
 	@Override
@@ -100,6 +105,27 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		{
 			w.unlock();
 		}
+	}
+
+	public ISchedule findIntersectingSchedule(BlockPos pos)
+	{
+		for (ISchedule r : this.data.getSchedules(ISchedule.class))
+		{
+			int minX = r.getBounds().getMin().getX() + this.getPos().getX();
+			int minY = r.getBounds().getMin().getY() + this.getPos().getY();
+			int minZ = r.getBounds().getMin().getZ() + this.getPos().getZ();
+
+			int maxX = minX + r.getBounds().getWidth() - 1;
+			int maxY = minY + r.getBounds().getHeight() - 1;
+			int maxZ = minZ + r.getBounds().getLength() - 1;
+
+			if (pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY && pos.getZ() >= minZ && pos.getZ() <= maxZ)
+			{
+				return r;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -234,6 +260,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.data.listen(this);
 
 		this.currentScheduleLayer = tag.getInteger("currentScheduleLayer");
+		this.data.setWorldObjectParent(this);
 	}
 
 	@Override
@@ -256,6 +283,18 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	@Override
 	public void onDataChanged()
+	{
+		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+	}
+
+	@Override
+	public void onAddSchedule(ISchedule schedule)
+	{
+		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+	}
+
+	@Override
+	public void onRemoveSchedule(ISchedule schedule)
 	{
 		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
 	}

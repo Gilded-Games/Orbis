@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class RenderShape implements IWorldRenderer
 {
 
-	private final static BufferBuilder buffer = Tessellator.getInstance().getBuffer();//new WorldRendererColorReplacer(2097152);
+	private final static BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 
 	private final List<IWorldRenderer> subRenderers = new ArrayList<>();
 

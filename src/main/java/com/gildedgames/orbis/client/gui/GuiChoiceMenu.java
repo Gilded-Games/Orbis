@@ -85,9 +85,9 @@ public class GuiChoiceMenu extends GuiFrame
 
 		this.choiceName = new GuiText(Dim2D.build().center(true).pos(center).addY(47).flush(), null);
 
-		this.addChild(gradient);
-		this.addChild(backdrop);
-		this.addChild(this.arrow);
+		this.addChildren(gradient);
+		this.addChildren(backdrop);
+		this.addChildren(this.arrow);
 
 		final float powerAngleStep = (float) Math.toDegrees((2 * Math.PI) / this.choices.length);
 
@@ -102,12 +102,12 @@ public class GuiChoiceMenu extends GuiFrame
 
 			icon.dim().mod().center(true).x(x).y(y).flush();
 
-			this.addChild(icon);
+			this.addChildren(icon);
 
 			angle += powerAngleStep;
 		}
 
-		this.addChild(this.choiceName);
+		this.addChildren(this.choiceName);
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class GuiChoiceMenu extends GuiFrame
 
 			if (Mouse.isButtonDown(0))
 			{
-				closestChoice.onSelect(PlayerOrbis.get(mc.player));
+				closestChoice.onSelect(PlayerOrbis.get(this.mc.player));
 			}
 
 			for (final Choice choice : this.choices)

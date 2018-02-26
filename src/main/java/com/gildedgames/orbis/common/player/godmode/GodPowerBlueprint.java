@@ -3,14 +3,14 @@ package com.gildedgames.orbis.common.player.godmode;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.client.godmode.GodPowerBlueprintClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.inventory.InventoryBlueprintForge;
-import com.gildedgames.orbis.common.containers.util.StagedInventory;
 import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
@@ -55,8 +55,8 @@ public class GodPowerBlueprint implements IGodPower
 		}
 
 		this.shapeSelector = new ShapeSelectorBlueprint(this);
-		this.stagedInventory = new StagedInventory<>(playerOrbis, () -> new InventoryBlueprintForge(playerOrbis.getEntity()),
-				m -> m.powers().getBlueprintPower().getStagedInventory(), "blueprintForge");
+		this.stagedInventory = new StagedInventory<>(playerOrbis.getEntity(), () -> new InventoryBlueprintForge(playerOrbis.getEntity()),
+				m -> PlayerOrbis.get(m).powers().getBlueprintPower().getStagedInventory(), "blueprintForge");
 	}
 
 	public BlockPos getPrevPlacingPos()
@@ -178,7 +178,7 @@ public class GodPowerBlueprint implements IGodPower
 	}
 
 	@Override
-	public boolean hasCustomGui()
+	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
 		return true;
 	}

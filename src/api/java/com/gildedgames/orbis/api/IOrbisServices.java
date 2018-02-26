@@ -38,7 +38,7 @@ public interface IOrbisServices
 	 * @param location The location of the project.
 	 * @return The loaded project.
 	 */
-	IProject loadProject(MinecraftServer server, ResourceLocation location);
+	IProject loadProject(MinecraftServer server, ResourceLocation location, Object mod, String archiveBaseName);
 
 	IOHelper io();
 

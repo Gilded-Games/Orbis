@@ -185,16 +185,16 @@ public class OrbisProject implements IProject
 	}
 
 	@Override
-	public void loadAndCacheData()
+	public void loadAndCacheData(Object mod, String archiveBaseName)
 	{
 		try
 		{
-			/**
+			/*
 			 * Uses the file jarLocation if accessible (used on Orbis client)
 			 * Otherwise, uses URI and accesses from MC server resource
 			 * so it works when stored in a mod jar.
 			 */
-			final String rawPath = this.getClass().getResource("").toURI().toString();
+			final String rawPath = mod.getClass().getResource("").toURI().toString();
 			URI resources = URI.create(rawPath);
 
 			final Path myPath;
@@ -202,19 +202,27 @@ public class OrbisProject implements IProject
 
 			final boolean usesJar;
 
-			/** INSIDE JAR **/
+			String modPackage = "/" + mod.getClass().getName().replace(mod.getClass().getSimpleName(), "").replace(".", "/");
+
+			/* INSIDE JAR **/
 			if (resources.getScheme().equals("jar"))
 			{
-				resources = URI.create(rawPath.replace("/com/gildedgames/aether/api/orbis_core/data/management/impl/", "/"));
+				resources = URI.create(rawPath.replace(modPackage, "/"));
 
 				fileSystem = FileSystems.newFileSystem(resources, Collections.<String, Object>emptyMap());
 				myPath = fileSystem.getPath("/");
 
 				usesJar = true;
 			}
-			else if (this.jarLocation != null) /** DEVELOPMENT WORKSPACE, JAR **/
+			else if (this.jarLocation != null) /* DEVELOPMENT WORKSPACE, JAR **/
 			{
-				resources = URI.create(rawPath.replace("/AetherII_api/com/gildedgames/aether/api/orbis_core/data/management/impl/", "/AetherII_main/assets/"));
+				String subRaw = rawPath.substring(rawPath.lastIndexOf(archiveBaseName));
+				String pack = subRaw.substring(archiveBaseName.length(), subRaw.indexOf("/"));
+
+				String orig = "/" + archiveBaseName + pack + modPackage;
+				String assets = "/" + archiveBaseName + "_main/assets/";
+
+				resources = URI.create(rawPath.replace(orig, assets));
 
 				myPath = Paths.get(resources);
 
@@ -234,7 +242,7 @@ public class OrbisProject implements IProject
 					final URI uri = p.toUri();
 					final String path = uri.toString().contains("!") ? uri.toString().split("!")[1] : uri.toString();
 
-					/** Prevents the path walking from including the project's jarLocation **/
+					/* Prevents the path walking from including the project's jarLocation **/
 					if (path == null || path.equals(this.locationFile != null ? this.locationFile.getPath() : this.jarLocation.getPath()))
 					{
 						return;
@@ -242,13 +250,13 @@ public class OrbisProject implements IProject
 
 					final String extension = FilenameUtils.getExtension(path);
 
-					/** Prevents the path walking from including the project data itself (hidden file) **/
+					/* Prevents the path walking from including the project data itself (hidden file) **/
 					if (extension.equals("project"))
 					{
 						return;
 					}
 
-					/** Make sure the file has an extension type accepted by this project **/
+					/* Make sure the file has an extension type accepted by this project **/
 					if (this.acceptedFileExtensions.contains(extension))
 					{
 						try
@@ -274,7 +282,7 @@ public class OrbisProject implements IProject
 								{
 									final boolean fromOtherProject = !this.identifier.equals(data.getMetadata().getIdentifier().getProjectIdentifier());
 
-									/** If the data file seems to be moved from another project, it'll reassign a new data id for it **/
+									/* If the data file seems to be moved from another project, it'll reassign a new data id for it **/
 									if (fromOtherProject)
 									{
 										data.getMetadata().setIdentifier(this.cache.createNextIdentifier());
@@ -284,16 +292,16 @@ public class OrbisProject implements IProject
 											(this.locationFile != null ? this.locationFile.getCanonicalPath() : this.jarLocation.getPath()) + File.separator,
 											"");
 
-									/**
+									/*
 									 * This will determine if a new identifier will be created
 									 * when the data is placesAir.
 									 */
 									final boolean shouldSaveAfter = data.getMetadata().getIdentifier() == null;
 
-									/** Loads data from file then sets it to the cache **/
+									/* Loads data from file then sets it to the cache **/
 									this.cache.setData(data, location);
 
-									/**
+									/*
 									 * Save the data to disk to ensure it doesn't keep creating
 									 * new identifiers each time the project is loaded.
 									 */
@@ -329,11 +337,7 @@ public class OrbisProject implements IProject
 				fileSystem.close();
 			}
 		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-		catch (final URISyntaxException e)
+		catch (final IOException | URISyntaxException e)
 		{
 			e.printStackTrace();
 		}

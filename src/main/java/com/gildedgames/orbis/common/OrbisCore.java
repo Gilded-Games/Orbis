@@ -15,6 +15,7 @@ import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.data.BlueprintNode;
 import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
@@ -166,7 +167,7 @@ public class OrbisCore
 			projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"));
 		}
 
-		projectManager.scanAndCacheProjects();
+		projectManager.scanAndCacheProjects(OrbisCore.INSTANCE, "Orbis");
 	}
 
 	public synchronized static void stopProjectManager()
@@ -287,6 +288,7 @@ public class OrbisCore
 		s.register(8, BlueprintPalette.class, new Instantiator<>(BlueprintPalette.class));
 		s.register(9, ColoredRegion.class, new Instantiator<>(ColoredRegion.class));
 		s.register(10, Framework.class, new Instantiator<>(Framework.class));
+		s.register(11, BlueprintNode.class, new Instantiator<>(BlueprintNode.class));
 
 		OrbisAPI.services().io().register(s);
 	}

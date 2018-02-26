@@ -115,7 +115,7 @@ public class OrbisProjectManager implements IProjectManager
 	}
 
 	@Override
-	public void refreshCache()
+	public void refreshCache(Object mod, String archiveBaseName)
 	{
 		final List<IProjectIdentifier> foundProjects = Lists.newArrayList();
 
@@ -134,7 +134,7 @@ public class OrbisProjectManager implements IProjectManager
 				{
 					project.setLocationAsFile(file);
 
-					project.loadAndCacheData();
+					project.loadAndCacheData(mod, archiveBaseName);
 
 					this.cacheProject(file.getName(), project);
 				}
@@ -159,7 +159,7 @@ public class OrbisProjectManager implements IProjectManager
 	}
 
 	@Override
-	public void scanAndCacheProjects()
+	public void scanAndCacheProjects(Object mod, String archiveBaseName)
 	{
 		this.walkProjects((innerFile, file) ->
 		{
@@ -174,7 +174,7 @@ public class OrbisProjectManager implements IProjectManager
 
 				project.setLocationAsFile(file);
 
-				project.loadAndCacheData();
+				project.loadAndCacheData(mod, archiveBaseName);
 
 				this.cacheProject(file.getName(), project);
 			}

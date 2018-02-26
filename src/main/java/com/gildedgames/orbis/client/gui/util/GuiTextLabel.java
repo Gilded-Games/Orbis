@@ -24,7 +24,7 @@ public class GuiTextLabel extends GuiFrame
 	@Override
 	public void init()
 	{
-		this.addChild(this.text);
+		this.addChildren(this.text);
 	}
 
 	@Override

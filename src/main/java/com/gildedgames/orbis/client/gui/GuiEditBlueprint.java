@@ -101,10 +101,10 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 		this.closeButton.getInner().displayString = "Close";
 
-		this.addChild(this.title);
-		this.addChild(this.nameInput);
-		this.addChild(this.saveButton);
-		this.addChild(this.closeButton);
+		this.addChildren(this.title);
+		this.addChildren(this.nameInput);
+		this.addChildren(this.saveButton);
+		this.addChildren(this.closeButton);
 
 		this.directoryViewer = new GuiDirectoryViewer(center.clone().addX(-200).flush(),
 				new DirectoryNavigator(new OrbisNavigatorNodeFactory()));
@@ -205,8 +205,8 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
-		this.addChild(this.directoryViewer);
-		this.addChild(this.layerViewer);
+		this.addChildren(this.directoryViewer);
+		this.addChildren(this.layerViewer);
 	}
 
 	@Override
@@ -243,7 +243,7 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		if (InputHelper.isHovered(this.closeButton) && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);
-			GuiRightClickBlueprint.lastCloseTime = System.currentTimeMillis();
+			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)

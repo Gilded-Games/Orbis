@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -29,9 +28,11 @@ public interface IGodPowerClient
 
 	List<IWorldRenderer> getActiveRenderers(PlayerOrbis playerOrbis, World world);
 
+	Object raytraceObject(PlayerOrbis playerOrbis);
+
 	/**
 	 * @return True if it should use the regular active selection behaviour. False to cancel.
 	 */
-	boolean onRightClickShape(PlayerOrbis playerOrbis, IShape selectedShape, MouseEvent event);
+	boolean onRightClickShape(PlayerOrbis playerOrbis, Object foundObject, MouseEvent event);
 
 }

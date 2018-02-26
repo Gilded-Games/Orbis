@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.api.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.OrbisTuple;
@@ -9,7 +10,6 @@ import com.gildedgames.orbis.api.util.mc.BlockUtil;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.blueprint.BlueprintRenderCache;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis.common.world_objects.IColored;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

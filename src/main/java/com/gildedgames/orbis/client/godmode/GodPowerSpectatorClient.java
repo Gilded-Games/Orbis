@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
@@ -73,7 +72,13 @@ public class GodPowerSpectatorClient implements IGodPowerClient
 	}
 
 	@Override
-	public boolean onRightClickShape(final PlayerOrbis playerOrbis, final IShape selectedShape, final MouseEvent event)
+	public Object raytraceObject(PlayerOrbis playerOrbis)
+	{
+		return null;
+	}
+
+	@Override
+	public boolean onRightClickShape(PlayerOrbis playerOrbis, Object foundObject, MouseEvent event)
 	{
 		return false;
 	}

@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.player.godmode.selection_input;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.shapes.AbstractShape;
 import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputDraggedClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -173,9 +174,11 @@ public class SelectionInputDragged implements ISelectionInput
 			{
 				event.setCanceled(true);
 
-				final IShape selectedShape = playerOrbis.getSelectedRegion();
+				IGodPowerClient client = playerOrbis.powers().getCurrentPower().getClientHandler();
 
-				if (selectedShape == null || playerOrbis.powers().getCurrentPower().getClientHandler().onRightClickShape(playerOrbis, selectedShape, event))
+				Object raytracedObject = client.raytraceObject(playerOrbis);
+
+				if (raytracedObject == null || client.onRightClickShape(playerOrbis, raytracedObject, event))
 				{
 					if (!event.isButtonstate() && this.getActiveSelection() != null || event.isButtonstate() && this.getActiveSelection() == null)
 					{

@@ -2,7 +2,7 @@ package com.gildedgames.orbis.api.data.framework;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDNode;
 import com.gildedgames.orbis.api.data.framework.generation.FDGenUtil;
@@ -34,9 +34,9 @@ public class FrameworkAlgorithm
 
 	private final FrameworkData framework;
 
-	private Graph<FDGDNode, FDGDEdge> fdgdGraph;
-
 	public Map<FrameworkNode, FDGDNode> _nodeMap; // Used for debugging
+
+	private Graph<FDGDNode, FDGDEdge> fdgdGraph;
 
 	private Phase phase = Phase.CSP;
 
@@ -92,7 +92,7 @@ public class FrameworkAlgorithm
 		{
 			//			this.solveCSP();
 			this.initialGraph();
-//			this.assignConnections();
+			//			this.assignConnections();
 			this.phase = Phase.FDGD;
 			this.gdAlgorithm.initialize(this.fdgdGraph, this.framework.getType(), this.random);
 			return false;
@@ -105,13 +105,15 @@ public class FrameworkAlgorithm
 
 			this.phase = this.gdAlgorithm.inEquilibrium(this.fdgdGraph, this.framework.getType(), this.fdgdIterations);
 
-			if(this.phase == Phase.PATHWAYS && !FDGenUtil.hasCollision(this.fdgdGraph))
+			if (this.phase == Phase.PATHWAYS && !FDGenUtil.hasCollision(this.fdgdGraph))
 			{
 				if (this.framework.getType() == FrameworkType.CUBES || !FDGenUtil.hasEdgeIntersections(this.fdgdGraph))
 				{
-//					//TODO: Might need to be uncommented? Seeing issues
+					//					//TODO: Might need to be uncommented? Seeing issues
 					for (final FDGDNode node : this.fdgdGraph.vertexSet())
+					{
 						node.assignConnectionsFixRot(this.fdgdGraph.edgesOf(node));
+					}
 
 					this.phase = Phase.PATHWAYS;
 
@@ -127,7 +129,9 @@ public class FrameworkAlgorithm
 					return true;
 				}
 				else
+				{
 					this.phase = Phase.REBUILD1;
+				}
 			}
 			return false;
 		}
@@ -142,7 +146,7 @@ public class FrameworkAlgorithm
 		if (this.phase == Phase.REBUILD2)
 		{
 			this.doSpiderWeb();
-//			this.doEdgeDestroy();
+			//			this.doEdgeDestroy();
 			this.gdAlgorithm.resetOnSpiderweb(this.fdgdGraph, this.framework.getType(), this.fdgdIterations);
 			this.phase = Phase.REBUILD3;
 			return false;
@@ -162,16 +166,24 @@ public class FrameworkAlgorithm
 		{
 			if (this.edgeIterator.hasNext())
 			{
-				if(this.pathfindingSolver.currentState() != null)
+				if (this.pathfindingSolver.currentState() != null)
+				{
 					for (PathwayNode node : this.pathfindingSolver.currentState().fullPath())
+					{
 						if (node != null)
+						{
 							this.fragments.add(node);
+						}
+					}
+				}
 				FDGDEdge edge = this.edgeIterator.next();
 				PathwayProblem problem = new PathwayProblem(edge.entrance1(), edge.node1(), edge.entrance2(), edge.pathway().pieces(), this.fragments);
 				this.pathfindingSolver = new StepAStar<>(problem, heuristicWeight);
 			}
 			else
+			{
 				return true;
+			}
 		}
 
 		this.pathfindingSolver.step();
@@ -204,9 +216,15 @@ public class FrameworkAlgorithm
 		{
 			PathwayData pathway = null;
 			for (PathwayData p1 : edge.node1().pathways())
-				for(PathwayData p2 : edge.node2().pathways())
+			{
+				for (PathwayData p2 : edge.node2().pathways())
+				{
 					if (p1 == p2)
+					{
 						pathway = p1;
+					}
+				}
+			}
 			if (pathway != null)
 			{
 				final FDGDNode node1 = nodeLookup.get(edge.node1());
@@ -309,7 +327,9 @@ public class FrameworkAlgorithm
 				// reach the two intersections by JUST going over other intersections,
 				// we can savely remove it.
 				if (!this.fdgdGraph.canReach(end, start, FDGDNode::isIntersection))
+				{
 					this.fdgdGraph.addEdge(n1, n2, edge);
+				}
 				else
 				{
 					edges.remove(p);
@@ -323,7 +343,7 @@ public class FrameworkAlgorithm
 		{
 			FDGDNode n = nodes.get(p);
 			Set<FDGDEdge> edgesOut = this.fdgdGraph.edgesOf(n);
-			if(n.isIntersection() && edgesOut.size() < 3)
+			if (n.isIntersection() && edgesOut.size() < 3)
 			{
 				List<FDGDEdge> edgesOutL = new ArrayList<>(edgesOut);
 				if (edgesOut.size() == 2)
@@ -348,7 +368,6 @@ public class FrameworkAlgorithm
 		}
 	}
 
-
 	private boolean doSpiderWeb()
 	{
 		boolean sFinished = true;
@@ -359,21 +378,21 @@ public class FrameworkAlgorithm
 		final int maxAmount = (int) Math.pow(edges.size(), spiderwebGrowth);
 		OrbisAPI.LOGGER.info(maxAmount);
 
-//		for (int j = 0; j < nodes.size(); j++)
-//		{
-//			FDGDNode n = nodes.get(j);
-//			if (n.isIntersection())
-//			{
-//				FDGDEdge e1 = n.getOldEdge1();
-//				FDGDEdge e2 = n.getOldEdge2();
-//				if (!FDGenUtil.isIntersecting(e1, e2) &&
-//						!FDGenUtil.hasEdgeIntersections(this.fdgdGraph, e1) &&
-//						!FDGenUtil.hasEdgeIntersections(this.fdgdGraph, e2))
-//				{
-//
-//				}
-//			}
-//		}
+		//		for (int j = 0; j < nodes.size(); j++)
+		//		{
+		//			FDGDNode n = nodes.get(j);
+		//			if (n.isIntersection())
+		//			{
+		//				FDGDEdge e1 = n.getOldEdge1();
+		//				FDGDEdge e2 = n.getOldEdge2();
+		//				if (!FDGenUtil.isIntersecting(e1, e2) &&
+		//						!FDGenUtil.hasEdgeIntersections(this.fdgdGraph, e1) &&
+		//						!FDGenUtil.hasEdgeIntersections(this.fdgdGraph, e2))
+		//				{
+		//
+		//				}
+		//			}
+		//		}
 
 		this.clearUselessIntersections(edges);
 		int i = 0;
@@ -395,12 +414,15 @@ public class FrameworkAlgorithm
 					final FDGDNode e2S = edge2.node1();
 					final FDGDNode e2T = edge2.node2();
 
-
 					// Filter intersections that happen because the edges have the same origin
 					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
+					{
 						continue;
+					}
 					if (!FDGenUtil.isIntersecting(edge1, edge2))
+					{
 						continue;
+					}
 
 					sFinished = false;
 					BlockPos connE1S = edge1.node1().centerAsBP();//.connectionOf1().getPos();
@@ -480,13 +502,17 @@ public class FrameworkAlgorithm
 					//We want to continue by looking from that edge.
 					p--;
 					i++;
-					if(i >= maxAmount)
+					if (i >= maxAmount)
+					{
 						break outerloop;
+					}
 					break;
 				}
 			}
 			if (sFinished) //There are no longer any intersecting edges left
+			{
 				break;
+			}
 		}
 		this.clearUselessIntersections(edges);
 		return sFinished;
@@ -504,8 +530,10 @@ public class FrameworkAlgorithm
 		outerloop:
 		while (i < maxAmount)
 		{
-			if(removed != null)
+			if (removed != null)
+			{
 				edges.remove(removed);
+			}
 			// Not using foreach loops here because we remove the contents of the edges in the loop.
 			for (FDGDEdge edge1 : edges)
 			{
@@ -519,10 +547,14 @@ public class FrameworkAlgorithm
 
 					// Filter intersections that happen because the edges have the same origin
 					if (e1T == e2T || e1T == e2S || e1S == e2T || e1S == e2S)
+					{
 						continue;
+					}
 
 					if (!FDGenUtil.isIntersecting(edge1, edge2))
+					{
 						continue;
+					}
 
 					final FDGDEdge toRemove = this.random.nextBoolean() ? edge1 : edge2;
 					//Remove the edge, and make sure we can still reach the nodes it connected
@@ -549,14 +581,16 @@ public class FrameworkAlgorithm
 			List<FDGDNode> vertices = new ArrayList<>(this.fdgdGraph.vertices);
 			Collections.shuffle(vertices);
 			for (FDGDNode n : vertices)
-				//TODO: Add amount of entrances constraint here
+			//TODO: Add amount of entrances constraint here
+			{
 				for (FDGDNode n2 : vertices)
+				{
 					if (this.fdgdGraph.edgesOf(n).size() < 3 &&
 							this.fdgdGraph.edgesOf(n2).size() < 3 &&
 							n != n2 && this.fdgdGraph.getEdge(n, n2) == null)
 					{
 						float dist = FDGenUtil.euclidian(n.centerAsBP(), n2.centerAsBP());
-						if(dist < diagonal * addEdgeDistanceRatio)
+						if (dist < diagonal * addEdgeDistanceRatio)
 						{
 							// TODO: Properly choose pathway
 							PathwayData p = n.getData().entrances().get(0).toConnectTo();
@@ -565,11 +599,13 @@ public class FrameworkAlgorithm
 							// edges already in the graph
 							boolean isIntersectingOthers = false;
 							for (FDGDEdge e2 : this.fdgdGraph.edgeSet())
-								if(FDGenUtil.isIntersecting(e, e2))
+							{
+								if (FDGenUtil.isIntersecting(e, e2))
 								{
 									isIntersectingOthers = true;
 									break;
 								}
+							}
 							if (!isIntersectingOthers)
 							{
 								OrbisAPI.LOGGER.info("Adding edge");
@@ -578,6 +614,8 @@ public class FrameworkAlgorithm
 							}
 						}
 					}
+				}
+			}
 		}
 	}
 

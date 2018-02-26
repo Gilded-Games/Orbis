@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.RotationHelp;

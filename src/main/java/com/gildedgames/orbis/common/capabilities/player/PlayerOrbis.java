@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.common.capabilities.player;
 
+import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.mc.NBTHelper;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.OrbisCapabilities;
@@ -53,6 +55,10 @@ public class PlayerOrbis implements IPlayerOrbis
 	private boolean developerModeEnabled;
 
 	private IShape selectedRegion;
+
+	private IFrameworkNode selectedNode;
+
+	private ISchedule selectedSchedule;
 
 	public PlayerOrbis()
 	{
@@ -123,6 +129,9 @@ public class PlayerOrbis implements IPlayerOrbis
 						(EntityPlayerMP) this.getEntity());
 		NetworkingOrbis
 				.sendPacketToPlayer(new PacketChangeSelectionType(this, this.selectionTypes().getCurrentSelectionType()),
+						(EntityPlayerMP) this.getEntity());
+		NetworkingOrbis
+				.sendPacketToPlayer(new PacketSetScheduling(this.powers().isScheduling()),
 						(EntityPlayerMP) this.getEntity());
 	}
 
@@ -204,6 +213,16 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.selectedRegion;
 	}
 
+	public IFrameworkNode getSelectedNode()
+	{
+		return this.selectedNode;
+	}
+
+	public ISchedule getSelectedSchedule()
+	{
+		return this.selectedSchedule;
+	}
+
 	public void setDeveloperMode(final boolean flag)
 	{
 		this.developerModeEnabled = flag;
@@ -257,7 +276,9 @@ public class PlayerOrbis implements IPlayerOrbis
 	@Override
 	public void onUpdate(LivingUpdateEvent event)
 	{
-		this.selectedRegion = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, false);
+		this.selectedRegion = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.WORLD_OBJECT_LOCATOR);
+		this.selectedNode = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.FRAMEWORK_NODE_LOCATOR);
+		this.selectedSchedule = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.SCHEDULE_LOCATOR);
 
 		for (final PlayerOrbisModule module : this.modules)
 		{

@@ -47,7 +47,7 @@ public class Region implements IMutableRegion
 
 	public Region(final IDimensions dimensions)
 	{
-		this.setBounds(BlockPos.ORIGIN, new BlockPos(dimensions.getWidth(), dimensions.getHeight(), dimensions.getLength()));
+		this.setBounds(BlockPos.ORIGIN, new BlockPos(dimensions.getWidth() - 1, dimensions.getHeight() - 1, dimensions.getLength() - 1));
 	}
 
 	@Override
@@ -160,6 +160,11 @@ public class Region implements IMutableRegion
 		RegionHelp.translate(this, x, y, z);
 
 		this.dataChanged = true;
+	}
+
+	public void add(BlockPos pos)
+	{
+		this.add(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public void subtract(final int x, final int y, final int z)

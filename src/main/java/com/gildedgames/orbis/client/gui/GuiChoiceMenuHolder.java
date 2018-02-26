@@ -7,7 +7,11 @@ import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.network.packets.PacketSetScheduling;
 import com.gildedgames.orbis.common.util.InputHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
@@ -22,11 +26,27 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 	private final static ResourceLocation CHOICE_TAB_UNPRESSED = OrbisCore.getResource("godmode/overlay/choice_tab_unpressed.png");
 
+	private final static ResourceLocation PLACEMENT_MODE_BAR = OrbisCore.getResource("godmode/overlay/placement_mode_bar.png");
+
+	private final static ResourceLocation LEFT_PLACEMENT_MODE = OrbisCore.getResource("godmode/overlay/left_placement_mode.png");
+
+	private final static ResourceLocation RIGHT_PLACEMENT_MODE = OrbisCore.getResource("godmode/overlay/right_placement_mode.png");
+
+	private final static ResourceLocation LEFT_PLACEMENT_MODE_UNPRESSED = OrbisCore.getResource("godmode/overlay/left_placement_mode_unpressed.png");
+
+	private final static ResourceLocation RIGHT_PLACEMENT_MODE_UNPRESSED = OrbisCore.getResource("godmode/overlay/right_placement_mode_unpressed.png");
+
+	private final static ResourceLocation GENERATE_ICON = OrbisCore.getResource("godmode/placement_icons/generate_icon.png");
+
+	private final static ResourceLocation SCHEDULE_ICON = OrbisCore.getResource("godmode/placement_icons/schedule_icon.png");
+
 	private static int choicePageIndex;
 
 	private final GuiChoiceMenu[] menus;
 
 	private final GuiTexture[] tabs;
+
+	private GuiTexture left, right;
 
 	public GuiChoiceMenuHolder(final GuiChoiceMenu... menus)
 	{
@@ -105,7 +125,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 			menu.setVisible(false);
 			menu.setEnabled(false);
 
-			this.addChild(menu);
+			this.addChildren(menu);
 
 			final GuiTexture choiceTab = new GuiTexture(
 					Dim2D.build().pos(center).addY(-77).addX((-22 * this.menus.length) / 2).addX(i * 22).width(22).height(19).flush(),
@@ -113,11 +133,11 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 			final GuiText number = new GuiText(Dim2D.build().pos(8, 7).flush(), new Text(new TextComponentString(String.valueOf(i + 1)), 1.0F));
 
-			choiceTab.addChild(number);
+			choiceTab.addChildren(number);
 
 			this.tabs[i] = choiceTab;
 
-			this.addChild(choiceTab);
+			this.addChildren(choiceTab);
 
 			i++;
 		}
@@ -129,7 +149,42 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 		final GuiTexture choiceBar = new GuiTexture(Dim2D.build().pos(center).addY(-58).width(96).height(6).centerX(true).flush(), CHOICE_BAR);
 
-		this.addChild(choiceBar);
+		this.addChildren(choiceBar);
+
+		this.left = new GuiTexture(
+				Dim2D.build().pos(center).addY(64).addX(-22).width(22).height(16).flush(),
+				LEFT_PLACEMENT_MODE_UNPRESSED);
+
+		this.right = new GuiTexture(
+				Dim2D.build().pos(center).addY(64).addX(0).width(22).height(16).flush(),
+				RIGHT_PLACEMENT_MODE_UNPRESSED);
+
+		final GuiTexture genIcon = new GuiTexture(
+				Dim2D.build().pos(center).addY(65).addX(-9).width(10).height(10).centerX(true).flush(),
+				GENERATE_ICON);
+
+		final GuiTexture scheduleIcon = new GuiTexture(
+				Dim2D.build().pos(center).addY(65).addX(9).width(10).height(10).centerX(true).flush(),
+				SCHEDULE_ICON);
+
+		final GuiTexture placementBar = new GuiTexture(Dim2D.build().pos(center).addY(58).width(48).height(6).centerX(true).flush(), PLACEMENT_MODE_BAR);
+
+		PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
+
+		if (playerOrbis.powers().isScheduling())
+		{
+			this.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
+		}
+		else
+		{
+			this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
+		}
+
+		this.addChildren(placementBar);
+		this.addChildren(this.left);
+		this.addChildren(this.right);
+		this.addChildren(genIcon);
+		this.addChildren(scheduleIcon);
 	}
 
 	@Override
@@ -149,6 +204,24 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				}
 
 				i++;
+			}
+
+			if (InputHelper.isHovered(this.left))
+			{
+				this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
+				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE_UNPRESSED);
+
+				NetworkingOrbis.sendPacketToServer(new PacketSetScheduling(false));
+				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(false);
+			}
+
+			if (InputHelper.isHovered(this.right))
+			{
+				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
+				this.left.setResourceLocation(LEFT_PLACEMENT_MODE_UNPRESSED);
+
+				NetworkingOrbis.sendPacketToServer(new PacketSetScheduling(true));
+				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(true);
 			}
 		}
 

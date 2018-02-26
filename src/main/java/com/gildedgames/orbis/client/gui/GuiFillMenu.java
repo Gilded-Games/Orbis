@@ -85,11 +85,11 @@ public class GuiFillMenu extends GuiFrameCreative
 		this.combineTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addX(60).addY(-49 - 9).flush(),
 				new Text(new TextComponentString("Combine"), 1.0F));
 
-		this.addChild(this.matrix);
-		this.addChild(this.flow);
-		this.addChild(this.combineTitle);
+		this.addChildren(this.matrix);
+		this.addChildren(this.flow);
+		this.addChildren(this.combineTitle);
 
-		this.addChild(this.forgeButton);
+		this.addChildren(this.forgeButton);
 	}
 
 	@Override

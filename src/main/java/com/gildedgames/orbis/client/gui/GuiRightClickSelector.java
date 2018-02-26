@@ -23,7 +23,7 @@ public class GuiRightClickSelector extends GuiFrame
 	@Override
 	public void init()
 	{
-		this.addChild(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
+		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
 				GuiRightClickElements.delete(this.region),
 				GuiRightClickElements.copy(this.region),
 				GuiRightClickElements.close()));
@@ -37,7 +37,7 @@ public class GuiRightClickSelector extends GuiFrame
 		if (Minecraft.getMinecraft().currentScreen == this)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);
-			GuiRightClickBlueprint.lastCloseTime = System.currentTimeMillis();
+			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 	}
 }

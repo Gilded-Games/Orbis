@@ -12,11 +12,14 @@ public class OrbisTileEntities
 
 	public static final String BLUEPRINT_PALETTE_ID = "orbis.blueprint_palette";
 
+	public static final String ENTITY_ITEM_ID = "orbis.entity_item";
+
 	public static void preInit()
 	{
 		GameRegistry.registerTileEntity(TileEntityBlockDataContainer.class, BLOCK_DATA_CONTAINER_ID);
 		GameRegistry.registerTileEntity(TileEntityBlockPalette.class, BLOCK_PALETTE_ID);
 		GameRegistry.registerTileEntity(TileEntityBlueprint.class, BLUEPRINT_ID);
 		GameRegistry.registerTileEntity(TileEntityBlueprintPalette.class, BLUEPRINT_PALETTE_ID);
+		GameRegistry.registerTileEntity(TileEntityEntityItem.class, ENTITY_ITEM_ID);
 	}
 }

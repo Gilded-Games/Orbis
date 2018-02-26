@@ -108,6 +108,15 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 	}
 
 	@Override
+	public void addChildren(IGuiFrame... children)
+	{
+		for (IGuiFrame element : children)
+		{
+			this.addChild(element, true);
+		}
+	}
+
+	@Override
 	public ModDim2D dim()
 	{
 		return this.dim;
@@ -152,7 +161,7 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 	}
 
 	@Override
-	public void addChild(final IGuiFrame element)
+	public void addChildren(final IGuiFrame element)
 	{
 		this.addChild(element, true);
 	}

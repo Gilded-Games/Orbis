@@ -2,7 +2,7 @@ package com.gildedgames.orbis.api.core.world_objects;
 
 import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.AbstractRegion;
 import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.data.region.IRegion;

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.api.data.framework;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,10 +42,10 @@ public class GeneratedFramework
 
 	}
 
-//	public List<Entrance> entrances()
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	//	public List<Entrance> entrances()
+	//	{
+	//		// TODO Auto-generated method stub
+	//		return null;
+	//	}
 
 }

@@ -26,6 +26,8 @@ import java.util.Random;
 public class BlockFilterLayer implements NBT
 {
 
+	private static final List<IBlockState> AIR_BLOCKS = Lists.newArrayList(Blocks.AIR.getDefaultState());
+
 	public boolean chooseBlockPerBlock = true;
 
 	protected List<BlockDataWithConditions> requiredBlocks = Lists.newArrayList();
@@ -122,11 +124,6 @@ public class BlockFilterLayer implements NBT
 	{
 		final BlockDataWithConditions replacementBlock = this.getRandom(rand, world);
 
-		if (!this.getFilterType().filter(state, this.requiredBlocks, world, rand))
-		{
-			return Blocks.AIR.getDefaultState();
-		}
-
 		return replacementBlock.getBlockState();
 	}
 
@@ -212,7 +209,37 @@ public class BlockFilterLayer implements NBT
 
 			if (options.schedules() && holder != null)
 			{
-				if (options.erases())
+				BlockFilter posFilter = holder.getCurrentScheduleLayer().getDataRecord().get(schedX, schedY, schedZ);
+
+				boolean found = false;
+
+				if (posFilter != null)
+				{
+					for (BlockFilterLayer layer : parentFilter.getFilters())
+					{
+						if (layer.getRequiredBlocks().equals(posFilter.getFilters().get(0).getReplacementBlocks()))
+						{
+							found = true;
+						}
+					}
+				}
+				else
+				{
+					for (BlockFilterLayer layer : parentFilter.getFilters())
+					{
+						if (layer.getRequiredBlocks().equals(AIR_BLOCKS))
+						{
+							found = true;
+						}
+					}
+				}
+
+				if (!found)
+				{
+					continue;
+				}
+
+				if (replacementBlock.isAir())
 				{
 					holder.getCurrentScheduleLayer().getDataRecord().unmarkPos(schedX, schedY, schedZ);
 				}

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.api.util;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayUtil;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IDimensions;

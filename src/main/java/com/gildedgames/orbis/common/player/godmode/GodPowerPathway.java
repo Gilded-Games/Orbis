@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.player.godmode;
 
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode;
 import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayProblem;
 import com.gildedgames.orbis.api.data.framework.generation.searching.StepAStar;
@@ -106,7 +106,7 @@ public class GodPowerPathway implements IGodPower
 	}
 
 	@Override
-	public boolean hasCustomGui()
+	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
 		return false;
 	}

@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.client.renderers.tiles;
 
 import com.gildedgames.orbis.api.block.BlockDataContainer;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
 import com.gildedgames.orbis.common.OrbisCore;

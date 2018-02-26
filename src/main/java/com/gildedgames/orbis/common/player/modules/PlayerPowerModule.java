@@ -30,8 +30,6 @@ public class PlayerPowerModule extends PlayerOrbisModule
 
 	private final GodPowerSpectator spectatorPower;
 
-	private final GodPowerSchedule schedulePower;
-
 	private final GodPowerEntrance entrancePower;
 
 	private final GodPowerPathway pathwayPower;
@@ -39,6 +37,8 @@ public class PlayerPowerModule extends PlayerOrbisModule
 	private final GodPowerFramework frameworkPower;
 
 	private int currentPowerIndex;
+
+	private boolean scheduling;
 
 	public PlayerPowerModule(final PlayerOrbis playerOrbis)
 	{
@@ -51,7 +51,6 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		this.blueprintPower = new GodPowerBlueprint(playerOrbis, this.getWorld());
 		this.selectPower = new GodPowerSelect(this.getWorld());
 		this.spectatorPower = new GodPowerSpectator(this.getWorld());
-		this.schedulePower = new GodPowerSchedule(this.getWorld());
 		this.entrancePower = new GodPowerEntrance(this.getWorld());
 		this.pathwayPower = new GodPowerPathway(this.getWorld());
 		this.frameworkPower = new GodPowerFramework(this.getWorld());
@@ -64,13 +63,22 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		powers.add(this.replacePower);
 		powers.add(this.blueprintPower);
 		powers.add(this.selectPower);
-		powers.add(this.schedulePower);
 		powers.add(this.entrancePower);
 		powers.add(this.pathwayPower);
 		powers.add(this.frameworkPower);
 		powers.add(this.spectatorPower);
 
 		this.powers = powers.toArray(new IGodPower[powers.size()]);
+	}
+
+	public boolean isScheduling()
+	{
+		return this.scheduling;
+	}
+
+	public void setScheduling(boolean scheduling)
+	{
+		this.scheduling = scheduling;
 	}
 
 	public GodPowerFramework getFrameworkPower()
@@ -123,14 +131,14 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		return this.selectPower;
 	}
 
-	public GodPowerSchedule getSchedulePower()
-	{
-		return this.schedulePower;
-	}
-
 	public IGodPower getCurrentPower()
 	{
 		return this.powers[this.currentPowerIndex];
+	}
+
+	public void setCurrentPower(final int powerIndex)
+	{
+		this.currentPowerIndex = powerIndex;
 	}
 
 	public void setCurrentPower(final Class<? extends IGodPower> clazz)
@@ -157,11 +165,6 @@ public class PlayerPowerModule extends PlayerOrbisModule
 				NetworkingOrbis.sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
 			}
 		}
-	}
-
-	public void setCurrentPower(final int powerIndex)
-	{
-		this.currentPowerIndex = powerIndex;
 	}
 
 	public int getCurrentPowerIndex()
@@ -227,6 +230,7 @@ public class PlayerPowerModule extends PlayerOrbisModule
 
 		tag.setTag("powers", modules);
 		tag.setInteger("currentPowerIndex", this.currentPowerIndex);
+		tag.setBoolean("scheduling", this.scheduling);
 	}
 
 	@Override
@@ -240,6 +244,7 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		}
 
 		this.currentPowerIndex = tag.getInteger("currentPowerIndex");
+		this.scheduling = tag.getBoolean("scheduling");
 	}
 
 }

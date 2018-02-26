@@ -1,14 +1,15 @@
 package com.gildedgames.orbis.common.world_objects;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
-import com.gildedgames.orbis.api.data.management.IData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
+import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.region.*;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.renderers.RenderShape;
+import com.gildedgames.orbis.client.renderers.framework.RenderFrameworkEditing;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Map;
 
 public class Framework extends AbstractRegion implements IWorldObject, IColored, IMutableRegion, IRotateable
 {
@@ -32,29 +34,58 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 
 	private IWorldRenderer renderer;
 
+	private FrameworkData data;
+
 	private Framework()
 	{
-		
+		this.data = new FrameworkData(300, 300, 300);
 	}
 
 	public Framework(World world, final IRegion region)
 	{
+		this();
 		this.world = world;
 		this.setBounds(region);
 	}
 
 	public Framework(World world, final BlockPos pos, final BlueprintData data)
 	{
+		this();
 		this.world = world;
 		this.setPos(pos);
 	}
 
 	public Framework(World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
 	{
+		this();
 		this.world = world;
 		this.rotation = rotation;
 
 		this.setPos(pos);
+	}
+
+	public IFrameworkNode findIntersectingNode(BlockPos pos)
+	{
+		for (Map.Entry<IFrameworkNode, BlockPos> entry : this.data.getNodeToPosMap().entrySet())
+		{
+			IFrameworkNode node = entry.getKey();
+			BlockPos p = entry.getValue();
+
+			int minX = p.getX() + this.getPos().getX();
+			int minY = p.getY() + this.getPos().getY();
+			int minZ = p.getZ() + this.getPos().getZ();
+
+			int maxX = minX + node.largestPossibleDim().getWidth() - 1;
+			int maxY = minY + node.largestPossibleDim().getHeight() - 1;
+			int maxZ = minZ + node.largestPossibleDim().getLength() - 1;
+
+			if (pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY && pos.getZ() >= minZ && pos.getZ() <= maxZ)
+			{
+				return node;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -158,12 +189,7 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	{
 		if (OrbisCore.isClient() && this.renderer == null)
 		{
-			final RenderShape r = new RenderShape(this);
-
-			r.useCustomColors = true;
-
-			r.colorGrid = this.getColor();
-			r.colorBorder = this.getColor();
+			final RenderFrameworkEditing r = new RenderFrameworkEditing(this);
 
 			this.renderer = r;
 		}
@@ -172,9 +198,9 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	}
 
 	@Override
-	public IData getData()
+	public FrameworkData getData()
 	{
-		return null;
+		return this.data;
 	}
 
 	@Override

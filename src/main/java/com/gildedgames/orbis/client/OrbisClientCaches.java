@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.client;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
 import com.gildedgames.orbis.common.OrbisCore;

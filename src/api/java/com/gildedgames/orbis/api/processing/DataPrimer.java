@@ -3,11 +3,9 @@ package com.gildedgames.orbis.api.processing;
 import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.block.BlockInstance;
-import com.gildedgames.orbis.api.core.BlueprintDefinition;
-import com.gildedgames.orbis.api.core.ICreationData;
-import com.gildedgames.orbis.api.core.PlacementCondition;
+import com.gildedgames.orbis.api.core.*;
 import com.gildedgames.orbis.api.core.util.BlueprintUtil;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.OrbisTuple;
@@ -251,6 +249,26 @@ public class DataPrimer
 	public void create(final BlockDataContainer container, final ICreationData data)
 	{
 		this.create(null, container, data, null);
+	}
+
+	public void create(BlueprintData bData, ICreationData data)
+	{
+		this.create(null, bData.getBlockDataContainer(), data, null);
+
+		BlueprintData.spawnEntities(bData, data.getWorld(), data.getPos());
+	}
+
+	public void create(PlacedBlueprint blueprint, ICreationData data)
+	{
+		for (BlockDataChunk chunk : blueprint.getDataChunks())
+		{
+			this.create(null, chunk.getContainer(), new CreationData(data.getWorld()).pos(chunk.getPos().getBlock(0, 0, 0)), null);
+		}
+
+		for (PlacedEntity p : blueprint.getPlacedEntities())
+		{
+			p.spawn(data.getWorld());
+		}
 	}
 
 	public void create(IRegion containerRegion, final BlockDataContainer container, final ICreationData data, final IRegion insideRegion)

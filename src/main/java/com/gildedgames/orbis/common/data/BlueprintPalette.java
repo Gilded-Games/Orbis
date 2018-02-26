@@ -2,8 +2,8 @@ package com.gildedgames.orbis.common.data;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.BlueprintData;
 import com.gildedgames.orbis.api.data.DataCondition;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
@@ -33,6 +33,8 @@ public class BlueprintPalette implements NBT
 	private LinkedHashMap<IDataIdentifier, DataCondition> idToConditions = Maps.newLinkedHashMap();
 
 	private BlueprintData largestInArea;
+
+	private int minEntrances, maxEntrances;
 
 	public BlueprintPalette()
 	{
@@ -93,6 +95,37 @@ public class BlueprintPalette implements NBT
 		return this.largestInArea;
 	}
 
+	public int getMinimumEntrances()
+	{
+		return this.minEntrances;
+	}
+
+	public int getMaximumEntrances()
+	{
+		return this.maxEntrances;
+	}
+
+	private void evaluateEntrances()
+	{
+		int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+
+		for (final BlueprintData blueprint : this.data.values())
+		{
+			if (blueprint.entrances().size() > max)
+			{
+				max = blueprint.entrances().size();
+			}
+
+			if (blueprint.entrances().size() < min)
+			{
+				min = blueprint.entrances().size();
+			}
+		}
+
+		this.minEntrances = min;
+		this.maxEntrances = max;
+	}
+
 	private void evaluateLargestInArea()
 	{
 		BlueprintData largestInArea = null;
@@ -115,6 +148,7 @@ public class BlueprintPalette implements NBT
 		this.data.put(data.getMetadata().getIdentifier(), data);
 
 		this.evaluateLargestInArea();
+		this.evaluateEntrances();
 	}
 
 	public void remove(final BlueprintData data)
@@ -172,6 +206,7 @@ public class BlueprintPalette implements NBT
 		}
 
 		this.evaluateLargestInArea();
+		this.evaluateEntrances();
 	}
 
 	@Override

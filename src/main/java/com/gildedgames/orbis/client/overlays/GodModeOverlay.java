@@ -16,6 +16,10 @@ public class GodModeOverlay implements IOverlay
 
 	private final static ResourceLocation BACKDROP_TEXTURE = OrbisCore.getResource("godmode/overlay/hotbar_power.png");
 
+	private final static ResourceLocation GENERATE_ICON = OrbisCore.getResource("godmode/placement_icons/generate_icon.png");
+
+	private final static ResourceLocation SCHEDULE_ICON = OrbisCore.getResource("godmode/placement_icons/schedule_icon.png");
+
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
 	public GodModeOverlay()
@@ -88,6 +92,27 @@ public class GodModeOverlay implements IOverlay
 		GlStateManager.translate(centerX + 34.0F, centerZ + 13.5F, 0);
 
 		GlStateManager.scale(0.5F, 0.5F, 0.0F);
+
+		Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, width, height, width, height);
+
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlpha();
+
+		GlStateManager.popMatrix();
+
+		GlStateManager.pushMatrix();
+
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlpha();
+
+		mc.getTextureManager().bindTexture(playerOrbis.powers().isScheduling() ? SCHEDULE_ICON : GENERATE_ICON);
+
+		width = 16;
+		height = 16;
+
+		GlStateManager.translate(centerX - 27, centerZ + 8, 0);
+
+		GlStateManager.scale(0.75F, 0.75F, 0.0F);
 
 		Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, width, height, width, height);
 

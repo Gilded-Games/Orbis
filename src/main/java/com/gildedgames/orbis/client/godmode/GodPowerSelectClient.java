@@ -1,8 +1,10 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.gui.GuiRightClickBlueprint;
+import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.GuiRightClickScheduleRegion;
 import com.gildedgames.orbis.client.gui.GuiRightClickSelector;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
@@ -79,7 +81,7 @@ public class GodPowerSelectClient implements IGodPowerClient
 	@Override
 	public int getShapeColor(final PlayerOrbis playerOrbis)
 	{
-		return SHAPE_COLOR;
+		return playerOrbis.powers().isScheduling() ? 0xd19044 : SHAPE_COLOR;
 	}
 
 	@Override
@@ -89,7 +91,13 @@ public class GodPowerSelectClient implements IGodPowerClient
 	}
 
 	@Override
-	public boolean onRightClickShape(final PlayerOrbis playerOrbis, final IShape selectedShape, final MouseEvent event)
+	public Object raytraceObject(PlayerOrbis playerOrbis)
+	{
+		return playerOrbis.powers().isScheduling() ? playerOrbis.getSelectedSchedule() : playerOrbis.getSelectedRegion();
+	}
+
+	@Override
+	public boolean onRightClickShape(PlayerOrbis playerOrbis, Object foundObject, MouseEvent event)
 	{
 		final EntityPlayer entity = playerOrbis.getEntity();
 
@@ -97,30 +105,46 @@ public class GodPowerSelectClient implements IGodPowerClient
 		final int y = MathHelper.floor(entity.posY);
 		final int z = MathHelper.floor(entity.posZ);
 
-		final boolean playerInside = selectedShape.contains(x, y, z) || selectedShape.contains(x, MathHelper.floor(entity.posY + entity.height), z);
-
-		if (entity.world.isRemote && !playerInside)
+		if (foundObject instanceof IShape)
 		{
-			if (System.currentTimeMillis() - GuiRightClickBlueprint.lastCloseTime > 200)
-			{
-				if (selectedShape instanceof Blueprint)
-				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickBlueprint((Blueprint) selectedShape));
-				}
-				else if (selectedShape instanceof WorldShape)
-				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickSelector((WorldShape) selectedShape));
-				}
-				else
-				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickSelector(new WorldShape(selectedShape, entity.world)));
-				}
+			IShape selectedShape = (IShape) foundObject;
 
-				return false;
+			final boolean playerInside = selectedShape.contains(x, y, z) || selectedShape.contains(x, MathHelper.floor(entity.posY + entity.height), z);
+
+			if (entity.world.isRemote && !playerInside)
+			{
+				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
+				{
+					if (!(selectedShape instanceof Blueprint) && selectedShape instanceof WorldShape)
+					{
+						Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickSelector((WorldShape) selectedShape));
+					}
+					else
+					{
+						return true;
+					}
+
+					return false;
+				}
+			}
+		}
+		else if (foundObject instanceof ScheduleRegion)
+		{
+			ScheduleRegion scheduleRegion = (ScheduleRegion) foundObject;
+
+			if (entity.world.isRemote)
+			{
+				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
+				{
+					Minecraft.getMinecraft()
+							.displayGuiScreen(new GuiRightClickScheduleRegion((Blueprint) scheduleRegion.getWorldObjectParent(), scheduleRegion));
+
+					return false;
+				}
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	@Override

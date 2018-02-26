@@ -2,8 +2,11 @@ package com.gildedgames.orbis.common.items;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -20,6 +23,17 @@ public class ItemsOrbis
 
 	public static final ItemBlueprintPalette blueprint_palette = new ItemBlueprintPalette();
 
+	public static final ItemEntity entity_item = new ItemEntity();
+
+	public static final CreativeTabs ENTITY_TAB = new CreativeTabs("Entities")
+	{
+		@Override
+		public ItemStack getTabIconItem()
+		{
+			return new ItemStack(Items.DIAMOND_HORSE_ARMOR);
+		}
+	};
+
 	@SubscribeEvent
 	public static void onRegisterItems(final RegistryEvent.Register<Item> event)
 	{
@@ -29,6 +43,7 @@ public class ItemsOrbis
 		items.register("block_chunk", block_chunk.setCreativeTab(null));
 		items.register("block_palette", block_palette.setCreativeTab(null));
 		items.register("blueprint_palette", blueprint_palette.setCreativeTab(null));
+		//items.register("entity_item", entity_item.setCreativeTab(ENTITY_TAB));
 	}
 
 	private static class ItemRegistryHelper

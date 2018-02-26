@@ -1,15 +1,13 @@
-package com.gildedgames.orbis.common.containers.util;
+package com.gildedgames.orbis.api.util.mc;
 
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.packets.PacketStagedInventoryChanged;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,19 +17,24 @@ public class StagedInventory<I extends IInventory>
 {
 	private static final Map<String, Locator> registeredLocators = Maps.newHashMap();
 
-	private final I stagingInv;
+	private I stagingInv;
 
-	private final I recordedInv;
+	private I recordedInv;
 
-	private final Locator locator;
+	private Locator locator;
 
-	private final String locatorId;
+	private String locatorId;
 
-	private final PlayerOrbis playerOrbis;
+	private EntityPlayer player;
 
-	public StagedInventory(final PlayerOrbis playerOrbis, final Supplier<I> inventorySupplier, final Locator locator, final String locatorId)
+	private StagedInventory()
 	{
-		this.playerOrbis = playerOrbis;
+
+	}
+
+	public StagedInventory(EntityPlayer player, final Supplier<I> inventorySupplier, final Locator locator, final String locatorId)
+	{
+		this.player = player;
 
 		this.stagingInv = inventorySupplier.get();
 		this.recordedInv = inventorySupplier.get();
@@ -40,6 +43,11 @@ public class StagedInventory<I extends IInventory>
 		this.locatorId = locatorId;
 
 		registeredLocators.put(this.locatorId, this.locator);
+	}
+
+	public static boolean locatorExists(String locatorId)
+	{
+		return registeredLocators.containsKey(locatorId);
 	}
 
 	public static Locator getLocator(final String locatorId)
@@ -59,9 +67,9 @@ public class StagedInventory<I extends IInventory>
 
 	public void update()
 	{
-		final World world = this.playerOrbis.getWorld();
+		final World world = this.player.getEntityWorld();
 
-		final List<Pair<Integer, ItemStack>> updates = world.isRemote ? Collections.emptyList() : new ArrayList<>();
+		final List<Pair<Integer, ItemStack>> updates = world.isRemote ? Collections.emptyList() : Lists.newArrayList();
 
 		// Checks what items have been changed in the staging inventory, records them, and then
 		// fires off to the effect manager
@@ -83,9 +91,9 @@ public class StagedInventory<I extends IInventory>
 
 		if (!world.isRemote)
 		{
-			NetworkingOrbis
+			/*NetworkingOrbis
 					.sendPacketToWatching(new PacketStagedInventoryChanged(this.playerOrbis.getEntity(), updates, this.getLocatorId()), this.playerOrbis.getEntity(),
-							true);
+							true);*/
 		}
 	}
 
@@ -96,6 +104,6 @@ public class StagedInventory<I extends IInventory>
 
 	public interface Locator
 	{
-		StagedInventory locate(PlayerOrbis playerOrbis);
+		StagedInventory locate(EntityPlayer player);
 	}
 }

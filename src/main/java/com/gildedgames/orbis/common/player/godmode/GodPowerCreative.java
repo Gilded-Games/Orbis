@@ -47,7 +47,7 @@ public class GodPowerCreative implements IGodPower
 	}
 
 	@Override
-	public boolean hasCustomGui()
+	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
 		return false;
 	}

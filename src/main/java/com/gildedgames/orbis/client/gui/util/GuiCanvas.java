@@ -49,7 +49,7 @@ public class GuiCanvas extends GuiFrame
 		{
 			canvas = new GuiCanvas();
 
-			currentFrame.addChild(canvas);
+			currentFrame.addChildren(canvas);
 		}
 
 		if (depth != 0.0F)

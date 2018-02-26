@@ -109,7 +109,7 @@ public interface IProject extends NBT
 	 * Should scan through the project directory and assemble all data links
 	 * in case data files have been moved around.
 	 */
-	void loadAndCacheData();
+	void loadAndCacheData(Object mod, String archiveBaseName);
 
 	/**
 	 * @return Whether or not the dependencies of this project (such as mods) are met.

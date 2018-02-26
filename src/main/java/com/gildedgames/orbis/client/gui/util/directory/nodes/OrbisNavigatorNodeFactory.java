@@ -37,7 +37,7 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 		{
 			if (OrbisProjectManager.isProjectDirectory(file))
 			{
-				OrbisCore.getProjectManager().refreshCache();
+				OrbisCore.getProjectManager().refreshCache(OrbisCore.INSTANCE, "Orbis");
 
 				try
 				{

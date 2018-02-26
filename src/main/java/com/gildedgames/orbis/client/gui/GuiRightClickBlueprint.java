@@ -14,8 +14,6 @@ import java.io.IOException;
 
 public class GuiRightClickBlueprint extends GuiFrame
 {
-	public static long lastCloseTime;
-
 	private final Blueprint blueprint;
 
 	public GuiRightClickBlueprint(final Blueprint blueprint)
@@ -28,7 +26,7 @@ public class GuiRightClickBlueprint extends GuiFrame
 	@Override
 	public void init()
 	{
-		this.addChild(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
+		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
 				new DropdownElement(new TextComponentString("Edit"))
 				{
 					@Override
@@ -37,9 +35,9 @@ public class GuiRightClickBlueprint extends GuiFrame
 						Minecraft.getMinecraft().displayGuiScreen(new GuiEditBlueprint(GuiRightClickBlueprint.this.blueprint));
 					}
 				},
-				GuiRightClickElements.remove(blueprint),
-				GuiRightClickElements.fillWithVoid(blueprint),
-				GuiRightClickElements.copy(blueprint),
+				GuiRightClickElements.remove(this.blueprint),
+				GuiRightClickElements.fillWithVoid(this.blueprint),
+				GuiRightClickElements.copy(this.blueprint),
 				GuiRightClickElements.close()));
 	}
 
@@ -51,7 +49,7 @@ public class GuiRightClickBlueprint extends GuiFrame
 		if (Minecraft.getMinecraft().currentScreen == this)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);
-			GuiRightClickBlueprint.lastCloseTime = System.currentTimeMillis();
+			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 	}
 }

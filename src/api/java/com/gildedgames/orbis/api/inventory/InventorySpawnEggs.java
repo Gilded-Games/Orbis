@@ -1,10 +1,11 @@
-package com.gildedgames.orbis.common.containers.inventory;
+package com.gildedgames.orbis.api.inventory;
 
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -14,16 +15,26 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nonnull;
 
-public class InventoryBlockForge implements IInventory, NBT
+public class InventorySpawnEggs implements IInventory, NBT
 {
-
-	private final EntityPlayer player;
 
 	private final NonNullList<ItemStack> inventory = NonNullList.withSize(16, ItemStack.EMPTY);
 
-	public InventoryBlockForge(final EntityPlayer player)
+	private BlueprintData blueprintData;
+
+	private InventorySpawnEggs()
 	{
-		this.player = player;
+
+	}
+
+	public InventorySpawnEggs(BlueprintData blueprintData)
+	{
+		this.blueprintData = blueprintData;
+	}
+
+	public void setBlueprintData(BlueprintData blueprintData)
+	{
+		this.blueprintData = blueprintData;
 	}
 
 	@Override
@@ -92,12 +103,16 @@ public class InventoryBlockForge implements IInventory, NBT
 	@Override
 	public void markDirty()
 	{
+		if (this.blueprintData != null)
+		{
+			this.blueprintData.markDirty();
+		}
 	}
 
 	@Override
 	public boolean isUsableByPlayer(final EntityPlayer player)
 	{
-		return !this.player.isDead && player.getDistanceSq(this.player) <= 64.0D;
+		return true;
 	}
 
 	@Override
@@ -113,7 +128,7 @@ public class InventoryBlockForge implements IInventory, NBT
 	@Override
 	public boolean isItemValidForSlot(final int index, @Nonnull final ItemStack stack)
 	{
-		return stack.getItem() instanceof ItemBlock;
+		return stack.getItem() instanceof ItemMonsterPlacer;
 	}
 
 	@Override

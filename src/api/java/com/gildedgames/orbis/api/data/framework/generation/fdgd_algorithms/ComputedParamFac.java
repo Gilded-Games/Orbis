@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.api.data.framework.generation.fdgd_algorithms;
 
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.FrameworkType;
 import com.gildedgames.orbis.api.data.framework.Graph;
 import com.gildedgames.orbis.api.data.framework.generation.FDGDEdge;
@@ -17,27 +17,11 @@ import java.util.List;
  */
 public class ComputedParamFac
 {
-	public float minRepulsion = .7f, maxRepulsion = .8f;
-
-	public float minRepulsionMagnitude = 5.8f, maxRepulsionMagnitude = 7.3f;
-
-	public float minStiffness = .06f, maxStiffness = .82f;
-
-	public float minEscape = 1.3f, maxEscape = 4f;
-
-	public float minNaturalLength = 5, maxNaturalLength = 450;
-
-	public float minC = .08f, maxC = .12f;
-
-	//-------------------------------------------------------------------//
-
 	public static final int minVertexSize = 4, maxVertexSize = 50;
 
 	public static final float maxEdgeDensity = 2.8f;
 
 	public static final int minPathwayLength = 3, maxPathwayLength = 340;
-
-	//-------------------------------------------------------------------//
 
 	public static float verticesRepulsion = 0.2f, edgesRepulsion = 0.2f, areaRepulsion = 0.6f;
 
@@ -45,13 +29,15 @@ public class ComputedParamFac
 
 	public static float verticesEscape = 0, edgesEscape = 0, areaEscape = 1;
 
+	//-------------------------------------------------------------------//
+
 	public static float verticesNL = 0, edgesNL = 0, areaNL = 1;
 
 	public static float verticesC = 0.4f, edgesC = 0.4f, areaC = 0.2f;
 
-	//-------------------------------------------------------------------//
-
 	public static float relNodeDistance = 1.5f;
+
+	//-------------------------------------------------------------------//
 
 	public static int fdgdMaxIterations = 2500;
 
@@ -63,11 +49,25 @@ public class ComputedParamFac
 
 	public static float acceptEquilibriumEsc = 0.8f;
 
+	//-------------------------------------------------------------------//
+
 	public static float graphGrowth = 0.5f;
 
 	public static float heuristicWeight = 3;
 
 	public static int pathwaysBoundingBox = 8;
+
+	public float minRepulsion = .7f, maxRepulsion = .8f;
+
+	public float minRepulsionMagnitude = 5.8f, maxRepulsionMagnitude = 7.3f;
+
+	public float minStiffness = .06f, maxStiffness = .82f;
+
+	public float minEscape = 1.3f, maxEscape = 4f;
+
+	public float minNaturalLength = 5, maxNaturalLength = 450;
+
+	public float minC = .08f, maxC = .12f;
 
 	public FrameworkParams createParams(Graph<FDGDNode, FDGDEdge> graph, FrameworkType type)
 	{
@@ -131,7 +131,8 @@ public class ComputedParamFac
 	private float repulsion(float vertices, float edges, float area)
 	{
 		final float normed = vertices * verticesRepulsion + edges * edgesRepulsion + area * areaRepulsion;
-		return this.valuelize(this.minRepulsion, this.maxRepulsion, normed) * (float) Math.pow(10, this.valuelize(this.minRepulsionMagnitude, this.maxRepulsionMagnitude, normed));
+		return this.valuelize(this.minRepulsion, this.maxRepulsion, normed) * (float) Math
+				.pow(10, this.valuelize(this.minRepulsionMagnitude, this.maxRepulsionMagnitude, normed));
 	}
 
 	private float stiffness(float vertices, float edges, float area)

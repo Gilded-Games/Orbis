@@ -15,7 +15,7 @@ public class CreationData implements ICreationData
 
 	private Random rand;
 
-	private BlockPos pos;
+	private BlockPos pos = BlockPos.ORIGIN;
 
 	private World world;
 
@@ -23,7 +23,7 @@ public class CreationData implements ICreationData
 
 	private Rotation rotation = Rotation.NONE;
 
-	private boolean placeAir = true, schedules = false, erases = false;
+	private boolean placeAir = true, schedules = false;
 
 	public CreationData(final World world)
 	{
@@ -101,14 +101,6 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public ICreationData erases(final boolean erases)
-	{
-		this.erases = erases;
-
-		return this;
-	}
-
-	@Override
 	public BlockPos getPos()
 	{
 		return this.pos;
@@ -151,16 +143,10 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public boolean erases()
-	{
-		return this.erases;
-	}
-
-	@Override
 	public ICreationData clone()
 	{
 		return new CreationData(this.world).pos(new BlockPos(this.pos)).rand(this.rand).rotation(this.rotation).creator(this.creator).placesAir(this.placeAir)
-				.schedules(this.schedules).erases(this.erases);
+				.schedules(this.schedules);
 	}
 
 	@Override
@@ -176,7 +162,6 @@ public class CreationData implements ICreationData
 		tag.setString("rotation", this.rotation.name());
 		tag.setBoolean("placeAir", this.placeAir);
 		tag.setBoolean("schedules", this.schedules);
-		tag.setBoolean("erases", this.erases);
 	}
 
 	@Override
@@ -186,6 +171,5 @@ public class CreationData implements ICreationData
 		this.rotation = Rotation.valueOf(tag.getString("rotation"));
 		this.placeAir = tag.getBoolean("placeAir");
 		this.schedules = tag.getBoolean("schedules");
-		this.erases = tag.getBoolean("erases");
 	}
 }

@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.world_objects;
 
 import com.gildedgames.orbis.api.data.management.IData;
+import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;

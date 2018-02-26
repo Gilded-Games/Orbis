@@ -1,7 +1,7 @@
 package orbis_core.data.framework;
 
 import com.gildedgames.orbis.api.block.BlockDataContainer;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.framework.FrameworkEdge;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
@@ -46,16 +46,16 @@ public class FrameworkDataset
 
 	public static FrameworkData framework1()
 	{
-		final FrameworkData frameworkData = new FrameworkData();
-		final FrameworkNode node1 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node2 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node3 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node4 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node5 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node6 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node7 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node8 = frameworkData.addNode(BlueprintDataset.schedule1());
-		final FrameworkNode node9 = frameworkData.addNode(BlueprintDataset.schedule1());
+		final FrameworkData frameworkData = new FrameworkData(200, 200, 200);
+		final FrameworkNode node1 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node2 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node3 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node4 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node5 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node6 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node7 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node8 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node9 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
 
 		frameworkData.addEdge(node1, node2);
 		frameworkData.addEdge(node1, node3);
@@ -85,7 +85,7 @@ public class FrameworkDataset
 
 	public static FrameworkData randomFramework(Random random)
 	{
-		FrameworkData frameworkData = new FrameworkData();
+		FrameworkData frameworkData = new FrameworkData(300, 300, 300);
 		PathwayData pathway = pathway(random);
 		frameworkData.addIntersection(pathway, pathway, getPathwayB(pathway));
 
@@ -93,7 +93,7 @@ public class FrameworkDataset
 		List<FrameworkNode> nodes = new ArrayList<>();
 		for (int i = 0; i < amt_nodes; i++)
 		{
-			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway)));
+			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway), BlockPos.ORIGIN));
 		}
 		List<FrameworkNode> connectedNodes = new ArrayList<>();
 		Graph<FrameworkNode, FrameworkEdge> graph = frameworkData.getGraph();

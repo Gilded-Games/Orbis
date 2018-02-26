@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
@@ -12,6 +13,8 @@ import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketFilterShape;
 import com.gildedgames.orbis.common.network.packets.PacketSetBlockDataContainerInHand;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSchedule;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,6 +22,8 @@ import net.minecraft.util.text.TextComponentString;
 
 public class GuiRightClickElements
 {
+	public static long lastCloseTime;
+
 	public static DropdownElement remove(final IWorldObject region)
 	{
 		return new DropdownElement(new TextComponentString("Remove"))
@@ -28,6 +33,18 @@ public class GuiRightClickElements
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(player.world);
 				NetworkingOrbis.sendPacketToServer(new PacketWorldObjectRemove(region.getWorld(), manager.getGroup(0), region));
+			}
+		};
+	}
+
+	public static DropdownElement remove(final Blueprint blueprint, ScheduleRegion scheduleRegion)
+	{
+		return new DropdownElement(new TextComponentString("Remove"))
+		{
+			@Override
+			public void onClick(final GuiDropdownList list, final EntityPlayer player)
+			{
+				NetworkingOrbis.sendPacketToServer(new PacketRemoveSchedule(blueprint, blueprint.getData().getScheduleId(scheduleRegion)));
 			}
 		};
 	}

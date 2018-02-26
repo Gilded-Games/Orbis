@@ -5,6 +5,7 @@ import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.shapes.AbstractShape;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputBrushClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -139,9 +140,11 @@ public class SelectionInputBrush implements ISelectionInput
 			{
 				event.setCanceled(true);
 
-				final IShape selectedShape = playerOrbis.getSelectedRegion();
+				IGodPowerClient client = playerOrbis.powers().getCurrentPower().getClientHandler();
 
-				if (selectedShape != null && !playerOrbis.powers().getCurrentPower().getClientHandler().onRightClickShape(playerOrbis, selectedShape, event))
+				Object raytracedObject = client.raytraceObject(playerOrbis);
+
+				if (raytracedObject != null && !client.onRightClickShape(playerOrbis, raytracedObject, event))
 				{
 					return;
 				}

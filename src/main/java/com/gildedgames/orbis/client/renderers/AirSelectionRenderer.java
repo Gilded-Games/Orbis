@@ -64,7 +64,8 @@ public class AirSelectionRenderer
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
 
 		if (!playerOrbis.inDeveloperMode() || (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower()
-				&& playerOrbis.getSelectedRegion() != null))
+				&& playerOrbis.getSelectedRegion() != null) || (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getSelectPower() && playerOrbis
+				.powers().isScheduling() && playerOrbis.getSelectedSchedule() != null))
 		{
 			return;
 		}

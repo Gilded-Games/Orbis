@@ -55,7 +55,7 @@ public class GuiDropdownList extends GuiFrame
 				}
 			};
 
-			this.addChild(label);
+			this.addChildren(label);
 		}
 
 		this.dim().mod().width(60).height(17 * this.elements.size()).flush();

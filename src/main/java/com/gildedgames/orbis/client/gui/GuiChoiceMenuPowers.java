@@ -24,6 +24,12 @@ public class GuiChoiceMenuPowers extends GuiChoiceMenu
 		}
 	}
 
+	@Override
+	public void init()
+	{
+		super.init();
+	}
+
 	public class PowerChoice implements Choice
 	{
 		private final String name;

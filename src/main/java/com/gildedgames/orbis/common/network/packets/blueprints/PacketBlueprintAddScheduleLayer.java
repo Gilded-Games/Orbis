@@ -2,7 +2,7 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
@@ -65,6 +65,13 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName, final int layerIndex)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.displayName = displayName;
+		this.layerIndex = layerIndex;
+	}
+
+	public PacketBlueprintAddScheduleLayer(int worldObjectId, final String displayName, final int layerIndex)
+	{
+		this.worldObjectId = worldObjectId;
 		this.displayName = displayName;
 		this.layerIndex = layerIndex;
 	}
@@ -182,7 +189,14 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 					// method in NetworkingOrbis to sendPacketToProjectUsers
 					if (player.world.getMinecraftServer().isDedicatedServer())
 					{
-						NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.id, message.displayName, index));
+						if (message.id == null)
+						{
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.worldObjectId, message.displayName, index));
+						}
+						else
+						{
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.id, message.displayName, index));
+						}
 					}
 				}
 			}
