@@ -141,6 +141,7 @@ public class OrbisDeveloperEventsClient
 				if (OrbisKeyBindings.keyBindAlt.isPressed())
 				{
 					NetworkingOrbis.sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
+					playerOrbis.powers().setScheduling(!playerOrbis.powers().isScheduling());
 				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
