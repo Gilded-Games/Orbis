@@ -181,6 +181,27 @@ public class NBTHelper
 		return tag;
 	}
 
+	public static <T extends NBT> T clone(T nbt)
+	{
+		return clone(null, nbt);
+	}
+
+	public static <T extends NBT> T clone(World world, T nbt)
+	{
+		NBTTagCompound tag = new NBTTagCompound();
+
+		nbt.write(tag);
+
+		IClassSerializer serializer = OrbisAPI.services().io().findSerializer(nbt);
+
+		final int id = serializer.serialize(nbt);
+		final T obj = serializer.deserialize(world, id);
+
+		obj.read(tag);
+
+		return obj;
+	}
+
 	public static NBTTagCompound write(final NBT nbt)
 	{
 		final NBTTagCompound tag = new NBTTagCompound();

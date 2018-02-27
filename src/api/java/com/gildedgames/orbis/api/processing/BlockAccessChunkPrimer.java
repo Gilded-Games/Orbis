@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api.processing;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -105,6 +106,12 @@ public class BlockAccessChunkPrimer implements IBlockAccessExtended
 
 	@Override
 	public void setTileEntity(final BlockPos pos, final TileEntity tileEntity)
+	{
+
+	}
+
+	@Override
+	public void spawnEntity(Entity entity)
 	{
 
 	}

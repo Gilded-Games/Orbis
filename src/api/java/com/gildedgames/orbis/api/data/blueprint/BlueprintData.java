@@ -13,6 +13,7 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IRotateable;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.*;
+import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.api.util.ObjectFilter;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -71,7 +72,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this.dataContainer = container;
 	}
 
-	public static void spawnEntities(BlueprintData data, World world, BlockPos pos)
+	public static void spawnEntities(DataPrimer primer, BlueprintData data, BlockPos pos)
 	{
 		for (ScheduleRegion s : data.getSchedules(ScheduleRegion.class))
 		{
@@ -82,11 +83,11 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 				if (stack.getItem() instanceof ItemMonsterPlacer)
 				{
 					BlockPos p = pos.add(s.getBounds().getMin())
-							.add(world.rand.nextInt(s.getBounds().getWidth()), 0, world.rand.nextInt(s.getBounds().getHeight()));
+							.add(primer.getWorld().rand.nextInt(s.getBounds().getWidth()), 0, primer.getWorld().rand.nextInt(s.getBounds().getHeight()));
 
 					PlacedEntity placedEntity = new PlacedEntity(stack, p);
 
-					placedEntity.spawn(world);
+					placedEntity.spawn(primer);
 				}
 			}
 		}

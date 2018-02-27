@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api.processing;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -72,6 +73,12 @@ public class BlockAccessExtendedWrapper implements IBlockAccessExtended
 	public void setTileEntity(final BlockPos pos, final TileEntity tileEntity)
 	{
 		this.world.setTileEntity(pos, tileEntity);
+	}
+
+	@Override
+	public void spawnEntity(Entity entity)
+	{
+		this.world.spawnEntity(entity);
 	}
 
 	@Nullable

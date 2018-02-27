@@ -11,6 +11,7 @@ import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class DataPrimer
 {
@@ -38,6 +40,11 @@ public class DataPrimer
 	public IBlockAccessExtended getAccess()
 	{
 		return this.access;
+	}
+
+	public void spawn(Entity entity)
+	{
+		this.access.spawnEntity(entity);
 	}
 
 	public void createChunk(final ChunkPos chunk, final World world, final BlueprintData def, final ICreationData data)
@@ -255,19 +262,19 @@ public class DataPrimer
 	{
 		this.create(null, bData.getBlockDataContainer(), data, null);
 
-		BlueprintData.spawnEntities(bData, data.getWorld(), data.getPos());
+		BlueprintData.spawnEntities(this, bData, data.getPos());
 	}
 
 	public void create(PlacedBlueprint blueprint, ICreationData data)
 	{
 		for (BlockDataChunk chunk : blueprint.getDataChunks())
 		{
-			this.create(null, chunk.getContainer(), new CreationData(data.getWorld()).pos(chunk.getPos().getBlock(0, 0, 0)), null);
+			this.create(null, chunk.getContainer(), data.clone().pos(chunk.getPos().getBlock(0, 0, 0)), null);
 		}
 
-		for (PlacedEntity p : blueprint.getPlacedEntities())
+		for (List<PlacedEntity> l : blueprint.getPlacedEntities().values())
 		{
-			p.spawn(data.getWorld());
+			l.forEach(p -> p.spawn(this));
 		}
 	}
 

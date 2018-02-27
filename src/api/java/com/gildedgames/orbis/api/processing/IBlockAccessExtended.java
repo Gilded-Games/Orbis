@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api.processing;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -53,5 +54,7 @@ public interface IBlockAccessExtended extends IBlockAccess
 	 * @param tileEntity The tile entity you're setting.
 	 */
 	void setTileEntity(BlockPos pos, TileEntity tileEntity);
+
+	void spawnEntity(Entity entity);
 
 }

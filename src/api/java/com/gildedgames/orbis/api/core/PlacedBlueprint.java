@@ -6,9 +6,12 @@ import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.core.util.BlueprintUtil;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
+import com.gildedgames.orbis.api.util.mc.NBTHelper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,6 +23,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class PlacedBlueprint implements NBT
 {
@@ -27,7 +31,7 @@ public class PlacedBlueprint implements NBT
 
 	private BlockDataChunk[] chunks;
 
-	private List<PlacedEntity> placedEntities = Lists.newArrayList();
+	private Map<ChunkPos, List<PlacedEntity>> placedEntities = Maps.newHashMap();
 
 	private BlueprintDefinition def;
 
@@ -38,6 +42,8 @@ public class PlacedBlueprint implements NBT
 	private ICreationData data;
 
 	private boolean hasGeneratedAChunk;
+
+	private List<ScheduleRegion> scheduleRegions = Lists.newArrayList();
 
 	public PlacedBlueprint(final World world, final BlueprintDefinition def, final ICreationData data)
 	{
@@ -51,6 +57,7 @@ public class PlacedBlueprint implements NBT
 
 		this.bakeChunks();
 		this.placeEntities();
+		this.bakeScheduleRegions();
 	}
 
 	public PlacedBlueprint(final World world, final NBTTagCompound tag)
@@ -61,6 +68,20 @@ public class PlacedBlueprint implements NBT
 
 		this.bakeChunks();
 		this.placeEntities();
+		this.bakeScheduleRegions();
+	}
+
+	private void bakeScheduleRegions()
+	{
+		this.def.getData().getSchedules(ScheduleRegion.class).forEach(s ->
+		{
+			ScheduleRegion c = NBTHelper.clone(s);
+
+			RegionHelp.translate(c.getBounds(), this.getCreationData().getPos().getX(), this.getCreationData().getPos().getY(),
+					this.getCreationData().getPos().getZ());
+
+			this.scheduleRegions.add(c);
+		});
 	}
 
 	private void placeEntities()
@@ -78,7 +99,14 @@ public class PlacedBlueprint implements NBT
 
 					PlacedEntity placedEntity = new PlacedEntity(stack, pos);
 
-					this.placedEntities.add(placedEntity);
+					ChunkPos p = new ChunkPos(this.getCreationData().getPos().getX() >> 4, this.getCreationData().getPos().getZ() >> 4);
+
+					if (!this.placedEntities.containsKey(p))
+					{
+						this.placedEntities.put(p, Lists.newArrayList());
+					}
+
+					this.placedEntities.get(p).add(placedEntity);
 				}
 			}
 		}
@@ -147,7 +175,7 @@ public class PlacedBlueprint implements NBT
 		}
 	}
 
-	public List<PlacedEntity> getPlacedEntities()
+	public Map<ChunkPos, List<PlacedEntity>> getPlacedEntities()
 	{
 		return this.placedEntities;
 	}
