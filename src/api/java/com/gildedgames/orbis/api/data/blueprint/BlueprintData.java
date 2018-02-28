@@ -63,6 +63,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this();
 
 		this.dataContainer = new BlockDataContainer(region);
+		this.addScheduleLayer(new ScheduleLayer("Default Layer", this, ScheduleDataType.DATA));
 	}
 
 	public BlueprintData(final BlockDataContainer container)
@@ -70,6 +71,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this();
 
 		this.dataContainer = container;
+		this.addScheduleLayer(new ScheduleLayer("Default Layer", this, ScheduleDataType.DATA));
 	}
 
 	public static void spawnEntities(DataPrimer primer, BlueprintData data, BlockPos pos)
@@ -266,9 +268,13 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		layer.listen(this);
 	}
 
-	public void addScheduleLayer(final IScheduleLayer layer)
+	public int addScheduleLayer(final IScheduleLayer layer)
 	{
-		this.setScheduleLayer(this.scheduleLayers.size(), layer);
+		int id = this.scheduleLayers.size();
+
+		this.setScheduleLayer(id, layer);
+
+		return id;
 	}
 
 	public boolean removeScheduleLayer(final int index)
@@ -310,13 +316,14 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		return -1;
 	}
 
-	public int getIndexOfScheduleLayer(final IScheduleLayer layer)
+	public int getScheduleLayerId(final IScheduleLayer layer)
 	{
-		for (int i = 0; i < this.scheduleLayers.size(); i++)
+		for (Map.Entry<Integer, IScheduleLayer> entry : this.scheduleLayers.entrySet())
 		{
-			final IScheduleLayer l = this.scheduleLayers.get(i);
+			int i = entry.getKey();
+			final IScheduleLayer s = entry.getValue();
 
-			if (layer.equals(l))
+			if (layer.equals(s))
 			{
 				return i;
 			}

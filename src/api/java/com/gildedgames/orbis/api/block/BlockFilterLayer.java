@@ -64,17 +64,17 @@ public class BlockFilterLayer implements NBT
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
+	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
+		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
 	}
 
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
+	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
+		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
 	}
 
 	public List<BlockDataWithConditions> getReplacementBlocks()
@@ -82,14 +82,14 @@ public class BlockFilterLayer implements NBT
 		return this.replacementBlocks;
 	}
 
-	public void setReplacementBlocks(final BlockDataWithConditions... newBlocks)
-	{
-		this.replacementBlocks = Lists.newArrayList(Arrays.asList(newBlocks));
-	}
-
 	public void setReplacementBlocks(final List<BlockDataWithConditions> newBlocks)
 	{
 		this.replacementBlocks = newBlocks;
+	}
+
+	public void setReplacementBlocks(final BlockDataWithConditions... newBlocks)
+	{
+		this.replacementBlocks = Lists.newArrayList(Arrays.asList(newBlocks));
 	}
 
 	public BlockFilterType getFilterType()
@@ -227,7 +227,7 @@ public class BlockFilterLayer implements NBT
 				{
 					for (BlockFilterLayer layer : parentFilter.getFilters())
 					{
-						if (layer.getRequiredBlocks().equals(AIR_BLOCKS))
+						if (layer.getRequiredBlocks().equals(AIR_BLOCKS) || layer.getFilterType() == BlockFilterType.ALL)
 						{
 							found = true;
 						}

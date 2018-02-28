@@ -3,7 +3,7 @@ package com.gildedgames.orbis.api.data.schedules;
 public enum ScheduleDataType
 {
 
-	FILL("Fill"), DELETE("Delete"), REPLACE("Replace"), BLUEPRINT("Blueprint");
+	DATA("Data");
 
 	String name;
 

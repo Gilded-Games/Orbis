@@ -254,7 +254,28 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	@Override
 	public void onRemoveScheduleLayer(IScheduleLayer layer, int index)
 	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
 
+		try
+		{
+			IWorldRenderer toRemove = null;
+
+			for (IWorldRenderer renderer : this.subRenderers)
+			{
+				if (renderer.getRenderedObject() == layer)
+				{
+					toRemove = renderer;
+					break;
+				}
+			}
+
+			this.subRenderers.remove(toRemove);
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	@Override

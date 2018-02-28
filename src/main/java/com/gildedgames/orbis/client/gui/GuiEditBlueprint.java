@@ -37,6 +37,7 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorListener
 {
@@ -116,7 +117,7 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 			return button;
 		}, () -> new ScheduleLayer("Layer " + String.valueOf(GuiEditBlueprint.this.blueprint.getData().getScheduleLayers().size() + 1),
-				GuiEditBlueprint.this.blueprint, ScheduleDataType.FILL))
+				GuiEditBlueprint.this.blueprint, ScheduleDataType.DATA))
 		{
 			@Override
 			public void onNewNode(final IScheduleLayer node, final int index)
@@ -154,12 +155,12 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 				if (b.getData().getMetadata().getIdentifier() == null)
 				{
 					NetworkingOrbis.sendPacketToServer(
-							new PacketBlueprintRemoveScheduleLayer(b, b.getData().getIndexOfScheduleLayer(node)));
+							new PacketBlueprintRemoveScheduleLayer(b, b.getData().getScheduleLayerId(node)));
 				}
 				else
 				{
 					NetworkingOrbis.sendPacketToServer(
-							new PacketBlueprintRemoveScheduleLayer(b.getData().getMetadata().getIdentifier(), b.getData().getIndexOfScheduleLayer(node)));
+							new PacketBlueprintRemoveScheduleLayer(b.getData().getMetadata().getIdentifier(), b.getData().getScheduleLayerId(node)));
 				}
 			}
 
@@ -170,7 +171,7 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 				final Blueprint b = GuiEditBlueprint.this.blueprint;
 
-				final int layerIndex = b.getData().getIndexOfScheduleLayer(node);
+				final int layerIndex = b.getData().getScheduleLayerId(node);
 
 				if (layerIndex != -1)
 				{
@@ -194,10 +195,11 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 			}
 		}
 
-		for (int i = 0; i < this.blueprint.getData().getScheduleLayers().size(); i++)
+		for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
 		{
-			final IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(i);
-
+			int i = e.getKey();
+			IScheduleLayer layer = e.getValue();
+			
 			this.layerViewer.getNavigator().add(layer, i);
 		}
 

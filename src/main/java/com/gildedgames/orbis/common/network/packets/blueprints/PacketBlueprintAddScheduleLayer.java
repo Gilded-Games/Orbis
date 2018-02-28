@@ -137,7 +137,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.setScheduleLayer(message.layerIndex, new ScheduleLayer(message.displayName, bData, ScheduleDataType.FILL));
+					bData.setScheduleLayer(message.layerIndex, new ScheduleLayer(message.displayName, bData, ScheduleDataType.DATA));
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -178,9 +178,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					final int index = bData.getScheduleLayers().size();
-
-					bData.addScheduleLayer(new ScheduleLayer(message.displayName, bData, ScheduleDataType.FILL));
+					int id = bData.addScheduleLayer(new ScheduleLayer(message.displayName, bData, ScheduleDataType.DATA));
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -191,11 +189,11 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.worldObjectId, message.displayName, index));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.worldObjectId, message.displayName, id));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.id, message.displayName, index));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.id, message.displayName, id));
 						}
 					}
 				}

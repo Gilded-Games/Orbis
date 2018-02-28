@@ -166,7 +166,14 @@ public class PacketBlueprintRemoveScheduleLayer extends PacketMultipleParts
 					// method in NetworkingOrbis to sendPacketToProjectUsers
 					if (player.world.getMinecraftServer().isDedicatedServer())
 					{
-						NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintRemoveScheduleLayer(message.id, message.scheduleLayerIndex));
+						if (message.id == null)
+						{
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintRemoveScheduleLayer(message.worldObjectId, message.scheduleLayerIndex));
+						}
+						else
+						{
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintRemoveScheduleLayer(message.id, message.scheduleLayerIndex));
+						}
 					}
 				}
 			}
