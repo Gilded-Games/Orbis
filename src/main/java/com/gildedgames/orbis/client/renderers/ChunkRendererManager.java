@@ -126,14 +126,14 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectGr
 
 			try
 			{
-				renderer.preRenderSubs(world, partialTicks, true);
-
 				for (final IWorldRenderer sub : renderer.getSubRenderers(world))
 				{
-					this.render(world, sub, partialTicks, encompassing);
-				}
+					renderer.preRenderSub(sub, world, partialTicks, true);
 
-				renderer.postRenderSubs(world, partialTicks, true);
+					this.render(world, sub, partialTicks, encompassing);
+
+					renderer.postRenderSub(sub, world, partialTicks, true);
+				}
 			}
 			finally
 			{

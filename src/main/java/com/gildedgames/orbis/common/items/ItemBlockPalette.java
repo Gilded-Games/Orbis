@@ -132,6 +132,6 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		final BlockFilter filter = new BlockFilter(layer);
 
-		filter.apply(selectedShape, world, creationData);
+		filter.apply(selectedShape, creationData);
 	}
 }

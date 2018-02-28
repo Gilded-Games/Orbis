@@ -111,6 +111,8 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 		this.directoryViewer.getNavigator().addListener(this);
 
+		this.directoryViewer.setDisplayBackdrop(false);
+
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
 		this.addChildren(this.directoryViewer);

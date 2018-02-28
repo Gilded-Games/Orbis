@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -45,7 +46,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 
 	private BlockDataContainer dataContainer;
 
-	private Map<Integer, IScheduleLayer> scheduleLayers = Maps.newHashMap();
+	private LinkedHashMap<Integer, IScheduleLayer> scheduleLayers = Maps.newLinkedHashMap();
 
 	private List<Entrance> entrances = Lists.newArrayList();
 
@@ -254,7 +255,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		return this.dataContainer;
 	}
 
-	public Map<Integer, IScheduleLayer> getScheduleLayers()
+	public LinkedHashMap<Integer, IScheduleLayer> getScheduleLayers()
 	{
 		return this.scheduleLayers;
 	}
@@ -410,7 +411,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 
 		this.dataContainer = funnel.get("dataContainer");
 		this.metadata = funnel.get("metadata");
-		this.scheduleLayers = funnel.getIntMap("scheduleLayers");
+		this.scheduleLayers = Maps.newLinkedHashMap(funnel.getIntMap("scheduleLayers"));
 
 		this.scheduleLayers.values().forEach(l -> l.setDimensions(this));
 

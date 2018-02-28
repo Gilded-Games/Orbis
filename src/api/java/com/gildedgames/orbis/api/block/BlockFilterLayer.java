@@ -4,8 +4,10 @@ import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
+import com.gildedgames.orbis.api.processing.BlockAccessBlockDataContainer;
 import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis.api.processing.DataPrimer;
+import com.gildedgames.orbis.api.processing.IBlockAccessExtended;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
@@ -64,17 +66,17 @@ public class BlockFilterLayer implements NBT
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
+	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
+		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
 	}
 
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
+	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
+		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
 	}
 
 	public List<BlockDataWithConditions> getReplacementBlocks()
@@ -82,14 +84,14 @@ public class BlockFilterLayer implements NBT
 		return this.replacementBlocks;
 	}
 
-	public void setReplacementBlocks(final List<BlockDataWithConditions> newBlocks)
-	{
-		this.replacementBlocks = newBlocks;
-	}
-
 	public void setReplacementBlocks(final BlockDataWithConditions... newBlocks)
 	{
 		this.replacementBlocks = Lists.newArrayList(Arrays.asList(newBlocks));
+	}
+
+	public void setReplacementBlocks(final List<BlockDataWithConditions> newBlocks)
+	{
+		this.replacementBlocks = newBlocks;
 	}
 
 	public BlockFilterType getFilterType()
@@ -127,11 +129,74 @@ public class BlockFilterLayer implements NBT
 		return replacementBlock.getBlockState();
 	}
 
+	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData options)
+	{
+		World world = options.getWorld();
+
+		if (this.condition == null)
+		{
+			this.condition = new DataCondition();
+		}
+
+		if (!this.condition.isMet(options.getRandom(), world) || this.replacementBlocks.isEmpty())
+		{
+			return;
+		}
+
+		IBlockAccessExtended access = new BlockAccessBlockDataContainer(world, container);
+
+		final DataPrimer primer = new DataPrimer(access);
+
+		BlockDataWithConditions replacementBlock = null;
+
+		if (!this.chooseBlockPerBlock)
+		{
+			replacementBlock = this.getRandom(options.getRandom(), world);
+		}
+
+		for (final BlockPos.MutableBlockPos pos : positions)
+		{
+			final IBlockState state;
+
+			state = access.getBlockState(pos);
+
+			if (!this.getFilterType().filter(state, this.requiredBlocks, world, options.getRandom()))
+			{
+				continue;
+			}
+
+			if (this.chooseBlockPerBlock)
+			{
+				replacementBlock = this.getRandom(options.getRandom(), world);
+			}
+
+			if (pos.getY() >= 256 || replacementBlock == null || !replacementBlock.getReplaceCondition().isMet(options.getRandom(), world))
+			{
+				continue;
+			}
+
+			if (!options.shouldCreate(replacementBlock, pos))
+			{
+				continue;
+			}
+
+			primer.create(replacementBlock, pos.toImmutable(), options);
+		}
+	}
+
+	public void apply(final BlockFilter parentFilter, final IShape shape, final ICreationData options)
+	{
+		this.apply(parentFilter, shape, shape.createShapeData(), options);
+	}
+
 	/**
 	 * Applies this layer to a shape
 	 */
-	public void apply(final BlockFilter parentFilter, final IShape shape, final World world, final ICreationData options)
+	public void apply(final BlockFilter parentFilter, IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions,
+			final ICreationData options)
 	{
+		World world = options.getWorld();
+
 		if (this.condition == null)
 		{
 			this.condition = new DataCondition();
@@ -150,7 +215,7 @@ public class BlockFilterLayer implements NBT
 			final WorldObjectManager manager = WorldObjectManager.get(world);
 			final IWorldObjectGroup group = manager.getGroup(0);
 
-			intersect = group.getIntersectingShape(shape);
+			intersect = group.getIntersectingShape(boundingBox);
 
 			if (intersect instanceof IScheduleLayerHolder)
 			{
@@ -167,7 +232,7 @@ public class BlockFilterLayer implements NBT
 			replacementBlock = this.getRandom(options.getRandom(), world);
 		}
 
-		for (final BlockPos.MutableBlockPos pos : shape.createShapeData())
+		for (final BlockPos.MutableBlockPos pos : positions)
 		{
 			int schedX = 0;
 			int schedY = 0;
@@ -250,7 +315,7 @@ public class BlockFilterLayer implements NBT
 			}
 			else
 			{
-				primer.create(replacementBlock, pos.toImmutable(), options);
+				primer.create(replacementBlock, pos.add(options.getPos()).toImmutable(), options);
 			}
 
 			// TODO: Re-enable event

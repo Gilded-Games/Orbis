@@ -61,6 +61,6 @@ public class ShapeSelectorFilter implements IShapeSelector
 
 		creationData.schedules(playerOrbis.powers().isScheduling());
 
-		filter.apply(selectedShape, world, creationData);
+		filter.apply(selectedShape, creationData);
 	}
 }

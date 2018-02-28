@@ -5,6 +5,7 @@ import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
@@ -100,7 +101,59 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		this.blueprint = blueprint;
 		this.cache = new BlueprintRenderCache(blueprint, world);
 
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			for (Integer id : this.blueprint.getData().getScheduleLayers().keySet())
+			{
+				IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(id);
+
+				if (layer != null)
+				{
+					RenderScheduleLayer render = new RenderScheduleLayer(layer, this.blueprint, this.blueprint);
+
+					render.setFocused(true);
+
+					this.subRenderers.add(render);
+				}
+			}
+		}
+		finally
+		{
+			w.unlock();
+		}
+
+		this.blueprint.getData().entrances().forEach(this::cacheEntrance);
 		this.blueprint.getData().getSchedules(ScheduleRegion.class).forEach(this::cacheSchedule);
+	}
+
+	private void cacheEntrance(Entrance entrance)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			Region r = new Region(entrance.getBounds());
+			r.add(this.blueprint.getPos().getX(), this.blueprint.getPos().getY(), this.blueprint.getPos().getZ());
+			RenderShape shape = new RenderShape(r);
+
+			shape.useCustomColors = true;
+
+			if (entrance.getBounds() instanceof IColored)
+			{
+				shape.colorBorder = ((IColored) entrance.getBounds()).getColor();
+				shape.colorGrid = ((IColored) entrance.getBounds()).getColor();
+			}
+
+			this.subRenderers.add(shape);
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	private void cacheSchedule(ISchedule schedule)
@@ -428,25 +481,31 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	}
 
 	@Override
-	public void preRenderSubs(World world, float partialTicks, boolean useCamera)
+	public void preRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
 	{
-		GlStateManager.pushMatrix();
-
-		if (useCamera)
+		if (!(sub.getRenderedObject() instanceof IScheduleLayer))
 		{
-			if (!this.lastMin.equals(this.blueprint.getMin()))
+			GlStateManager.pushMatrix();
+
+			if (useCamera)
 			{
-				GlStateManager.translate(this.blueprint.getMin().getX() - this.lastMin.getX(),
-						this.blueprint.getMin().getY() - this.lastMin.getY(),
-						this.blueprint.getMin().getZ() - this.lastMin.getZ());
+				if (!this.lastMin.equals(this.blueprint.getMin()))
+				{
+					GlStateManager.translate(this.blueprint.getMin().getX() - this.lastMin.getX(),
+							this.blueprint.getMin().getY() - this.lastMin.getY(),
+							this.blueprint.getMin().getZ() - this.lastMin.getZ());
+				}
 			}
 		}
 	}
 
 	@Override
-	public void postRenderSubs(World world, float partialTicks, boolean useCamera)
+	public void postRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
 	{
-		GlStateManager.popMatrix();
+		if (!(sub.getRenderedObject() instanceof IScheduleLayer))
+		{
+			GlStateManager.popMatrix();
+		}
 	}
 
 	@Override

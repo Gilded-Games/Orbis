@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -58,13 +59,35 @@ public class BlockFilter implements NBT
 		return sample;
 	}
 
-	public void apply(final IShape shape, final World world, final ICreationData options)
+	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData options)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(this, shape, world, options);
+				layer.apply(positions, container, options);
+			}
+		}
+	}
+
+	public void apply(IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions, final ICreationData options)
+	{
+		for (final BlockFilterLayer layer : this.filters)
+		{
+			if (layer != null)
+			{
+				layer.apply(this, boundingBox, positions, options);
+			}
+		}
+	}
+
+	public void apply(final IShape shape, final ICreationData options)
+	{
+		for (final BlockFilterLayer layer : this.filters)
+		{
+			if (layer != null)
+			{
+				layer.apply(this, shape, options);
 			}
 		}
 	}

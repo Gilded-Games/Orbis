@@ -3,8 +3,10 @@ package com.gildedgames.orbis.api.core;
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
+import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.core.util.BlueprintUtil;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -132,7 +134,15 @@ public class PlacedBlueprint implements NBT
 
 	private void bakeChunks()
 	{
-		final BlockDataContainer blocks = this.def.getData().getBlockDataContainer();
+		final BlockDataContainer blocks = this.def.getData().getBlockDataContainer().clone();
+
+		for (IScheduleLayer layer : this.getDef().getData().getScheduleLayers().values())
+		{
+			for (BlockFilter filter : layer.getDataRecord().getData())
+			{
+				filter.apply(layer.getDataRecord().getPositions(filter), blocks, this.data);
+			}
+		}
 
 		final ChunkPos[] chunksOccupied = BlueprintUtil.getChunksInsideTemplate(this.getDef().getData(), this.getCreationData());
 
