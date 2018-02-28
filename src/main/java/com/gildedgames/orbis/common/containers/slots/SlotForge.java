@@ -1,8 +1,14 @@
 package com.gildedgames.orbis.common.containers.slots;
 
+import com.gildedgames.orbis.client.OrbisKeyBindings;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
 
 public class SlotForge extends Slot
 {
@@ -36,8 +42,16 @@ public class SlotForge extends Slot
 	@Override
 	public void putStack(final ItemStack stack)
 	{
+		ItemStack s = stack.copy();
+
 		this.inventory.setInventorySlotContents(this.getSlotIndex() - this.indexOffset, stack);
 		this.onSlotChanged();
+
+		if (OrbisCore.isClient() && Keyboard.isKeyDown(OrbisKeyBindings.keyBindControl.getKeyCode()))
+		{
+			NetworkingOrbis.sendPacketToServer(new PacketSetItemStack(s));
+			Minecraft.getMinecraft().player.inventory.setItemStack(s);
+		}
 	}
 
 	@Override
