@@ -114,6 +114,8 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
+		this.directoryViewer.setDisplayBackdrop(false);
+
 		this.addChildren(this.directoryViewer);
 
 		final int xOffset = 15;

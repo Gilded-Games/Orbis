@@ -34,12 +34,19 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 	private GuiDropdownList dropdownList;
 
+	private boolean displayBackdrop = true;
+
 	public GuiDirectoryViewer(final Pos2D pos, final IDirectoryNavigator navigator)
 	{
 		super(null, Dim2D.build().width(176).height(190).pos(pos).flush());
 
 		this.navigator = navigator;
 		this.navigator.addListener(this);
+	}
+
+	public void setDisplayBackdrop(boolean displayBackdrop)
+	{
+		this.displayBackdrop = displayBackdrop;
 	}
 
 	public GuiDropdownList getDropdownList()
@@ -225,7 +232,10 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 		final GuiTexture backdrop = new GuiTexture(Dim2D.buildWith(this).area().flush(), VIEWER_BACKDROP);
 
-		//this.addChildren(backdrop);
+		if (this.displayBackdrop)
+		{
+			this.addChildren(backdrop);
+		}
 
 		this.addChildren(this.refreshButton);
 		this.addChildren(this.backButton);
