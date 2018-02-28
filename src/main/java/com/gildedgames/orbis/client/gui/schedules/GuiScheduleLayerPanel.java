@@ -80,12 +80,12 @@ public class GuiScheduleLayerPanel extends GuiFrame
 
 		this.resetButton.getInner().displayString = "Reset Changes";
 
-		GuiText noiseTitle = new GuiText(Dim2D.build().width(140).height(20).addY(57).addX(20).flush(),
+		GuiText noiseTitle = new GuiText(Dim2D.build().width(140).height(20).addY(62).addX(20).flush(),
 				new Text(new TextComponentString("Edge Noise:"), 1.0F));
 
 		this.noise = new GuiInputSlider(Dim2D.build().height(20).width(60).flush(), 0, 100, 1.0F);
 
-		this.noise.dim().mod().width(this.dim().width() - 40).x(20).y(70).flush();
+		this.noise.dim().mod().width(this.dim().width() - 40).x(20).y(75).flush();
 
 		this.noise.setSliderValue(this.layer.getEdgeNoise());
 
