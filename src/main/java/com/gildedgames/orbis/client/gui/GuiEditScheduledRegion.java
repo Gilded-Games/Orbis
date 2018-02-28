@@ -94,6 +94,15 @@ public class GuiEditScheduledRegion extends GuiFrame
 	}
 
 	@Override
+	protected void keyTypedInner(final char typedChar, final int keyCode) throws IOException
+	{
+		if (!this.nameInput.getInner().isFocused())
+		{
+			super.keyTypedInner(typedChar, keyCode);
+		}
+	}
+
+	@Override
 	public void drawScreen(final int mouseX, final int mouseY, final float partialTicks)
 	{
 		this.drawWorldBackground(0);
