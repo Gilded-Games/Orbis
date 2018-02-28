@@ -71,6 +71,24 @@ public class PlacedBlueprint implements NBT
 		this.bakeScheduleRegions();
 	}
 
+	public List<ScheduleRegion> getScheduleRegions()
+	{
+		return this.scheduleRegions;
+	}
+
+	public ScheduleRegion getScheduleFromTriggerID(String triggerId)
+	{
+		for (ScheduleRegion s : this.scheduleRegions)
+		{
+			if (s.getTriggerID().equals(triggerId))
+			{
+				return s;
+			}
+		}
+
+		return null;
+	}
+
 	private void bakeScheduleRegions()
 	{
 		this.def.getData().getSchedules(ScheduleRegion.class).forEach(s ->

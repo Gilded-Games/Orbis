@@ -289,7 +289,7 @@ public class OrbisProject implements IProject
 									}
 
 									final String location = loc.replace(
-											(this.locationFile != null ? this.locationFile.getCanonicalPath() : this.jarLocation.getPath()) + File.separator,
+											loc.substring(0, loc.lastIndexOf(this.identifier.getProjectId()) + this.identifier.getProjectId().length() + 1),
 											"");
 
 									/*
