@@ -13,7 +13,13 @@ public interface IScheduleLayer extends NBT
 
 	boolean unlisten(IScheduleLayerListener listener);
 
-	String displayName();
+	String getDisplayName();
+
+	void setDisplayName(String displayName);
+
+	float getEdgeNoise();
+
+	void setEdgeNoise(float edgeNoise);
 
 	IPositionRecord<BlockFilter> getDataRecord();
 

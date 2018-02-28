@@ -1,15 +1,18 @@
 package com.gildedgames.orbis.client;
 
 import com.gildedgames.orbis.api.block.BlockFilter;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
+import com.gildedgames.orbis.api.world.WorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
-import com.gildedgames.orbis.client.gui.GuiChoiceMenuHolder;
-import com.gildedgames.orbis.client.gui.GuiChoiceMenuPowers;
-import com.gildedgames.orbis.client.gui.GuiChoiceMenuSelectionInputs;
-import com.gildedgames.orbis.client.gui.GuiChoiceMenuSelectionTypes;
+import com.gildedgames.orbis.client.gui.blueprint.GuiEditBlueprint;
+import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
+import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
+import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionInputs;
+import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionTypes;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.ChunkRendererManager;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -23,6 +26,7 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -30,6 +34,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -108,7 +113,23 @@ public class OrbisDeveloperEventsClient
 
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
 
-			if (playerOrbis.powers().getCurrentPower().hasCustomGui(playerOrbis))
+			WorldObjectManager manager = WorldObjectManager.get(mc.player.world);
+			WorldObjectGroup group = manager.getGroup(0);
+
+			final int x = MathHelper.floor(mc.player.posX);
+			final int y = MathHelper.floor(mc.player.posY);
+			final int z = MathHelper.floor(mc.player.posZ);
+
+			Blueprint blueprint = group.getIntersectingShape(Blueprint.class,
+					new Region(new BlockPos(x, y, z), new BlockPos(x, MathHelper.floor(mc.player.posY + mc.player.height), z)));
+
+			if (blueprint != null)
+			{
+				Minecraft.getMinecraft().displayGuiScreen(new GuiEditBlueprint(null, blueprint));
+
+				event.setCanceled(true);
+			}
+			else if (playerOrbis.powers().getCurrentPower().hasCustomGui(playerOrbis))
 			{
 				playerOrbis.powers().getCurrentPower().onOpenGui(mc.player);
 				playerOrbis.powers().getCurrentPower().getClientHandler().onOpenGui(mc.player);

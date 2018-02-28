@@ -45,6 +45,12 @@ public class DirectoryNavigator implements IDirectoryNavigator
 	}
 
 	@Override
+	public void onClickNode(IDirectoryNode node)
+	{
+		this.listeners.forEach(l -> l.onNodeClick(this, node));
+	}
+
+	@Override
 	public void onOpenNode(final IDirectoryNode node)
 	{
 		this.listeners.forEach(l -> l.onNodeOpen(this, node));

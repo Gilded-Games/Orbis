@@ -15,7 +15,7 @@ public class GuiRightClickSelector extends GuiFrame
 
 	public GuiRightClickSelector(final WorldShape region)
 	{
-		super(Dim2D.flush());
+		super(null, Dim2D.flush());
 
 		this.region = region;
 	}

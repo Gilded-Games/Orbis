@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.power_wheel;
 
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
@@ -42,7 +42,7 @@ public class GuiChoiceMenu extends GuiFrame
 
 	public GuiChoiceMenu(final Choice... choices)
 	{
-		super(Dim2D.flush());
+		super(null, Dim2D.flush());
 
 		this.choices = choices;
 	}

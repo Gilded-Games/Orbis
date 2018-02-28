@@ -25,7 +25,7 @@ public class GuiRightClickScheduleRegion extends GuiFrame
 
 	public GuiRightClickScheduleRegion(Blueprint blueprint, final ScheduleRegion scheduleRegion)
 	{
-		super(Dim2D.flush());
+		super(null, Dim2D.flush());
 
 		this.blueprint = blueprint;
 		this.scheduleRegion = scheduleRegion;

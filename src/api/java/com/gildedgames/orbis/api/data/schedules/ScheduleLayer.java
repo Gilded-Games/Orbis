@@ -20,6 +20,8 @@ public class ScheduleLayer implements IScheduleLayer
 
 	private ScheduleDataType dataType;
 
+	private float edgeNoise;
+
 	private ScheduleLayer()
 	{
 
@@ -56,9 +58,27 @@ public class ScheduleLayer implements IScheduleLayer
 	}
 
 	@Override
-	public String displayName()
+	public String getDisplayName()
 	{
 		return this.displayName;
+	}
+
+	@Override
+	public void setDisplayName(String displayName)
+	{
+		this.displayName = displayName;
+	}
+
+	@Override
+	public float getEdgeNoise()
+	{
+		return this.edgeNoise;
+	}
+
+	@Override
+	public void setEdgeNoise(float edgeNoise)
+	{
+		this.edgeNoise = edgeNoise;
 	}
 
 	@Override
@@ -81,6 +101,7 @@ public class ScheduleLayer implements IScheduleLayer
 		tag.setString("displayName", this.displayName);
 		funnel.set("positionRecord", this.positionRecord);
 		tag.setInteger("dataType", this.dataType.ordinal());
+		tag.setFloat("edgeNoise", this.edgeNoise);
 	}
 
 	@Override
@@ -91,5 +112,6 @@ public class ScheduleLayer implements IScheduleLayer
 		this.displayName = tag.getString("displayName");
 		this.positionRecord = funnel.get("positionRecord");
 		this.dataType = ScheduleDataType.values()[tag.getInteger("dataType")];
+		this.edgeNoise = tag.getFloat("edgeNoise");
 	}
 }

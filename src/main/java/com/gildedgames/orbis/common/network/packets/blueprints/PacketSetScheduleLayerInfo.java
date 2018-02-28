@@ -5,8 +5,7 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
-import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
@@ -22,7 +21,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
+public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 {
 
 	private IDataIdentifier id;
@@ -31,48 +30,55 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 
 	private String displayName;
 
-	public PacketBlueprintAddScheduleLayer()
+	private float edgeNoise;
+
+	public PacketSetScheduleLayerInfo()
 	{
 
 	}
 
-	private PacketBlueprintAddScheduleLayer(final byte[] data)
+	private PacketSetScheduleLayerInfo(final byte[] data)
 	{
 		super(data);
 	}
 
-	public PacketBlueprintAddScheduleLayer(final IDataIdentifier id, final String displayName)
+	public PacketSetScheduleLayerInfo(final IDataIdentifier id, IScheduleLayer layer, final int layerIndex)
 	{
 		this.id = id;
-		this.displayName = displayName;
-		this.layerIndex = -1;
-	}
 
-	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName)
-	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
-		this.displayName = displayName;
-		this.layerIndex = -1;
-	}
+		this.displayName = layer.getDisplayName();
+		this.edgeNoise = layer.getEdgeNoise();
 
-	public PacketBlueprintAddScheduleLayer(final IDataIdentifier id, final String displayName, final int layerIndex)
-	{
-		this.id = id;
-		this.displayName = displayName;
 		this.layerIndex = layerIndex;
 	}
 
-	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName, final int layerIndex)
+	public PacketSetScheduleLayerInfo(final Blueprint blueprint, IScheduleLayer layer, String displayName, float edgeNoise)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+
 		this.displayName = displayName;
-		this.layerIndex = layerIndex;
+		this.edgeNoise = edgeNoise;
+
+		this.layerIndex = blueprint.getData().getScheduleLayerId(layer);
 	}
 
-	public PacketBlueprintAddScheduleLayer(int worldObjectId, final String displayName, final int layerIndex)
+	public PacketSetScheduleLayerInfo(int worldObjectId, final String displayName, float edgeNoise, final int layerIndex)
 	{
 		this.worldObjectId = worldObjectId;
+
 		this.displayName = displayName;
+		this.edgeNoise = edgeNoise;
+
+		this.layerIndex = layerIndex;
+	}
+
+	public PacketSetScheduleLayerInfo(final IDataIdentifier id, final String displayName, float edgeNoise, final int layerIndex)
+	{
+		this.id = id;
+
+		this.displayName = displayName;
+		this.edgeNoise = edgeNoise;
+
 		this.layerIndex = layerIndex;
 	}
 
@@ -85,7 +91,9 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 		this.id = funnel.get("id");
 		this.worldObjectId = tag.getInteger("worldObjectId");
 		this.layerIndex = tag.getInteger("layerIndex");
-		this.displayName = tag.getString("getDisplayName");
+
+		this.displayName = tag.getString("displayName");
+		this.edgeNoise = tag.getFloat("edgeNoise");
 	}
 
 	@Override
@@ -97,7 +105,9 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 		funnel.set("id", this.id);
 		tag.setInteger("worldObjectId", this.worldObjectId);
 		tag.setInteger("layerIndex", this.layerIndex);
-		tag.setString("getDisplayName", this.displayName);
+
+		tag.setString("displayName", this.displayName);
+		tag.setFloat("edgeNoise", this.edgeNoise);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -105,13 +115,13 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 	@Override
 	public PacketMultipleParts createPart(final byte[] data)
 	{
-		return new PacketBlueprintAddScheduleLayer(data);
+		return new PacketSetScheduleLayerInfo(data);
 	}
 
-	public static class HandlerClient extends MessageHandlerClient<PacketBlueprintAddScheduleLayer, IMessage>
+	public static class HandlerClient extends MessageHandlerClient<PacketSetScheduleLayerInfo, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketBlueprintAddScheduleLayer message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSetScheduleLayerInfo message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -137,7 +147,13 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.setScheduleLayer(message.layerIndex, new ScheduleLayer(message.displayName, bData, ScheduleDataType.DATA));
+					IScheduleLayer layer = bData.getScheduleLayer(message.layerIndex);
+
+					if (layer != null)
+					{
+						layer.setDisplayName(message.displayName);
+						layer.setEdgeNoise(message.edgeNoise);
+					}
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -149,10 +165,10 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 		}
 	}
 
-	public static class HandlerServer extends MessageHandlerServer<PacketBlueprintAddScheduleLayer, IMessage>
+	public static class HandlerServer extends MessageHandlerServer<PacketSetScheduleLayerInfo, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketBlueprintAddScheduleLayer message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSetScheduleLayerInfo message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -178,7 +194,13 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					int id = bData.addScheduleLayer(new ScheduleLayer(message.displayName, bData, ScheduleDataType.DATA));
+					IScheduleLayer layer = bData.getScheduleLayer(message.layerIndex);
+
+					if (layer != null)
+					{
+						layer.setDisplayName(message.displayName);
+						layer.setEdgeNoise(message.edgeNoise);
+					}
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -189,11 +211,13 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.worldObjectId, message.displayName, id));
+							NetworkingOrbis.sendPacketToAllPlayers(
+									new PacketSetScheduleLayerInfo(message.worldObjectId, message.displayName, message.edgeNoise, message.layerIndex));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketBlueprintAddScheduleLayer(message.id, message.displayName, id));
+							NetworkingOrbis.sendPacketToAllPlayers(
+									new PacketSetScheduleLayerInfo(message.id, message.displayName, message.edgeNoise, message.layerIndex));
 						}
 					}
 				}

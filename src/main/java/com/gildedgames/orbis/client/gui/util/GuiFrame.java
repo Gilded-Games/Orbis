@@ -25,7 +25,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 {
 
+	public static boolean preventInnerTyping = false;
+
 	private final List<IGuiFrame> children = new CopyOnWriteArrayList<>();
+
+	private final GuiFrame prevFrame;
 
 	private final ModDim2D dim = new ModDim2D();
 
@@ -36,18 +40,31 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 	public GuiFrame()
 	{
 		super(new ContainerGeneric(Minecraft.getMinecraft().player));
+
+		this.prevFrame = null;
 	}
 
 	public GuiFrame(final Rect rect)
 	{
-		this(rect, new ContainerGeneric(Minecraft.getMinecraft().player));
+		this(null, rect);
 	}
 
-	public GuiFrame(final Rect rect, final Container inventorySlotsIn)
+	public GuiFrame(GuiFrame prevFrame, final Rect rect)
+	{
+		this(prevFrame, rect, new ContainerGeneric(Minecraft.getMinecraft().player));
+	}
+
+	public GuiFrame(GuiFrame prevFrame, final Rect rect, final Container inventorySlotsIn)
 	{
 		super(inventorySlotsIn);
 
+		this.prevFrame = prevFrame;
 		this.dim.set(rect);
+	}
+
+	public GuiFrame getPrevFrame()
+	{
+		return this.prevFrame;
 	}
 
 	public void setDrawDefaultBackground(final boolean flag)
@@ -411,7 +428,10 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 	protected void keyTypedInner(final char typedChar, final int keyCode) throws IOException
 	{
-		super.keyTyped(typedChar, keyCode);
+		if (!preventInnerTyping)
+		{
+			super.keyTyped(typedChar, keyCode);
+		}
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.client.gui.GuiEditBlueprint;
-import com.gildedgames.orbis.client.gui.GuiLoadBlueprint;
+import com.gildedgames.orbis.client.gui.blueprint.GuiLoadBlueprint;
+import com.gildedgames.orbis.client.gui.blueprint.GuiSaveBlueprint;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.MessageHandlerClient;
 import com.gildedgames.orbis.common.network.MessageHandlerServer;
@@ -93,9 +93,9 @@ public class PacketDeleteFile extends PacketMultipleParts
 
 				if (file.delete())
 				{
-					if (Minecraft.getMinecraft().currentScreen instanceof GuiEditBlueprint)
+					if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveBlueprint)
 					{
-						final GuiEditBlueprint viewProjects = (GuiEditBlueprint) Minecraft.getMinecraft().currentScreen;
+						final GuiSaveBlueprint viewProjects = (GuiSaveBlueprint) Minecraft.getMinecraft().currentScreen;
 
 						viewProjects.refreshNavigator();
 					}

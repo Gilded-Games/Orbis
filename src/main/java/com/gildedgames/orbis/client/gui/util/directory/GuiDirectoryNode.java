@@ -120,6 +120,8 @@ public class GuiDirectoryNode extends GuiFrame
 
 				this.lastClickTime = System.currentTimeMillis();
 
+				this.navigator.onClickNode(this.directoryNode);
+
 				if (millisecondsSince < 200)
 				{
 					this.directoryNode.onOpen(this.navigator);

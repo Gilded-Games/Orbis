@@ -25,6 +25,8 @@ public interface IDirectoryNavigator
 	 */
 	boolean removeListener(IDirectoryNavigatorListener listener);
 
+	void onClickNode(IDirectoryNode node);
+
 	void onOpenNode(IDirectoryNode node);
 
 	/**

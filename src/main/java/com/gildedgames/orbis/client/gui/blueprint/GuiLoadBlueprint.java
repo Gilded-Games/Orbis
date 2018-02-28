@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.blueprint;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
@@ -61,9 +61,9 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 	private IProject project;
 
-	public GuiLoadBlueprint(final PlayerOrbis playerOrbis)
+	public GuiLoadBlueprint(GuiFrame prevFrame, final PlayerOrbis playerOrbis)
 	{
-		super(Dim2D.flush(), null);
+		super(prevFrame, Dim2D.flush(), null);
 
 		this.container = new ContainerBlueprintInventory(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
 
@@ -201,7 +201,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	}
 
 	@Override
-	public void onNodeOpen(final IDirectoryNavigator navigator, final IDirectoryNode node)
+	public void onNodeClick(IDirectoryNavigator navigator, IDirectoryNode node)
 	{
 		if (node instanceof BlueprintNode)
 		{
@@ -221,7 +221,11 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 				OrbisCore.LOGGER.error(e);
 			}
 		}
+	}
 
+	@Override
+	public void onNodeOpen(final IDirectoryNavigator navigator, final IDirectoryNode node)
+	{
 		if (node instanceof ProjectNode)
 		{
 			final ProjectNode projectNode = (ProjectNode) node;

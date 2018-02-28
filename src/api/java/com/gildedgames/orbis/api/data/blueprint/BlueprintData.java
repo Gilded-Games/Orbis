@@ -316,6 +316,11 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		return -1;
 	}
 
+	public IScheduleLayer getScheduleLayer(int id)
+	{
+		return this.scheduleLayers.get(id);
+	}
+
 	public int getScheduleLayerId(final IScheduleLayer layer)
 	{
 		for (Map.Entry<Integer, IScheduleLayer> entry : this.scheduleLayers.entrySet())

@@ -1,32 +1,25 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.blueprint;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis.api.data.management.impl.ProjectIdentifier;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
-import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.client.gui.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigatorListener;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
-import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.ProjectNode;
-import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintAddScheduleLayer;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRemoveScheduleLayer;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestCreateProject;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis.common.network.packets.projects.PacketSaveWorldObjectToProject;
@@ -37,9 +30,8 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
-public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorListener
+public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorListener
 {
 	private final Blueprint blueprint;
 
@@ -47,11 +39,9 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 	private GuiInput nameInput;
 
-	private GuiButtonVanilla saveButton, closeButton;
+	private GuiButtonVanilla saveButton, backButton;
 
 	private GuiDirectoryViewer directoryViewer;
-
-	private GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled> layerViewer;
 
 	private boolean requestListing = true;
 
@@ -59,9 +49,9 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 	private boolean inProjectDirectory;
 
-	public GuiEditBlueprint(final Blueprint blueprint)
+	public GuiSaveBlueprint(GuiFrame prevFrame, final Blueprint blueprint)
 	{
-		super(Dim2D.flush());
+		super(prevFrame, Dim2D.flush());
 
 		this.setDrawDefaultBackground(true);
 		this.blueprint = blueprint;
@@ -85,107 +75,31 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	@Override
 	public void init()
 	{
-		final Pos2D center = Pos2D.flush((this.width / 2) + 100, this.height / 2);
-
-		final int yOffset = -80;
-
-		this.title = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(-25).addX(-70).addY(yOffset).flush(),
+		this.title = new GuiText(Dim2D.build().width(140).height(20).addY(3).addX(132).flush(),
 				new Text(new TextComponentString("Project Name:"), 1.0F));
 
-		this.nameInput = new GuiInput(Dim2D.build().center(true).width(140).height(20).pos(center).addY(yOffset).flush());
+		this.nameInput = new GuiInput(Dim2D.build().height(20).addY(15).addX(132).flush());
 
-		this.saveButton = new GuiButtonVanilla(Dim2D.build().center(true).width(50).height(20).pos(center).addY(30).addX(-30).addY(yOffset).flush());
+		this.nameInput.dim().mod().width(this.width - this.nameInput.dim().x() - 20).flush();
 
-		this.saveButton.getInner().displayString = "Save";
+		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(75).flush());
 
-		this.closeButton = new GuiButtonVanilla(Dim2D.build().center(true).width(50).height(20).pos(center).addY(30).addX(30).addY(yOffset).flush());
+		this.saveButton.getInner().displayString = "Save As";
 
-		this.closeButton.getInner().displayString = "Close";
+		this.backButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(20).flush());
+
+		this.backButton.getInner().displayString = "Back";
 
 		this.addChildren(this.title);
 		this.addChildren(this.nameInput);
 		this.addChildren(this.saveButton);
-		this.addChildren(this.closeButton);
+		this.addChildren(this.backButton);
 
-		this.directoryViewer = new GuiDirectoryViewer(center.clone().addX(-200).flush(),
+		this.directoryViewer = new GuiDirectoryViewer(Pos2D.build().addY(45).addX(20).flush(),
 				new DirectoryNavigator(new OrbisNavigatorNodeFactory()));
-		this.layerViewer = new GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled>(center.clone().addY(40).flush(), new ListNavigator<>(), (p, n, i) ->
-		{
-			final GuiButtonVanillaToggled button = new GuiButtonVanillaToggled(Dim2D.build().pos(p).width(130).height(20).flush(), i);
 
-			button.getInner().displayString = n.displayName();
-
-			return button;
-		}, () -> new ScheduleLayer("Layer " + String.valueOf(GuiEditBlueprint.this.blueprint.getData().getScheduleLayers().size() + 1),
-				GuiEditBlueprint.this.blueprint, ScheduleDataType.DATA))
-		{
-			@Override
-			public void onNewNode(final IScheduleLayer node, final int index)
-			{
-				super.onAddNode(node, index);
-
-				final Blueprint b = GuiEditBlueprint.this.blueprint;
-
-				if (this.mc.isIntegratedServerRunning())
-				{
-					b.getData().addScheduleLayer(node);
-				}
-				else
-				{
-					if (b.getData().getMetadata().getIdentifier() == null)
-					{
-						NetworkingOrbis.sendPacketToServer(
-								new PacketBlueprintAddScheduleLayer(b, node.displayName()));
-					}
-					else
-					{
-						NetworkingOrbis.sendPacketToServer(
-								new PacketBlueprintAddScheduleLayer(b.getData().getMetadata().getIdentifier(), node.displayName()));
-					}
-				}
-			}
-
-			@Override
-			public void onRemoveNode(final IScheduleLayer node, final int index)
-			{
-				super.onRemoveNode(node, index);
-
-				final Blueprint b = GuiEditBlueprint.this.blueprint;
-
-				if (b.getData().getMetadata().getIdentifier() == null)
-				{
-					NetworkingOrbis.sendPacketToServer(
-							new PacketBlueprintRemoveScheduleLayer(b, b.getData().getScheduleLayerId(node)));
-				}
-				else
-				{
-					NetworkingOrbis.sendPacketToServer(
-							new PacketBlueprintRemoveScheduleLayer(b.getData().getMetadata().getIdentifier(), b.getData().getScheduleLayerId(node)));
-				}
-			}
-
-			@Override
-			public void onNodeClicked(final IScheduleLayer node, final int index)
-			{
-				super.onNodeClicked(node, index);
-
-				final Blueprint b = GuiEditBlueprint.this.blueprint;
-
-				final int layerIndex = b.getData().getScheduleLayerId(node);
-
-				if (layerIndex != -1)
-				{
-					NetworkingOrbis.sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
-				}
-				else
-				{
-					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiEditBlueprint.");
-				}
-			}
-		};
-
-		this.directoryViewer.dim().mod().center(true).flush();
-		this.layerViewer.dim().mod().center(true).flush();
+		this.directoryViewer.dim().mod().width(this.width - this.directoryViewer.dim().x() - 20).flush();
+		this.directoryViewer.dim().mod().height(this.height - this.directoryViewer.dim().y() - 20).flush();
 
 		if (!OrbisCore.getProjectManager().getLocation().exists())
 		{
@@ -195,20 +109,11 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 			}
 		}
 
-		for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
-		{
-			int i = e.getKey();
-			IScheduleLayer layer = e.getValue();
-			
-			this.layerViewer.getNavigator().add(layer, i);
-		}
-
 		this.directoryViewer.getNavigator().addListener(this);
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
 		this.addChildren(this.directoryViewer);
-		this.addChildren(this.layerViewer);
 	}
 
 	@Override
@@ -242,9 +147,9 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.closeButton) && mouseButton == 0)
+		if (InputHelper.isHovered(this.backButton) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(null);
+			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
@@ -308,6 +213,12 @@ public class GuiEditBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onNodeClick(IDirectoryNavigator navigator, IDirectoryNode node)
+	{
+
 	}
 
 	@Override

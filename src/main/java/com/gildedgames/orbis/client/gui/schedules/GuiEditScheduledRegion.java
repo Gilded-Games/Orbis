@@ -1,7 +1,8 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.schedules;
 
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
+import com.gildedgames.orbis.client.gui.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.rect.Dim2D;
@@ -34,9 +35,9 @@ public class GuiEditScheduledRegion extends GuiFrame
 
 	private GuiButtonVanilla saveButton, closeButton;
 
-	public GuiEditScheduledRegion(PlayerOrbis playerOrbis, ScheduleRegion scheduleRegion)
+	public GuiEditScheduledRegion(GuiFrame prevFrame, PlayerOrbis playerOrbis, ScheduleRegion scheduleRegion)
 	{
-		super(Dim2D.flush(), new ContainerScheduleRegion(playerOrbis, new InventorySpawnEggs(null)));
+		super(prevFrame, Dim2D.flush(), new ContainerScheduleRegion(playerOrbis, new InventorySpawnEggs(null)));
 
 		this.container = (ContainerScheduleRegion) this.inventorySlots;
 		playerOrbis.getEntity().openContainer = this.inventorySlots;

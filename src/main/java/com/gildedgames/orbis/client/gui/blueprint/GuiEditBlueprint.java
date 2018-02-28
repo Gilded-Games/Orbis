@@ -1,0 +1,222 @@
+package com.gildedgames.orbis.client.gui.blueprint;
+
+import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
+import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
+import com.gildedgames.orbis.client.gui.schedules.GuiScheduleLayerPanel;
+import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
+import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
+import com.gildedgames.orbis.client.gui.util.GuiFrame;
+import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
+import com.gildedgames.orbis.client.rect.Dim2D;
+import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintAddScheduleLayer;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRemoveScheduleLayer;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
+import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.google.common.collect.Maps;
+import net.minecraft.client.Minecraft;
+
+import java.io.IOException;
+import java.util.Map;
+
+public class GuiEditBlueprint extends GuiFrame
+{
+	private final Blueprint blueprint;
+
+	private GuiButtonVanilla saveButton, closeButton;
+
+	private GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled> layerViewer;
+
+	private GuiScheduleLayerPanel currentPanel;
+
+	private Map<Integer, GuiScheduleLayerPanel> cachedPanels = Maps.newHashMap();
+
+	public GuiEditBlueprint(GuiFrame prevFrame, final Blueprint blueprint)
+	{
+		super(prevFrame, Dim2D.flush());
+
+		this.setDrawDefaultBackground(true);
+		this.blueprint = blueprint;
+	}
+
+	@Override
+	public void onGuiClosed()
+	{
+		super.onGuiClosed();
+
+		GuiButtonVanillaToggled.TOGGLED_BUTTON_ID = -1;
+	}
+
+	@Override
+	public void init()
+	{
+		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(75).flush());
+
+		this.saveButton.getInner().displayString = "Save As";
+
+		this.closeButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(20).flush());
+
+		this.closeButton.getInner().displayString = "Close";
+
+		this.addChildren(this.saveButton);
+		this.addChildren(this.closeButton);
+
+		this.layerViewer = new GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled>(Pos2D.build().add(20, 45).flush(), new ListNavigator<>(), (p, n, i) ->
+		{
+			final GuiButtonVanillaToggled button = new GuiButtonVanillaToggled(Dim2D.build().pos(p).width(130).height(20).flush(), i);
+
+			button.getInner().displayString = n.getDisplayName();
+
+			if (n == GuiEditBlueprint.this.blueprint.getCurrentScheduleLayer())
+			{
+				GuiButtonVanillaToggled.TOGGLED_BUTTON_ID = i;
+			}
+
+			return button;
+		}, () -> new ScheduleLayer("Layer " + String.valueOf(GuiEditBlueprint.this.blueprint.getData().getScheduleLayers().size() + 1),
+				GuiEditBlueprint.this.blueprint, ScheduleDataType.DATA))
+		{
+			@Override
+			public void onNewNode(final IScheduleLayer node, final int index)
+			{
+				super.onAddNode(node, index);
+
+				final Blueprint b = GuiEditBlueprint.this.blueprint;
+
+				if (this.mc.isIntegratedServerRunning())
+				{
+					b.getData().addScheduleLayer(node);
+				}
+				else
+				{
+					if (b.getData().getMetadata().getIdentifier() == null)
+					{
+						NetworkingOrbis.sendPacketToServer(
+								new PacketBlueprintAddScheduleLayer(b, node.getDisplayName()));
+					}
+					else
+					{
+						NetworkingOrbis.sendPacketToServer(
+								new PacketBlueprintAddScheduleLayer(b.getData().getMetadata().getIdentifier(), node.getDisplayName()));
+					}
+				}
+
+				GuiScheduleLayerPanel panel = new GuiScheduleLayerPanel(Dim2D.build().width(this.width - 250).height(this.height - 65).flush(),
+						GuiEditBlueprint.this.blueprint, node);
+
+				panel.dim().mod().addX(this.width - panel.dim().width() - 20).addY(45).flush();
+
+				GuiEditBlueprint.this.cachedPanels.put(index, panel);
+			}
+
+			@Override
+			public void onRemoveNode(final IScheduleLayer node, final int index)
+			{
+				super.onRemoveNode(node, index);
+
+				final Blueprint b = GuiEditBlueprint.this.blueprint;
+
+				if (b.getData().getMetadata().getIdentifier() == null)
+				{
+					NetworkingOrbis.sendPacketToServer(
+							new PacketBlueprintRemoveScheduleLayer(b, b.getData().getScheduleLayerId(node)));
+				}
+				else
+				{
+					NetworkingOrbis.sendPacketToServer(
+							new PacketBlueprintRemoveScheduleLayer(b.getData().getMetadata().getIdentifier(), b.getData().getScheduleLayerId(node)));
+				}
+			}
+
+			@Override
+			public void onNodeClicked(final IScheduleLayer node, final int index)
+			{
+				super.onNodeClicked(node, index);
+
+				final Blueprint b = GuiEditBlueprint.this.blueprint;
+
+				final int layerIndex = b.getData().getScheduleLayerId(node);
+
+				if (layerIndex != -1)
+				{
+					NetworkingOrbis.sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
+				}
+				else
+				{
+					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveBlueprint.");
+				}
+
+				GuiEditBlueprint.this.removeChild(GuiEditBlueprint.this.currentPanel);
+
+				GuiEditBlueprint.this.currentPanel = GuiEditBlueprint.this.cachedPanels.get(index);
+
+				GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
+			}
+		};
+
+		this.layerViewer.dim().mod().height(this.height - 65).flush();
+
+		if (!OrbisCore.getProjectManager().getLocation().exists())
+		{
+			if (!OrbisCore.getProjectManager().getLocation().mkdirs())
+			{
+				throw new RuntimeException("Project manager file could not be created!");
+			}
+		}
+
+		for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
+		{
+			int i = e.getKey();
+			IScheduleLayer layer = e.getValue();
+
+			this.layerViewer.getNavigator().add(layer, i);
+
+			GuiScheduleLayerPanel panel = new GuiScheduleLayerPanel(Dim2D.build().width(this.width - 250).height(this.height - 65).flush(), this.blueprint,
+					layer);
+
+			panel.dim().mod().addX(this.width - panel.dim().width() - 20).addY(45).flush();
+
+			GuiEditBlueprint.this.cachedPanels.put(i, panel);
+		}
+
+		this.addChildren(this.layerViewer);
+
+		int currentIndex = this.blueprint.getCurrentScheduleLayerIndex();
+
+		if (!this.cachedPanels.isEmpty())
+		{
+			GuiEditBlueprint.this.currentPanel = GuiEditBlueprint.this.cachedPanels.get(currentIndex);
+
+			GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
+		}
+	}
+
+	@Override
+	public void draw()
+	{
+		super.draw();
+	}
+
+	@Override
+	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
+	{
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+
+		if (InputHelper.isHovered(this.closeButton) && mouseButton == 0)
+		{
+			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame());
+			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
+		}
+
+		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
+		{
+			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveBlueprint(this, this.blueprint));
+		}
+	}
+}

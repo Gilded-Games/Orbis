@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.power_wheel;
 
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
