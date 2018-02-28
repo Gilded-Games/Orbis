@@ -271,7 +271,7 @@ public class DataPrimer
 		{
 			for (BlockFilter filter : layer.getDataRecord().getData())
 			{
-				filter.apply(boundingBox, layer.getDataRecord().getPositions(filter), data);
+				filter.apply(boundingBox, layer.getDataRecord().getPositions(filter), data, layer.choosesPerBlock());
 			}
 		}
 

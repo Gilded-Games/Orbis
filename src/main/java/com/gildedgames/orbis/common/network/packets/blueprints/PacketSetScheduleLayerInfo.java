@@ -32,6 +32,8 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 	private float edgeNoise;
 
+	private boolean choosesPerBlock;
+
 	public PacketSetScheduleLayerInfo()
 	{
 
@@ -42,42 +44,35 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 		super(data);
 	}
 
-	public PacketSetScheduleLayerInfo(final IDataIdentifier id, IScheduleLayer layer, final int layerIndex)
-	{
-		this.id = id;
-
-		this.displayName = layer.getDisplayName();
-		this.edgeNoise = layer.getEdgeNoise();
-
-		this.layerIndex = layerIndex;
-	}
-
-	public PacketSetScheduleLayerInfo(final Blueprint blueprint, IScheduleLayer layer, String displayName, float edgeNoise)
+	public PacketSetScheduleLayerInfo(final Blueprint blueprint, IScheduleLayer layer, String displayName, float edgeNoise, boolean choosesPerBlock)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
 
 		this.displayName = displayName;
 		this.edgeNoise = edgeNoise;
+		this.choosesPerBlock = choosesPerBlock;
 
 		this.layerIndex = blueprint.getData().getScheduleLayerId(layer);
 	}
 
-	public PacketSetScheduleLayerInfo(int worldObjectId, final String displayName, float edgeNoise, final int layerIndex)
+	public PacketSetScheduleLayerInfo(int worldObjectId, final int layerIndex, final String displayName, float edgeNoise, boolean choosesPerBlock)
 	{
 		this.worldObjectId = worldObjectId;
 
 		this.displayName = displayName;
 		this.edgeNoise = edgeNoise;
+		this.choosesPerBlock = choosesPerBlock;
 
 		this.layerIndex = layerIndex;
 	}
 
-	public PacketSetScheduleLayerInfo(final IDataIdentifier id, final String displayName, float edgeNoise, final int layerIndex)
+	public PacketSetScheduleLayerInfo(final IDataIdentifier id, final int layerIndex, final String displayName, float edgeNoise, boolean choosesPerBlock)
 	{
 		this.id = id;
 
 		this.displayName = displayName;
 		this.edgeNoise = edgeNoise;
+		this.choosesPerBlock = choosesPerBlock;
 
 		this.layerIndex = layerIndex;
 	}
@@ -94,6 +89,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 		this.displayName = tag.getString("displayName");
 		this.edgeNoise = tag.getFloat("edgeNoise");
+		this.choosesPerBlock = tag.getBoolean("choosesPerBlock");
 	}
 
 	@Override
@@ -108,6 +104,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 		tag.setString("displayName", this.displayName);
 		tag.setFloat("edgeNoise", this.edgeNoise);
+		tag.setBoolean("choosesPerBlock", this.choosesPerBlock);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -153,6 +150,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 					{
 						layer.setDisplayName(message.displayName);
 						layer.setEdgeNoise(message.edgeNoise);
+						layer.setChoosesPerBlock(message.choosesPerBlock);
 					}
 				}
 			}
@@ -200,6 +198,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 					{
 						layer.setDisplayName(message.displayName);
 						layer.setEdgeNoise(message.edgeNoise);
+						layer.setChoosesPerBlock(message.choosesPerBlock);
 					}
 
 					// TODO: Send just to people who have downloaded this project
@@ -212,12 +211,14 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 						if (message.id == null)
 						{
 							NetworkingOrbis.sendPacketToAllPlayers(
-									new PacketSetScheduleLayerInfo(message.worldObjectId, message.displayName, message.edgeNoise, message.layerIndex));
+									new PacketSetScheduleLayerInfo(message.worldObjectId, message.layerIndex, message.displayName, message.edgeNoise,
+											message.choosesPerBlock));
 						}
 						else
 						{
 							NetworkingOrbis.sendPacketToAllPlayers(
-									new PacketSetScheduleLayerInfo(message.id, message.displayName, message.edgeNoise, message.layerIndex));
+									new PacketSetScheduleLayerInfo(message.id, message.layerIndex, message.displayName, message.edgeNoise,
+											message.choosesPerBlock));
 						}
 					}
 				}

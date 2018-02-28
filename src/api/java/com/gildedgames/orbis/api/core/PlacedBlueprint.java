@@ -140,7 +140,7 @@ public class PlacedBlueprint implements NBT
 		{
 			for (BlockFilter filter : layer.getDataRecord().getData())
 			{
-				filter.apply(layer.getDataRecord().getPositions(filter), blocks, this.data);
+				filter.apply(layer.getDataRecord().getPositions(filter), blocks, this.data, layer.choosesPerBlock());
 			}
 		}
 

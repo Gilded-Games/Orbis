@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.rect.Dim2D;
+import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.client.rect.Rect;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetScheduleLayerInfo;
@@ -29,6 +30,8 @@ public class GuiScheduleLayerPanel extends GuiFrame
 
 	private GuiInputSlider noise;
 
+	private GuiTickBox choosesPerBlock;
+
 	private boolean setText;
 
 	public GuiScheduleLayerPanel(final Rect rect, Blueprint blueprint, IScheduleLayer layer)
@@ -50,12 +53,14 @@ public class GuiScheduleLayerPanel extends GuiFrame
 			{
 				NetworkingOrbis
 						.sendPacketToServer(
-								new PacketSetScheduleLayerInfo(this.blueprint, this.layer, this.nameInput.getInner().getText(), this.noise.getSliderValue()));
+								new PacketSetScheduleLayerInfo(this.blueprint, this.layer, this.nameInput.getInner().getText(), this.noise.getSliderValue(),
+										this.choosesPerBlock.isTicked()));
 			}
 			else if (InputHelper.isHovered(this.resetButton))
 			{
 				this.nameInput.getInner().setText(this.layer.getDisplayName());
 				this.noise.setSliderValue(this.layer.getEdgeNoise());
+				this.choosesPerBlock.setTicked(this.layer.choosesPerBlock());
 			}
 		}
 	}
@@ -89,7 +94,12 @@ public class GuiScheduleLayerPanel extends GuiFrame
 
 		this.noise.setSliderValue(this.layer.getEdgeNoise());
 
-		this.addChildren(this.title, this.nameInput, this.saveButton, this.resetButton, this.noise, noiseTitle);
+		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).addY(102).addX(20).flush(),
+				new Text(new TextComponentString("Chooses Per Block:"), 1.0F));
+
+		this.choosesPerBlock = new GuiTickBox(Pos2D.flush(20, 115), this.layer.choosesPerBlock());
+
+		this.addChildren(this.title, this.nameInput, this.saveButton, this.resetButton, this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
 	}
 
 	@Override

@@ -105,8 +105,6 @@ public class BlockFilterHelper
 	{
 		final BlockFilterLayer filterLayer = BlockFilterHelper.getNewFillLayer();
 
-		filterLayer.chooseBlockPerBlock = true;
-
 		final List<BlockDataWithConditions> blocks = Lists.newArrayList();
 
 		for (final ItemStack stack : stacks)

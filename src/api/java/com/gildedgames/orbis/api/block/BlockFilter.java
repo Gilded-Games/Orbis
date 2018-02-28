@@ -59,35 +59,35 @@ public class BlockFilter implements NBT
 		return sample;
 	}
 
-	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData options)
+	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData options, boolean choosePerBlock)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(positions, container, options);
+				layer.apply(positions, container, options, choosePerBlock);
 			}
 		}
 	}
 
-	public void apply(IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions, final ICreationData options)
+	public void apply(IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions, final ICreationData options, boolean choosePerBlock)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(this, boundingBox, positions, options);
+				layer.apply(this, boundingBox, positions, options, choosePerBlock);
 			}
 		}
 	}
 
-	public void apply(final IShape shape, final ICreationData options)
+	public void apply(final IShape shape, final ICreationData options, boolean choosePerBlock)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(this, shape, options);
+				layer.apply(this, shape, options, choosePerBlock);
 			}
 		}
 	}

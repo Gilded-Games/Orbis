@@ -13,6 +13,10 @@ public interface IScheduleLayer extends NBT
 
 	boolean unlisten(IScheduleLayerListener listener);
 
+	void setChoosesPerBlock(boolean choosesPerBlock);
+
+	boolean choosesPerBlock();
+
 	String getDisplayName();
 
 	void setDisplayName(String displayName);

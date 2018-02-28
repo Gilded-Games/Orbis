@@ -63,7 +63,7 @@ public class PacketFilterShape implements IMessage
 			final IShape shape = message.funnel.get(player.world, "shape");
 			final BlockFilter filter = message.funnel.get("filter");
 
-			filter.apply(shape, new CreationData(player.world, player));
+			filter.apply(shape, new CreationData(player.world, player), true);
 
 			return null;
 		}

@@ -22,6 +22,8 @@ public class ScheduleLayer implements IScheduleLayer
 
 	private float edgeNoise;
 
+	private boolean choosesPerBlock = true;
+
 	private ScheduleLayer()
 	{
 
@@ -55,6 +57,18 @@ public class ScheduleLayer implements IScheduleLayer
 	public boolean unlisten(final IScheduleLayerListener listener)
 	{
 		return this.listeners.remove(listener);
+	}
+
+	@Override
+	public void setChoosesPerBlock(boolean choosesPerBlock)
+	{
+		this.choosesPerBlock = choosesPerBlock;
+	}
+
+	@Override
+	public boolean choosesPerBlock()
+	{
+		return this.choosesPerBlock;
 	}
 
 	@Override
@@ -102,6 +116,7 @@ public class ScheduleLayer implements IScheduleLayer
 		funnel.set("positionRecord", this.positionRecord);
 		tag.setInteger("dataType", this.dataType.ordinal());
 		tag.setFloat("edgeNoise", this.edgeNoise);
+		tag.setBoolean("choosesPerBlock", this.choosesPerBlock);
 	}
 
 	@Override
@@ -113,5 +128,6 @@ public class ScheduleLayer implements IScheduleLayer
 		this.positionRecord = funnel.get("positionRecord");
 		this.dataType = ScheduleDataType.values()[tag.getInteger("dataType")];
 		this.edgeNoise = tag.getFloat("edgeNoise");
+		this.choosesPerBlock = tag.getBoolean("choosesPerBlock");
 	}
 }
