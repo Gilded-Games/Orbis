@@ -44,7 +44,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				NetworkingOrbis.sendPacketToServer(new PacketRemoveSchedule(blueprint, blueprint.getData().getScheduleId(scheduleRegion)));
+				NetworkingOrbis.sendPacketToServer(new PacketRemoveSchedule(blueprint, scheduleRegion));
 			}
 		};
 	}

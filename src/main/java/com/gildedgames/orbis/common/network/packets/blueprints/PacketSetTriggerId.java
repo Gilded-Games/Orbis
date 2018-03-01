@@ -5,7 +5,7 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
@@ -29,7 +29,7 @@ public class PacketSetTriggerId implements IMessage
 
 	private String triggerId;
 
-	private int scheduleId = -1;
+	private int scheduleId = -1, layerId = -1;
 
 	private NBTFunnel funnel;
 
@@ -38,24 +38,33 @@ public class PacketSetTriggerId implements IMessage
 
 	}
 
-	public PacketSetTriggerId(IDataIdentifier id, int scheduleId, String triggerId)
+	public PacketSetTriggerId(IDataIdentifier id, int layerId, int scheduleId, String triggerId)
 	{
 		this.id = id;
+
+		this.layerId = layerId;
 		this.scheduleId = scheduleId;
+
 		this.triggerId = triggerId;
 	}
 
-	public PacketSetTriggerId(Blueprint blueprint, int scheduleId, String triggerId)
+	public PacketSetTriggerId(Blueprint blueprint, ISchedule schedule, String triggerId)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
-		this.scheduleId = scheduleId;
+
+		this.layerId = schedule.getParent().getParent().getLayerId();
+		this.scheduleId = schedule.getParent().getScheduleId(schedule);
+
 		this.triggerId = triggerId;
 	}
 
-	public PacketSetTriggerId(int worldObjectId, int scheduleId, String triggerId)
+	public PacketSetTriggerId(int worldObjectId, int layerId, int scheduleId, String triggerId)
 	{
 		this.worldObjectId = worldObjectId;
+
+		this.layerId = layerId;
 		this.scheduleId = scheduleId;
+
 		this.triggerId = triggerId;
 	}
 
@@ -67,6 +76,7 @@ public class PacketSetTriggerId implements IMessage
 
 		this.worldObjectId = tag.getInteger("worldObjectId");
 		this.id = funnel.get("id");
+		this.layerId = tag.getInteger("layerId");
 		this.scheduleId = tag.getInteger("scheduleId");
 		this.triggerId = tag.getString("triggerId");
 	}
@@ -79,6 +89,7 @@ public class PacketSetTriggerId implements IMessage
 
 		tag.setInteger("worldObjectId", this.worldObjectId);
 		funnel.set("id", this.id);
+		tag.setInteger("layerId", this.layerId);
 		tag.setInteger("scheduleId", this.scheduleId);
 		tag.setString("triggerId", this.triggerId);
 
@@ -114,7 +125,7 @@ public class PacketSetTriggerId implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.getSchedule(message.scheduleId, ScheduleRegion.class).setTriggerId(message.triggerId);
+					bData.getScheduleLayer(message.layerId).getScheduleRecord().getSchedule(message.scheduleId).setTriggerId(message.triggerId);
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -155,7 +166,7 @@ public class PacketSetTriggerId implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.getSchedule(message.scheduleId, ScheduleRegion.class).setTriggerId(message.triggerId);
+					bData.getScheduleLayer(message.layerId).getScheduleRecord().getSchedule(message.scheduleId).setTriggerId(message.triggerId);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -166,11 +177,12 @@ public class PacketSetTriggerId implements IMessage
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketSetTriggerId(message.worldObjectId, message.scheduleId, message.triggerId));
+							NetworkingOrbis.sendPacketToAllPlayers(
+									new PacketSetTriggerId(message.worldObjectId, message.layerId, message.scheduleId, message.triggerId));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketSetTriggerId(message.id, message.scheduleId, message.triggerId));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketSetTriggerId(message.id, message.layerId, message.scheduleId, message.triggerId));
 						}
 					}
 				}

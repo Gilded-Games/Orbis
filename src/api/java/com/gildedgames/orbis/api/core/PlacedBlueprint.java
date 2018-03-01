@@ -82,7 +82,7 @@ public class PlacedBlueprint implements NBT
 	{
 		for (ScheduleRegion s : this.scheduleRegions)
 		{
-			if (s.getTriggerID().equals(triggerId))
+			if (s.getTriggerId().equals(triggerId))
 			{
 				return s;
 			}
@@ -93,40 +93,46 @@ public class PlacedBlueprint implements NBT
 
 	private void bakeScheduleRegions()
 	{
-		this.def.getData().getSchedules(ScheduleRegion.class).forEach(s ->
+		for (IScheduleLayer layer : this.def.getData().getScheduleLayers().values())
 		{
-			ScheduleRegion c = NBTHelper.clone(s);
+			layer.getScheduleRecord().getSchedules(ScheduleRegion.class).forEach(s ->
+			{
+				ScheduleRegion c = NBTHelper.clone(s);
 
-			RegionHelp.translate(c.getBounds(), this.getCreationData().getPos().getX(), this.getCreationData().getPos().getY(),
-					this.getCreationData().getPos().getZ());
+				RegionHelp.translate(c.getBounds(), this.getCreationData().getPos().getX(), this.getCreationData().getPos().getY(),
+						this.getCreationData().getPos().getZ());
 
-			this.scheduleRegions.add(c);
-		});
+				this.scheduleRegions.add(c);
+			});
+		}
 	}
 
 	private void placeEntities()
 	{
-		for (ScheduleRegion s : this.def.getData().getSchedules(ScheduleRegion.class))
+		for (IScheduleLayer layer : this.def.getData().getScheduleLayers().values())
 		{
-			for (int i = 0; i < s.getSpawnEggsInventory().getSizeInventory(); i++)
+			for (ScheduleRegion s : layer.getScheduleRecord().getSchedules(ScheduleRegion.class))
 			{
-				ItemStack stack = s.getSpawnEggsInventory().getStackInSlot(i);
-
-				if (stack.getItem() instanceof ItemMonsterPlacer)
+				for (int i = 0; i < s.getSpawnEggsInventory().getSizeInventory(); i++)
 				{
-					BlockPos pos = this.getCreationData().getPos().add(s.getBounds().getMin());
-					pos.add(this.world.rand.nextInt(s.getBounds().getWidth()), 0, this.world.rand.nextInt(s.getBounds().getHeight()));
+					ItemStack stack = s.getSpawnEggsInventory().getStackInSlot(i);
 
-					PlacedEntity placedEntity = new PlacedEntity(stack, pos);
-
-					ChunkPos p = new ChunkPos(this.getCreationData().getPos().getX() >> 4, this.getCreationData().getPos().getZ() >> 4);
-
-					if (!this.placedEntities.containsKey(p))
+					if (stack.getItem() instanceof ItemMonsterPlacer)
 					{
-						this.placedEntities.put(p, Lists.newArrayList());
-					}
+						BlockPos pos = this.getCreationData().getPos().add(s.getBounds().getMin());
+						pos.add(this.world.rand.nextInt(s.getBounds().getWidth()), 0, this.world.rand.nextInt(s.getBounds().getHeight()));
 
-					this.placedEntities.get(p).add(placedEntity);
+						PlacedEntity placedEntity = new PlacedEntity(stack, pos);
+
+						ChunkPos p = new ChunkPos(this.getCreationData().getPos().getX() >> 4, this.getCreationData().getPos().getZ() >> 4);
+
+						if (!this.placedEntities.containsKey(p))
+						{
+							this.placedEntities.put(p, Lists.newArrayList());
+						}
+
+						this.placedEntities.get(p).add(placedEntity);
+					}
 				}
 			}
 		}
@@ -138,9 +144,9 @@ public class PlacedBlueprint implements NBT
 
 		for (IScheduleLayer layer : this.getDef().getData().getScheduleLayers().values())
 		{
-			for (BlockFilter filter : layer.getDataRecord().getData())
+			for (BlockFilter filter : layer.getFilterRecord().getData())
 			{
-				filter.apply(layer.getDataRecord().getPositions(filter), blocks, this.data, layer.choosesPerBlock());
+				filter.apply(layer.getFilterRecord().getPositions(filter), blocks, this.data, layer.choosesPerBlock());
 			}
 		}
 

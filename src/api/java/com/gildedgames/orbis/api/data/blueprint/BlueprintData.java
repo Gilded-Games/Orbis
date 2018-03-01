@@ -14,10 +14,9 @@ import com.gildedgames.orbis.api.data.region.IRotateable;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.processing.DataPrimer;
-import com.gildedgames.orbis.api.util.ObjectFilter;
-import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.IWorldObjectChild;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.item.ItemMonsterPlacer;
@@ -36,7 +35,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class BlueprintData implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>
+public class BlueprintData implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>, IWorldObjectChild
 {
 	private final List<IBlueprintDataListener> listeners = Lists.newArrayList();
 
@@ -50,8 +49,6 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 
 	private List<Entrance> entrances = Lists.newArrayList();
 
-	private Map<Integer, ISchedule> schedules = Maps.newHashMap();
-
 	private IWorldObject worldObjectParent;
 
 	private BlueprintData()
@@ -64,7 +61,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this();
 
 		this.dataContainer = new BlockDataContainer(region);
-		this.addScheduleLayer(new ScheduleLayer("Default Layer", this, ScheduleDataType.DATA));
+		this.addScheduleLayer(new ScheduleLayer("Default Layer", this));
 	}
 
 	public BlueprintData(final BlockDataContainer container)
@@ -72,25 +69,28 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this();
 
 		this.dataContainer = container;
-		this.addScheduleLayer(new ScheduleLayer("Default Layer", this, ScheduleDataType.DATA));
+		this.addScheduleLayer(new ScheduleLayer("Default Layer", this));
 	}
 
 	public static void spawnEntities(DataPrimer primer, BlueprintData data, BlockPos pos)
 	{
-		for (ScheduleRegion s : data.getSchedules(ScheduleRegion.class))
+		for (IScheduleLayer layer : data.getScheduleLayers().values())
 		{
-			for (int i = 0; i < s.getSpawnEggsInventory().getSizeInventory(); i++)
+			for (ScheduleRegion s : layer.getScheduleRecord().getSchedules(ScheduleRegion.class))
 			{
-				ItemStack stack = s.getSpawnEggsInventory().getStackInSlot(i);
-
-				if (stack.getItem() instanceof ItemMonsterPlacer)
+				for (int i = 0; i < s.getSpawnEggsInventory().getSizeInventory(); i++)
 				{
-					BlockPos p = pos.add(s.getBounds().getMin())
-							.add(primer.getWorld().rand.nextInt(s.getBounds().getWidth()), 0, primer.getWorld().rand.nextInt(s.getBounds().getHeight()));
+					ItemStack stack = s.getSpawnEggsInventory().getStackInSlot(i);
 
-					PlacedEntity placedEntity = new PlacedEntity(stack, p);
+					if (stack.getItem() instanceof ItemMonsterPlacer)
+					{
+						BlockPos p = pos.add(s.getBounds().getMin())
+								.add(primer.getWorld().rand.nextInt(s.getBounds().getWidth()), 0, primer.getWorld().rand.nextInt(s.getBounds().getHeight()));
 
-					placedEntity.spawn(primer);
+						PlacedEntity placedEntity = new PlacedEntity(stack, p);
+
+						placedEntity.spawn(primer);
+					}
 				}
 			}
 		}
@@ -104,102 +104,18 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		}
 	}
 
+	@Override
 	public IWorldObject getWorldObjectParent()
 	{
 		return this.worldObjectParent;
 	}
 
+	@Override
 	public void setWorldObjectParent(IWorldObject parent)
 	{
 		this.worldObjectParent = parent;
 
-		this.schedules.values().forEach(s -> s.setParent(this));
-		this.schedules.values().forEach(s -> s.setWorldObjectParent(this.worldObjectParent));
-	}
-
-	public <T extends ISchedule> List<T> getSchedules(Class<T> clazz)
-	{
-		return ObjectFilter.getTypesFrom(this.schedules.values(), clazz);
-	}
-
-	public ScheduleRegion getScheduleFromTriggerID(String triggerId)
-	{
-		for (ScheduleRegion s : this.getSchedules(ScheduleRegion.class))
-		{
-			if (s.getTriggerID().equals(triggerId))
-			{
-				return s;
-			}
-		}
-
-		return null;
-	}
-
-	public void setSchedule(int id, ISchedule schedule)
-	{
-		final Lock w = this.lock.writeLock();
-		w.lock();
-
-		try
-		{
-			if (schedule instanceof ScheduleRegion)
-			{
-				ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-				boolean intersects = false;
-
-				for (ScheduleRegion s : this.getSchedules(ScheduleRegion.class))
-				{
-					if (RegionHelp.intersects(scheduleRegion.getBounds(), s.getBounds()))
-					{
-						intersects = true;
-						break;
-					}
-				}
-
-				if (intersects)
-				{
-					throw new IllegalArgumentException("Schedule regions cannot intersect with other schedule regions in the Blueprint");
-				}
-			}
-
-			schedule.setParent(this);
-			schedule.setWorldObjectParent(this.worldObjectParent);
-
-			this.schedules.put(id, schedule);
-
-			this.listeners.forEach(o -> o.onAddSchedule(schedule));
-		}
-		finally
-		{
-			w.unlock();
-		}
-	}
-
-	public int addSchedule(final ISchedule schedule)
-	{
-		int id = this.schedules.size();
-
-		this.setSchedule(id, schedule);
-
-		return id;
-	}
-
-	public void removeSchedule(int id)
-	{
-		final Lock w = this.lock.writeLock();
-		w.lock();
-
-		try
-		{
-			ISchedule schedule = this.schedules.remove(id);
-
-			this.listeners.forEach(o -> o.onRemoveSchedule(schedule));
-		}
-		finally
-		{
-			w.unlock();
-		}
+		this.scheduleLayers.values().forEach(s -> s.setWorldObjectParent(this.worldObjectParent));
 	}
 
 	public void addEntrance(Entrance entrance)
@@ -264,6 +180,9 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 	{
 		this.listeners.forEach(o -> o.onAddScheduleLayer(layer, this.scheduleLayers.size()));
 
+		layer.setWorldObjectParent(this.worldObjectParent);
+		layer.setLayerId(index);
+
 		this.scheduleLayers.put(index, layer);
 
 		layer.listen(this);
@@ -289,32 +208,6 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		layer.unlisten(this);
 
 		return removed;
-	}
-
-	public <T extends ISchedule> T getSchedule(int id, Class<T> clazz)
-	{
-		return (T) this.schedules.get(id);
-	}
-
-	public ISchedule getSchedule(int id)
-	{
-		return this.schedules.get(id);
-	}
-
-	public int getScheduleId(final ISchedule schedule)
-	{
-		for (Map.Entry<Integer, ISchedule> entry : this.schedules.entrySet())
-		{
-			int i = entry.getKey();
-			final ISchedule s = entry.getValue();
-
-			if (schedule.equals(s))
-			{
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	public IScheduleLayer getScheduleLayer(int id)
@@ -401,7 +294,6 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		funnel.set("metadata", this.metadata);
 		funnel.setIntMap("scheduleLayers", this.scheduleLayers);
 		funnel.setList("entrances", this.entrances);
-		funnel.setIntMap("schedules", this.schedules);
 	}
 
 	@Override
@@ -416,13 +308,9 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this.scheduleLayers.values().forEach(l -> l.setDimensions(this));
 
 		this.scheduleLayers.values().forEach(l -> l.listen(this));
-		this.scheduleLayers.values().forEach(l -> l.getDataRecord().listen(this));
+		this.scheduleLayers.values().forEach(l -> l.getFilterRecord().listen(this));
 
 		this.entrances = funnel.getList("entrances");
-
-		this.schedules = funnel.getIntMap("schedules");
-
-		this.schedules.values().forEach(s -> s.setParent(this));
 	}
 
 	public void fetchBlocksInside(final IShape shape, final World world, final Rotation rotation)

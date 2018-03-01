@@ -3,9 +3,9 @@ package com.gildedgames.orbis.client.renderers;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,7 +31,7 @@ public class RenderScheduleRegion implements IWorldRenderer
 
 	private Region bb;
 
-	public RenderScheduleRegion(Blueprint blueprint, final ScheduleRegion scheduleRegion)
+	public RenderScheduleRegion(IWorldObject parentObject, final ScheduleRegion scheduleRegion)
 	{
 		this.scheduleRegion = scheduleRegion;
 
@@ -41,7 +41,7 @@ public class RenderScheduleRegion implements IWorldRenderer
 		try
 		{
 			this.bb = new Region(this.scheduleRegion.getBounds());
-			this.bb.add(blueprint.getPos());
+			this.bb.add(parentObject.getPos());
 
 			this.renderShape = new RenderShape(this.bb);
 

@@ -121,11 +121,12 @@ public class ShapeSelectorSelect implements IShapeSelector
 
 				if (world.getMinecraftServer().isDedicatedServer())
 				{
-					NetworkingOrbis.sendPacketToDimension(new PacketAddSchedule(b, scheduleRegion), world.provider.getDimension());
+					NetworkingOrbis
+							.sendPacketToDimension(new PacketAddSchedule(b, scheduleRegion, b.getCurrentScheduleLayerIndex()), world.provider.getDimension());
 				}
 				else
 				{
-					b.getData().addSchedule(scheduleRegion);
+					b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleRegion);
 				}
 			}
 		}

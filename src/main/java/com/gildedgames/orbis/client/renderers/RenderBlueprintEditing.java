@@ -5,10 +5,8 @@ import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.data.shapes.CuboidShape;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -88,7 +86,6 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 			}
 
 			this.blueprint.getData().entrances().forEach(this::onAddEntrance);
-			this.blueprint.getData().getSchedules(ScheduleRegion.class).forEach(this::onAddSchedule);
 		}
 		finally
 		{
@@ -288,61 +285,6 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	public void onDataChanged()
 	{
 
-	}
-
-	@Override
-	public void onAddSchedule(ISchedule schedule)
-	{
-		if (schedule instanceof ScheduleRegion)
-		{
-			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-			final Lock w = this.lock.writeLock();
-			w.lock();
-
-			try
-			{
-				RenderScheduleRegion r = new RenderScheduleRegion(this.blueprint, scheduleRegion);
-
-				this.subRenderers.add(r);
-			}
-			finally
-			{
-				w.unlock();
-			}
-		}
-	}
-
-	@Override
-	public void onRemoveSchedule(ISchedule schedule)
-	{
-		if (schedule instanceof ScheduleRegion)
-		{
-			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-			final Lock w = this.lock.writeLock();
-			w.lock();
-
-			try
-			{
-				IWorldRenderer toRemove = null;
-
-				for (IWorldRenderer renderer : this.subRenderers)
-				{
-					if (renderer.getRenderedObject() == scheduleRegion)
-					{
-						toRemove = renderer;
-						break;
-					}
-				}
-
-				this.subRenderers.remove(toRemove);
-			}
-			finally
-			{
-				w.unlock();
-			}
-		}
 	}
 
 	@Override

@@ -272,7 +272,7 @@ public class BlockFilterLayer implements NBT
 
 			if (options.schedules() && holder != null)
 			{
-				BlockFilter posFilter = holder.getCurrentScheduleLayer().getDataRecord().get(schedX, schedY, schedZ);
+				BlockFilter posFilter = holder.getCurrentScheduleLayer().getFilterRecord().get(schedX, schedY, schedZ);
 
 				boolean found = false;
 
@@ -304,11 +304,11 @@ public class BlockFilterLayer implements NBT
 
 				if (replacementBlock.isAir())
 				{
-					holder.getCurrentScheduleLayer().getDataRecord().unmarkPos(schedX, schedY, schedZ);
+					holder.getCurrentScheduleLayer().getFilterRecord().unmarkPos(schedX, schedY, schedZ);
 				}
 				else
 				{
-					holder.getCurrentScheduleLayer().getDataRecord().markPos(parentFilter, schedX, schedY, schedZ);
+					holder.getCurrentScheduleLayer().getFilterRecord().markPos(parentFilter, schedX, schedY, schedZ);
 				}
 			}
 			else

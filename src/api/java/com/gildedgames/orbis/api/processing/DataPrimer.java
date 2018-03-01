@@ -269,9 +269,9 @@ public class DataPrimer
 
 		for (IScheduleLayer layer : bData.getScheduleLayers().values())
 		{
-			for (BlockFilter filter : layer.getDataRecord().getData())
+			for (BlockFilter filter : layer.getFilterRecord().getData())
 			{
-				filter.apply(boundingBox, layer.getDataRecord().getPositions(filter), data, layer.choosesPerBlock());
+				filter.apply(boundingBox, layer.getFilterRecord().getPositions(filter), data, layer.choosesPerBlock());
 			}
 		}
 

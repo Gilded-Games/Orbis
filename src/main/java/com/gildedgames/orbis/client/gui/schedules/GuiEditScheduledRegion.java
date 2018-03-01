@@ -73,7 +73,7 @@ public class GuiEditScheduledRegion extends GuiFrame
 
 		this.nameInput = new GuiInput(Dim2D.build().center(true).width(110).height(20).pos(center).addX(xOffsetInput).addY(yOffset + yOffsetInput).flush());
 
-		this.nameInput.getInner().setText(this.scheduleRegion.getTriggerID());
+		this.nameInput.getInner().setText(this.scheduleRegion.getTriggerId());
 
 		this.saveButton = new GuiButtonVanilla(
 				Dim2D.build().center(true).width(50).height(20).pos(center).addY(30).addX(-30).addX(xOffsetInput).addY(yOffset + yOffsetInput).flush());
@@ -125,7 +125,8 @@ public class GuiEditScheduledRegion extends GuiFrame
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
 			Blueprint b = (Blueprint) this.scheduleRegion.getWorldObjectParent();
-			NetworkingOrbis.sendPacketToServer(new PacketSetTriggerId(b, b.getData().getScheduleId(this.scheduleRegion), this.nameInput.getInner().getText()));
+			NetworkingOrbis.sendPacketToServer(
+					new PacketSetTriggerId(b, this.scheduleRegion, this.nameInput.getInner().getText()));
 		}
 	}
 

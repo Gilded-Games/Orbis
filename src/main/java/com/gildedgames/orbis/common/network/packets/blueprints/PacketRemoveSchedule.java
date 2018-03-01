@@ -5,6 +5,7 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
@@ -26,7 +27,7 @@ public class PacketRemoveSchedule implements IMessage
 
 	private int worldObjectId;
 
-	private int scheduleId = -1;
+	private int scheduleId = -1, layerId = -1;
 
 	private NBTFunnel funnel;
 
@@ -35,22 +36,25 @@ public class PacketRemoveSchedule implements IMessage
 
 	}
 
-	public PacketRemoveSchedule(IDataIdentifier id, int scheduleId)
+	public PacketRemoveSchedule(IDataIdentifier id, int layerId, int scheduleId)
 	{
 		this.id = id;
 		this.scheduleId = scheduleId;
+		this.layerId = layerId;
 	}
 
-	public PacketRemoveSchedule(Blueprint blueprint, int scheduleId)
+	public PacketRemoveSchedule(Blueprint blueprint, ISchedule schedule)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
-		this.scheduleId = scheduleId;
+		this.scheduleId = schedule.getParent().getScheduleId(schedule);
+		this.layerId = schedule.getParent().getParent().getLayerId();
 	}
 
-	public PacketRemoveSchedule(int worldObjectId, int scheduleId)
+	public PacketRemoveSchedule(int worldObjectId, int layerId, int scheduleId)
 	{
 		this.worldObjectId = worldObjectId;
 		this.scheduleId = scheduleId;
+		this.layerId = layerId;
 	}
 
 	@Override
@@ -62,6 +66,7 @@ public class PacketRemoveSchedule implements IMessage
 		this.worldObjectId = tag.getInteger("worldObjectId");
 		this.id = funnel.get("id");
 		this.scheduleId = tag.getInteger("scheduleId");
+		this.layerId = tag.getInteger("layerId");
 	}
 
 	@Override
@@ -73,6 +78,7 @@ public class PacketRemoveSchedule implements IMessage
 		tag.setInteger("worldObjectId", this.worldObjectId);
 		funnel.set("id", this.id);
 		tag.setInteger("scheduleId", this.scheduleId);
+		tag.setInteger("layerId", this.layerId);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -106,7 +112,7 @@ public class PacketRemoveSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.removeSchedule(message.scheduleId);
+					bData.getScheduleLayer(message.layerId).getScheduleRecord().removeSchedule(message.scheduleId);
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -147,7 +153,7 @@ public class PacketRemoveSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.removeSchedule(message.scheduleId);
+					bData.getScheduleLayer(message.layerId).getScheduleRecord().removeSchedule(message.scheduleId);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -158,11 +164,11 @@ public class PacketRemoveSchedule implements IMessage
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketRemoveSchedule(message.worldObjectId, message.scheduleId));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketRemoveSchedule(message.worldObjectId, message.layerId, message.scheduleId));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketRemoveSchedule(message.id, message.scheduleId));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketRemoveSchedule(message.id, message.layerId, message.scheduleId));
 						}
 					}
 				}

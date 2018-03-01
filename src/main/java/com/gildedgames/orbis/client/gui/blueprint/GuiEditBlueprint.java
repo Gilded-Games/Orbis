@@ -1,7 +1,6 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
@@ -80,7 +79,7 @@ public class GuiEditBlueprint extends GuiFrame
 
 			return button;
 		}, () -> new ScheduleLayer("Layer " + String.valueOf(GuiEditBlueprint.this.blueprint.getData().getScheduleLayers().size() + 1),
-				GuiEditBlueprint.this.blueprint, ScheduleDataType.DATA))
+				GuiEditBlueprint.this.blueprint))
 		{
 			@Override
 			public void onNewNode(final IScheduleLayer node, final int index)

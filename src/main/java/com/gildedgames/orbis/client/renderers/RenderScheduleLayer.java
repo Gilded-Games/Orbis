@@ -1,8 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
+import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
@@ -15,7 +14,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderScheduleLayer implements IWorldRenderer
+public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListener
 {
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -32,7 +31,12 @@ public class RenderScheduleLayer implements IWorldRenderer
 		this.layer = layer;
 		this.parentObject = parentObject;
 
-		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getDataRecord(), holder, this.parentObject);
+		if (layer.getScheduleRecord() != null)
+		{
+			layer.getScheduleRecord().listen(this);
+		}
+
+		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getFilterRecord(), holder, this.parentObject);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -40,6 +44,25 @@ public class RenderScheduleLayer implements IWorldRenderer
 		try
 		{
 			this.subRenderers.add(renderPositionRecord);
+		}
+		finally
+		{
+			w.unlock();
+		}
+
+		layer.getScheduleRecord().getSchedules(ScheduleRegion.class).forEach(this::cacheScheduleRegion);
+	}
+
+	private void cacheScheduleRegion(ScheduleRegion schedule)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			RenderScheduleRegion r = new RenderScheduleRegion(this.parentObject, schedule);
+
+			this.subRenderers.add(r);
 		}
 		finally
 		{
@@ -56,6 +79,11 @@ public class RenderScheduleLayer implements IWorldRenderer
 				RenderFilterRecord f = (RenderFilterRecord) r;
 
 				((RenderFilterRecord) r).setFocused(focused);
+			}
+
+			if (r instanceof RenderScheduleRegion)
+			{
+				r.setDisabled(!focused);
 			}
 		}
 	}
@@ -131,5 +159,60 @@ public class RenderScheduleLayer implements IWorldRenderer
 	public void read(final NBTTagCompound tag)
 	{
 
+	}
+
+	@Override
+	public void onAddSchedule(ISchedule schedule)
+	{
+		if (schedule instanceof ScheduleRegion)
+		{
+			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
+
+			final Lock w = this.lock.writeLock();
+			w.lock();
+
+			try
+			{
+				RenderScheduleRegion r = new RenderScheduleRegion(this.parentObject, scheduleRegion);
+
+				this.subRenderers.add(r);
+			}
+			finally
+			{
+				w.unlock();
+			}
+		}
+	}
+
+	@Override
+	public void onRemoveSchedule(ISchedule schedule)
+	{
+		if (schedule instanceof ScheduleRegion)
+		{
+			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
+
+			final Lock w = this.lock.writeLock();
+			w.lock();
+
+			try
+			{
+				IWorldRenderer toRemove = null;
+
+				for (IWorldRenderer renderer : this.subRenderers)
+				{
+					if (renderer.getRenderedObject() == scheduleRegion)
+					{
+						toRemove = renderer;
+						break;
+					}
+				}
+
+				this.subRenderers.remove(toRemove);
+			}
+			finally
+			{
+				w.unlock();
+			}
+		}
 	}
 }

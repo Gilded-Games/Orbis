@@ -7,10 +7,7 @@ import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
+import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
@@ -28,7 +25,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Blueprint extends BlueprintRegion implements IWorldObject, IColored, IBlueprintDataListener,
-		IScheduleLayerHolder
+		IScheduleLayerHolder, IScheduleRecordListener
 {
 	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
 
@@ -109,7 +106,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	public ISchedule findIntersectingSchedule(BlockPos pos)
 	{
-		for (ISchedule r : this.data.getSchedules(ISchedule.class))
+		for (ISchedule r : this.getCurrentScheduleLayer().getScheduleRecord().getSchedules(ISchedule.class))
 		{
 			int minX = r.getBounds().getMin().getX() + this.getPos().getX();
 			int minY = r.getBounds().getMin().getY() + this.getPos().getY();
@@ -144,7 +141,14 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		int oldIndex = this.currentScheduleLayer;
 		IScheduleLayer oldLayer = this.getData().getScheduleLayers().get(oldIndex);
 
+		if (oldLayer != null)
+		{
+			oldLayer.getScheduleRecord().unlisten(this);
+		}
+
 		this.currentScheduleLayer = index;
+
+		this.getCurrentScheduleLayer().getScheduleRecord().listen(this);
 
 		Lock w = this.lock.readLock();
 		w.lock();

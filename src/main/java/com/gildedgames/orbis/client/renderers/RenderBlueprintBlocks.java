@@ -4,9 +4,7 @@ import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.mc.BlockUtil;
@@ -126,7 +124,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		}
 
 		this.blueprint.getData().entrances().forEach(this::cacheEntrance);
-		this.blueprint.getData().getSchedules(ScheduleRegion.class).forEach(this::cacheSchedule);
 	}
 
 	private void cacheEntrance(Entrance entrance)
@@ -153,28 +150,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		finally
 		{
 			w.unlock();
-		}
-	}
-
-	private void cacheSchedule(ISchedule schedule)
-	{
-		if (schedule instanceof ScheduleRegion)
-		{
-			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-			final Lock w = this.lock.writeLock();
-			w.lock();
-
-			try
-			{
-				RenderScheduleRegion r = new RenderScheduleRegion(this.blueprint, scheduleRegion);
-
-				this.subRenderers.add(r);
-			}
-			finally
-			{
-				w.unlock();
-			}
 		}
 	}
 

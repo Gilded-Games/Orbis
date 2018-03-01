@@ -14,6 +14,7 @@ import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.FilterRecord;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis.api.data.schedules.ScheduleRecord;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.data.shapes.*;
 import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
@@ -126,6 +127,7 @@ public class OrbisServices implements IOrbisServices
 			s.register(28, FrameworkNode.class, new Instantiator<>(FrameworkNode.class));
 			s.register(29, ScheduleRegion.class, new Instantiator<>(ScheduleRegion.class));
 			s.register(30, InventorySpawnEggs.class, new Instantiator<>(InventorySpawnEggs.class));
+			s.register(31, ScheduleRecord.class, new Instantiator<>(ScheduleRecord.class));
 
 			this.io.register(s);
 		}

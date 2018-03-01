@@ -17,9 +17,9 @@ public class ScheduleRegion implements NBT, IColored, ISchedule
 
 	private IMutableRegion bounds;
 
-	private BlueprintData parent;
-
 	private IWorldObject worldObjectParent;
+
+	private IScheduleRecord parent;
 
 	private ScheduleRegion()
 	{
@@ -38,14 +38,28 @@ public class ScheduleRegion implements NBT, IColored, ISchedule
 		return this.spawnEggsInv;
 	}
 
-	public String getTriggerID()
+	@Override
+	public String getTriggerId()
 	{
 		return this.triggerId;
 	}
 
+	@Override
 	public void setTriggerId(String triggerId)
 	{
 		this.triggerId = triggerId;
+	}
+
+	@Override
+	public IScheduleRecord getParent()
+	{
+		return this.parent;
+	}
+
+	@Override
+	public void setParent(IScheduleRecord parent)
+	{
+		this.parent = parent;
 	}
 
 	@Override
@@ -90,19 +104,12 @@ public class ScheduleRegion implements NBT, IColored, ISchedule
 	public void setWorldObjectParent(IWorldObject parent)
 	{
 		this.worldObjectParent = parent;
-	}
 
-	@Override
-	public BlueprintData getParent()
-	{
-		return this.parent;
-	}
+		if (parent.getData() instanceof BlueprintData)
+		{
+			BlueprintData data = (BlueprintData) parent.getData();
 
-	@Override
-	public void setParent(BlueprintData parent)
-	{
-		this.parent = parent;
-
-		this.spawnEggsInv.setBlueprintData(this.parent);
+			this.spawnEggsInv.setBlueprintData(data);
+		}
 	}
 }

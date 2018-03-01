@@ -117,7 +117,7 @@ public class GodPowerSelectClient implements IGodPowerClient
 				{
 					if (!(selectedShape instanceof Blueprint) && selectedShape instanceof WorldShape)
 					{
-						Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickSelector((WorldShape) selectedShape));
+						Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickSelector(playerOrbis, (WorldShape) selectedShape));
 					}
 					else
 					{

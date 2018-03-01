@@ -29,7 +29,7 @@ public class PacketAddSchedule implements IMessage
 
 	private ISchedule schedule;
 
-	private int scheduleId = -1;
+	private int scheduleId = -1, layerId = -1;
 
 	private NBTFunnel funnel;
 
@@ -38,31 +38,34 @@ public class PacketAddSchedule implements IMessage
 
 	}
 
-	public PacketAddSchedule(IDataIdentifier id, ISchedule schedule, int scheduleId)
+	public PacketAddSchedule(IDataIdentifier id, ISchedule schedule, int layerId, int scheduleId)
 	{
 		this.id = id;
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
+		this.layerId = layerId;
 	}
 
-	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule)
+	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int layerId)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
 		this.schedule = schedule;
+		this.layerId = layerId;
 	}
 
-	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int scheduleId)
+	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int layerId, int scheduleId)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
 	}
 
-	public PacketAddSchedule(int worldObjectId, ISchedule schedule, int scheduleId)
+	public PacketAddSchedule(int worldObjectId, ISchedule schedule, int layerId, int scheduleId)
 	{
 		this.worldObjectId = worldObjectId;
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
+		this.layerId = layerId;
 	}
 
 	@Override
@@ -75,6 +78,7 @@ public class PacketAddSchedule implements IMessage
 		this.id = funnel.get("id");
 		this.schedule = funnel.get("schedule");
 		this.scheduleId = tag.getInteger("scheduleId");
+		this.layerId = tag.getInteger("layerId");
 	}
 
 	@Override
@@ -87,6 +91,7 @@ public class PacketAddSchedule implements IMessage
 		funnel.set("id", this.id);
 		funnel.set("schedule", this.schedule);
 		tag.setInteger("scheduleId", this.scheduleId);
+		tag.setInteger("layerId", this.layerId);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -122,11 +127,11 @@ public class PacketAddSchedule implements IMessage
 
 					if (message.scheduleId == -1)
 					{
-						bData.addSchedule(message.schedule);
+						bData.getScheduleLayer(message.layerId).getScheduleRecord().addSchedule(message.schedule);
 					}
 					else
 					{
-						bData.setSchedule(message.scheduleId, message.schedule);
+						bData.getScheduleLayer(message.layerId).getScheduleRecord().setSchedule(message.scheduleId, message.schedule);
 					}
 				}
 			}
@@ -168,7 +173,7 @@ public class PacketAddSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					int scheduleId = bData.addSchedule(message.schedule);
+					int scheduleId = bData.getScheduleLayer(message.layerId).getScheduleRecord().addSchedule(message.schedule);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -179,11 +184,11 @@ public class PacketAddSchedule implements IMessage
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketAddSchedule(message.worldObjectId, message.schedule, scheduleId));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketAddSchedule(message.worldObjectId, message.schedule, message.layerId, scheduleId));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketAddSchedule(message.id, message.schedule, scheduleId));
+							NetworkingOrbis.sendPacketToAllPlayers(new PacketAddSchedule(message.id, message.schedule, message.layerId, scheduleId));
 						}
 					}
 				}

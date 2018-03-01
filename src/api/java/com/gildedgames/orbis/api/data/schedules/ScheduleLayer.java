@@ -3,6 +3,7 @@ package com.gildedgames.orbis.api.data.schedules;
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObject;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -18,30 +19,29 @@ public class ScheduleLayer implements IScheduleLayer
 
 	private IPositionRecord<BlockFilter> positionRecord;
 
-	private ScheduleDataType dataType;
+	private IScheduleRecord scheduleRecord = new ScheduleRecord();
 
 	private float edgeNoise;
 
 	private boolean choosesPerBlock = true;
 
+	private IWorldObject worldObjectParent;
+
+	private int layerId;
+
 	private ScheduleLayer()
 	{
-
+		this.scheduleRecord.setParent(this);
 	}
 
-	public ScheduleLayer(final String displayName, final IDimensions dimensions, final ScheduleDataType dataType)
+	public ScheduleLayer(final String displayName, final IDimensions dimensions)
 	{
 		this.displayName = displayName;
 		this.dimensions = dimensions;
-		this.dataType = dataType;
 
 		this.positionRecord = new FilterRecord(this.dimensions.getWidth(), this.dimensions.getHeight(), this.dimensions.getLength());
-	}
 
-	@Override
-	public ScheduleDataType dataType()
-	{
-		return this.dataType;
+		this.scheduleRecord.setParent(this);
 	}
 
 	@Override
@@ -96,9 +96,15 @@ public class ScheduleLayer implements IScheduleLayer
 	}
 
 	@Override
-	public IPositionRecord<BlockFilter> getDataRecord()
+	public IPositionRecord<BlockFilter> getFilterRecord()
 	{
 		return this.positionRecord;
+	}
+
+	@Override
+	public IScheduleRecord getScheduleRecord()
+	{
+		return this.scheduleRecord;
 	}
 
 	@Override
@@ -108,15 +114,30 @@ public class ScheduleLayer implements IScheduleLayer
 	}
 
 	@Override
+	public int getLayerId()
+	{
+		return this.layerId;
+	}
+
+	@Override
+	public void setLayerId(int layerId)
+	{
+		this.layerId = layerId;
+	}
+
+	@Override
 	public void write(final NBTTagCompound tag)
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
-		tag.setString("displayName", this.displayName);
 		funnel.set("positionRecord", this.positionRecord);
-		tag.setInteger("dataType", this.dataType.ordinal());
+		funnel.set("scheduleRecord", this.scheduleRecord);
+
+		tag.setString("displayName", this.displayName);
 		tag.setFloat("edgeNoise", this.edgeNoise);
 		tag.setBoolean("choosesPerBlock", this.choosesPerBlock);
+
+		tag.setInteger("layerId", this.layerId);
 	}
 
 	@Override
@@ -124,10 +145,39 @@ public class ScheduleLayer implements IScheduleLayer
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.displayName = tag.getString("displayName");
 		this.positionRecord = funnel.get("positionRecord");
-		this.dataType = ScheduleDataType.values()[tag.getInteger("dataType")];
+
+		IScheduleRecord record = funnel.get("scheduleRecord");
+
+		if (record != null)
+		{
+			this.scheduleRecord = record;
+		}
+
+		this.displayName = tag.getString("displayName");
 		this.edgeNoise = tag.getFloat("edgeNoise");
 		this.choosesPerBlock = tag.getBoolean("choosesPerBlock");
+
+		this.layerId = tag.getInteger("layerId");
+
+		if (this.scheduleRecord != null)
+		{
+			this.scheduleRecord.setParent(this);
+		}
 	}
+
+	@Override
+	public IWorldObject getWorldObjectParent()
+	{
+		return this.worldObjectParent;
+	}
+
+	@Override
+	public void setWorldObjectParent(IWorldObject parent)
+	{
+		this.worldObjectParent = parent;
+
+		this.scheduleRecord.setWorldObjectParent(parent);
+	}
+
 }

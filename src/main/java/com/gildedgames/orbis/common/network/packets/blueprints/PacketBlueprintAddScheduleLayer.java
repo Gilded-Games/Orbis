@@ -5,7 +5,6 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.schedules.ScheduleDataType;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
@@ -137,7 +136,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.setScheduleLayer(message.layerIndex, new ScheduleLayer(message.displayName, bData, ScheduleDataType.DATA));
+					bData.setScheduleLayer(message.layerIndex, new ScheduleLayer(message.displayName, bData));
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -178,7 +177,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					int id = bData.addScheduleLayer(new ScheduleLayer(message.displayName, bData, ScheduleDataType.DATA));
+					int id = bData.addScheduleLayer(new ScheduleLayer(message.displayName, bData));
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have

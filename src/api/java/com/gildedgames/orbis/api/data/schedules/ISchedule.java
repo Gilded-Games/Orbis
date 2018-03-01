@@ -1,20 +1,19 @@
 package com.gildedgames.orbis.api.data.schedules;
 
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.mc.NBT;
-import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.IWorldObjectChild;
 
-public interface ISchedule extends NBT
+public interface ISchedule extends NBT, IWorldObjectChild
 {
 
-	IWorldObject getWorldObjectParent();
+	String getTriggerId();
 
-	void setWorldObjectParent(IWorldObject parent);
+	void setTriggerId(String triggerId);
 
-	BlueprintData getParent();
+	IScheduleRecord getParent();
 
-	void setParent(BlueprintData parent);
+	void setParent(IScheduleRecord parent);
 
 	IRegion getBounds();
 
