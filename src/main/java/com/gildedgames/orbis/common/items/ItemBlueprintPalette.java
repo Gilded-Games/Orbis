@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.items;
 
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintPaletteRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.OrbisServerCaches;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketCreatePlacingBlueprintPalette;
@@ -51,7 +51,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 		event.getModelRegistry().putObject(new ModelResourceLocation(OrbisCore.MOD_ID + ":blueprint_palette", "inventory"), dummyModel);
 	}
 
-	public static void setBlueprintPalette(final ItemStack stack, final BlueprintPalette palette)
+	public static void setBlueprintPalette(final ItemStack stack, final BlueprintDataPalette palette)
 	{
 		if (stack.getTagCompound() == null)
 		{
@@ -63,7 +63,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 		funnel.set("palette", palette);
 	}
 
-	public static BlueprintPalette getBlueprintPalette(final ItemStack stack)
+	public static BlueprintDataPalette getBlueprintPalette(final ItemStack stack)
 	{
 		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("palette"))
 		{

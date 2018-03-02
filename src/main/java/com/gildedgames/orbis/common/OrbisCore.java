@@ -1,11 +1,12 @@
 package com.gildedgames.orbis.common;
 
+import com.gildedgames.orbis.api.IOrbisServicesListener;
 import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataCachePool;
 import com.gildedgames.orbis.api.data.management.IProjectManager;
 import com.gildedgames.orbis.api.data.management.impl.DataCache;
 import com.gildedgames.orbis.api.data.management.impl.DataCachePool;
-import com.gildedgames.orbis.api.data.management.impl.OrbisProjectManager;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
@@ -16,7 +17,6 @@ import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataCachePool;
@@ -53,7 +53,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 @Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION)
-public class OrbisCore
+public class OrbisCore implements IOrbisServicesListener
 {
 
 	public static final String MOD_NAME = "Orbis";
@@ -74,8 +74,6 @@ public class OrbisCore
 
 	public static ConfigOrbis CONFIG;
 
-	private static IProjectManager projectManager;
-
 	private static IDataCachePool dataCache;
 
 	private static void clearSelection(final EntityPlayer player)
@@ -93,6 +91,11 @@ public class OrbisCore
 
 			playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 		}
+	}
+
+	public static IProjectManager getProjectManager()
+	{
+		return OrbisAPI.services().getProjectManager();
 	}
 
 	@SubscribeEvent
@@ -138,55 +141,6 @@ public class OrbisCore
 	public static void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event)
 	{
 		clearSelection(event.player);
-	}
-
-	public synchronized static void startProjectManager()
-	{
-		if (projectManager != null)
-		{
-			return;
-		}
-
-		if (isClient())
-		{
-			final ServerData data = Minecraft.getMinecraft().getCurrentServerData();
-
-			if (data != null)
-			{
-				projectManager = new OrbisProjectManager(
-						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/projects/"));
-			}
-			else
-			{
-				projectManager = new OrbisProjectManager(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/projects/"));
-			}
-		}
-
-		if (projectManager == null)
-		{
-			projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"));
-		}
-
-		projectManager.scanAndCacheProjects(OrbisCore.INSTANCE, "Orbis");
-	}
-
-	public synchronized static void stopProjectManager()
-	{
-		if (projectManager != null)
-		{
-			projectManager.flushProjects();
-			projectManager = null;
-		}
-	}
-
-	public synchronized static IProjectManager getProjectManager()
-	{
-		if (projectManager == null)
-		{
-			startProjectManager();
-		}
-
-		return projectManager;
 	}
 
 	public static void startDataCache()
@@ -285,7 +239,7 @@ public class OrbisCore
 		s.register(5, SelectionTypeLine.class, new Instantiator<>(SelectionTypeLine.class));
 		s.register(6, Text.class, new Instantiator<>(Text.class));
 		s.register(7, WorldShape.class, new Instantiator<>(WorldShape.class));
-		s.register(8, BlueprintPalette.class, new Instantiator<>(BlueprintPalette.class));
+		s.register(8, BlueprintDataPalette.class, new Instantiator<>(BlueprintDataPalette.class));
 		s.register(9, ColoredRegion.class, new Instantiator<>(ColoredRegion.class));
 		s.register(10, Framework.class, new Instantiator<>(Framework.class));
 		s.register(11, BlueprintNode.class, new Instantiator<>(BlueprintNode.class));
@@ -323,15 +277,20 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onServerStopping(final FMLServerStoppingEvent event)
 	{
-		stopProjectManager();
+		OrbisAPI.services().stopProjectManager();
 		startDataCache();
 	}
 
 	@Mod.EventHandler
 	public void serverStarted(final FMLServerStartedEvent event)
 	{
-		startProjectManager();
+		OrbisAPI.services().startProjectManager();
 		stopDataCache();
 	}
 
+	@Override
+	public void onStartProjectManager()
+	{
+		OrbisAPI.services().getProjectManager().scanAndCacheProjects(OrbisCore.INSTANCE, "Orbis");
+	}
 }

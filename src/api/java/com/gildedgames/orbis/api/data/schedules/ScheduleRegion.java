@@ -1,9 +1,11 @@
 package com.gildedgames.orbis.api.data.schedules;
 
+import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
+import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.world.IWorldObject;
@@ -66,6 +68,12 @@ public class ScheduleRegion implements NBT, IColored, ISchedule
 	public IMutableRegion getBounds()
 	{
 		return this.bounds;
+	}
+
+	@Override
+	public void onGenerateLayer(DataPrimer primer, ICreationData data)
+	{
+		
 	}
 
 	@Override

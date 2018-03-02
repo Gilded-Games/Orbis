@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.renderers.tiles;
 
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.client.OrbisClientCaches;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.tiles.TileEntityBlueprintPalette;
 import com.gildedgames.orbis.common.util.OpenGLHelper;
@@ -56,7 +56,7 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 				return;
 			}
 
-			final BlueprintPalette palette = ItemBlueprintPalette.getBlueprintPalette(this.stack);
+			final BlueprintDataPalette palette = ItemBlueprintPalette.getBlueprintPalette(this.stack);
 
 			if (palette == null || palette.getIDs().size() <= 0)
 			{

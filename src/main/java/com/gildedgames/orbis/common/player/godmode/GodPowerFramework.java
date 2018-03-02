@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.player.godmode;
 
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
@@ -9,7 +10,6 @@ import com.gildedgames.orbis.client.godmode.GodPowerFrameworkClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
@@ -63,7 +63,7 @@ public class GodPowerFramework implements IGodPower
 		}
 
 		BlueprintData data = playerOrbis.powers().getBlueprintPower().getPlacingBlueprint();
-		BlueprintPalette palette = playerOrbis.powers().getBlueprintPower().getPlacingPalette();
+		BlueprintDataPalette palette = playerOrbis.powers().getBlueprintPower().getPlacingPalette();
 
 		if (data == null && palette == null)
 		{

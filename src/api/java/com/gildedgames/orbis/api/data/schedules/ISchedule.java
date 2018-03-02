@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.api.data.schedules;
 
+import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.world.IWorldObjectChild;
 
@@ -16,5 +18,7 @@ public interface ISchedule extends NBT, IWorldObjectChild
 	void setParent(IScheduleRecord parent);
 
 	IRegion getBounds();
+
+	void onGenerateLayer(DataPrimer primer, ICreationData data);
 
 }

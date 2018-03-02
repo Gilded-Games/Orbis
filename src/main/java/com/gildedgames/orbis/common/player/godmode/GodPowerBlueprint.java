@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.client.godmode.GodPowerBlueprintClient;
@@ -11,7 +12,6 @@ import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.inventory.InventoryBlueprintForge;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
@@ -41,7 +41,7 @@ public class GodPowerBlueprint implements IGodPower
 
 	private BlueprintData placingBlueprint;
 
-	private BlueprintPalette placingPalette;
+	private BlueprintDataPalette placingPalette;
 
 	private ItemStack previousStack;
 
@@ -84,7 +84,7 @@ public class GodPowerBlueprint implements IGodPower
 		this.placingRotation = rotation;
 	}
 
-	public BlueprintPalette getPlacingPalette()
+	public BlueprintDataPalette getPlacingPalette()
 	{
 		return this.placingPalette;
 	}

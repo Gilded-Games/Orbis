@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.util.RotationHelp;
@@ -13,7 +14,6 @@ import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -52,7 +52,7 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 
 	private BlueprintData prevBlueprintData;
 
-	private BlueprintPalette prevPalette;
+	private BlueprintDataPalette prevPalette;
 
 	private Rotation prevRotation;
 

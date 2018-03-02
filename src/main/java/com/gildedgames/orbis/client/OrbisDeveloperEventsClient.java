@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
@@ -243,7 +244,7 @@ public class OrbisDeveloperEventsClient
 		}
 		else
 		{
-			OrbisCore.stopProjectManager();
+			OrbisAPI.services().stopProjectManager();
 			OrbisCore.stopDataCache();
 		}
 	}
@@ -356,7 +357,7 @@ public class OrbisDeveloperEventsClient
 		}
 		else
 		{
-			OrbisCore.stopProjectManager();
+			OrbisAPI.services().stopProjectManager();
 			CHUNK_RENDERER_MANAGER.unload();
 		}
 

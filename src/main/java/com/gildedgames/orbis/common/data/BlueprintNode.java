@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.data;
 
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import com.gildedgames.orbis.api.data.region.IDimensions;
@@ -19,7 +20,7 @@ public class BlueprintNode implements IFrameworkNode
 
 	private BlueprintData data;
 
-	private BlueprintPalette palette;
+	private BlueprintDataPalette palette;
 
 	private List<BlueprintData> values;
 
@@ -38,7 +39,7 @@ public class BlueprintNode implements IFrameworkNode
 		this.maxEntrances = this.data.entrances().size();
 	}
 
-	public BlueprintNode(BlueprintPalette palette)
+	public BlueprintNode(BlueprintDataPalette palette)
 	{
 		this.palette = palette;
 		this.values = Lists.newArrayList(this.palette.getData());

@@ -3,6 +3,7 @@ package com.gildedgames.orbis.api;
 import com.gildedgames.orbis.api.core.GameRegistrar;
 import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
 import com.gildedgames.orbis.api.data.management.IProject;
+import com.gildedgames.orbis.api.data.management.IProjectManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,10 @@ import javax.annotation.Nullable;
 
 public interface IOrbisServices
 {
+
+	void listen(IOrbisServicesListener listener);
+
+	boolean unlisten(IOrbisServicesListener listener);
 
 	GameRegistrar registrar();
 
@@ -41,5 +46,11 @@ public interface IOrbisServices
 	IProject loadProject(MinecraftServer server, ResourceLocation location, Object mod, String archiveBaseName);
 
 	IOHelper io();
+
+	IProjectManager getProjectManager();
+
+	void startProjectManager();
+
+	void stopProjectManager();
 
 }

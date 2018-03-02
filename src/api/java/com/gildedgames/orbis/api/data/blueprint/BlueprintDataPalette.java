@@ -1,13 +1,12 @@
-package com.gildedgames.orbis.common.data;
+package com.gildedgames.orbis.api.data.blueprint;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.DataCondition;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
-import com.gildedgames.orbis.common.OrbisCore;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -25,7 +24,7 @@ import java.util.Random;
  * (the tool), instead of the API. This means that palettes and other objects
  * from the API package cannot attempt to find state.
  */
-public class BlueprintPalette implements NBT
+public class BlueprintDataPalette implements NBT
 {
 
 	private final Map<IDataIdentifier, BlueprintData> data = Maps.newHashMap();
@@ -36,7 +35,7 @@ public class BlueprintPalette implements NBT
 
 	private int minEntrances, maxEntrances;
 
-	public BlueprintPalette()
+	public BlueprintDataPalette()
 	{
 
 	}
@@ -195,13 +194,13 @@ public class BlueprintPalette implements NBT
 			try
 			{
 				final IDataIdentifier id = pair.getKey();
-				final BlueprintData data = OrbisCore.getProjectManager().findData(id);
+				final BlueprintData data = OrbisAPI.services().getProjectManager().findData(id);
 
 				this.data.put(id, data);
 			}
 			catch (final OrbisMissingDataException | OrbisMissingProjectException e)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisAPI.LOGGER.error(e);
 			}
 		}
 

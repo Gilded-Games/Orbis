@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.management.IProject;
@@ -23,7 +24,6 @@ import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerBlueprintInventory;
-import com.gildedgames.orbis.common.data.BlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
@@ -163,7 +163,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.blueprint_palette);
 
-			final BlueprintPalette palette = new BlueprintPalette();
+			final BlueprintDataPalette palette = new BlueprintDataPalette();
 
 			for (final ItemStack s : InventoryHelper.getItemStacks(this.container.slots))
 			{

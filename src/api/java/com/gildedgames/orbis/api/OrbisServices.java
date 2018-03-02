@@ -9,6 +9,7 @@ import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.management.IProject;
+import com.gildedgames.orbis.api.data.management.IProjectManager;
 import com.gildedgames.orbis.api.data.management.impl.*;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.Region;
@@ -23,11 +24,15 @@ import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
 import com.gildedgames.orbis.api.world.WorldObjectGroup;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.DimensionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 public class OrbisServices implements IOrbisServices
@@ -51,6 +57,10 @@ public class OrbisServices implements IOrbisServices
 	private final Map<String, IProject> loadedProjects = Maps.newHashMap();
 
 	private final GameRegistrar gameRegistrar = new GameRegistrar();
+
+	private List<IOrbisServicesListener> listeners = Lists.newArrayList();
+
+	private IProjectManager projectManager;
 
 	private IOHelper io;
 
@@ -244,8 +254,75 @@ public class OrbisServices implements IOrbisServices
 	}
 
 	@Override
+	public void listen(IOrbisServicesListener listener)
+	{
+		if (!this.listeners.contains(listener))
+		{
+			this.listeners.add(listener);
+		}
+	}
+
+	@Override
+	public boolean unlisten(IOrbisServicesListener listener)
+	{
+		return this.listeners.remove(listener);
+	}
+
+	@Override
 	public GameRegistrar registrar()
 	{
 		return this.gameRegistrar;
+	}
+
+	@Override
+	public synchronized void startProjectManager()
+	{
+		if (this.projectManager != null)
+		{
+			return;
+		}
+
+		if (OrbisAPI.isClient())
+		{
+			final ServerData data = Minecraft.getMinecraft().getCurrentServerData();
+
+			if (data != null)
+			{
+				this.projectManager = new OrbisProjectManager(
+						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/projects/"));
+			}
+			else
+			{
+				this.projectManager = new OrbisProjectManager(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/projects/"));
+			}
+		}
+
+		if (this.projectManager == null)
+		{
+			this.projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"));
+		}
+
+		this.listeners.forEach(IOrbisServicesListener::onStartProjectManager);
+	}
+
+	@Override
+	public synchronized void stopProjectManager()
+	{
+		if (this.projectManager != null)
+		{
+			this.projectManager.flushProjects();
+			this.projectManager = null;
+		}
+	}
+
+	@Override
+	public synchronized IProjectManager getProjectManager()
+	{
+		if (this.projectManager == null)
+		{
+			this.startProjectManager();
+		}
+
+		return this.projectManager;
 	}
 }
