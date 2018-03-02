@@ -76,6 +76,11 @@ public class OrbisCore implements IOrbisServicesListener
 
 	private static IDataCachePool dataCache;
 
+	public OrbisCore()
+	{
+		OrbisAPI.services().listen(this);
+	}
+
 	private static void clearSelection(final EntityPlayer player)
 	{
 		final World world = player.world;
