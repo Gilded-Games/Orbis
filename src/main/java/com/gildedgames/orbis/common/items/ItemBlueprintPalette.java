@@ -124,7 +124,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 		{
 			playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 
-			if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
+			if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingPalette() != null)
 			{
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
