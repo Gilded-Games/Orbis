@@ -5,10 +5,13 @@ import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.data.region.IDimensions;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -31,7 +34,7 @@ public class BlueprintDataPalette implements NBT
 
 	private LinkedHashMap<IDataIdentifier, DataCondition> idToConditions = Maps.newLinkedHashMap();
 
-	private BlueprintData largestInArea;
+	private IDimensions largestDim;
 
 	private int minEntrances, maxEntrances;
 
@@ -89,9 +92,9 @@ public class BlueprintDataPalette implements NBT
 		return this.data.values();
 	}
 
-	public BlueprintData getLargestInArea()
+	public IDimensions getLargestDim()
 	{
-		return this.largestInArea;
+		return this.largestDim;
 	}
 
 	public int getMinimumEntrances()
@@ -127,18 +130,18 @@ public class BlueprintDataPalette implements NBT
 
 	private void evaluateLargestInArea()
 	{
-		BlueprintData largestInArea = null;
+		int width = Integer.MIN_VALUE;
+		int height = Integer.MIN_VALUE;
+		int length = Integer.MIN_VALUE;
 
 		for (final BlueprintData blueprint : this.data.values())
 		{
-			if (largestInArea == null || (blueprint.getHeight() >= largestInArea.getHeight() && blueprint.getHeight() >= largestInArea.getHeight()
-					&& blueprint.getLength() >= largestInArea.getLength()))
-			{
-				largestInArea = blueprint;
-			}
+			width = Math.max(width, blueprint.getWidth());
+			height = Math.max(height, blueprint.getHeight());
+			length = Math.max(length, blueprint.getLength());
 		}
 
-		this.largestInArea = largestInArea;
+		this.largestDim = new Region(BlockPos.ORIGIN, new BlockPos(width - 1, height - 1, length - 1));
 	}
 
 	public void add(final BlueprintData data, final DataCondition condition)
@@ -200,7 +203,7 @@ public class BlueprintDataPalette implements NBT
 			}
 			catch (final OrbisMissingDataException | OrbisMissingProjectException e)
 			{
-				OrbisAPI.LOGGER.error(e);
+				OrbisAPI.LOGGER.error("Missing in " + this.getClass().getName() + " : ", e);
 			}
 		}
 

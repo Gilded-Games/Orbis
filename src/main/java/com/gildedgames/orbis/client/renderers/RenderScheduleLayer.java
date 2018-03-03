@@ -51,6 +51,24 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 		}
 
 		layer.getScheduleRecord().getSchedules(ScheduleRegion.class).forEach(this::cacheScheduleRegion);
+		layer.getScheduleRecord().getSchedules(ScheduleBlueprint.class).forEach(this::cacheScheduleBlueprint);
+	}
+
+	private void cacheScheduleBlueprint(ScheduleBlueprint schedule)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			RenderScheduleBlueprint r = new RenderScheduleBlueprint(this.parentObject, schedule);
+
+			this.subRenderers.add(r);
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	private void cacheScheduleRegion(ScheduleRegion schedule)
@@ -78,10 +96,9 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			{
 				RenderFilterRecord f = (RenderFilterRecord) r;
 
-				((RenderFilterRecord) r).setFocused(focused);
+				f.setFocused(focused);
 			}
-
-			if (r instanceof RenderScheduleRegion)
+			else
 			{
 				r.setDisabled(!focused);
 			}
@@ -164,55 +181,58 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 	@Override
 	public void onAddSchedule(ISchedule schedule)
 	{
-		if (schedule instanceof ScheduleRegion)
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
 		{
-			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
+			IWorldRenderer r = null;
 
-			final Lock w = this.lock.writeLock();
-			w.lock();
-
-			try
+			if (schedule instanceof ScheduleRegion)
 			{
-				RenderScheduleRegion r = new RenderScheduleRegion(this.parentObject, scheduleRegion);
+				ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
 
-				this.subRenderers.add(r);
+				r = new RenderScheduleRegion(this.parentObject, scheduleRegion);
 			}
-			finally
+			else if (schedule instanceof ScheduleBlueprint)
 			{
-				w.unlock();
+				ScheduleBlueprint scheduleBlueprint = (ScheduleBlueprint) schedule;
+
+				r = new RenderScheduleBlueprint(this.parentObject, scheduleBlueprint);
 			}
+
+			this.subRenderers.add(r);
+		}
+		finally
+		{
+			w.unlock();
 		}
 	}
 
 	@Override
 	public void onRemoveSchedule(ISchedule schedule)
 	{
-		if (schedule instanceof ScheduleRegion)
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
 		{
-			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
+			IWorldRenderer toRemove = null;
 
-			final Lock w = this.lock.writeLock();
-			w.lock();
-
-			try
+			for (IWorldRenderer renderer : this.subRenderers)
 			{
-				IWorldRenderer toRemove = null;
-
-				for (IWorldRenderer renderer : this.subRenderers)
+				if (renderer.getRenderedObject() == schedule)
 				{
-					if (renderer.getRenderedObject() == scheduleRegion)
-					{
-						toRemove = renderer;
-						break;
-					}
+					toRemove = renderer;
+					break;
 				}
+			}
 
-				this.subRenderers.remove(toRemove);
-			}
-			finally
-			{
-				w.unlock();
-			}
+			this.subRenderers.remove(toRemove);
+		}
+		finally
+		{
+			w.unlock();
 		}
 	}
 }

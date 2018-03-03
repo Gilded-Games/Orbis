@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.management;
 
+import com.gildedgames.orbis.api.util.io.NBTMeta;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.world.IWorldObject;
 
@@ -10,7 +11,7 @@ import com.gildedgames.orbis.api.world.IWorldObject;
  *
  * It also stores metadata and a file extension.
  */
-public interface IData extends NBT
+public interface IData extends NBT, NBTMeta
 {
 
 	/**

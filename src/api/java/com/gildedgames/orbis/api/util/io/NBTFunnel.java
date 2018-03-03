@@ -24,6 +24,14 @@ public class NBTFunnel
 		this.tag = tag;
 	}
 
+	/**
+	 * @return The tag we're reading and writing from.
+	 */
+	public NBTTagCompound getTag()
+	{
+		return this.tag;
+	}
+
 	public void set(final String key, final NBT nbt)
 	{
 		this.tag.setTag(key, NBTHelper.write(nbt));
@@ -56,6 +64,11 @@ public class NBTFunnel
 		tag.setString("date", date.toString());
 
 		this.tag.setTag(key, tag);
+	}
+
+	public <T extends NBTMeta> T loadWithoutReading(final String key)
+	{
+		return NBTHelper.loadWithoutReading(this.tag.getCompoundTag(key));
 	}
 
 	public <T extends NBT> T get(final String key)

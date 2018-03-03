@@ -188,9 +188,21 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		layer.listen(this);
 	}
 
+	public int findNextAvailableId()
+	{
+		int i = 0;
+
+		while (this.scheduleLayers.containsKey(i))
+		{
+			i++;
+		}
+
+		return i;
+	}
+
 	public int addScheduleLayer(final IScheduleLayer layer)
 	{
-		int id = this.scheduleLayers.size();
+		int id = this.findNextAvailableId();
 
 		this.setScheduleLayer(id, layer);
 
@@ -290,8 +302,8 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
-		funnel.set("dataContainer", this.dataContainer);
 		funnel.set("metadata", this.metadata);
+		funnel.set("dataContainer", this.dataContainer);
 		funnel.setIntMap("scheduleLayers", this.scheduleLayers);
 		funnel.setList("entrances", this.entrances);
 	}
@@ -301,8 +313,8 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.dataContainer = funnel.get("dataContainer");
 		this.metadata = funnel.get("metadata");
+		this.dataContainer = funnel.get("dataContainer");
 		this.scheduleLayers = Maps.newLinkedHashMap(funnel.getIntMap("scheduleLayers"));
 
 		this.scheduleLayers.values().forEach(l -> l.setDimensions(this));
@@ -399,4 +411,11 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this.listeners.forEach(IBlueprintDataListener::onDataChanged);
 	}
 
+	@Override
+	public void readMetadataOnly(NBTTagCompound tag)
+	{
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.metadata = funnel.get("metadata");
+	}
 }

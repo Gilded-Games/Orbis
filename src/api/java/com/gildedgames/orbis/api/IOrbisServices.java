@@ -4,6 +4,8 @@ import com.gildedgames.orbis.api.core.GameRegistrar;
 import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectManager;
+import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
+import com.gildedgames.orbis.api.world.instances.IInstanceRegistry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +14,10 @@ import javax.annotation.Nullable;
 
 public interface IOrbisServices
 {
+
+	INetworkOrbis network();
+
+	void setNetwork(INetworkOrbis network);
 
 	void listen(IOrbisServicesListener listener);
 
@@ -52,5 +58,7 @@ public interface IOrbisServices
 	void startProjectManager();
 
 	void stopProjectManager();
+
+	IInstanceRegistry instances();
 
 }

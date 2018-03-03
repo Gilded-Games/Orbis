@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.gui;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
@@ -7,7 +8,6 @@ import com.gildedgames.orbis.client.gui.util.GuiFrame;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
@@ -44,8 +44,8 @@ public class GuiRightClickSelector extends GuiFrame
 					{
 						final WorldObjectManager manager = WorldObjectManager.get(player.world);
 
-						NetworkingOrbis.sendPacketToServer(new PacketClearSelectedRegion());
-						NetworkingOrbis.sendPacketToServer(new PacketWorldObjectRemove(GuiRightClickSelector.this.region.getWorld(), manager.getGroup(0),
+						OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
+						OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(GuiRightClickSelector.this.region.getWorld(), manager.getGroup(0),
 								GuiRightClickSelector.this.region));
 
 						GuiRightClickSelector.this.playerOrbis.powers().getSelectPower().setSelectedRegion(null);

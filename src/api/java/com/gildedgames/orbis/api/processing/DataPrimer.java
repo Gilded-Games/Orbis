@@ -7,9 +7,11 @@ import com.gildedgames.orbis.api.block.BlockInstance;
 import com.gildedgames.orbis.api.core.*;
 import com.gildedgames.orbis.api.core.util.BlueprintUtil;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
@@ -256,6 +258,17 @@ public class DataPrimer
 		MinecraftForge.EVENT_BUS.post(changeBlockEvent);*/
 	}
 
+	public void create(BlueprintDataPalette palette, ICreationData data)
+	{
+		final BlueprintData b = palette.fetchRandom(data.getWorld(), data.getWorld().rand);
+
+		final Rotation rotation = data.getRotation();
+
+		final IRegion region = RotationHelp.regionFromCenter(data.getPos(), b, rotation);
+
+		this.create(b, data.clone().pos(region.getMin()));
+	}
+
 	public void create(final BlockDataContainer container, final ICreationData data)
 	{
 		this.create(null, container, data, null);
@@ -273,6 +286,8 @@ public class DataPrimer
 			{
 				filter.apply(boundingBox, layer.getFilterRecord().getPositions(filter), data, layer.choosesPerBlock());
 			}
+
+			layer.getScheduleRecord().getSchedules(ISchedule.class).forEach(s -> s.onGenerateLayer(this, data));
 		}
 
 		BlueprintData.spawnEntities(this, bData, data.getPos());

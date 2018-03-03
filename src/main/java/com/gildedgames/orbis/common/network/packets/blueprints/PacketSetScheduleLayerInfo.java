@@ -1,19 +1,19 @@
 package com.gildedgames.orbis.common.network.packets.blueprints;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.MessageHandlerClient;
-import com.gildedgames.orbis.common.network.MessageHandlerServer;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.util.PacketMultipleParts;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -210,13 +210,13 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(
+							OrbisAPI.network().sendPacketToAllPlayers(
 									new PacketSetScheduleLayerInfo(message.worldObjectId, message.layerIndex, message.displayName, message.edgeNoise,
 											message.choosesPerBlock));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(
+							OrbisAPI.network().sendPacketToAllPlayers(
 									new PacketSetScheduleLayerInfo(message.id, message.layerIndex, message.displayName, message.edgeNoise,
 											message.choosesPerBlock));
 						}

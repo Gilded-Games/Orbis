@@ -117,7 +117,12 @@ public class OrbisProjectCache implements IProjectCache
 	@Override
 	public int getDataId(final String location)
 	{
-		return this.idToLocation.inverse().get(location);
+		if (this.idToLocation.inverse().containsKey(location))
+		{
+			return this.idToLocation.inverse().get(location);
+		}
+
+		return -1;
 	}
 
 	@Override

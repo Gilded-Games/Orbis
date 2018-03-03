@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
@@ -12,7 +13,6 @@ import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintAddScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRemoveScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
@@ -66,7 +66,8 @@ public class GuiEditBlueprint extends GuiFrame
 		this.addChildren(this.saveButton);
 		this.addChildren(this.closeButton);
 
-		this.layerViewer = new GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled>(Pos2D.build().add(20, 45).flush(), new ListNavigator<>(), (p, n, i) ->
+		this.layerViewer = new GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled>(Pos2D.build().add(20, 45).flush(),
+				navigator -> this.blueprint.getData().findNextAvailableId(), new ListNavigator<>(), (p, n, i) ->
 		{
 			final GuiButtonVanillaToggled button = new GuiButtonVanillaToggled(Dim2D.build().pos(p).width(130).height(20).flush(), i);
 
@@ -78,7 +79,7 @@ public class GuiEditBlueprint extends GuiFrame
 			}
 
 			return button;
-		}, () -> new ScheduleLayer("Layer " + String.valueOf(GuiEditBlueprint.this.blueprint.getData().getScheduleLayers().size() + 1),
+		}, i -> new ScheduleLayer("Layer " + String.valueOf(i + 1),
 				GuiEditBlueprint.this.blueprint))
 		{
 			@Override
@@ -96,12 +97,12 @@ public class GuiEditBlueprint extends GuiFrame
 				{
 					if (b.getData().getMetadata().getIdentifier() == null)
 					{
-						NetworkingOrbis.sendPacketToServer(
+						OrbisAPI.network().sendPacketToServer(
 								new PacketBlueprintAddScheduleLayer(b, node.getDisplayName()));
 					}
 					else
 					{
-						NetworkingOrbis.sendPacketToServer(
+						OrbisAPI.network().sendPacketToServer(
 								new PacketBlueprintAddScheduleLayer(b.getData().getMetadata().getIdentifier(), node.getDisplayName()));
 					}
 				}
@@ -123,12 +124,12 @@ public class GuiEditBlueprint extends GuiFrame
 
 				if (b.getData().getMetadata().getIdentifier() == null)
 				{
-					NetworkingOrbis.sendPacketToServer(
+					OrbisAPI.network().sendPacketToServer(
 							new PacketBlueprintRemoveScheduleLayer(b, b.getData().getScheduleLayerId(node)));
 				}
 				else
 				{
-					NetworkingOrbis.sendPacketToServer(
+					OrbisAPI.network().sendPacketToServer(
 							new PacketBlueprintRemoveScheduleLayer(b.getData().getMetadata().getIdentifier(), b.getData().getScheduleLayerId(node)));
 				}
 			}
@@ -142,20 +143,23 @@ public class GuiEditBlueprint extends GuiFrame
 
 				final int layerIndex = b.getData().getScheduleLayerId(node);
 
+				GuiEditBlueprint.this.removeChild(GuiEditBlueprint.this.currentPanel);
+
 				if (layerIndex != -1)
 				{
-					NetworkingOrbis.sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
+					OrbisAPI.network().sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
+
+					GuiEditBlueprint.this.currentPanel = GuiEditBlueprint.this.cachedPanels.get(index);
+
+					if (GuiEditBlueprint.this.currentPanel != null)
+					{
+						GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
+					}
 				}
 				else
 				{
 					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveBlueprint.");
 				}
-
-				GuiEditBlueprint.this.removeChild(GuiEditBlueprint.this.currentPanel);
-
-				GuiEditBlueprint.this.currentPanel = GuiEditBlueprint.this.cachedPanels.get(index);
-
-				GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
 			}
 		};
 
@@ -192,7 +196,10 @@ public class GuiEditBlueprint extends GuiFrame
 		{
 			GuiEditBlueprint.this.currentPanel = GuiEditBlueprint.this.cachedPanels.get(currentIndex);
 
-			GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
+			if (GuiEditBlueprint.this.currentPanel != null)
+			{
+				GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
+			}
 		}
 	}
 

@@ -50,7 +50,7 @@ public class BlueprintNode implements IFrameworkNode
 	@Override
 	public IDimensions largestPossibleDim()
 	{
-		return this.data != null ? this.data : this.palette.getLargestInArea();
+		return this.data != null ? this.data : this.palette.getLargestDim();
 	}
 
 	@Override

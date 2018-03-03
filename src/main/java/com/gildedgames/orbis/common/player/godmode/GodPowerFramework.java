@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
@@ -11,7 +12,6 @@ import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
 import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFramework;
@@ -95,15 +95,15 @@ public class GodPowerFramework implements IGodPower
 					node = new FrameworkNode(new BlueprintNode(data));
 				}
 
-				int xDif = -framework.getPos().getX() - (data != null ? data.getWidth() / 2 : palette.getLargestInArea().getWidth() / 2);
+				int xDif = -framework.getPos().getX() - (data != null ? data.getWidth() / 2 : palette.getLargestDim().getWidth() / 2);
 				int yDif = -framework.getPos().getY();
-				int zDif = -framework.getPos().getZ() - (data != null ? data.getLength() / 2 : palette.getLargestInArea().getLength() / 2);
+				int zDif = -framework.getPos().getZ() - (data != null ? data.getLength() / 2 : palette.getLargestDim().getLength() / 2);
 
 				BlockPos relativePos = pos.add(xDif, yDif, zDif);
 
 				this.prevPlacingPos = relativePos;
 
-				NetworkingOrbis.sendPacketToServer(new PacketAddNode(framework, node, relativePos));
+				OrbisAPI.network().sendPacketToServer(new PacketAddNode(framework, node, relativePos));
 			}
 		}
 	}

@@ -32,7 +32,7 @@ public interface IProjectManager
 	 * been deleted or changed on the disk, and update
 	 * the cache to reflect these changes.
 	 */
-	void refreshCache(Object mod, String archiveBaseName);
+	void refreshCache();
 
 	/**
 	 * Scans the directory this manager is attached to for any

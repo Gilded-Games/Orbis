@@ -9,17 +9,26 @@ import java.io.File;
 
 public class ConfigOrbis
 {
+	public final ConfigCategory biomes, dimensions;
+
 	private final Configuration configuration;
+
+	private int orbisDimId;
 
 	public ConfigOrbis(File file)
 	{
 		this.configuration = new Configuration(file, true);
+
+		this.biomes = this.configuration.getCategory("Biome IDs");
+		this.dimensions = this.configuration.getCategory("Dimension IDs");
 
 		this.loadAndSync();
 	}
 
 	private void loadAndSync()
 	{
+		this.orbisDimId = this.getInt(this.dimensions, "Orbis Dimension ID", 4);
+
 		if (this.configuration.hasChanged())
 		{
 			this.configuration.save();
@@ -43,6 +52,11 @@ public class ConfigOrbis
 	private boolean getBoolean(ConfigCategory category, String name, boolean defaultValue)
 	{
 		return this.configuration.get(category.getName(), name, defaultValue).getBoolean();
+	}
+
+	public int getOrbisDimId()
+	{
+		return this.orbisDimId;
 	}
 }
 

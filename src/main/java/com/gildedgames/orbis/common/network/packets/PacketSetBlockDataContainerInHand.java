@@ -2,9 +2,9 @@ package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
-import com.gildedgames.orbis.common.network.MessageHandlerServer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

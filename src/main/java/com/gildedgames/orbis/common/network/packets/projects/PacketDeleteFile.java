@@ -1,17 +1,17 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.client.gui.blueprint.GuiLoadBlueprint;
 import com.gildedgames.orbis.client.gui.blueprint.GuiSaveBlueprint;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.MessageHandlerClient;
-import com.gildedgames.orbis.common.network.MessageHandlerServer;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.util.PacketMultipleParts;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -135,7 +135,7 @@ public class PacketDeleteFile extends PacketMultipleParts
 
 			if (file.delete())
 			{
-				NetworkingOrbis.sendPacketToPlayer(new PacketDeleteFile(message.project, message.location), (EntityPlayerMP) player);
+				OrbisAPI.network().sendPacketToPlayer(new PacketDeleteFile(message.project, message.location), (EntityPlayerMP) player);
 			}
 
 			return null;

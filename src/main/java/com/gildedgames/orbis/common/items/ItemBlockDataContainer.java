@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.items;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.data.management.IDataCache;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
@@ -7,7 +8,6 @@ import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockDataContainer
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketCreateItemBlockDataContainer;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataToCache;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
@@ -60,7 +60,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 
 		if (!player.world.isRemote && player.getServer() != null && player.getServer().isDedicatedServer() && shouldSend)
 		{
-			NetworkingOrbis.sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
+			OrbisAPI.network().sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
 		}
 	}
 
@@ -109,7 +109,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
-				NetworkingOrbis.sendPacketToServer(new PacketCreateItemBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
+				OrbisAPI.network().sendPacketToServer(new PacketCreateItemBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
 			}
 		}
 	}

@@ -1,9 +1,11 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.GuiRightClickSchedule;
 import com.gildedgames.orbis.client.gui.GuiRightClickScheduleRegion;
 import com.gildedgames.orbis.client.gui.GuiRightClickSelector;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
@@ -138,6 +140,21 @@ public class GodPowerSelectClient implements IGodPowerClient
 				{
 					Minecraft.getMinecraft()
 							.displayGuiScreen(new GuiRightClickScheduleRegion((Blueprint) scheduleRegion.getWorldObjectParent(), scheduleRegion));
+
+					return false;
+				}
+			}
+		}
+		else if (foundObject instanceof ISchedule)
+		{
+			ISchedule schedule = (ISchedule) foundObject;
+
+			if (entity.world.isRemote)
+			{
+				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
+				{
+					Minecraft.getMinecraft()
+							.displayGuiScreen(new GuiRightClickSchedule((Blueprint) schedule.getWorldObjectParent(), schedule));
 
 					return false;
 				}

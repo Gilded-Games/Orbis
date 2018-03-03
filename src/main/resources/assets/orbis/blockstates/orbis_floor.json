@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"normal": {
+			"model": "orbis:orbis_floor"
+		}
+	}
+}

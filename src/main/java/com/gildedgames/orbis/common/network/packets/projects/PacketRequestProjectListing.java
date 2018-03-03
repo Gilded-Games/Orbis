@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
-import com.gildedgames.orbis.common.network.MessageHandlerServer;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.util.PacketMultipleParts;
+import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -49,7 +49,7 @@ public class PacketRequestProjectListing extends PacketMultipleParts
 				return null;
 			}
 
-			NetworkingOrbis.sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) player);
+			OrbisAPI.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) player);
 
 			return null;
 		}

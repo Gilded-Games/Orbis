@@ -20,7 +20,6 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
@@ -88,7 +87,7 @@ public class OrbisDeveloperEventsClient
 				{
 					selectionInput.clearSelection();
 
-					NetworkingOrbis.sendPacketToServer(new PacketClearSelection());
+					OrbisAPI.network().sendPacketToServer(new PacketClearSelection());
 
 					event.setCanceled(true);
 				}
@@ -98,8 +97,9 @@ public class OrbisDeveloperEventsClient
 					final WorldObjectManager manager = WorldObjectManager.get(mc.world);
 					final IWorldObjectGroup group = manager.getGroup(0);
 
-					NetworkingOrbis.sendPacketToServer(new PacketClearSelectedRegion());
-					NetworkingOrbis.sendPacketToServer(new PacketWorldObjectRemove(mc.world, group, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+					OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
+					OrbisAPI.network()
+							.sendPacketToServer(new PacketWorldObjectRemove(mc.world, group, playerOrbis.powers().getSelectPower().getSelectedRegion()));
 
 					playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 
@@ -135,7 +135,7 @@ public class OrbisDeveloperEventsClient
 				playerOrbis.powers().getCurrentPower().onOpenGui(mc.player);
 				playerOrbis.powers().getCurrentPower().getClientHandler().onOpenGui(mc.player);
 
-				NetworkingOrbis.sendPacketToServer(new PacketOpenPowerGui());
+				OrbisAPI.network().sendPacketToServer(new PacketOpenPowerGui());
 
 				event.setCanceled(true);
 			}
@@ -162,20 +162,20 @@ public class OrbisDeveloperEventsClient
 
 				if (OrbisKeyBindings.keyBindAlt.isPressed())
 				{
-					NetworkingOrbis.sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
+					OrbisAPI.network().sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
 					playerOrbis.powers().setScheduling(!playerOrbis.powers().isScheduling());
 				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
 				{
 					playerOrbis.setDeveloperReach(reach + 1);
-					NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(reach + 1));
+					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
 				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindDecreaseReach.getKeyCode()))
 				{
 					playerOrbis.setDeveloperReach(reach - 1);
-					NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(reach - 1));
+					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 				}
 
 				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
@@ -185,7 +185,7 @@ public class OrbisDeveloperEventsClient
 					{
 						final ItemStack item = new ItemStack(ItemsOrbis.block_chunk);
 
-						NetworkingOrbis.sendPacketToServer(new PacketSetBlockDataContainerInHand(item, select.getSelectedRegion()));
+						OrbisAPI.network().sendPacketToServer(new PacketSetBlockDataContainerInHand(item, select.getSelectedRegion()));
 						mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, item);
 					}
 				}
@@ -196,7 +196,7 @@ public class OrbisDeveloperEventsClient
 					{
 						final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewDeleteLayer(mc.player.getHeldItemMainhand()));
 
-						NetworkingOrbis.sendPacketToServer(new PacketFilterShape(select.getSelectedRegion(), filter));
+						OrbisAPI.network().sendPacketToServer(new PacketFilterShape(select.getSelectedRegion(), filter));
 					}
 				}
 
@@ -207,7 +207,7 @@ public class OrbisDeveloperEventsClient
 					if (power.getPlacingBlueprint() != null)
 					{
 						power.setPlacingRotation(RotationHelp.getNextRotation(power.getPlacingRotation(), true));
-						NetworkingOrbis.sendPacketToServer(new PacketRotateBlueprint());
+						OrbisAPI.network().sendPacketToServer(new PacketRotateBlueprint());
 					}
 				}
 
@@ -239,7 +239,7 @@ public class OrbisDeveloperEventsClient
 				prevSelection = null;
 				playerOrbis.setDeveloperReach(prevReach);
 
-				NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(prevReach));
+				OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(prevReach));
 			}
 		}
 		else
@@ -300,7 +300,7 @@ public class OrbisDeveloperEventsClient
 			if (event.getDwheel() > 0)
 			{
 				playerOrbis.setDeveloperReach(reach + 1);
-				NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(reach + 1));
+				OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
 
 				event.setCanceled(true);
 			}
@@ -319,13 +319,13 @@ public class OrbisDeveloperEventsClient
 					final float distance = MathHelper.floor((float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
 
 					playerOrbis.setDeveloperReach(distance);
-					NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(distance));
+					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(distance));
 
 					reach = playerOrbis.getReach();
 				}
 
 				playerOrbis.setDeveloperReach(reach - 1);
-				NetworkingOrbis.sendPacketToServer(new PacketDeveloperReach(reach - 1));
+				OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 
 				event.setCanceled(true);
 			}

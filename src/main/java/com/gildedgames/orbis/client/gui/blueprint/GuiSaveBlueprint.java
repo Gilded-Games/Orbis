@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IProject;
@@ -19,7 +20,6 @@ import com.gildedgames.orbis.client.gui.util.directory.nodes.ProjectNode;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestCreateProject;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis.common.network.packets.projects.PacketSaveWorldObjectToProject;
@@ -164,7 +164,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 				if (!OrbisCore.getProjectManager().projectNameExists(this.nameInput.getInner().getText()) && !OrbisCore.getProjectManager()
 						.projectExists(id))
 				{
-					NetworkingOrbis.sendPacketToServer(new PacketRequestCreateProject(this.nameInput.getInner().getText(), id));
+					OrbisAPI.network().sendPacketToServer(new PacketRequestCreateProject(this.nameInput.getInner().getText(), id));
 				}
 			}
 			else
@@ -211,7 +211,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 				}
 				else
 				{
-					NetworkingOrbis.sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.blueprint, location));
+					OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.blueprint, location));
 				}
 			}
 		}
@@ -257,7 +257,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	{
 		if (!Minecraft.getMinecraft().isIntegratedServerRunning() && this.requestListing)
 		{
-			NetworkingOrbis.sendPacketToServer(new PacketRequestProjectListing());
+			OrbisAPI.network().sendPacketToServer(new PacketRequestProjectListing());
 		}
 	}
 }

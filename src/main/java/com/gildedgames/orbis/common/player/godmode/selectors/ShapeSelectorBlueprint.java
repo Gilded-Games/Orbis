@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -52,7 +52,7 @@ public class ShapeSelectorBlueprint implements IShapeSelector
 
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
-				NetworkingOrbis.sendPacketToDimension(new PacketWorldObjectAdd(world, group, blueprint), world.provider.getDimension());
+				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(world, group, blueprint), world.provider.getDimension());
 			}
 		}
 	}

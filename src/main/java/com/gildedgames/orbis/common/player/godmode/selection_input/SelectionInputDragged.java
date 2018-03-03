@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode.selection_input;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.shapes.AbstractShape;
 import com.gildedgames.orbis.api.world.IWorldObject;
@@ -7,7 +8,6 @@ import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputDraggedClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
@@ -100,7 +100,7 @@ public class SelectionInputDragged implements ISelectionInput
 				{
 					final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
 
-					NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
+					OrbisAPI.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 				}
 
 				this.activeSelection = null;
@@ -218,7 +218,7 @@ public class SelectionInputDragged implements ISelectionInput
 		{
 			final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(PlayerOrbis.get(this.player));
 
-			NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
+			OrbisAPI.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 		}
 	}
 

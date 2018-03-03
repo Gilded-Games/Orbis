@@ -1,11 +1,15 @@
 package com.gildedgames.orbis.common.network;
 
+import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
+import com.gildedgames.orbis.api.packets.instances.PacketRegisterDimension;
+import com.gildedgames.orbis.api.packets.instances.PacketRegisterInstance;
+import com.gildedgames.orbis.api.packets.instances.PacketUnregisterDimension;
+import com.gildedgames.orbis.api.packets.util.IMessageMultipleParts;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.projects.*;
-import com.gildedgames.orbis.common.network.util.IMessageMultipleParts;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityTracker;
@@ -24,18 +28,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NetworkingOrbis
+public class NetworkingOrbis implements INetworkOrbis
 {
 	private static final HashMap<Integer, ArrayList<byte[]>> packetParts = Maps.newHashMap();
 
 	private static SimpleNetworkWrapper instance;
 
 	private static int discriminant;
-
-	public static Map<Integer, ArrayList<byte[]>> getPacketParts()
-	{
-		return packetParts;
-	}
 
 	public static void preInit()
 	{
@@ -85,6 +84,8 @@ public class NetworkingOrbis
 				Side.SERVER);
 		instance.registerMessage(PacketSetScheduleLayerInfo.HandlerServer.class, PacketSetScheduleLayerInfo.class, discriminant++,
 				Side.SERVER);
+		instance.registerMessage(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class, discriminant++,
+				Side.SERVER);
 
 		// C L I E N T
 		instance.registerMessage(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, discriminant++, Side.CLIENT);
@@ -119,11 +120,20 @@ public class NetworkingOrbis
 				Side.CLIENT);
 		instance.registerMessage(PacketSetScheduleLayerInfo.HandlerClient.class, PacketSetScheduleLayerInfo.class, discriminant++,
 				Side.CLIENT);
+		instance.registerMessage(PacketRegisterDimension.Handler.class, PacketRegisterDimension.class, discriminant++, Side.CLIENT);
+		instance.registerMessage(PacketUnregisterDimension.Handler.class, PacketUnregisterDimension.class, discriminant++, Side.CLIENT);
+		instance.registerMessage(PacketRegisterInstance.Handler.class, PacketRegisterInstance.class, discriminant++, Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());
 	}
 
-	private static IMessage[] fetchParts(final IMessage message)
+	@Override
+	public Map<Integer, ArrayList<byte[]>> getPacketParts()
+	{
+		return NetworkingOrbis.packetParts;
+	}
+
+	private IMessage[] fetchParts(final IMessage message)
 	{
 		final IMessage[] parts;
 
@@ -142,27 +152,30 @@ public class NetworkingOrbis
 		return parts;
 	}
 
-	public static void sendPacketToDimension(final IMessage message, final int dimension)
+	@Override
+	public void sendPacketToDimension(final IMessage message, final int dimension)
 	{
-		for (final IMessage part : fetchParts(message))
+		for (final IMessage part : this.fetchParts(message))
 		{
 			NetworkingOrbis.instance.sendToDimension(part, dimension);
 		}
 	}
 
-	public static void sendPacketToAllPlayers(final IMessage message)
+	@Override
+	public void sendPacketToAllPlayers(final IMessage message)
 	{
-		for (final IMessage part : fetchParts(message))
+		for (final IMessage part : this.fetchParts(message))
 		{
 			NetworkingOrbis.instance.sendToAll(part);
 		}
 	}
 
-	public static void sendPacketToAllPlayersExcept(final IMessage message, final EntityPlayerMP player)
+	@Override
+	public void sendPacketToAllPlayersExcept(final IMessage message, final EntityPlayerMP player)
 	{
 		final PlayerList playerList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
 
-		for (final IMessage part : fetchParts(message))
+		for (final IMessage part : this.fetchParts(message))
 		{
 			for (final EntityPlayerMP p : playerList.getPlayers())
 			{
@@ -174,17 +187,19 @@ public class NetworkingOrbis
 		}
 	}
 
-	public static void sendPacketToPlayer(final IMessage message, final EntityPlayerMP player)
+	@Override
+	public void sendPacketToPlayer(final IMessage message, final EntityPlayerMP player)
 	{
-		for (final IMessage part : fetchParts(message))
+		for (final IMessage part : this.fetchParts(message))
 		{
 			NetworkingOrbis.instance.sendTo(part, player);
 		}
 	}
 
-	public static void sendPacketToWatching(final IMessage message, final EntityLivingBase entity, final boolean includeSelf)
+	@Override
+	public void sendPacketToWatching(final IMessage message, final EntityLivingBase entity, final boolean includeSelf)
 	{
-		for (final IMessage part : fetchParts(message))
+		for (final IMessage part : this.fetchParts(message))
 		{
 			final WorldServer world = (WorldServer) entity.world;
 
@@ -192,21 +207,22 @@ public class NetworkingOrbis
 
 			for (final EntityPlayer player : tracker.getTrackingPlayers(entity))
 			{
-				NetworkingOrbis.sendPacketToPlayer(part, (EntityPlayerMP) player);
+				this.sendPacketToPlayer(part, (EntityPlayerMP) player);
 			}
 
 			// Entities don't watch themselves, take special care here
 			if (includeSelf && entity instanceof EntityPlayer)
 			{
-				NetworkingOrbis.sendPacketToPlayer(part, (EntityPlayerMP) entity);
+				this.sendPacketToPlayer(part, (EntityPlayerMP) entity);
 			}
 		}
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public static void sendPacketToServer(final IMessage message)
+	public void sendPacketToServer(final IMessage message)
 	{
-		for (final IMessage part : fetchParts(message))
+		for (final IMessage part : this.fetchParts(message))
 		{
 			NetworkingOrbis.instance.sendToServer(part);
 		}

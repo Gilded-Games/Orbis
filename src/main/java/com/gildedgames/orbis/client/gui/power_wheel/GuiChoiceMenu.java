@@ -47,6 +47,11 @@ public class GuiChoiceMenu extends GuiFrame
 		this.choices = choices;
 	}
 
+	public GuiText getChoiceName()
+	{
+		return this.choiceName;
+	}
+
 	public Choice getHoveredChoice()
 	{
 		return this.hoveredChoice;
@@ -83,7 +88,7 @@ public class GuiChoiceMenu extends GuiFrame
 		this.arrow = new GuiTexture(Dim2D.build().pos(center).addX(-0.5F).addY(-2).center(true).width(11).height(12).flush(), ARROW_TEXTURE);
 		//this.arrow.dim().mod().origin(0, 3).flush();
 
-		this.choiceName = new GuiText(Dim2D.build().center(true).pos(center).addY(47).flush(), null);
+		this.choiceName = new GuiText(Dim2D.build().center(true).pos(center).addY(-86).flush(), null);
 
 		this.addChildren(gradient);
 		this.addChildren(backdrop);

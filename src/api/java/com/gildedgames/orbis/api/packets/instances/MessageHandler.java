@@ -1,7 +1,7 @@
-package com.gildedgames.orbis.common.network;
+package com.gildedgames.orbis.api.packets.instances;
 
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.util.IMessageMultipleParts;
+import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.packets.util.IMessageMultipleParts;
 import com.google.common.collect.Lists;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,13 +52,13 @@ public abstract class MessageHandler<REQ extends IMessage, RES extends IMessage>
 
 			input.close();
 
-			ArrayList<byte[]> byteArray = NetworkingOrbis.getPacketParts().get(partID);
+			ArrayList<byte[]> byteArray = OrbisAPI.network().getPacketParts().get(partID);
 
 			if (byteArray == null)
 			{
 				byteArray = Lists.newArrayList();
 
-				NetworkingOrbis.getPacketParts().put(partID, byteArray);
+				OrbisAPI.network().getPacketParts().put(partID, byteArray);
 
 				for (int i = 0; i < packetTotalParts; i++)
 				{
@@ -88,7 +88,7 @@ public abstract class MessageHandler<REQ extends IMessage, RES extends IMessage>
 					outputStream.write(byteList);
 				}
 
-				NetworkingOrbis.getPacketParts().remove(partID);
+				OrbisAPI.network().getPacketParts().remove(partID);
 
 				messageParts.read(Unpooled.copiedBuffer(outputStream.toByteArray()));
 				return this.onMessage(message, player);
@@ -96,7 +96,7 @@ public abstract class MessageHandler<REQ extends IMessage, RES extends IMessage>
 		}
 		catch (final IOException e)
 		{
-			OrbisCore.LOGGER.error("Couldn't process message part!", e);
+			OrbisAPI.LOGGER.error("Couldn't process message part!", e);
 		}
 
 		return null;

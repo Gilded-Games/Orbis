@@ -65,7 +65,7 @@ public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileE
 							}
 							catch (final OrbisMissingDataException | OrbisMissingProjectException e)
 							{
-								OrbisCore.LOGGER.error(e);
+								OrbisCore.LOGGER.error("Missing in " + TileEntityBlueprintRenderer.class.getName() + " : ", e);
 							}
 
 							return Optional.absent();

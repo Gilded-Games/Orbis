@@ -1,6 +1,6 @@
-package com.gildedgames.orbis.common.network.util;
+package com.gildedgames.orbis.api.packets.util;
 
-import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.api.OrbisAPI;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -84,7 +84,7 @@ public abstract class PacketMultipleParts implements IMessage, IMessageMultipleP
 			}
 			catch (final IOException e)
 			{
-				OrbisCore.LOGGER.error("Couldn't write output fragment for message parts!", e);
+				OrbisAPI.LOGGER.error("Couldn't write output fragment for message parts!", e);
 			}
 
 			parts[partIndex] = this.createPart(byteStream.toByteArray());

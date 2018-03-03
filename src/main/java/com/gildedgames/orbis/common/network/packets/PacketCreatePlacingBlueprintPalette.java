@@ -1,14 +1,12 @@
 package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.api.core.CreationData;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.core.ICreationData;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis.api.processing.DataPrimer;
-import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.MessageHandlerServer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -67,15 +65,12 @@ public class PacketCreatePlacingBlueprintPalette implements IMessage
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				final BlueprintData data = playerOrbis.powers().getBlueprintPower().getPlacingPalette().fetchRandom(player.world, player.world.rand);
-
-				final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
-
-				final IRegion region = RotationHelp.regionFromCenter(message.pos, data, rotation);
-
 				final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(player.world));
 
-				primer.create(data, new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false));
+				final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
+				ICreationData data = new CreationData(player.world, player).pos(message.pos).rotation(rotation).placesAir(false);
+
+				primer.create(playerOrbis.powers().getBlueprintPower().getPlacingPalette(), data);
 			}
 
 			return null;

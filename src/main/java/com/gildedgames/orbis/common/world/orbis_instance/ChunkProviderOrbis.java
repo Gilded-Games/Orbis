@@ -1,0 +1,107 @@
+package com.gildedgames.orbis.common.world.orbis_instance;
+
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.blocks.BlocksOrbis;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkPrimer;
+import net.minecraft.world.gen.IChunkGenerator;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+
+public class ChunkProviderOrbis implements IChunkGenerator
+{
+
+	private final World world;
+
+	private final Random random;
+
+	public ChunkProviderOrbis(final World world, final long seed)
+	{
+		this.world = world;
+
+		if (!this.world.isRemote)
+		{
+			this.world.setSeaLevel(255);
+		}
+
+		this.random = new Random(seed);
+	}
+
+	@Override
+	public void populate(final int chunkX, final int chunkZ)
+	{
+
+	}
+
+	@Override
+	public boolean generateStructures(final Chunk chunkIn, final int x, final int z)
+	{
+		return false;
+	}
+
+	@Override
+	public Chunk generateChunk(final int chunkX, final int chunkZ)
+	{
+		final OrbisInstance inst = OrbisCore.ORBIS_INSTANCE_HANDLER.getFromDimId(this.world.provider.getDimension());
+
+		this.random.setSeed(chunkX * 0x4f9939f508L + chunkZ * 0x1ef1565bd5L);
+
+		final ChunkPrimer primer = new ChunkPrimer();
+
+		for (int x = 0; x < 16; x++)
+		{
+			for (int z = 0; z < 16; z++)
+			{
+				primer.setBlockState(x, 0, z, BlocksOrbis.orbis_floor.getDefaultState());
+			}
+		}
+
+		final Chunk chunk = new Chunk(this.world, primer, chunkX, chunkZ);
+
+		chunk.generateSkylightMap();
+		chunk.resetRelightChecks();
+
+		return chunk;
+	}
+
+	@Override
+	public List<Biome.SpawnListEntry> getPossibleCreatures(final EnumCreatureType creatureType, final BlockPos pos)
+	{
+		final Biome biome = this.world.getBiome(pos);
+
+		if (biome == null)
+		{
+			return null;
+		}
+		else
+		{
+			return biome.getSpawnableList(creatureType);
+		}
+	}
+
+	@Nullable
+	@Override
+	public BlockPos getNearestStructurePos(final World worldIn, final String structureName, final BlockPos position, final boolean findUnexplored)
+	{
+		return null;
+	}
+
+	@Override
+	public void recreateStructures(final Chunk chunk, final int chunkX, final int chunkZ)
+	{
+
+	}
+
+	@Override
+	public boolean isInsideStructure(final World worldIn, final String structureName, final BlockPos pos)
+	{
+		return false;
+	}
+
+}

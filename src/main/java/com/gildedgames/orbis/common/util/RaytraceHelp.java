@@ -1,18 +1,26 @@
 package com.gildedgames.orbis.common.util;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
 public class RaytraceHelp
 {
 
-	public static BlockPos fromMovingObjectPos(final RayTraceResult position)
+	public static BlockPos fromMovingObjectPos(EntityPlayer player, final RayTraceResult position)
 	{
 		final Vec3d pos = position.hitVec;
-		return new BlockPos(pos.x, pos.y, pos.z);
+
+		final int x = MathHelper.floor(pos.x);
+		final int y = Math.max(player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS ? 1 : 0, MathHelper.floor(pos.y));
+		final int z = MathHelper.floor(pos.z);
+
+		return new BlockPos(x, y, z);
 	}
 
 	public static BlockPos rayTrace(final PlayerOrbis player)
@@ -55,7 +63,7 @@ public class RaytraceHelp
 
 		if (raytrace != null)
 		{
-			return fromMovingObjectPos(raytrace);
+			return fromMovingObjectPos(player.getEntity(), raytrace);
 		}
 
 		return player.raytraceWithRegionSnapping();
@@ -67,7 +75,7 @@ public class RaytraceHelp
 
 		if (raytrace != null)
 		{
-			return fromMovingObjectPos(raytrace);
+			return fromMovingObjectPos(player.getEntity(), raytrace);
 		}
 
 		return airRayTrace;

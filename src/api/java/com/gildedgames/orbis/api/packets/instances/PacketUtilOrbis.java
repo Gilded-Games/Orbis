@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.common.network;
+package com.gildedgames.orbis.api.packets.instances;
 
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

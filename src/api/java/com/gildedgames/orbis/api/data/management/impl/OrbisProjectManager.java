@@ -115,7 +115,7 @@ public class OrbisProjectManager implements IProjectManager
 	}
 
 	@Override
-	public void refreshCache(Object mod, String archiveBaseName)
+	public void refreshCache()
 	{
 		final List<IProjectIdentifier> foundProjects = Lists.newArrayList();
 
@@ -134,7 +134,7 @@ public class OrbisProjectManager implements IProjectManager
 				{
 					project.setLocationAsFile(file);
 
-					project.loadAndCacheData(mod, archiveBaseName);
+					project.loadAndCacheData();
 
 					this.cacheProject(file.getName(), project);
 				}
@@ -174,9 +174,11 @@ public class OrbisProjectManager implements IProjectManager
 
 				project.setLocationAsFile(file);
 
-				project.loadAndCacheData(mod, archiveBaseName);
-
 				this.cacheProject(file.getName(), project);
+
+				project.setModAndArchiveLoadingFrom(mod, archiveBaseName);
+
+				project.loadAndCacheData();
 			}
 			catch (final IOException e)
 			{
@@ -261,6 +263,12 @@ public class OrbisProjectManager implements IProjectManager
 
 		if (data == null)
 		{
+			// Try to find and load data if not loaded yet
+			if (project.findAndLoadData(identifier))
+			{
+				return project.getCache().getData(identifier.getDataId());
+			}
+
 			throw new OrbisMissingDataException(identifier);
 		}
 

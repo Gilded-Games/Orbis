@@ -210,8 +210,6 @@ public class BlockDataContainer implements NBT, IDimensions, Iterable<BlockData>
 	@Override
 	public void write(final NBTTagCompound tag)
 	{
-		final NBTFunnel funnel = new NBTFunnel(tag);
-
 		tag.setInteger("width", this.getWidth());
 		tag.setInteger("height", this.getHeight());
 		tag.setInteger("length", this.getLength());
@@ -335,14 +333,14 @@ public class BlockDataContainer implements NBT, IDimensions, Iterable<BlockData>
 			tag.setByteArray("addBlocks", addBlocks);
 		}
 
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
 		funnel.set("actual_metadata", this.metadata);
 	}
 
 	@Override
 	public void read(final NBTTagCompound tag)
 	{
-		final NBTFunnel funnel = new NBTFunnel(tag);
-
 		this.width = tag.getInteger("width");
 		this.height = tag.getInteger("height");
 		this.length = tag.getInteger("length");
@@ -442,6 +440,8 @@ public class BlockDataContainer implements NBT, IDimensions, Iterable<BlockData>
 			this.data[i] = new BlockData(blockState, tileEntities.get(i));
 		}
 
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
 		this.metadata = funnel.get("actual_metadata");
 	}
 
@@ -481,5 +481,13 @@ public class BlockDataContainer implements NBT, IDimensions, Iterable<BlockData>
 	public Iterator<BlockData> iterator()
 	{
 		return new BlockDataIterator(this.data);
+	}
+
+	@Override
+	public void readMetadataOnly(NBTTagCompound tag)
+	{
+		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.metadata = funnel.get("actual_metadata");
 	}
 }

@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -106,6 +107,11 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	public ISchedule findIntersectingSchedule(BlockPos pos)
 	{
+		if (this.getCurrentScheduleLayer() == null)
+		{
+			return null;
+		}
+
 		for (ISchedule r : this.getCurrentScheduleLayer().getScheduleRecord().getSchedules(ISchedule.class))
 		{
 			int minX = r.getBounds().getMin().getX() + this.getPos().getX();
@@ -125,9 +131,21 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		return null;
 	}
 
+	private void checkScheduleLayerExists()
+	{
+		boolean exists = this.getData().getScheduleLayers().containsKey(this.currentScheduleLayer);
+
+		if (!exists && !this.getData().getScheduleLayers().isEmpty())
+		{
+			this.currentScheduleLayer = Collections.min(this.getData().getScheduleLayers().keySet());
+		}
+	}
+
 	@Override
 	public int getCurrentScheduleLayerIndex()
 	{
+		this.checkScheduleLayerExists();
+
 		return this.currentScheduleLayer;
 	}
 
@@ -166,6 +184,8 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Override
 	public IScheduleLayer getCurrentScheduleLayer()
 	{
+		this.checkScheduleLayerExists();
+
 		return this.getData().getScheduleLayers().get(this.currentScheduleLayer);
 	}
 

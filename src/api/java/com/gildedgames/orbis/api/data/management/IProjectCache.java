@@ -92,7 +92,7 @@ public interface IProjectCache extends NBT
 	/**
 	 * A way to get the data id from its location.
 	 * @param location The location of the data.
-	 * @return The data id.
+	 * @return The data id. Returns -1 if not present.
 	 */
 	int getDataId(String location);
 

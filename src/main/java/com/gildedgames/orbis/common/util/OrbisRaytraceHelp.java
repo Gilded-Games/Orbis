@@ -9,6 +9,7 @@ import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.entity.Entity;
@@ -115,7 +116,7 @@ public class OrbisRaytraceHelp
 		final Vec3d finalVec = getFinalVec(player);
 
 		final int x = MathHelper.floor(finalVec.x);
-		final int y = MathHelper.floor(finalVec.y);
+		final int y = Math.max(player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS ? 1 : 0, MathHelper.floor(finalVec.y));
 		final int z = MathHelper.floor(finalVec.z);
 
 		return new BlockPos(x, y, z);

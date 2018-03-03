@@ -8,6 +8,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFilter;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -63,7 +64,9 @@ public class GodPowerDelete implements IGodPower
 	@Override
 	public boolean canInteractWithItems(final PlayerOrbis playerOrbis)
 	{
-		return false;
+		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+
+		return !held.isEmpty();
 	}
 
 	@Nullable

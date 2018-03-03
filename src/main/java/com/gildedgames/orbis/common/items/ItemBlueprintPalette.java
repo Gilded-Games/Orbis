@@ -1,16 +1,23 @@
 package com.gildedgames.orbis.common.items;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.data.schedules.ScheduleBlueprint;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObjectGroup;
+import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintPaletteRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.OrbisServerCaches;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketCreatePlacingBlueprintPalette;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -117,18 +124,51 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 			return;
 		}
 
-		final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+		BlueprintDataPalette palette = playerOrbis.powers().getBlueprintPower().getPlacingPalette();
 
-		if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()) && playerOrbis.powers().getCurrentPower()
+		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && palette != null && playerOrbis.powers().getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
-			playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
+			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
 
-			if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingPalette() != null)
+			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
 			{
+				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
-				NetworkingOrbis.sendPacketToServer(new PacketCreatePlacingBlueprintPalette(createPos));
+				if (playerOrbis.powers().isScheduling())
+				{
+					final WorldObjectManager manager = WorldObjectManager.get(world);
+					final IWorldObjectGroup group = manager.getGroup(0);
+
+					Region r = new Region(palette.getLargestDim());
+					RegionHelp.translate(r, createPos);
+
+					Blueprint b = group.getIntersectingShape(Blueprint.class, r);
+
+					if (b != null)
+					{
+						r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
+						r.subtract(r.getWidth() / 2, 0, r.getLength() / 2);
+
+						ScheduleBlueprint scheduleBlueprint = new ScheduleBlueprint("", palette, r);
+
+						if (!Minecraft.getMinecraft().isIntegratedServerRunning())
+						{
+							OrbisAPI.network()
+									.sendPacketToDimension(new PacketAddSchedule(b, scheduleBlueprint, b.getCurrentScheduleLayerIndex()),
+											world.provider.getDimension());
+						}
+						else
+						{
+							b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleBlueprint);
+						}
+					}
+				}
+				else
+				{
+					OrbisAPI.network().sendPacketToServer(new PacketCreatePlacingBlueprintPalette(createPos));
+				}
 			}
 		}
 	}

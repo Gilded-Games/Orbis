@@ -327,4 +327,10 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 	{
 		return this.length;
 	}
+
+	@Override
+	public void readMetadataOnly(NBTTagCompound tag)
+	{
+
+	}
 }

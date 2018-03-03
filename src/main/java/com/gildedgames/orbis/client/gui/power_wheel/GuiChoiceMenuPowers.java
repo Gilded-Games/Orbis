@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 
@@ -47,7 +47,7 @@ public class GuiChoiceMenuPowers extends GuiChoiceMenu
 		{
 			playerOrbis.powers().setCurrentPower(this.power.getClass());
 
-			NetworkingOrbis.sendPacketToServer(new PacketChangePower(playerOrbis.powers().getCurrentPowerIndex()));
+			OrbisAPI.network().sendPacketToServer(new PacketChangePower(playerOrbis.powers().getCurrentPowerIndex()));
 		}
 
 		@Override

@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.api.data.schedules;
 
+import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.ObjectFilter;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -7,6 +8,7 @@ import com.gildedgames.orbis.api.world.IWorldObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 import java.util.Map;
@@ -55,32 +57,40 @@ public class ScheduleRecord implements IScheduleRecord
 	{
 		int id = this.schedules.size();
 
-		this.setSchedule(id, schedule);
+		boolean success = this.setSchedule(id, schedule);
+
+		if (!success)
+		{
+			return -1;
+		}
 
 		return id;
 	}
 
 	@Override
-	public void setSchedule(int id, ISchedule schedule)
+	public boolean setSchedule(int id, ISchedule schedule)
 	{
+		IRegion bb = this.worldObjectParent.getShape().getBoundingBox();
+
+		BlockPos min = schedule.getBounds().getMin().add(bb.getMin());
+		BlockPos max = schedule.getBounds().getMax().add(bb.getMin());
+
+		if (max.getX() > bb.getMax().getX() || max.getY() > bb.getMax().getY() || max.getZ() > bb.getMax().getZ()
+				|| min.getX() < bb.getMin().getX() || min.getY() < bb.getMin().getY() || min.getZ() < bb.getMin().getZ())
+		{
+			return false;
+		}
+
 		if (schedule instanceof ScheduleRegion)
 		{
 			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-			boolean intersects = false;
 
 			for (ScheduleRegion s : this.getSchedules(ScheduleRegion.class))
 			{
 				if (RegionHelp.intersects(scheduleRegion.getBounds(), s.getBounds()))
 				{
-					intersects = true;
-					break;
+					return false;
 				}
-			}
-
-			if (intersects)
-			{
-				throw new IllegalArgumentException("Schedule regions cannot intersect with other schedule regions in the Blueprint");
 			}
 		}
 
@@ -90,6 +100,8 @@ public class ScheduleRecord implements IScheduleRecord
 		this.schedules.put(id, schedule);
 
 		this.listeners.forEach(o -> o.onAddSchedule(schedule));
+
+		return true;
 	}
 
 	@Override

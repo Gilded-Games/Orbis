@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.player.modules;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketChangeSelectionType;
 import com.gildedgames.orbis.common.player.godmode.selection_types.*;
 import net.minecraft.nbt.NBTTagCompound;
@@ -95,6 +95,16 @@ public class PlayerSelectionTypesModule extends PlayerOrbisModule
 		return this.selectionTypes[this.currentSelectionTypeIndex];
 	}
 
+	public void setCurrentSelectionType(int powerIndex)
+	{
+		this.currentSelectionTypeIndex = powerIndex;
+
+		if (this.getWorld().isRemote)
+		{
+			OrbisAPI.network().sendPacketToServer(new PacketChangeSelectionType(this.currentSelectionTypeIndex));
+		}
+	}
+
 	public void setCurrentSelectionType(final Class<? extends ISelectionType> clazz)
 	{
 		int foundIndex = -1;
@@ -116,18 +126,8 @@ public class PlayerSelectionTypesModule extends PlayerOrbisModule
 
 			if (this.getWorld().isRemote)
 			{
-				NetworkingOrbis.sendPacketToServer(new PacketChangeSelectionType(this.currentSelectionTypeIndex));
+				OrbisAPI.network().sendPacketToServer(new PacketChangeSelectionType(this.currentSelectionTypeIndex));
 			}
-		}
-	}
-
-	public void setCurrentSelectionType(int powerIndex)
-	{
-		this.currentSelectionTypeIndex = powerIndex;
-
-		if (this.getWorld().isRemote)
-		{
-			NetworkingOrbis.sendPacketToServer(new PacketChangeSelectionType(this.currentSelectionTypeIndex));
 		}
 	}
 

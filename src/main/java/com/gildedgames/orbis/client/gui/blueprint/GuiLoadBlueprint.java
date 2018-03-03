@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.DataCondition;
@@ -27,7 +28,6 @@ import com.gildedgames.orbis.common.containers.ContainerBlueprintInventory;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis.common.util.InputHelper;
@@ -195,7 +195,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 			ItemBlueprintPalette.setBlueprintPalette(stack, palette);
 
-			NetworkingOrbis.sendPacketToServer(new PacketSetItemStack(stack));
+			OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
 			Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 		}
 	}
@@ -213,7 +213,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 				ItemBlueprint.setBlueprint(stack, data.getMetadata().getIdentifier());
 
-				NetworkingOrbis.sendPacketToServer(new PacketSetItemStack(stack));
+				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
 				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -257,7 +257,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	{
 		if (!Minecraft.getMinecraft().isIntegratedServerRunning() && this.requestListing)
 		{
-			NetworkingOrbis.sendPacketToServer(new PacketRequestProjectListing());
+			OrbisAPI.network().sendPacketToServer(new PacketRequestProjectListing());
 		}
 	}
 

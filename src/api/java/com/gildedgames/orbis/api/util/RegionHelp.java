@@ -125,6 +125,11 @@ public class RegionHelp
 		return xOnEdge && yOnEdge && zOnEdge;
 	}
 
+	public static void translate(final IMutableRegion region, BlockPos pos)
+	{
+		translate(region, pos.getX(), pos.getY(), pos.getZ());
+	}
+
 	public static void translate(final IMutableRegion region, final int translateX, final int translateY, final int translateZ)
 	{
 		final BlockPos min = region.getMin();

@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.player.modules;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.*;
 import net.minecraft.item.ItemStack;
@@ -136,11 +136,6 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		return this.powers[this.currentPowerIndex];
 	}
 
-	public void setCurrentPower(final int powerIndex)
-	{
-		this.currentPowerIndex = powerIndex;
-	}
-
 	public void setCurrentPower(final Class<? extends IGodPower> clazz)
 	{
 		int foundIndex = -1;
@@ -162,9 +157,14 @@ public class PlayerPowerModule extends PlayerOrbisModule
 
 			if (this.getWorld().isRemote)
 			{
-				NetworkingOrbis.sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
+				OrbisAPI.network().sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
 			}
 		}
+	}
+
+	public void setCurrentPower(final int powerIndex)
+	{
+		this.currentPowerIndex = powerIndex;
 	}
 
 	public int getCurrentPowerIndex()

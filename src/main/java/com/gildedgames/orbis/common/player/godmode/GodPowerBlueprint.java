@@ -138,7 +138,7 @@ public class GodPowerBlueprint implements IGodPower
 				}
 				catch (final OrbisMissingDataException | OrbisMissingProjectException e)
 				{
-					OrbisCore.LOGGER.error(e);
+					OrbisCore.LOGGER.error("Missing in " + this.getClass().getName() + " : ", e);
 					player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
 				}
 			}

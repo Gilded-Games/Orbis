@@ -1,12 +1,14 @@
 package com.gildedgames.orbis.common.capabilities.player;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBTHelper;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.OrbisCapabilities;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
@@ -15,6 +17,7 @@ import com.gildedgames.orbis.common.player.modules.PlayerProjectModule;
 import com.gildedgames.orbis.common.player.modules.PlayerSelectionInputModule;
 import com.gildedgames.orbis.common.player.modules.PlayerSelectionTypesModule;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,6 +63,8 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private ISchedule selectedSchedule;
 
+	private OrbisInstance orbisInstance;
+
 	public PlayerOrbis()
 	{
 		this.entity = null;
@@ -100,6 +105,16 @@ public class PlayerOrbis implements IPlayerOrbis
 		return entity.hasCapability(OrbisCapabilities.PLAYER_DATA, null);
 	}
 
+	public OrbisInstance getOrbisInstance()
+	{
+		return this.orbisInstance;
+	}
+
+	public void setOrbisInstance(OrbisInstance orbisInstance)
+	{
+		this.orbisInstance = orbisInstance;
+	}
+
 	public boolean containsObserver(final PlayerOrbisObserver observer)
 	{
 		return this.observers.contains(observer);
@@ -120,17 +135,17 @@ public class PlayerOrbis implements IPlayerOrbis
 	 */
 	public void sendFullUpdate()
 	{
-		NetworkingOrbis.sendPacketToPlayer(new PacketDeveloperMode(this.inDeveloperMode()), (EntityPlayerMP) this.getEntity());
-		NetworkingOrbis.sendPacketToPlayer(new PacketDeveloperReach(this.getDeveloperReach()), (EntityPlayerMP) this.getEntity());
-		NetworkingOrbis
+		OrbisAPI.network().sendPacketToPlayer(new PacketDeveloperMode(this.inDeveloperMode()), (EntityPlayerMP) this.getEntity());
+		OrbisAPI.network().sendPacketToPlayer(new PacketDeveloperReach(this.getDeveloperReach()), (EntityPlayerMP) this.getEntity());
+		OrbisAPI.network()
 				.sendPacketToPlayer(new PacketChangePower(this.powers().getCurrentPowerIndex()), (EntityPlayerMP) this.getEntity());
-		NetworkingOrbis
+		OrbisAPI.network()
 				.sendPacketToPlayer(new PacketChangeSelectionInput(this, this.selectionInputs().getCurrentSelectionInput()),
 						(EntityPlayerMP) this.getEntity());
-		NetworkingOrbis
+		OrbisAPI.network()
 				.sendPacketToPlayer(new PacketChangeSelectionType(this, this.selectionTypes().getCurrentSelectionType()),
 						(EntityPlayerMP) this.getEntity());
-		NetworkingOrbis
+		OrbisAPI.network()
 				.sendPacketToPlayer(new PacketSetScheduling(this.powers().isScheduling()),
 						(EntityPlayerMP) this.getEntity());
 	}
@@ -147,9 +162,9 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	public void onPlayerBeginWatching(final IPlayerOrbis other)
 	{
-		NetworkingOrbis.sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.powers().getBlueprintPower().getStagedInventory()),
+		OrbisAPI.network().sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.powers().getBlueprintPower().getStagedInventory()),
 				(EntityPlayerMP) other.getEntity());
-		NetworkingOrbis.sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.powers().getFillPower().getStagedInventory()),
+		OrbisAPI.network().sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.powers().getFillPower().getStagedInventory()),
 				(EntityPlayerMP) other.getEntity());
 	}
 
@@ -229,7 +244,7 @@ public class PlayerOrbis implements IPlayerOrbis
 
 		if (!this.getEntity().world.isRemote)
 		{
-			NetworkingOrbis.sendPacketToPlayer(new PacketDeveloperMode(flag), (EntityPlayerMP) this.getEntity());
+			OrbisAPI.network().sendPacketToPlayer(new PacketDeveloperMode(flag), (EntityPlayerMP) this.getEntity());
 		}
 	}
 
@@ -269,7 +284,7 @@ public class PlayerOrbis implements IPlayerOrbis
 
 		if (!this.getEntity().world.isRemote)
 		{
-			NetworkingOrbis.sendPacketToPlayer(new PacketDeveloperReach(this.developerReach), (EntityPlayerMP) this.getEntity());
+			OrbisAPI.network().sendPacketToPlayer(new PacketDeveloperReach(this.developerReach), (EntityPlayerMP) this.getEntity());
 		}
 	}
 
@@ -294,10 +309,14 @@ public class PlayerOrbis implements IPlayerOrbis
 	@Override
 	public void write(final NBTTagCompound tag)
 	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+
 		tag.setBoolean("developerModeEnabled", this.developerModeEnabled);
 
 		tag.setBoolean("reachSet", this.reachSet);
 		tag.setDouble("developerReach", this.developerReach);
+
+		funnel.set("orbisInstance", this.orbisInstance);
 
 		final NBTTagList modules = new NBTTagList();
 
@@ -312,6 +331,8 @@ public class PlayerOrbis implements IPlayerOrbis
 	@Override
 	public void read(final NBTTagCompound tag)
 	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+
 		this.developerModeEnabled = tag.getBoolean("developerModeEnabled");
 
 		this.reachSet = tag.getBoolean("reachSet");
@@ -320,6 +341,10 @@ public class PlayerOrbis implements IPlayerOrbis
 		{
 			this.developerReach = tag.getDouble("developerReach");
 		}
+
+		this.orbisInstance = funnel.get("orbisInstance");
+
+		OrbisCore.ORBIS_INSTANCE_HANDLER.registerInstance(this.orbisInstance);
 
 		final NBTTagList modules = tag.getTagList("modules", 10);
 

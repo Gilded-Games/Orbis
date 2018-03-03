@@ -1,8 +1,13 @@
 package com.gildedgames.orbis.api;
 
+import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
+import com.gildedgames.orbis.api.world.instances.IInstanceRegistry;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 /**
  * This OrbisAPI allows mod developers to integrate
@@ -12,9 +17,9 @@ import org.apache.logging.log4j.Logger;
  */
 public class OrbisAPI
 {
-	private static IOrbisServices services;
-
 	public static final Logger LOGGER = LogManager.getLogger("OrbisAPI");
+
+	private static IOrbisServices services;
 
 	private OrbisAPI()
 	{
@@ -39,5 +44,20 @@ public class OrbisAPI
 		}
 
 		return OrbisAPI.services;
+	}
+
+	public static IInstanceRegistry instances()
+	{
+		return OrbisAPI.services().instances();
+	}
+
+	public static INetworkOrbis network()
+	{
+		return OrbisAPI.services().network();
+	}
+
+	public static File getWorldDirectory()
+	{
+		return DimensionManager.getCurrentSaveRootDirectory();
 	}
 }

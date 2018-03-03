@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.data.IDropdownElement;
@@ -10,7 +11,6 @@ import com.gildedgames.orbis.client.gui.util.GuiFactory;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProject;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -100,7 +100,7 @@ public class ProjectNode implements IDirectoryNode
 				public void onClick(final GuiDropdownList list, final EntityPlayer player)
 				{
 					ProjectNode.this.project.getMetadata().setDownloading(true);
-					NetworkingOrbis.sendPacketToServer(new PacketRequestProject(ProjectNode.this.project.getProjectIdentifier()));
+					OrbisAPI.network().sendPacketToServer(new PacketRequestProject(ProjectNode.this.project.getProjectIdentifier()));
 				}
 			});
 		}

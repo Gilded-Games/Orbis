@@ -3,13 +3,10 @@ package com.gildedgames.orbis.common.player.godmode;
 import com.gildedgames.orbis.client.godmode.GodPowerSelectClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
-import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorSelect;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -56,9 +53,7 @@ public class GodPowerSelect implements IGodPower
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
-		return !held.isEmpty() && (held.getItem() instanceof ItemBlock
-				|| held.getItem() instanceof ItemBlueprint
-				|| held.getItem() instanceof ItemBlockDataContainer);
+		return !held.isEmpty();
 	}
 
 	@Override

@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.gui;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.network.packets.PacketOpenGui;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -21,14 +21,14 @@ public class GuiRightClickScheduleRegion extends GuiFrame
 {
 	private final Blueprint blueprint;
 
-	private final ScheduleRegion scheduleRegion;
+	private final ScheduleRegion schedule;
 
-	public GuiRightClickScheduleRegion(Blueprint blueprint, final ScheduleRegion scheduleRegion)
+	public GuiRightClickScheduleRegion(Blueprint blueprint, final ScheduleRegion schedule)
 	{
 		super(null, Dim2D.flush());
 
 		this.blueprint = blueprint;
-		this.scheduleRegion = scheduleRegion;
+		this.schedule = schedule;
 	}
 
 	@Override
@@ -41,12 +41,12 @@ public class GuiRightClickScheduleRegion extends GuiFrame
 					public void onClick(final GuiDropdownList list, final EntityPlayer player)
 					{
 						BlockPos pos = GuiRightClickScheduleRegion.this.blueprint.getPos().add(
-								GuiRightClickScheduleRegion.this.scheduleRegion.getBounds().getMin());
+								GuiRightClickScheduleRegion.this.schedule.getBounds().getMin());
 
-						NetworkingOrbis.sendPacketToServer(new PacketOpenGui(OrbisGuiHandler.EDIT_SCHEDULE_REGION, pos.getX(), pos.getY(), pos.getZ()));
+						OrbisAPI.network().sendPacketToServer(new PacketOpenGui(OrbisGuiHandler.EDIT_SCHEDULE_REGION, pos.getX(), pos.getY(), pos.getZ()));
 					}
 				},
-				GuiRightClickElements.remove(this.blueprint, this.scheduleRegion),
+				GuiRightClickElements.remove(this.blueprint, this.schedule),
 				GuiRightClickElements.close()));
 	}
 

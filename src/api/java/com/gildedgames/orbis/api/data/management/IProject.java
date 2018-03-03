@@ -100,6 +100,24 @@ public interface IProject extends NBT
 	void writeData(IData data, File file);
 
 	/**
+	 *
+	 * @param data
+	 * @param file
+	 * @param location
+	 */
+	void loadData(IData data, File file, String location);
+
+	/**
+	 * Attempts to find the data attached to this identifier.
+	 * @param id The data identifier of the data you're searching for.
+	 * @return True if found and loaded the data into cache.
+	 * False if did not find the data or could not load into cache.
+	 */
+	boolean findAndLoadData(IDataIdentifier id);
+
+	void setModAndArchiveLoadingFrom(Object mod, String archiveBaseName);
+
+	/**
 	 * Loads the data inside of the project and also fetches its
 	 * own name. The name of the project should be decided based on
 	 * the directory name - this is unrelated to the Project Identifier
@@ -109,7 +127,7 @@ public interface IProject extends NBT
 	 * Should scan through the project directory and assemble all data links
 	 * in case data files have been moved around.
 	 */
-	void loadAndCacheData(Object mod, String archiveBaseName);
+	void loadAndCacheData();
 
 	/**
 	 * @return Whether or not the dependencies of this project (such as mods) are met.

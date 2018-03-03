@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame implements IListNavigatorListener<NODE>
 {
@@ -33,19 +33,23 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 
 	private final NodeFactory<NODE, NODE_GUI> guiFactory;
 
-	private final Supplier<NODE> nodeFactory;
+	private final Function<Integer, NODE> nodeFactory;
 
 	private GuiAbstractButton addButton;
 
 	private int currentScroll, maxScroll;
 
-	public GuiListViewer(final Pos2D pos, final IListNavigator<NODE> navigator, final NodeFactory<NODE, NODE_GUI> guiFactory, final Supplier<NODE> nodeFactory)
+	private Function<IListNavigator, Integer> newNodeIndex;
+
+	public GuiListViewer(final Pos2D pos, Function<IListNavigator, Integer> newNodeIndex, final IListNavigator<NODE> navigator,
+			final NodeFactory<NODE, NODE_GUI> guiFactory, final Function<Integer, NODE> nodeFactory)
 	{
 		super(Dim2D.build().width(176).height(136).pos(pos).flush());
 
 		this.navigator = navigator;
 		this.navigator.addListener(this);
 
+		this.newNodeIndex = newNodeIndex;
 		this.guiFactory = guiFactory;
 		this.nodeFactory = nodeFactory;
 	}
@@ -131,7 +135,9 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 		{
 			if (this.addButton != null && InputHelper.isHovered(this.addButton) && this.addButton.isEnabled())
 			{
-				this.getNavigator().addNew(this.nodeFactory.get(), this.getNavigator().getNodes().size());
+				int index = this.newNodeIndex.apply(this.getNavigator());
+
+				this.getNavigator().addNew(this.nodeFactory.apply(index), index);
 				return;
 			}
 

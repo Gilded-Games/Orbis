@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets;
 
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
 import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.MessageHandlerClient;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

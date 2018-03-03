@@ -280,9 +280,11 @@ public class BlockFilterLayer implements NBT
 				{
 					for (BlockFilterLayer layer : parentFilter.getFilters())
 					{
-						if (layer.getRequiredBlocks().equals(posFilter.getFilters().get(0).getReplacementBlocks()))
+						if (layer.getFilterType() == BlockFilterType.ALL || layer.getRequiredBlocks()
+								.equals(posFilter.getFilters().get(0).getReplacementBlocks()))
 						{
 							found = true;
+							break;
 						}
 					}
 				}
@@ -290,9 +292,10 @@ public class BlockFilterLayer implements NBT
 				{
 					for (BlockFilterLayer layer : parentFilter.getFilters())
 					{
-						if (layer.getRequiredBlocks().equals(AIR_BLOCKS) || layer.getFilterType() == BlockFilterType.ALL)
+						if (layer.getFilterType() == BlockFilterType.ALL || layer.getRequiredBlocks().equals(AIR_BLOCKS))
 						{
 							found = true;
+							break;
 						}
 					}
 				}

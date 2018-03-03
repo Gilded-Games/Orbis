@@ -1,6 +1,6 @@
-package com.gildedgames.orbis.common.network;
+package com.gildedgames.orbis.api.packets.instances;
 
-import com.gildedgames.orbis.common.network.util.IMessageMultipleParts;
+import com.gildedgames.orbis.api.packets.util.IMessageMultipleParts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

@@ -12,6 +12,7 @@ import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.instances.InstanceEvents;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
@@ -28,6 +29,8 @@ import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionType
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeSphere;
 import com.gildedgames.orbis.common.tiles.OrbisTileEntities;
 import com.gildedgames.orbis.common.util.ColoredRegion;
+import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
+import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
@@ -74,12 +77,9 @@ public class OrbisCore implements IOrbisServicesListener
 
 	public static ConfigOrbis CONFIG;
 
-	private static IDataCachePool dataCache;
+	public static OrbisInstanceHandler ORBIS_INSTANCE_HANDLER;
 
-	public OrbisCore()
-	{
-		OrbisAPI.services().listen(this);
-	}
+	private static IDataCachePool dataCache;
 
 	private static void clearSelection(final EntityPlayer player)
 	{
@@ -91,8 +91,8 @@ public class OrbisCore implements IOrbisServicesListener
 			final WorldObjectManager manager = WorldObjectManager.get(world);
 			final IWorldObjectGroup group = manager.getGroup(0);
 
-			NetworkingOrbis.sendPacketToServer(new PacketClearSelectedRegion());
-			NetworkingOrbis.sendPacketToServer(new PacketWorldObjectRemove(world, group, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+			OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
+			OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(world, group, playerOrbis.powers().getSelectPower().getSelectedRegion()));
 
 			playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 		}
@@ -114,8 +114,8 @@ public class OrbisCore implements IOrbisServicesListener
 		 */
 		if (!event.player.world.isRemote && event.player.getServer() != null && event.player.getServer().isDedicatedServer())
 		{
-			NetworkingOrbis.sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
-			NetworkingOrbis.sendPacketToPlayer(new PacketSendDataCachePool(dataCache), (EntityPlayerMP) event.player);
+			OrbisAPI.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
+			OrbisAPI.network().sendPacketToPlayer(new PacketSendDataCachePool(dataCache), (EntityPlayerMP) event.player);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class OrbisCore implements IOrbisServicesListener
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(player.getServer().getWorld(world.provider.getDimension()));
 
-				NetworkingOrbis.sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				OrbisAPI.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
 			}
 		}
 	}
@@ -222,11 +222,6 @@ public class OrbisCore implements IOrbisServicesListener
 		return FMLCommonHandler.instance().getSide().isServer();
 	}
 
-	public static File getWorldDirectory()
-	{
-		return DimensionManager.getCurrentSaveRootDirectory();
-	}
-
 	public static boolean isInsideDevEnvironment()
 	{
 		return Launch.blackboard.get("fml.deobfuscatedEnvironment") == Boolean.TRUE;
@@ -248,6 +243,7 @@ public class OrbisCore implements IOrbisServicesListener
 		s.register(9, ColoredRegion.class, new Instantiator<>(ColoredRegion.class));
 		s.register(10, Framework.class, new Instantiator<>(Framework.class));
 		s.register(11, BlueprintNode.class, new Instantiator<>(BlueprintNode.class));
+		s.register(12, OrbisInstance.class, new Instantiator<>(OrbisInstance.class));
 
 		OrbisAPI.services().io().register(s);
 	}
@@ -255,7 +251,7 @@ public class OrbisCore implements IOrbisServicesListener
 	@Mod.EventHandler
 	public void onFMLConstruction(final FMLConstructionEvent event)
 	{
-
+		OrbisAPI.services().setNetwork(new NetworkingOrbis());
 	}
 
 	@Mod.EventHandler
@@ -284,13 +280,26 @@ public class OrbisCore implements IOrbisServicesListener
 	{
 		OrbisAPI.services().stopProjectManager();
 		startDataCache();
+
+		//TODO: Move this over to WorldData saver or something. This currently sucks.
+		InstanceEvents.saveAllInstancesToDisk();
+	}
+
+	@Mod.EventHandler
+	public void onServerStopped(final FMLServerStoppedEvent event)
+	{
+		InstanceEvents.unregisterAllInstances();
 	}
 
 	@Mod.EventHandler
 	public void serverStarted(final FMLServerStartedEvent event)
 	{
+		// Checks if listener is already in, don't worry
+		OrbisAPI.services().listen(OrbisCore.INSTANCE);
 		OrbisAPI.services().startProjectManager();
 		stopDataCache();
+
+		InstanceEvents.loadAllInstancesFromDisk();
 	}
 
 	@Override

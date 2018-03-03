@@ -35,6 +35,10 @@ public class OrbisProject implements IProject
 
 	private IProjectMetadata metadata;
 
+	private Object mod;
+
+	private String archiveBaseName;
+
 	private OrbisProject()
 	{
 		this.cache = new OrbisProjectCache(this);
@@ -185,7 +189,87 @@ public class OrbisProject implements IProject
 	}
 
 	@Override
-	public void loadAndCacheData(Object mod, String archiveBaseName)
+	public void loadData(IData data, File file, String location)
+	{
+		final boolean fromOtherProject = !this.identifier.equals(data.getMetadata().getIdentifier().getProjectIdentifier());
+
+		/* If the data file seems to be moved from another project, it'll reassign a new data id for it **/
+		if (fromOtherProject)
+		{
+			data.getMetadata().setIdentifier(this.cache.createNextIdentifier());
+		}
+
+		/*
+		 * This will determine if a new identifier will be created
+		 * when the data is null.
+		 */
+		final boolean shouldSaveAfter = data.getMetadata().getIdentifier() == null;
+
+		/* Loads data from file then sets it to the cache **/
+		this.cache.setData(data, location);
+
+		/*
+		 * Save the data to disk to ensure it doesn't keep creating
+		 * new identifiers each time the project is loaded.
+		 */
+		if (this.locationFile != null && (shouldSaveAfter || fromOtherProject) && !OrbisAPI.isClient())
+		{
+			this.writeData(data, file);
+		}
+	}
+
+	@Override
+	public boolean findAndLoadData(IDataIdentifier id)
+	{
+		if (id == null)
+		{
+			throw new IllegalArgumentException("Identifier should not be null when trying to find and load data!");
+		}
+
+		final boolean[] found = { false };
+
+		this.walkDataLoading((nbt, location, file, uri) -> {
+			// If already loaded, continue to next file
+			if (this.cache.getDataId(location) != -1)
+			{
+				return;
+			}
+
+			final IData data = nbt.loadWithoutReading("data");
+
+			if (data != null)
+			{
+				// Nested data tags because of the way NBTHelper writes NBT files
+				NBTTagCompound tag = nbt.getTag().getCompoundTag("data").getCompoundTag("data");
+
+				data.readMetadataOnly(tag);
+
+				if (id.equals(data.getMetadata().getIdentifier()))
+				{
+					found[0] = true;
+
+					data.read(tag);
+
+					this.loadData(data, file, location);
+				}
+			}
+		});
+
+		return found[0];
+	}
+
+	@Override
+	public void setModAndArchiveLoadingFrom(Object mod, String archiveBaseName)
+	{
+		this.mod = mod;
+		this.archiveBaseName = archiveBaseName;
+	}
+
+	/**
+	 * Walks through the project finding data files, then calls the provided
+	 * consumer to do what you want with that data file.
+	 */
+	private void walkDataLoading(ProjectDataWalker dataWalker)
 	{
 		try
 		{
@@ -194,7 +278,7 @@ public class OrbisProject implements IProject
 			 * Otherwise, uses URI and accesses from MC server resource
 			 * so it works when stored in a mod jar.
 			 */
-			final String rawPath = mod.getClass().getResource("").toURI().toString();
+			final String rawPath = this.mod.getClass().getResource("").toURI().toString();
 			URI resources = URI.create(rawPath);
 
 			final Path myPath;
@@ -202,7 +286,7 @@ public class OrbisProject implements IProject
 
 			final boolean usesJar;
 
-			String modPackage = "/" + mod.getClass().getName().replace(mod.getClass().getSimpleName(), "").replace(".", "/");
+			String modPackage = "/" + this.mod.getClass().getName().replace(this.mod.getClass().getSimpleName(), "").replace(".", "/");
 
 			/* INSIDE JAR **/
 			if (resources.getScheme().equals("jar"))
@@ -216,11 +300,11 @@ public class OrbisProject implements IProject
 			}
 			else if (this.jarLocation != null) /* DEVELOPMENT WORKSPACE, JAR **/
 			{
-				String subRaw = rawPath.substring(rawPath.lastIndexOf(archiveBaseName));
-				String pack = subRaw.substring(archiveBaseName.length(), subRaw.indexOf("/"));
+				String subRaw = rawPath.substring(rawPath.lastIndexOf(this.archiveBaseName));
+				String pack = subRaw.substring(this.archiveBaseName.length(), subRaw.indexOf("/"));
 
-				String orig = "/" + archiveBaseName + pack + modPackage;
-				String assets = "/" + archiveBaseName + "_main/assets/";
+				String orig = "/" + this.archiveBaseName + pack + modPackage;
+				String assets = "/" + this.archiveBaseName + "_main/assets/";
 
 				resources = URI.create(rawPath.replace(orig, assets));
 
@@ -276,44 +360,11 @@ public class OrbisProject implements IProject
 
 								final NBTFunnel funnel = new NBTFunnel(tag);
 
-								final IData data = funnel.get("data");
+								final String location = loc.replace(
+										loc.substring(0, loc.lastIndexOf(this.identifier.getProjectId()) + this.identifier.getProjectId().length() + 1),
+										"");
 
-								if (data != null)
-								{
-									final boolean fromOtherProject = !this.identifier.equals(data.getMetadata().getIdentifier().getProjectIdentifier());
-
-									/* If the data file seems to be moved from another project, it'll reassign a new data id for it **/
-									if (fromOtherProject)
-									{
-										data.getMetadata().setIdentifier(this.cache.createNextIdentifier());
-									}
-
-									final String location = loc.replace(
-											loc.substring(0, loc.lastIndexOf(this.identifier.getProjectId()) + this.identifier.getProjectId().length() + 1),
-											"");
-
-									/*
-									 * This will determine if a new identifier will be created
-									 * when the data is placesAir.
-									 */
-									final boolean shouldSaveAfter = data.getMetadata().getIdentifier() == null;
-
-									/* Loads data from file then sets it to the cache **/
-									this.cache.setData(data, location);
-
-									/*
-									 * Save the data to disk to ensure it doesn't keep creating
-									 * new identifiers each time the project is loaded.
-									 */
-									if (this.locationFile != null && (shouldSaveAfter || fromOtherProject) && !OrbisAPI.isClient())
-									{
-										this.writeData(data, file);
-									}
-								}
-								else
-								{
-									OrbisAPI.services().log().error("Failed to load back a data file from project.", uri);
-								}
+								dataWalker.walk(funnel, location, file, uri);
 							}
 							catch (final IOException e)
 							{
@@ -344,8 +395,30 @@ public class OrbisProject implements IProject
 	}
 
 	@Override
+	public void loadAndCacheData()
+	{
+		this.walkDataLoading((nbt, location, file, uri) -> {
+			final IData data = nbt.get("data");
+
+			if (data != null && this.cache.getDataId(location) == -1)
+			{
+				this.loadData(data, file, location);
+			}
+			else
+			{
+				OrbisAPI.services().log().error("Failed to load back a data file from project.", uri);
+			}
+		});
+	}
+
+	@Override
 	public boolean areModDependenciesMet()
 	{
 		return true;
+	}
+
+	private interface ProjectDataWalker
+	{
+		void walk(NBTFunnel funnel, String location, File file, URI uri);
 	}
 }

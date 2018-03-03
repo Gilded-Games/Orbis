@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.gui.schedules;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.client.rect.Rect;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetScheduleLayerInfo;
 import com.gildedgames.orbis.common.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -51,7 +51,7 @@ public class GuiScheduleLayerPanel extends GuiFrame
 		{
 			if (InputHelper.isHovered(this.saveButton))
 			{
-				NetworkingOrbis
+				OrbisAPI.network()
 						.sendPacketToServer(
 								new PacketSetScheduleLayerInfo(this.blueprint, this.layer, this.nameInput.getInner().getText(), this.noise.getSliderValue(),
 										this.choosesPerBlock.isTicked()));

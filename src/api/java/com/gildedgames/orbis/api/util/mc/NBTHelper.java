@@ -2,9 +2,11 @@ package com.gildedgames.orbis.api.util.mc;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
+import com.google.common.collect.AbstractIterator;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -14,9 +16,52 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class NBTHelper
 {
+
+	public static NBTTagList getTagList(final NBTTagCompound tag, final String key)
+	{
+		return tag.getTagList(key, 10);
+	}
+
+	public static Iterable<NBTTagCompound> getIterator(final NBTTagCompound tag, final String tagListKey)
+	{
+		return getIterator(getTagList(tag, tagListKey));
+	}
+
+	/**
+	 * Get the iterator for a taglist in an NBTTagCompound.
+	 * Simply a nice shortcut method.
+	 */
+	public static Iterable<NBTTagCompound> getIterator(final NBTTagList tagList)
+	{
+		return new Iterable<NBTTagCompound>()
+		{
+			@Override
+			public Iterator<NBTTagCompound> iterator()
+			{
+				return new AbstractIterator<NBTTagCompound>()
+				{
+					private int i = 0;
+
+					@Override
+					protected NBTTagCompound computeNext()
+					{
+						if (this.i >= tagList.tagCount())
+						{
+							return this.endOfData();
+						}
+
+						final NBTTagCompound tag = tagList.getCompoundTagAt(this.i);
+						this.i++;
+						return tag;
+					}
+				};
+			}
+		};
+	}
 
 	public static NBTTagCompound readNBTFromFile(final String fileName)
 	{
@@ -260,5 +305,19 @@ public class NBTHelper
 		obj.read(tag.getCompoundTag("data"));
 
 		return obj;
+	}
+
+	public static <T extends NBT> T loadWithoutReading(final NBTTagCompound tag)
+	{
+		if (tag == null || tag.getBoolean("_null") || !tag.hasKey("_null"))
+		{
+			return null;
+		}
+
+		IClassSerializer serializer = OrbisAPI.services().io().findSerializer(tag.getString("s_id"));
+
+		final int id = tag.getInteger("id");
+
+		return serializer.deserialize(id);
 	}
 }

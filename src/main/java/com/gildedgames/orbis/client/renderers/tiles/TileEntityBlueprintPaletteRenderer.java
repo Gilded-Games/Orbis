@@ -9,6 +9,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.tiles.TileEntityBlueprintPalette;
 import com.gildedgames.orbis.common.util.OpenGLHelper;
+import com.gildedgames.orbis.common.util.WorldRenderHelp;
 import com.google.common.base.Optional;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
@@ -102,6 +103,8 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 			}
 
 			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
+
+			WorldRenderHelp.renderSubRenderers(blueprint);
 
 			if (!inGuiContext)
 			{

@@ -1,18 +1,18 @@
 package com.gildedgames.orbis.common.network.packets.framework;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
+import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.MessageHandlerClient;
-import com.gildedgames.orbis.common.network.MessageHandlerServer;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -167,11 +167,11 @@ public class PacketAddNode implements IMessage
 					{
 						if (message.id == null)
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketAddNode(message.worldObjectId, message.node, message.pos));
+							OrbisAPI.network().sendPacketToAllPlayers(new PacketAddNode(message.worldObjectId, message.node, message.pos));
 						}
 						else
 						{
-							NetworkingOrbis.sendPacketToAllPlayers(new PacketAddNode(message.id, message.node, message.pos));
+							OrbisAPI.network().sendPacketToAllPlayers(new PacketAddNode(message.id, message.node, message.pos));
 						}
 					}
 				}

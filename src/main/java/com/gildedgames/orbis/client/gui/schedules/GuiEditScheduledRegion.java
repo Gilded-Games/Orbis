@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.gui.schedules;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
@@ -10,7 +11,6 @@ import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetTriggerId;
 import com.gildedgames.orbis.common.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -125,7 +125,7 @@ public class GuiEditScheduledRegion extends GuiFrame
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
 			Blueprint b = (Blueprint) this.scheduleRegion.getWorldObjectParent();
-			NetworkingOrbis.sendPacketToServer(
+			OrbisAPI.network().sendPacketToServer(
 					new PacketSetTriggerId(b, this.scheduleRegion, this.nameInput.getInner().getText()));
 		}
 	}

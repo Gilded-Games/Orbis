@@ -13,17 +13,18 @@ import com.gildedgames.orbis.api.data.management.IProjectManager;
 import com.gildedgames.orbis.api.data.management.impl.*;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.data.schedules.FilterRecord;
-import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRecord;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.data.shapes.*;
 import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
+import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
+import com.gildedgames.orbis.api.util.mc.BlockPosDimension;
 import com.gildedgames.orbis.api.world.WorldObjectGroup;
+import com.gildedgames.orbis.api.world.instances.IInstanceRegistry;
+import com.gildedgames.orbis.api.world.instances.InstanceRegistryImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
@@ -63,6 +64,10 @@ public class OrbisServices implements IOrbisServices
 	private IProjectManager projectManager;
 
 	private IOHelper io;
+
+	private INetworkOrbis network;
+
+	private IInstanceRegistry instancesRegistry = new InstanceRegistryImpl();
 
 	@Override
 	public Logger log()
@@ -138,6 +143,8 @@ public class OrbisServices implements IOrbisServices
 			s.register(29, ScheduleRegion.class, new Instantiator<>(ScheduleRegion.class));
 			s.register(30, InventorySpawnEggs.class, new Instantiator<>(InventorySpawnEggs.class));
 			s.register(31, ScheduleRecord.class, new Instantiator<>(ScheduleRecord.class));
+			s.register(32, ScheduleBlueprint.class, new Instantiator<>(ScheduleBlueprint.class));
+			s.register(33, BlockPosDimension.class, new Instantiator<>(BlockPosDimension.class));
 
 			this.io.register(s);
 		}
@@ -248,9 +255,23 @@ public class OrbisServices implements IOrbisServices
 		final IProject project = funnel.get("project");
 
 		project.setJarLocation(location);
-		project.loadAndCacheData(mod, archiveBaseName);
+		project.setModAndArchiveLoadingFrom(mod, archiveBaseName);
+
+		project.loadAndCacheData();
 
 		this.loadedProjects.put(id, project);
+	}
+
+	@Override
+	public INetworkOrbis network()
+	{
+		return this.network;
+	}
+
+	@Override
+	public void setNetwork(INetworkOrbis network)
+	{
+		this.network = network;
 	}
 
 	@Override
@@ -313,6 +334,12 @@ public class OrbisServices implements IOrbisServices
 			this.projectManager.flushProjects();
 			this.projectManager = null;
 		}
+	}
+
+	@Override
+	public IInstanceRegistry instances()
+	{
+		return this.instancesRegistry;
 	}
 
 	@Override

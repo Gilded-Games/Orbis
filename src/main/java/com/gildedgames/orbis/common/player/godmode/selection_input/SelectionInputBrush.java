@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode.selection_input;
 
+import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.shapes.AbstractShape;
@@ -9,7 +10,6 @@ import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputBrushClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
@@ -118,7 +118,7 @@ public class SelectionInputBrush implements ISelectionInput
 						{
 							if (this.playerOrbis.getWorld().isRemote)
 							{
-								NetworkingOrbis.sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), null, null));
+								OrbisAPI.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), null, null));
 							}
 						}
 					}
