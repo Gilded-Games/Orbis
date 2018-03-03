@@ -344,7 +344,10 @@ public class PlayerOrbis implements IPlayerOrbis
 
 		this.orbisInstance = funnel.get("orbisInstance");
 
-		OrbisCore.ORBIS_INSTANCE_HANDLER.registerInstance(this.orbisInstance);
+		if (this.orbisInstance != null)
+		{
+			OrbisCore.ORBIS_INSTANCE_HANDLER.registerInstance(this.orbisInstance);
+		}
 
 		final NBTTagList modules = tag.getTagList("modules", 10);
 
