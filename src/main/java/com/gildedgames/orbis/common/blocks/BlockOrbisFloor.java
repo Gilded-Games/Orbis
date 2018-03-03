@@ -59,7 +59,7 @@ public class BlockOrbisFloor extends Block implements ModelRegisterCallback
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
 	{
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@SideOnly(Side.CLIENT)
