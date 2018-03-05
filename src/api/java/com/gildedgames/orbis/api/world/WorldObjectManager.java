@@ -53,13 +53,18 @@ public class WorldObjectManager extends WorldSavedData
 
 	public static WorldObjectManager get(final World world)
 	{
-		final World using;
+		World using;
 
 		if (world.isRemote)
 		{
 			if (Minecraft.getMinecraft().isIntegratedServerRunning())
 			{
 				using = DimensionManager.getWorld(world.provider.getDimension());
+
+				if (using == null)
+				{
+					using = world;
+				}
 			}
 			else
 			{
