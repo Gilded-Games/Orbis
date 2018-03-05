@@ -1,11 +1,9 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
@@ -16,13 +14,10 @@ import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
-import com.gildedgames.orbis.common.util.CreationDataOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -80,7 +75,7 @@ public class ShapeSelectorSelect implements IShapeSelector
 			return;
 		}
 
-		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+		/*final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
 		if (held.getItem() instanceof ItemBlock)
 		{
@@ -103,7 +98,7 @@ public class ShapeSelectorSelect implements IShapeSelector
 			filter.apply(selectedShape, creationData, true);
 
 			return;
-		}
+		}*/
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 		final IWorldObjectGroup group = manager.getGroup(0);
