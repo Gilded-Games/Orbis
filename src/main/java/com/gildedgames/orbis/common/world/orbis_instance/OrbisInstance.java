@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.world.instances.IInstance;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.DimensionType;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class OrbisInstance implements IInstance
 
 	private BlockPosDimension outsideEntrance, insideEntrance;
 
-	private int dimIdInside;
+	private int dimensionId;
 
 	@SuppressWarnings("unused")
 	private OrbisInstance()
@@ -26,9 +27,9 @@ public class OrbisInstance implements IInstance
 
 	public OrbisInstance(final int id)
 	{
-		this.dimIdInside = id;
+		this.dimensionId = id;
 
-		this.insideEntrance = new BlockPosDimension(0, 2, 0, this.dimIdInside);
+		this.insideEntrance = new BlockPosDimension(0, 2, 0, this.dimensionId);
 	}
 
 	public BlockPosDimension getOutsideEntrance()
@@ -57,7 +58,7 @@ public class OrbisInstance implements IInstance
 		output.setTag("outsideEntrance", NBTHelper.write(this.outsideEntrance));
 		output.setTag("insideEntrance", NBTHelper.write(this.insideEntrance));
 
-		output.setInteger("dimIdInside", this.dimIdInside);
+		output.setInteger("dimensionId", this.dimensionId);
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class OrbisInstance implements IInstance
 		this.outsideEntrance = NBTHelper.read(input.getCompoundTag("outsideEntrance"));
 		this.insideEntrance = NBTHelper.read(input.getCompoundTag("insideEntrance"));
 
-		this.dimIdInside = input.getInteger("dimIdInside");
+		this.dimensionId = input.getInteger("dimensionId");
 	}
 
 	@Override
@@ -88,15 +89,21 @@ public class OrbisInstance implements IInstance
 	}
 
 	@Override
-	public int getDimIdInside()
+	public DimensionType getDimensionType()
 	{
-		return this.dimIdInside;
+		return WorldProviderOrbis.ORBIS;
 	}
 
 	@Override
-	public void setDimIdInside(int dimIdInside)
+	public int getDimensionId()
 	{
-		this.dimIdInside = dimIdInside;
+		return this.dimensionId;
+	}
+
+	@Override
+	public void setDimensionId(int dimensionId)
+	{
+		this.dimensionId = dimensionId;
 	}
 
 }

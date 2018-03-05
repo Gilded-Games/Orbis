@@ -20,7 +20,7 @@ public class OrbisInstanceHandler
 
 	public void registerInstance(OrbisInstance instance)
 	{
-		this.handler.registerInstance(instance, instance.getDimIdInside());
+		this.handler.registerInstance(instance, instance.getDimensionId());
 	}
 
 	public OrbisInstance getFromDimId(final int dimId)
@@ -62,5 +62,7 @@ public class OrbisInstanceHandler
 		}
 
 		this.handler.teleportPlayerOutsideInstance(player);
+
+		hook.setInstance(null);
 	}
 }

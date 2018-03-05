@@ -120,7 +120,7 @@ public class InstanceHandler<T extends IInstance> implements IInstanceHandler<T>
 				}
 			}
 
-			instance.setDimIdInside(id);
+			instance.setDimensionId(id);
 		}
 
 		DimensionManager.registerDimension(id, this.factory.dimensionType());
@@ -212,6 +212,8 @@ public class InstanceHandler<T extends IInstance> implements IInstanceHandler<T>
 	@Override
 	public World teleportPlayerToDimension(final T instance, final EntityPlayerMP player)
 	{
+		OrbisAPI.network().sendPacketToPlayer(new PacketRegisterDimension(instance.getDimensionType(), instance.getDimensionId()), player);
+
 		if (this.instances.containsValue(instance))
 		{
 			final IPlayerInstances hook = OrbisAPI.instances().getPlayer(player);
