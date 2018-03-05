@@ -1,8 +1,10 @@
 package com.gildedgames.orbis.client.gui.util;
 
 import com.gildedgames.orbis.client.rect.Rect;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiTexture extends GuiFrame
@@ -14,6 +16,23 @@ public class GuiTexture extends GuiFrame
 		super(rect);
 
 		this.texture = texture;
+		this.setShouldScaleRender(false);
+	}
+
+	public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, float width, float height, float textureWidth,
+			float textureHeight)
+	{
+		float f = 1.0F / textureWidth;
+		float f1 = 1.0F / textureHeight;
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		bufferbuilder.pos((double) x, (double) (y + height), 0.0D).tex((double) (u * f), (double) ((v + height) * f1)).endVertex();
+		bufferbuilder.pos((double) (x + width), (double) (y + height), 0.0D).tex((double) ((u + width) * f), (double) ((v + height) * f1))
+				.endVertex();
+		bufferbuilder.pos((double) (x + width), (double) y, 0.0D).tex((double) ((u + width) * f), (double) (v * f1)).endVertex();
+		bufferbuilder.pos((double) x, (double) y, 0.0D).tex((double) (u * f), (double) (v * f1)).endVertex();
+		tessellator.draw();
 	}
 
 	public ResourceLocation getResourceLocation()
@@ -37,10 +56,13 @@ public class GuiTexture extends GuiFrame
 	{
 		GlStateManager.pushMatrix();
 
+		GuiFrameUtils.applyAlpha(this);
+
 		this.mc.getTextureManager().bindTexture(this.texture);
 
-		Gui.drawModalRectWithCustomSizedTexture((int) this.dim().x(), (int) this.dim().y(), 0, 0, (int) this.dim().width(), (int) this.dim().height(),
-				(int) this.dim().width(), (int) this.dim().height());
+		drawModalRectWithCustomSizedTexture(this.dim().x(), this.dim().y(), 0, 0, this.dim().width(),
+				this.dim().height(),
+				this.dim().width(), this.dim().height());
 
 		GlStateManager.popMatrix();
 	}

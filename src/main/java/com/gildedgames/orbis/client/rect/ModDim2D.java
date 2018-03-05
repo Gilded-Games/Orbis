@@ -214,8 +214,9 @@ public class ModDim2D implements Rect
 			}
 		}
 
-		final float offsetX = this.originalState.isCenteredX() ? width * this.originalState.scale() / 2 : 0;
-		final float offsetY = this.originalState.isCenteredY() ? height * this.originalState.scale() / 2 : 0;
+		final float offsetX = this.originalState.isCenteredX() ? (width * this.originalState.scale()) / 2 : 0;
+		final float offsetY = this.originalState.isCenteredY() ? (height * this.originalState.scale()) / 2 : 0;
+
 		width *= this.originalState.scale();
 		height *= this.originalState.scale();
 

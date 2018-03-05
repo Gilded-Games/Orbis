@@ -43,6 +43,8 @@ public interface IGuiFrame extends RectHolder
 
 	void draw();
 
+	void preDrawChildren();
+
 	void onMouseWheel(final int state);
 
 	void publicMouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException;

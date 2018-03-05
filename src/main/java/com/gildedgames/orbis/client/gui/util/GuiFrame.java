@@ -37,6 +37,10 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 	private boolean hasInit, enabled = true, visible = true, hoverEntered = false;
 
+	private float alpha = 1.0F;
+
+	private boolean shouldScaleRender = true;
+
 	public GuiFrame()
 	{
 		super(new ContainerGeneric(Minecraft.getMinecraft().player));
@@ -60,6 +64,21 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 		this.prevFrame = prevFrame;
 		this.dim.set(rect);
+	}
+
+	public void setShouldScaleRender(boolean shouldScaleRender)
+	{
+		this.shouldScaleRender = shouldScaleRender;
+	}
+
+	public float getAlpha()
+	{
+		return this.alpha;
+	}
+
+	public void setAlpha(float alpha)
+	{
+		this.alpha = alpha;
 	}
 
 	public GuiFrame getPrevFrame()
@@ -98,6 +117,12 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 	@Override
 	public void onHoverExit()
+	{
+
+	}
+
+	@Override
+	public void preDrawChildren()
 	{
 
 	}
@@ -294,7 +319,10 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 		GlStateManager.translate(this.dim().isCenteredX() ? (this.dim().width() / 2) : 0, this.dim().isCenteredY() ? (this.dim().height() / 2) : 0, 0);
 
-		GlStateManager.scale(this.dim().scale(), this.dim().scale(), 0);
+		if (this.shouldScaleRender)
+		{
+			GlStateManager.scale(this.dim().scale(), this.dim().scale(), 0);
+		}
 
 		GlStateManager.rotate(this.dim().degrees(), 0.0F, 0.0F, 1.0F);
 
@@ -302,16 +330,11 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 		GlStateManager.translate(-x - this.dim().originX(), -y - this.dim().originY(), 0);
 
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-
-		GlStateManager.enableAlpha();
+		GuiFrameUtils.applyAlpha(this);
 
 		this.draw();
+
+		this.preDrawChildren();
 
 		for (final IGuiFrame frame : this.children)
 		{

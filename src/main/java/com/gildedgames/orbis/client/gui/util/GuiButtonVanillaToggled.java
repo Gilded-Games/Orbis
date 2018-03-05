@@ -78,6 +78,8 @@ public class GuiButtonVanillaToggled extends GuiFrame
 	{
 		GlStateManager.pushMatrix();
 
+		GuiFrameUtils.applyAlpha(this);
+
 		this.button.x = (int) this.dim().x();
 		this.button.y = (int) this.dim().y();
 

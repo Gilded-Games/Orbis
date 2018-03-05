@@ -32,6 +32,8 @@ public class GuiTextLabel extends GuiFrame
 	{
 		GlStateManager.pushMatrix();
 
+		GuiFrameUtils.applyAlpha(this);
+
 		this.drawTextBackground(this.dim().x(), this.dim().y(), this.dim().width(), this.dim().height(), InputHelper.isHovered(this) ? -267486864 : -267386864,
 				InputHelper.isHovered(this) ? 1547420415 : 1347420415);
 

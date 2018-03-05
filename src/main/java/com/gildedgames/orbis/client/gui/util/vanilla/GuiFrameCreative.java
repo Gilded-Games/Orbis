@@ -224,6 +224,12 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 	}
 
 	@Override
+	public void preDrawChildren()
+	{
+
+	}
+
+	@Override
 	public void drawScreen(final int mouseX, final int mouseY, final float partialTicks)
 	{
 		if (!this.isVisible())
@@ -289,6 +295,8 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 		GlStateManager.enableAlpha();
 
 		this.draw();
+
+		this.preDrawChildren();
 
 		for (final IGuiFrame frame : this.children)
 		{
