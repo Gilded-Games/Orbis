@@ -8,7 +8,6 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.client.godmode.GodPowerBlueprintClient;
-import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.inventory.InventoryBlueprintForge;
@@ -28,7 +27,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class GodPowerBlueprint implements IGodPower
+public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 {
 
 	private final ShapeSelectorBlueprint shapeSelector;
@@ -207,7 +206,7 @@ public class GodPowerBlueprint implements IGodPower
 	}
 
 	@Override
-	public IGodPowerClient getClientHandler()
+	public GodPowerBlueprintClient getClientHandler()
 	{
 		return this.clientHandler;
 	}

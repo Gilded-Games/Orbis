@@ -111,6 +111,11 @@ public class BlueprintRegion extends AbstractRegion implements IMutableRegion, I
 		this.notifyDataChange();
 	}
 
+	public void setPosNoAdjust(BlockPos pos)
+	{
+
+	}
+
 	@Override
 	public BlockPos getMin()
 	{

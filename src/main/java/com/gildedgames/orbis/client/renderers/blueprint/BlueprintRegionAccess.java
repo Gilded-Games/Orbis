@@ -28,7 +28,8 @@ public class BlueprintRegionAccess implements IBlockAccess
 	@Override
 	public TileEntity getTileEntity(final BlockPos pos)
 	{
-		final BlockData data = this.blueprint.getBlock(pos);
+		final BlockData data = this.blueprint.getBlockDataContainer().get(pos);
+
 		return data.getTileEntity();
 	}
 
@@ -41,12 +42,12 @@ public class BlueprintRegionAccess implements IBlockAccess
 	@Override
 	public IBlockState getBlockState(final BlockPos pos)
 	{
-		if (!RegionHelp.contains(this.blueprint, pos))
+		if (!RegionHelp.contains(this.blueprint, pos.add(this.blueprint.getMin())))
 		{
 			return Blocks.AIR.getDefaultState();
 		}
 
-		final BlockData data = this.blueprint.getBlock(pos);
+		final BlockData data = this.blueprint.getBlockDataContainer().get(pos);
 
 		if (data == null)
 		{
@@ -59,7 +60,8 @@ public class BlueprintRegionAccess implements IBlockAccess
 	@Override
 	public boolean isAirBlock(final BlockPos pos)
 	{
-		final BlockData data = this.blueprint.getBlock(pos);
+		final BlockData data = this.blueprint.getBlockDataContainer().get(pos);
+
 		return data.isAir();
 	}
 

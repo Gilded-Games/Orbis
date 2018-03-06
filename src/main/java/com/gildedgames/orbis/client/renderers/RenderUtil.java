@@ -1,16 +1,45 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 
 public class RenderUtil
 {
 
 	private final static Minecraft mc = Minecraft.getMinecraft();
+
+	public static void rotateRender(IDimensions d, Rotation r)
+	{
+		float angle = 0.0F;
+
+		switch (r)
+		{
+			case NONE:
+				angle = 0.0F;
+				break;
+			case CLOCKWISE_90:
+				GlStateManager.translate(d.getLength(), 0, 0);
+				angle = 270.0F;
+				break;
+			case CLOCKWISE_180:
+				GlStateManager.translate(d.getWidth(), 0, d.getLength());
+				angle = 180.0F;
+				break;
+			case COUNTERCLOCKWISE_90:
+				GlStateManager.translate(0, 0, d.getWidth());
+				angle = 90.0F;
+				break;
+		}
+
+		GlStateManager.rotate(angle, 0.0F, 1.0F, 0.0F);
+	}
 
 	public static void renderTextAbove(final IRegion region, final String string, final double yOffset, final float partialTicks)
 	{

@@ -78,7 +78,7 @@ public class PacketCreatePlacingBlueprint implements IMessage
 
 				ICreationData creationData = new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false);
 
-				primer.create(data, creationData);
+				primer.create(region, data, creationData);
 			}
 
 			return null;

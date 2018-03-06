@@ -204,7 +204,7 @@ public class OrbisDeveloperEventsClient
 				{
 					final GodPowerBlueprint power = playerOrbis.powers().getBlueprintPower();
 
-					if (power.getPlacingBlueprint() != null)
+					if (power.getPlacingBlueprint() != null || power.getPlacingPalette() != null)
 					{
 						power.setPlacingRotation(RotationHelp.getNextRotation(power.getPlacingRotation(), true));
 						OrbisAPI.network().sendPacketToServer(new PacketRotateBlueprint());

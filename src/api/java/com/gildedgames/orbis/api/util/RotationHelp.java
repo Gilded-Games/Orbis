@@ -97,7 +97,7 @@ public class RotationHelp
 							if (relocateTo != null)
 							{
 								int xDif = (relocateTo.getMax().getX() - to.getX()) / 2;
-								int zDif = Math.abs(relocateTo.getMax().getZ() - to.getZ()) / 2;
+								int zDif = (relocateTo.getMax().getZ() - to.getZ()) / 2;
 
 								this.rotated.setPos(this.rotated.getX() + xDif, this.rotated.getY(), this.rotated.getZ() + zDif);
 							}
@@ -140,7 +140,7 @@ public class RotationHelp
 							if (relocateTo != null)
 							{
 								int xDif = (relocateTo.getMax().getX() - to.getX()) / 2;
-								int zDif = Math.abs(relocateTo.getMax().getZ() - to.getZ()) / 2;
+								int zDif = (relocateTo.getMax().getZ() - to.getZ()) / 2;
 
 								this.rotated.setPos(this.rotated.getX() + xDif, this.rotated.getY(), this.rotated.getZ() + zDif);
 							}

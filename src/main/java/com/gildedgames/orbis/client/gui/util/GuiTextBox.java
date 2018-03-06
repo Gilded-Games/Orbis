@@ -67,6 +67,8 @@ public class GuiTextBox extends GuiFrame
 						textElement = new GuiText(Dim2D.build().pos(0, textHeight).flush(), new Text(new TextComponentString(s), t.scale()));
 					}
 
+					textElement.setAlpha(this.getAlpha());
+
 					this.addChildren(textElement);
 
 					textHeight += 0.9f * t.scaledHeight();
@@ -75,6 +77,20 @@ public class GuiTextBox extends GuiFrame
 		}
 
 		this.dim().mod().height(textHeight).flush();
+	}
+
+	@Override
+	public void draw()
+	{
+		for (IGuiFrame c : this.seekAllContent())
+		{
+			if (c instanceof GuiText)
+			{
+				GuiText text = (GuiText) c;
+
+				text.setAlpha(this.getAlpha());
+			}
+		}
 	}
 
 }

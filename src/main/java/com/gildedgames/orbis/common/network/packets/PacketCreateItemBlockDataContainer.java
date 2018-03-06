@@ -76,12 +76,12 @@ public class PacketCreateItemBlockDataContainer implements IMessage
 			{
 				final BlockDataContainer container = ItemBlockDataContainer.getDataContainer(message.stack);
 
-				final Rotation rotation = Rotation.NONE;
+				final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
 
 				final IRegion region = RotationHelp.regionFromCenter(message.pos, container, rotation);
 
 				final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(player.world));
-				primer.create(container, new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false));
+				primer.create(region, container, new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false), null);
 			}
 
 			return null;

@@ -4,6 +4,8 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
@@ -112,20 +114,25 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 	{
 		final List<IWorldRenderer> renderers = Lists.newArrayList();
 
-		if (this.prevBlueprintData != this.server.getPlacingBlueprint() || this.prevRotation != this.server.getPlacingRotation())
+		boolean rotChanged = this.prevRotation != this.server.getPlacingRotation();
+
+		if (this.prevBlueprintData != this.server.getPlacingBlueprint() || rotChanged)
 		{
 			this.renderer = null;
 
 			this.prevBlueprintData = this.server.getPlacingBlueprint();
-			this.prevRotation = this.server.getPlacingRotation();
 		}
 
-		if (this.prevPalette != this.server.getPlacingPalette() || this.prevRotation != this.server.getPlacingRotation())
+		if (this.prevPalette != this.server.getPlacingPalette() || rotChanged)
 		{
 			this.paletteRenderers.clear();
 			this.paletteBlueprints.clear();
 
 			this.prevPalette = this.server.getPlacingPalette();
+		}
+
+		if (rotChanged)
+		{
 			this.prevRotation = this.server.getPlacingRotation();
 		}
 
@@ -141,7 +148,7 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 				{
 					final IRegion region = RotationHelp.regionFromCenter(pos, data, this.server.getPlacingRotation());
 
-					final Blueprint b = new Blueprint(world, region.getMin(), this.server.getPlacingRotation(), data);
+					final Blueprint b = new Blueprint(world, region.getMin(), Rotation.NONE, data);
 
 					final IWorldRenderer r = new RenderBlueprintBlocks(b, world);
 
@@ -151,7 +158,9 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 
 				blueprint = this.paletteBlueprints.get((int) ((System.currentTimeMillis() / 1000) % this.paletteBlueprints.size()));
 
-				this.renderShape = new RenderShape(blueprint);
+				final IRegion r = RotationHelp.regionFromCenter(pos, blueprint, this.server.getPlacingRotation());
+
+				this.renderShape = new RenderShape(r);
 
 				this.renderShape.useCustomColors = true;
 
@@ -164,12 +173,11 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 			{
 				blueprint = this.paletteBlueprints.get((int) ((System.currentTimeMillis() / 1000) % this.paletteBlueprints.size()));
 
-				final IRegion renderRegion = RotationHelp
-						.regionFromCenter(pos, blueprint.getData(), this.server.getPlacingRotation());
+				IRegion r = new Region(RotationHelp.regionFromCenter(pos, blueprint, this.server.getPlacingRotation()));
 
-				blueprint.setPos(renderRegion.getMin());
+				blueprint.setPos(r.getMin());
 
-				this.renderShape.setShape(blueprint);
+				this.renderShape.setShape(r);
 			}
 
 			this.paletteRenderers.forEach(r -> r.setDisabled(true));
@@ -186,15 +194,15 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 		{
 			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
 
-			final IRegion renderRegion = RotationHelp.regionFromCenter(pos, this.server.getPlacingBlueprint(), this.server.getPlacingRotation());
+			IRegion r = new Region(RotationHelp.regionFromCenter(pos, this.server.getPlacingBlueprint(), this.server.getPlacingRotation()));
 
 			if (this.renderer == null)
 			{
-				this.blueprint = new Blueprint(world, renderRegion.getMin(), this.server.getPlacingRotation(), this.server.getPlacingBlueprint());
+				this.blueprint = new Blueprint(world, r.getMin(), Rotation.NONE, this.server.getPlacingBlueprint());
 
 				this.renderer = new RenderBlueprintBlocks(this.blueprint, world);
 
-				this.renderShape = new RenderShape(this.blueprint);
+				this.renderShape = new RenderShape(r);
 
 				this.renderShape.useCustomColors = true;
 
@@ -205,7 +213,10 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 			}
 			else
 			{
-				this.blueprint.setPos(renderRegion.getMin());
+				BlockPos p = r.getMin();
+
+				RegionHelp.relocate(((Region) this.renderShape.getRenderedObject()), p);
+				this.blueprint.setPos(p);
 			}
 
 			renderers.add(this.renderer);

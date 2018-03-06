@@ -49,12 +49,12 @@ public class ShapeSelectorPathway implements IShapeSelector
 
 		p.processPathway(playerOrbis, start, end);
 
-		primer.create(p.getInitialNode().getData(),
+		primer.create(null, p.getInitialNode().getData(),
 				new CreationData(world, playerOrbis.getEntity()).pos(p.getInitialNode().getMin()).rotation(p.getInitialNode().getRotation()).placesAir(true));
 
 		for (PathwayNode n : p.getStepAStar().currentState().fullPath())
 		{
-			primer.create(n.getData(), new CreationData(world, playerOrbis.getEntity()).pos(n.getMin()).rotation(n.getRotation()).placesAir(true));
+			primer.create(null, n.getData(), new CreationData(world, playerOrbis.getEntity()).pos(n.getMin()).rotation(n.getRotation()).placesAir(true));
 		}
 	}
 }

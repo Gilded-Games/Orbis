@@ -266,7 +266,7 @@ public class DataPrimer
 
 		final IRegion region = RotationHelp.regionFromCenter(data.getPos(), b, rotation);
 
-		this.create(b, data.clone().pos(region.getMin()));
+		this.create(region, b, data.clone().pos(region.getMin()));
 	}
 
 	public void create(final BlockDataContainer container, final ICreationData data)
@@ -274,9 +274,9 @@ public class DataPrimer
 		this.create(null, container, data, null);
 	}
 
-	public void create(BlueprintData bData, ICreationData data)
+	public void create(IRegion relocateTo, BlueprintData bData, ICreationData data)
 	{
-		this.create(null, bData.getBlockDataContainer(), data, null);
+		this.create(relocateTo, bData.getBlockDataContainer(), data, null);
 
 		IShape boundingBox = new Region(bData).translate(data.getPos());
 
@@ -306,7 +306,7 @@ public class DataPrimer
 		}
 	}
 
-	public void create(IRegion containerRegion, final BlockDataContainer container, final ICreationData data, final IRegion insideRegion)
+	public void create(IRegion relocateTo, final BlockDataContainer container, final ICreationData data, final IRegion insideRegion)
 	{
 		final BlockPos min = data.getPos();
 		BlockPos max = new BlockPos(min.getX() + container.getWidth() - 1, min.getY() + container.getHeight() - 1,
@@ -317,7 +317,7 @@ public class DataPrimer
 		if (rotAmount != 0)
 		{
 			for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : RotationHelp
-					.getAllInBoxRotated(min, max, data.getRotation(), containerRegion))
+					.getAllInBoxRotated(min, max, data.getRotation(), relocateTo))
 			{
 				final BlockPos.MutableBlockPos beforeRot = tuple.getFirst();
 				BlockPos.MutableBlockPos rotated = tuple.getSecond();

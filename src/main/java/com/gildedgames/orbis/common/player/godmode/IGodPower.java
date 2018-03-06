@@ -6,7 +6,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import net.minecraft.entity.player.EntityPlayer;
 
-public interface IGodPower extends NBT
+public interface IGodPower<C extends IGodPowerClient> extends NBT
 {
 
 	void onUpdate(EntityPlayer player, PlayerOrbis playerOrbis, boolean isPowerActive);
@@ -23,6 +23,6 @@ public interface IGodPower extends NBT
 	 */
 	IShapeSelector getShapeSelector();
 
-	IGodPowerClient getClientHandler();
+	C getClientHandler();
 
 }

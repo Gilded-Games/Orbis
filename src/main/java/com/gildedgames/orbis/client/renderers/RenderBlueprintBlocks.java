@@ -5,11 +5,11 @@ import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.util.OrbisTuple;
-import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.mc.BlockUtil;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.blueprint.BlueprintRenderCache;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -41,9 +41,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 {
 	private final Minecraft mc = Minecraft.getMinecraft();
 
-	//Setup the next parameters to vary the use of the renderer.
-	//----------------------------------------------------------------------
-
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -54,31 +51,10 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 	private final BlueprintRenderCache cache;
 
-	//----------------------------------------------------------------------
-
 	private final float scale = 1.0f;
 
-	/**
-	 * doesRecolor: Set to true if you want to recolor the blocks you paint.
-	 * renderDimensions: Set to true to renderSubRenderers the dimensions of the blueprint above it like x x y x z
-	 * renderBlocks : Set to false to unlisten rendering the blocks inside the blueprint and only renderSubRenderers the references inside it
-	 */
-	public boolean doesRecolor = false, renderDimensions = true, renderBlocks = true;
+	public boolean renderBlocks = true;
 
-	/**
-	 * useCamera: Set to false to renderSubRenderers in a gui. TODO: Implement easier way
-	 * renderGridReferences: Set to false to unlisten rendering the grid in the regions of the References
-	 */
-	public boolean renderGridReferences = true;
-
-	/**
-	 * Number between 0.0f and 1.0f. Put lower to add transparency
-	 */
-	public float alpha = 0.0f;
-
-	/**
-	 * When doesRecolor == true, this is the color it'll recolor to.
-	 */
 	public int color = 0x0000FF;
 
 	public Iterable<BlockPos.MutableBlockPos> shapeData;
@@ -88,8 +64,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	private BlockPos lastMin;
 
 	private int glIndex = -1;
-
-	private Iterable<OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos>> rotatedData;
 
 	private Rotation lastRotation;
 
@@ -225,22 +199,9 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-		if (this.rotatedData != null)
+		for (final BlockPos pos : this.shapeData)
 		{
-			for (final OrbisTuple<BlockPos.MutableBlockPos, BlockPos.MutableBlockPos> tuple : this.rotatedData)
-			{
-				final BlockPos beforeRot = tuple.getFirst();
-				final BlockPos rotated = tuple.getSecond();
-
-				this.renderPos(rotated, beforeRot, buffer);
-			}
-		}
-		else
-		{
-			for (final BlockPos pos : this.shapeData)
-			{
-				this.renderPos(pos, pos, buffer);
-			}
+			this.renderPos(pos, buffer);
 		}
 
 		buffer.setTranslation(0, 0, 0);
@@ -268,23 +229,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		RenderHelper.enableStandardItemLighting();
 
 		GlStateManager.popMatrix();
-
-		for (Entrance entrance : this.blueprint.getData().entrances())
-		{
-			Region r = new Region(entrance.getBounds());
-			r.add(this.blueprint.getPos().getX(), this.blueprint.getPos().getY(), this.blueprint.getPos().getZ());
-			RenderShape shape = new RenderShape(r);
-
-			shape.useCustomColors = true;
-
-			if (entrance.getBounds() instanceof IColored)
-			{
-				shape.colorBorder = ((IColored) entrance.getBounds()).getColor();
-				shape.colorGrid = ((IColored) entrance.getBounds()).getColor();
-			}
-
-			this.subRenderers.add(shape);
-		}
 
 		this.render(world, partialTicks, useCamera);
 	}
@@ -314,14 +258,14 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		}
 	}
 
-	private void renderPos(final BlockPos renderPos, final BlockPos containerPos, final BufferBuilder buffer)
+	private void renderPos(final BlockPos renderPos, final BufferBuilder buffer)
 	{
 		if (!this.renderBlocks)
 		{
 			return;
 		}
 
-		final IBlockState state = this.cache.getBlockState(containerPos);
+		final IBlockState state = this.cache.getBlockState(renderPos);
 
 		if (state != null && !BlockUtil.isAir(state) && !BlockUtil.isVoid(state) && state.getRenderType() != EnumBlockRenderType.INVISIBLE)
 		{
@@ -398,23 +342,13 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		if (this.lastRotation != this.blueprint.getRotation())
 		{
 			this.lastRotation = this.blueprint.getRotation();
-
-			final int rotAmount = Math.abs(RotationHelp.getRotationAmount(this.blueprint.getRotation(), Rotation.NONE));
-
-			if (rotAmount != 0)
-			{
-				this.rotatedData = RotationHelp.getAllInBoxRotated(this.blueprint.getMin(), this.blueprint.getMax(), this.blueprint.getRotation());
-			}
-			else
-			{
-				this.rotatedData = null;
-			}
 		}
 
 		if (this.lastMin == null || this.glIndex == -1)
 		{
 			this.lastMin = this.blueprint.getMin();
-			this.shapeData = this.blueprint.createShapeData();
+			this.shapeData = BlockPos.getAllInBoxMutable(BlockPos.ORIGIN,
+					this.blueprint.getMax().add(-this.blueprint.getMin().getX(), -this.blueprint.getMin().getY(), -this.blueprint.getMin().getZ()));
 		}
 
 		if (this.glIndex == -1)
@@ -422,6 +356,8 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 			this.cacheRender(world, partialTicks, useCamera);
 			return;
 		}
+
+		GodPowerBlueprint bp = PlayerOrbis.get(this.mc.player).powers().getBlueprintPower();
 
 		final double offsetPlayerX = this.mc.player.lastTickPosX + (this.mc.player.posX - this.mc.player.lastTickPosX) * partialTicks;
 		final double offsetPlayerY = this.mc.player.lastTickPosY + (this.mc.player.posY - this.mc.player.lastTickPosY) * partialTicks;
@@ -431,14 +367,13 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		if (useCamera)
 		{
-			if (!this.lastMin.equals(this.blueprint.getMin()))
-			{
-				GlStateManager.translate(this.blueprint.getMin().getX() - this.lastMin.getX(),
-						this.blueprint.getMin().getY() - this.lastMin.getY(),
-						this.blueprint.getMin().getZ() - this.lastMin.getZ());
-			}
-
 			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+
+			GlStateManager.translate(this.blueprint.getMin().getX(),
+					this.blueprint.getMin().getY(),
+					this.blueprint.getMin().getZ());
+
+			RenderUtil.rotateRender(this.blueprint, bp.getPlacingRotation());
 		}
 
 		GlStateManager.callList(this.glIndex);
