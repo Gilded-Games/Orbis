@@ -1,10 +1,15 @@
 package com.gildedgames.orbis.client.godmode;
 
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.GuiRightClickEntrance;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -71,12 +76,30 @@ public class GodPowerEntranceClient implements IGodPowerClient
 	@Override
 	public Object raytraceObject(PlayerOrbis playerOrbis)
 	{
-		return null;
+		return playerOrbis.getSelectedEntrance();
 	}
 
 	@Override
 	public boolean onRightClickShape(PlayerOrbis playerOrbis, Object foundObject, MouseEvent event)
 	{
+		final EntityPlayer entity = playerOrbis.getEntity();
+
+		if (foundObject instanceof Entrance)
+		{
+			Entrance entrance = (Entrance) foundObject;
+
+			if (entity.world.isRemote)
+			{
+				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
+				{
+					Minecraft.getMinecraft()
+							.displayGuiScreen(new GuiRightClickEntrance((Blueprint) entrance.getWorldObjectParent(), entrance));
+
+					return false;
+				}
+			}
+		}
+
 		return false;
 	}
 

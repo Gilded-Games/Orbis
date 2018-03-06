@@ -95,6 +95,22 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		}
 	}
 
+	public int getEntranceId(Entrance entrance)
+	{
+		int i = 0;
+		for (Entrance e : this.entrances)
+		{
+			if (e == entrance)
+			{
+				return i;
+			}
+
+			i++;
+		}
+
+		return -1;
+	}
+
 	public void listen(final IBlueprintDataListener listener)
 	{
 		if (!this.listeners.contains(listener))
@@ -115,6 +131,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this.worldObjectParent = parent;
 
 		this.scheduleLayers.values().forEach(s -> s.setWorldObjectParent(this.worldObjectParent));
+		this.entrances.forEach(e -> e.setWorldObjectParent(this.worldObjectParent));
 	}
 
 	public void addEntrance(Entrance entrance)
@@ -133,9 +150,33 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 				throw new IllegalArgumentException("Entrance can only be placed on the edges of blueprints");
 			}
 
+			entrance.setWorldObjectParent(this.worldObjectParent);
+
 			this.entrances.add(entrance);
 
 			this.listeners.forEach(o -> o.onAddEntrance(entrance));
+		}
+		finally
+		{
+			w.unlock();
+		}
+	}
+
+	public boolean removeEntrance(int id)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			Entrance entrance = this.entrances.remove(id);
+
+			if (entrance != null)
+			{
+				this.listeners.forEach(o -> o.onRemoveEntrance(entrance));
+			}
+
+			return entrance != null;
 		}
 		finally
 		{

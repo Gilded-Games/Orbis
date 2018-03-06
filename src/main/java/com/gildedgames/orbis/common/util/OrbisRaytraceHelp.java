@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.util;
 
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
@@ -50,6 +51,20 @@ public class OrbisRaytraceHelp
 			Blueprint blueprint = (Blueprint) shape;
 
 			return blueprint.findIntersectingSchedule(pos);
+		}
+
+		return null;
+	};
+
+	public static final LocateWithPos<Entrance> ENTRANCE_LOCATOR = (world, pos) ->
+	{
+		IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+
+		if (shape instanceof Blueprint)
+		{
+			Blueprint blueprint = (Blueprint) shape;
+
+			return blueprint.findIntersectingEntrance(pos);
 		}
 
 		return null;

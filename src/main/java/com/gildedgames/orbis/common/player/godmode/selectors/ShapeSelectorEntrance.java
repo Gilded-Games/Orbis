@@ -9,13 +9,10 @@ import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.client.godmode.GodPowerEntranceClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerEntrance;
 import com.gildedgames.orbis.common.util.ColoredRegion;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddEntrance;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,31 +27,37 @@ public class ShapeSelectorEntrance implements IShapeSelector
 	}
 
 	@Override
-	public boolean isSelectorActive(final PlayerOrbis playerOrbis, final World world)
+	public boolean canStartSelectingFrom(PlayerOrbis playerOrbis, BlockPos pos)
 	{
-		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+		World world = playerOrbis.getWorld();
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 		final IWorldObjectGroup group = manager.getGroup(0);
 
-		final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
+		Blueprint b = group.getIntersectingShape(Blueprint.class, pos);
 
-		Blueprint b = group.getIntersectingShape(Blueprint.class, endPos);
-
-		if (b == null)
+		if (b != null)
 		{
-			return false;
+			boolean up = pos.getY() == b.getMax().getY();
+			boolean down = pos.getY() == b.getMin().getY();
+			boolean north = pos.getX() == b.getMin().getX();
+			boolean south = pos.getX() == b.getMax().getX();
+			boolean east = pos.getZ() == b.getMax().getZ();
+			boolean west = pos.getZ() == b.getMin().getZ();
+
+			if (up || down || north || south || east || west)
+			{
+				return b.findIntersectingEntrance(pos) == null;
+			}
 		}
 
-		boolean north = endPos.getX() == b.getMin().getX();
-		boolean south = endPos.getX() == b.getMax().getX();
-		boolean east = endPos.getZ() == b.getMax().getZ();
-		boolean west = endPos.getZ() == b.getMin().getZ();
-		boolean up = endPos.getY() == b.getMax().getY();
-		boolean down = endPos.getY() == b.getMin().getY();
+		return false;
+	}
 
-		return (north || south || east || west || up || down) && (held.isEmpty() || !(held.getItem() == ItemsOrbis.block_chunk
-				|| held.getItem() == ItemsOrbis.blueprint));
+	@Override
+	public boolean isSelectorActive(final PlayerOrbis playerOrbis, final World world)
+	{
+		return true;
 	}
 
 	@Override
@@ -81,7 +84,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 
 				if (north || south || east || west || up || down)
 				{
-					return true;
+					return b.findIntersectingEntrance(shape) == null;
 				}
 			}
 		}

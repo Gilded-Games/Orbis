@@ -105,6 +105,51 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		}
 	}
 
+	public Entrance findIntersectingEntrance(IShape s)
+	{
+		for (Entrance e : this.getData().entrances())
+		{
+			int minX = e.getBounds().getMin().getX() + this.getPos().getX();
+			int minY = e.getBounds().getMin().getY() + this.getPos().getY();
+			int minZ = e.getBounds().getMin().getZ() + this.getPos().getZ();
+
+			int maxX = minX + e.getBounds().getWidth() - 1;
+			int maxY = minY + e.getBounds().getHeight() - 1;
+			int maxZ = minZ + e.getBounds().getLength() - 1;
+
+			IRegion r = s.getBoundingBox();
+
+			if (maxX >= r.getBoundingBox().getMin().getX() && minX <= r.getMax().getX() && maxY >= r.getMin().getY() && minY <= r.getMax().getY()
+					&& maxZ >= r.getMin().getZ() && minZ <= r.getMax().getZ())
+			{
+				return e;
+			}
+		}
+
+		return null;
+	}
+
+	public Entrance findIntersectingEntrance(BlockPos pos)
+	{
+		for (Entrance e : this.getData().entrances())
+		{
+			int minX = e.getBounds().getMin().getX() + this.getPos().getX();
+			int minY = e.getBounds().getMin().getY() + this.getPos().getY();
+			int minZ = e.getBounds().getMin().getZ() + this.getPos().getZ();
+
+			int maxX = minX + e.getBounds().getWidth() - 1;
+			int maxY = minY + e.getBounds().getHeight() - 1;
+			int maxZ = minZ + e.getBounds().getLength() - 1;
+
+			if (pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY && pos.getZ() >= minZ && pos.getZ() <= maxZ)
+			{
+				return e;
+			}
+		}
+
+		return null;
+	}
+
 	public ISchedule findIntersectingSchedule(BlockPos pos)
 	{
 		if (this.getCurrentScheduleLayer() == null)

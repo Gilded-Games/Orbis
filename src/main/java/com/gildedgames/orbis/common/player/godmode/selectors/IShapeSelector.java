@@ -10,6 +10,11 @@ import javax.annotation.Nullable;
 public interface IShapeSelector
 {
 
+	default boolean canStartSelectingFrom(PlayerOrbis playerOrbis, BlockPos pos)
+	{
+		return true;
+	}
+
 	boolean isSelectorActive(PlayerOrbis playerOrbis, World world);
 
 	boolean canSelectShape(PlayerOrbis playerOrbis, IShape shape, World world);

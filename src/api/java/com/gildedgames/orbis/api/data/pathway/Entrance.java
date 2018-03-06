@@ -4,16 +4,20 @@ import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
+import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.IWorldObjectChild;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-public class Entrance implements NBT, IColored
+public class Entrance implements NBT, IColored, IWorldObjectChild
 {
 	private IMutableRegion bounds;
 
 	private PathwayData toConnectTo;
 
 	private EnumFacing[] facings;
+
+	private IWorldObject parent;
 
 	private Entrance()
 	{
@@ -74,5 +78,17 @@ public class Entrance implements NBT, IColored
 	public int getColor()
 	{
 		return 0xd38dc7;
+	}
+
+	@Override
+	public IWorldObject getWorldObjectParent()
+	{
+		return this.parent;
+	}
+
+	@Override
+	public void setWorldObjectParent(IWorldObject parent)
+	{
+		this.parent = parent;
 	}
 }

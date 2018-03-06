@@ -5,7 +5,9 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.google.common.collect.Lists;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -84,7 +86,30 @@ public class RenderEntrance implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
+		PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
 
+		if (playerOrbis.getSelectedEntrance() == this.entrance && playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getEntrancePower())
+		{
+			boolean refresh = this.renderShape.boxAlpha == 0.25F;
+
+			this.renderShape.boxAlpha = 0.5F;
+
+			if (refresh)
+			{
+				this.renderShape.refresh();
+			}
+		}
+		else
+		{
+			boolean refresh = this.renderShape.boxAlpha == 0.5F;
+
+			this.renderShape.boxAlpha = 0.25F;
+
+			if (refresh)
+			{
+				this.renderShape.refresh();
+			}
+		}
 	}
 
 	@Override

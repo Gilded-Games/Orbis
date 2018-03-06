@@ -110,7 +110,7 @@ public class SelectionInputDragged implements ISelectionInput
 				return true;
 			}
 		}
-		else if (selector.isSelectorActive(playerOrbis, playerOrbis.getWorld()))
+		else if (selector.isSelectorActive(playerOrbis, playerOrbis.getWorld()) && selector.canStartSelectingFrom(playerOrbis, pos))
 		{
 			this.selectPos = pos;
 

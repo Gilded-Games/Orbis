@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.capabilities.player;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -65,6 +66,8 @@ public class PlayerOrbis implements IPlayerOrbis
 	private IFrameworkNode selectedNode;
 
 	private ISchedule selectedSchedule;
+
+	private Entrance selectedEntrance;
 
 	private OrbisInstance orbisInstance;
 
@@ -260,6 +263,11 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.selectedSchedule;
 	}
 
+	public Entrance getSelectedEntrance()
+	{
+		return this.selectedEntrance;
+	}
+
 	public void setDeveloperMode(final boolean flag)
 	{
 		this.developerModeEnabled = flag;
@@ -316,6 +324,7 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.selectedRegion = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.WORLD_OBJECT_LOCATOR);
 		this.selectedNode = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.FRAMEWORK_NODE_LOCATOR);
 		this.selectedSchedule = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.SCHEDULE_LOCATOR);
+		this.selectedEntrance = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.ENTRANCE_LOCATOR);
 
 		for (final PlayerOrbisModule module : this.modules)
 		{

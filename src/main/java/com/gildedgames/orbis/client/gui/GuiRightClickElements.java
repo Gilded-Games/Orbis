@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.block.BlockFilter;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
@@ -13,6 +14,7 @@ import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketFilterShape;
 import com.gildedgames.orbis.common.network.packets.PacketSetBlockDataContainerInHand;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveEntrance;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSchedule;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
@@ -45,6 +47,18 @@ public class GuiRightClickElements
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
 				OrbisAPI.network().sendPacketToServer(new PacketRemoveSchedule(blueprint, schedule));
+			}
+		};
+	}
+
+	public static DropdownElement remove(final Blueprint blueprint, Entrance entrance)
+	{
+		return new DropdownElement(new TextComponentString("Remove"))
+		{
+			@Override
+			public void onClick(final GuiDropdownList list, final EntityPlayer player)
+			{
+				OrbisAPI.network().sendPacketToServer(new PacketRemoveEntrance(blueprint, entrance));
 			}
 		};
 	}
