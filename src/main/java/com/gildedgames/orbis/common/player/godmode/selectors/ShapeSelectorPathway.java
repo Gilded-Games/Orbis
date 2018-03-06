@@ -1,13 +1,10 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
-import com.gildedgames.orbis.api.core.CreationData;
-import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionPathway;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,18 +40,6 @@ public class ShapeSelectorPathway implements IShapeSelector
 			return;
 		}
 
-		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
-
-		GodPowerPathway p = playerOrbis.powers().getPathwayPower();
-
-		p.processPathway(playerOrbis, start, end);
-
-		primer.create(null, p.getInitialNode().getData(),
-				new CreationData(world, playerOrbis.getEntity()).pos(p.getInitialNode().getMin()).rotation(p.getInitialNode().getRotation()).placesAir(true));
-
-		for (PathwayNode n : p.getStepAStar().currentState().fullPath())
-		{
-			primer.create(null, n.getData(), new CreationData(world, playerOrbis.getEntity()).pos(n.getMin()).rotation(n.getRotation()).placesAir(true));
-		}
+		playerOrbis.getWorldActionLog().track(world, new WorldActionPathway(start, end));
 	}
 }

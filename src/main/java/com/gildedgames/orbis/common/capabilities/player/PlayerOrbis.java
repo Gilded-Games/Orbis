@@ -18,6 +18,9 @@ import com.gildedgames.orbis.common.player.modules.PlayerSelectionInputModule;
 import com.gildedgames.orbis.common.player.modules.PlayerSelectionTypesModule;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
+import com.gildedgames.orbis.common.world_actions.IWorldActionLog;
+import com.gildedgames.orbis.common.world_actions.WorldActionLog;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogClient;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,6 +67,10 @@ public class PlayerOrbis implements IPlayerOrbis
 	private ISchedule selectedSchedule;
 
 	private OrbisInstance orbisInstance;
+
+	private IWorldActionLog worldActionLog = new WorldActionLog(this);
+
+	private IWorldActionLog worldActionLogClient = new WorldActionLogClient();
 
 	public PlayerOrbis()
 	{
@@ -130,6 +137,16 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.observers.remove(observer);
 	}
 
+	public IWorldActionLog getWorldActionLog()
+	{
+		if (this.getWorld().isRemote)
+		{
+			return this.worldActionLogClient;
+		}
+
+		return this.worldActionLog;
+	}
+
 	/**
 	 * Syncs the client and watching entities completely.
 	 */
@@ -158,6 +175,11 @@ public class PlayerOrbis implements IPlayerOrbis
 	public void onTeleport(final PlayerEvent.PlayerChangedDimensionEvent event)
 	{
 		this.sendFullUpdate();
+
+		if (!this.getWorld().isRemote)
+		{
+			this.getWorldActionLog().clear();
+		}
 	}
 
 	public void onPlayerBeginWatching(final IPlayerOrbis other)

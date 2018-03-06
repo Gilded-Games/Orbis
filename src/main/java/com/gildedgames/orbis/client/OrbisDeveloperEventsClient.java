@@ -26,6 +26,7 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -178,6 +179,18 @@ public class OrbisDeveloperEventsClient
 					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 				}
 
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
+				{
+					if (OrbisKeyBindings.keyBindRedo.isPressed())
+					{
+						playerOrbis.getWorldActionLog().redo(mc.world);
+					}
+					else if (OrbisKeyBindings.keyBindUndo.isPressed())
+					{
+						playerOrbis.getWorldActionLog().undo(mc.world);
+					}
+				}
+
 				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
 						&& OrbisKeyBindings.keyBindCopy.isPressed())
 				{
@@ -196,7 +209,7 @@ public class OrbisDeveloperEventsClient
 					{
 						final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewDeleteLayer(mc.player.getHeldItemMainhand()));
 
-						OrbisAPI.network().sendPacketToServer(new PacketFilterShape(select.getSelectedRegion(), filter));
+						playerOrbis.getWorldActionLog().track(mc.world, new WorldActionFilter(select.getSelectedRegion().getBoundingBox(), filter, false));
 					}
 				}
 

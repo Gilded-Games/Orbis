@@ -1,12 +1,11 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.util.CreationDataOrbis;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -57,10 +56,6 @@ public class ShapeSelectorFilter implements IShapeSelector
 
 		final BlockFilter filter = this.filterSupplier.apply(playerOrbis.getEntity());
 
-		final ICreationData creationData = new CreationDataOrbis(world, playerOrbis.getEntity());
-
-		creationData.schedules(playerOrbis.powers().isScheduling());
-
-		filter.apply(selectedShape, creationData, true);
+		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
 	}
 }

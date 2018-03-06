@@ -31,6 +31,7 @@ import com.gildedgames.orbis.common.tiles.OrbisTileEntities;
 import com.gildedgames.orbis.common.util.ColoredRegion;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
+import com.gildedgames.orbis.common.world_actions.impl.*;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
@@ -244,6 +245,12 @@ public class OrbisCore implements IOrbisServicesListener
 		s.register(10, Framework.class, new Instantiator<>(Framework.class));
 		s.register(11, BlueprintNode.class, new Instantiator<>(BlueprintNode.class));
 		s.register(12, OrbisInstance.class, new Instantiator<>(OrbisInstance.class));
+		s.register(13, WorldActionPathway.class, new Instantiator<>(WorldActionPathway.class));
+		s.register(14, WorldActionAddWorldObject.class, new Instantiator<>(WorldActionAddWorldObject.class));
+		s.register(15, WorldActionAddEntrance.class, new Instantiator<>(WorldActionAddEntrance.class));
+		s.register(16, WorldActionAddSchedule.class, new Instantiator<>(WorldActionAddSchedule.class));
+
+		s.register(13, WorldActionFilter.class, new Instantiator<>(WorldActionFilter.class));
 
 		OrbisAPI.services().io().register(s);
 	}

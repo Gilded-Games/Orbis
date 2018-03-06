@@ -1,12 +1,13 @@
 package com.gildedgames.orbis.api.data.pathway;
 
+import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-public class Entrance implements NBT
+public class Entrance implements NBT, IColored
 {
 	private IMutableRegion bounds;
 
@@ -67,5 +68,11 @@ public class Entrance implements NBT
 			String name = names[i];
 			this.facings[i] = EnumFacing.valueOf(name);
 		}
+	}
+
+	@Override
+	public int getColor()
+	{
+		return 0xd38dc7;
 	}
 }

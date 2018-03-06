@@ -13,6 +13,7 @@ import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerEntrance;
 import com.gildedgames.orbis.common.util.ColoredRegion;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddEntrance;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -111,7 +112,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 
 			ColoredRegion entrance = new ColoredRegion(r).setColor(GodPowerEntranceClient.SHAPE_COLOR);
 
-			b.getData().addEntrance(new Entrance(entrance, null, facings));
+			playerOrbis.getWorldActionLog().track(world, new WorldActionAddEntrance(b, new Entrance(entrance, null, facings)));
 		}
 	}
 }

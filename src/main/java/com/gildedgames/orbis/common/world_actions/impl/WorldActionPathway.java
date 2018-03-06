@@ -1,0 +1,102 @@
+package com.gildedgames.orbis.common.world_actions.impl;
+
+import com.gildedgames.orbis.api.block.BlockDataContainer;
+import com.gildedgames.orbis.api.core.CreationData;
+import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode;
+import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayProblem;
+import com.gildedgames.orbis.api.data.framework.generation.searching.StepAStar;
+import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.api.processing.DataPrimer;
+import com.gildedgames.orbis.api.util.BlueprintHelper;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
+import com.gildedgames.orbis.common.world_actions.IWorldAction;
+import com.google.common.collect.Lists;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
+
+public class WorldActionPathway implements IWorldAction
+{
+
+	private BlockPos start, end;
+
+	private List<Pair<BlockPos, BlockDataContainer>> oldContent = Lists.newArrayList();
+
+	private PathwayProblem problem;
+
+	private StepAStar<PathwayNode> stepAStar;
+
+	private BlueprintRegion initialNode;
+
+	private WorldActionPathway()
+	{
+
+	}
+
+	public WorldActionPathway(BlockPos start, BlockPos end)
+	{
+		this.start = start;
+		this.end = end;
+	}
+
+	@Override
+	public void redo(PlayerOrbis player, World world)
+	{
+		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+
+		if (this.problem == null)
+		{
+			GodPowerPathway p = player.powers().getPathwayPower();
+
+			p.processPathway(player, this.start, this.end);
+
+			this.problem = p.getPathwayProblem();
+			this.stepAStar = p.getStepAStar();
+			this.initialNode = p.getInitialNode();
+		}
+
+		this.oldContent.clear();
+
+		for (PathwayNode n : this.stepAStar.currentState().fullPath())
+		{
+			this.oldContent.add(Pair.of(n.getMin(), BlueprintHelper.fetchBlocksInside(n, world)));
+
+			primer.create(null, n.getData(), new CreationData(world, player.getEntity()).pos(n.getMin()).rotation(n.getRotation()).placesAir(true));
+		}
+	}
+
+	@Override
+	public void undo(PlayerOrbis player, World world)
+	{
+		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+
+		for (Pair<BlockPos, BlockDataContainer> pair : this.oldContent)
+		{
+			primer.create(pair.getValue(), new CreationData(world).pos(pair.getKey()));
+		}
+	}
+
+	@Override
+	public void write(NBTTagCompound tag)
+	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+
+		funnel.setBlockPos("s", this.start);
+		funnel.setBlockPos("e", this.end);
+	}
+
+	@Override
+	public void read(NBTTagCompound tag)
+	{
+		NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.start = funnel.get("s");
+		this.end = funnel.get("e");
+	}
+}

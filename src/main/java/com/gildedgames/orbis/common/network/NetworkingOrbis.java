@@ -10,6 +10,10 @@ import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.projects.*;
+import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWorldActions;
+import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
+import com.gildedgames.orbis.common.network.packets.world_actions.PacketTrackWorldAction;
+import com.gildedgames.orbis.common.network.packets.world_actions.PacketUndoWorldAction;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityTracker;
@@ -85,6 +89,15 @@ public class NetworkingOrbis implements INetworkOrbis
 		instance.registerMessage(PacketSetScheduleLayerInfo.HandlerServer.class, PacketSetScheduleLayerInfo.class, discriminant++,
 				Side.SERVER);
 		instance.registerMessage(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class, discriminant++,
+				Side.SERVER);
+
+		instance.registerMessage(PacketTrackWorldAction.HandlerServer.class, PacketTrackWorldAction.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketRedoWorldAction.HandlerServer.class, PacketRedoWorldAction.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketUndoWorldAction.HandlerServer.class, PacketUndoWorldAction.class, discriminant++,
+				Side.SERVER);
+		instance.registerMessage(PacketClearWorldActions.HandlerServer.class, PacketClearWorldActions.class, discriminant++,
 				Side.SERVER);
 
 		// C L I E N T

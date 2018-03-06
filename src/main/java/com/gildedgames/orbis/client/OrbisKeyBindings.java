@@ -22,6 +22,10 @@ public class OrbisKeyBindings
 
 	public static KeyBinding keyBindCopy = new KeyBinding("keybindings.copy", Keyboard.KEY_C, "key.categories.misc");
 
+	public static KeyBinding keyBindUndo = new KeyBinding("keybindings.undo", Keyboard.KEY_Z, "key.categories.misc");
+
+	public static KeyBinding keyBindRedo = new KeyBinding("keybindings.redo", Keyboard.KEY_Y, "key.categories.misc");
+
 	public static KeyBinding keyBindIncreaseReach = new KeyBinding("keybindings.increaseReach", Keyboard.KEY_ADD, "key.categories.misc");
 
 	public static KeyBinding keyBindDecreaseReach = new KeyBinding("keybindings.decreaseReach", Keyboard.KEY_SUBTRACT, "key.categories.misc");
@@ -36,6 +40,8 @@ public class OrbisKeyBindings
 		ClientRegistry.registerKeyBinding(keyBindCopy);
 		ClientRegistry.registerKeyBinding(keyBindIncreaseReach);
 		ClientRegistry.registerKeyBinding(keyBindDecreaseReach);
+		ClientRegistry.registerKeyBinding(keyBindUndo);
+		ClientRegistry.registerKeyBinding(keyBindRedo);
 	}
 
 }

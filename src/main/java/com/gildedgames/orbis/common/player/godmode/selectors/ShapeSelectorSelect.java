@@ -12,8 +12,8 @@ import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddSchedule;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -114,15 +114,7 @@ public class ShapeSelectorSelect implements IShapeSelector
 
 				ScheduleRegion scheduleRegion = new ScheduleRegion("", r);
 
-				if (world.getMinecraftServer().isDedicatedServer())
-				{
-					OrbisAPI.network()
-							.sendPacketToDimension(new PacketAddSchedule(b, scheduleRegion, b.getCurrentScheduleLayerIndex()), world.provider.getDimension());
-				}
-				else
-				{
-					b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleRegion);
-				}
+				playerOrbis.getWorldActionLog().track(world, new WorldActionAddSchedule(b, scheduleRegion, b.getCurrentScheduleLayerIndex()));
 			}
 		}
 		else

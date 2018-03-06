@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.api.data.blueprint;
 
-import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.core.PlacedEntity;
@@ -14,6 +13,7 @@ import com.gildedgames.orbis.api.data.region.IRotateable;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.processing.DataPrimer;
+import com.gildedgames.orbis.api.util.BlueprintHelper;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldObjectChild;
@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -325,24 +324,6 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		this.entrances = funnel.getList("entrances");
 	}
 
-	public void fetchBlocksInside(final IShape shape, final World world, final Rotation rotation)
-	{
-		final BlockDataContainer container = new BlockDataContainer(shape.getBoundingBox());
-
-		final BlockPos min = shape.getBoundingBox().getMin();
-
-		for (final BlockPos pos : shape.createShapeData())
-		{
-			final BlockData blockData = new BlockData().getDataFrom(pos, world);
-
-			final BlockPos translated = pos.add(-min.getX(), -min.getY(), -min.getZ());
-
-			container.set(blockData, translated);
-		}
-
-		this.dataContainer = container;
-	}
-
 	@Override
 	public void preSaveToDisk(final IWorldObject object)
 	{
@@ -358,7 +339,7 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 				rotation = rotateable.getRotation();
 			}
 
-			this.fetchBlocksInside(shape, object.getWorld(), rotation);
+			this.dataContainer = BlueprintHelper.fetchBlocksInside(shape, object.getWorld());
 		}
 	}
 

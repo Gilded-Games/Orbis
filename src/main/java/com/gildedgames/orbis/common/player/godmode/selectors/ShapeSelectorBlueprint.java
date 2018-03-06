@@ -1,12 +1,11 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
-import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddWorldObject;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -41,19 +40,11 @@ public class ShapeSelectorBlueprint implements IShapeSelector
 	@Override
 	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		final Blueprint blueprint = new Blueprint(world, selectedShape.getBoundingBox());
-
 		if (!world.isRemote)
 		{
-			group.addObject(blueprint);
+			final Blueprint blueprint = new Blueprint(world, selectedShape.getBoundingBox());
 
-			if (world.getMinecraftServer().isDedicatedServer())
-			{
-				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(world, group, blueprint), world.provider.getDimension());
-			}
+			playerOrbis.getWorldActionLog().track(world, new WorldActionAddWorldObject(blueprint));
 		}
 	}
 }

@@ -1,9 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.api.data.pathway.Entrance;
-import com.gildedgames.orbis.api.data.region.IColored;
 import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.util.mc.BlockUtil;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
@@ -107,19 +105,9 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		try
 		{
-			Region r = new Region(entrance.getBounds());
-			r.add(this.blueprint.getPos().getX(), this.blueprint.getPos().getY(), this.blueprint.getPos().getZ());
-			RenderShape shape = new RenderShape(r);
+			RenderEntrance render = new RenderEntrance(this.blueprint, entrance);
 
-			shape.useCustomColors = true;
-
-			if (entrance.getBounds() instanceof IColored)
-			{
-				shape.colorBorder = ((IColored) entrance.getBounds()).getColor();
-				shape.colorGrid = ((IColored) entrance.getBounds()).getColor();
-			}
-
-			this.subRenderers.add(shape);
+			this.subRenderers.add(render);
 		}
 		finally
 		{
