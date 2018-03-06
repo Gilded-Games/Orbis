@@ -1,28 +1,32 @@
 package com.gildedgames.orbis.common.world_actions;
 
+import com.gildedgames.orbis.api.util.FixedStack;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.world.World;
 
-import java.util.Stack;
-
 public class WorldActionLog implements IWorldActionLog
 {
+	private int historySize;
 
 	/**
 	 * The actions that have been created
 	 */
-	private Stack<IWorldAction> past = new Stack<>();
+	private FixedStack<IWorldAction> past;
 
 	/**
 	 * The actions that have been called with "undo"
 	 */
-	private Stack<IWorldAction> future = new Stack<>();
+	private FixedStack<IWorldAction> future;
 
 	private PlayerOrbis playerOrbis;
 
-	public WorldActionLog(PlayerOrbis playerOrbis)
+	public WorldActionLog(PlayerOrbis playerOrbis, int historySize)
 	{
 		this.playerOrbis = playerOrbis;
+		this.historySize = historySize;
+
+		this.past = new FixedStack<>(this.historySize);
+		this.future = new FixedStack<>(this.historySize);
 	}
 
 	/**
@@ -34,6 +38,7 @@ public class WorldActionLog implements IWorldActionLog
 	public void track(World world, IWorldAction action)
 	{
 		this.future.clear();
+
 		this.past.push(action);
 
 		action.redo(this.playerOrbis, world);
@@ -42,7 +47,7 @@ public class WorldActionLog implements IWorldActionLog
 	@Override
 	public void undo(World world)
 	{
-		if (!this.past.isEmpty() && this.past.peek() != null)
+		if (!this.past.isEmpty())
 		{
 			IWorldAction action = this.past.pop();
 
@@ -55,7 +60,7 @@ public class WorldActionLog implements IWorldActionLog
 	@Override
 	public void redo(World world)
 	{
-		if (!this.future.isEmpty() && this.future.peek() != null)
+		if (!this.future.isEmpty())
 		{
 			IWorldAction action = this.future.pop();
 
