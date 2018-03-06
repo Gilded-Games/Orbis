@@ -20,7 +20,7 @@ public class FileNode implements IDirectoryNode
 
 	private final File file;
 
-	private final GuiTexture icon = new GuiTexture(Dim2D.build().area(32).flush(), TEXTURE);
+	private final GuiTexture icon = new GuiTexture(Dim2D.build().area(23).flush(), TEXTURE);
 
 	public FileNode(final File file)
 	{
