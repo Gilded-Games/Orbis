@@ -61,6 +61,10 @@ public class OrbisDeveloperEventsClient
 
 	private static IWorldObject prevSelection;
 
+	private static int prevDim;
+
+	private static boolean prevDimSet;
+
 	@SubscribeEvent()
 	public static void onModelRegistryReady(final ModelRegistryEvent event)
 	{
@@ -338,6 +342,14 @@ public class OrbisDeveloperEventsClient
 		}
 	}
 
+	private static void onClientChangeDimension()
+	{
+		CHUNK_RENDERER_MANAGER.unload();
+		WorldObjectManager manager = WorldObjectManager.get(mc.player.world);
+
+		CHUNK_RENDERER_MANAGER.onReloaded(manager);
+	}
+
 	@SubscribeEvent
 	public static void onClientTick(final TickEvent.ClientTickEvent event)
 	{
@@ -351,6 +363,22 @@ public class OrbisDeveloperEventsClient
 		final World world = FMLClientHandler.instance().getWorldClient();
 
 		final EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
+
+		if (player != null)
+		{
+			if (!prevDimSet)
+			{
+				prevDim = player.dimension;
+				prevDimSet = true;
+			}
+
+			if (player.dimension != prevDim)
+			{
+				prevDim = player.dimension;
+
+				onClientChangeDimension();
+			}
+		}
 
 		if (player != null && player.world != null)
 		{
