@@ -37,6 +37,11 @@ public class WorldActionLog implements IWorldActionLog
 	@Override
 	public void track(World world, IWorldAction action)
 	{
+		if (action == null)
+		{
+			return;
+		}
+
 		this.future.clear();
 
 		this.past.push(action);
@@ -51,9 +56,12 @@ public class WorldActionLog implements IWorldActionLog
 		{
 			IWorldAction action = this.past.pop();
 
-			action.undo(this.playerOrbis, world);
+			if (action != null)
+			{
+				action.undo(this.playerOrbis, world);
 
-			this.future.push(action);
+				this.future.push(action);
+			}
 		}
 	}
 
@@ -64,9 +72,12 @@ public class WorldActionLog implements IWorldActionLog
 		{
 			IWorldAction action = this.future.pop();
 
-			action.redo(this.playerOrbis, world);
+			if (action != null)
+			{
+				action.redo(this.playerOrbis, world);
 
-			this.past.push(action);
+				this.past.push(action);
+			}
 		}
 	}
 

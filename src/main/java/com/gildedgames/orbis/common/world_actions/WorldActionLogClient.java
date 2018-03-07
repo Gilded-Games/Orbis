@@ -12,6 +12,11 @@ public class WorldActionLogClient implements IWorldActionLog
 	@Override
 	public void track(World world, IWorldAction action)
 	{
+		if (action == null)
+		{
+			return;
+		}
+
 		OrbisAPI.network().sendPacketToServer(new PacketTrackWorldAction(action));
 	}
 
