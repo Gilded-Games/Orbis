@@ -284,7 +284,7 @@ public class DataPrimer
 		{
 			for (BlockFilter filter : layer.getFilterRecord().getData())
 			{
-				filter.apply(boundingBox, layer.getFilterRecord().getPositions(filter), data, layer.getOptions().choosesPerBlock());
+				filter.apply(boundingBox, layer.getFilterRecord().getPositions(filter), data, layer.getOptions());
 			}
 
 			layer.getScheduleRecord().getSchedules(ISchedule.class).forEach(s -> s.onGenerateLayer(this, data));

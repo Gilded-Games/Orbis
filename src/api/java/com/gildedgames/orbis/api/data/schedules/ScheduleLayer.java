@@ -25,7 +25,7 @@ public class ScheduleLayer implements IScheduleLayer
 
 	private int layerId;
 
-	private ILayerOptions options = new LayerOptions();
+	private IFilterOptions options = new FilterOptions();
 
 	private ScheduleLayer()
 	{
@@ -58,7 +58,7 @@ public class ScheduleLayer implements IScheduleLayer
 	}
 
 	@Override
-	public ILayerOptions getOptions()
+	public IFilterOptions getOptions()
 	{
 		return this.options;
 	}
@@ -128,7 +128,7 @@ public class ScheduleLayer implements IScheduleLayer
 
 		this.scheduleRecord = funnel.getWithDefault("scheduleRecord", this::getScheduleRecord);
 
-		this.options = funnel.getWithDefault("options", LayerOptions::new);
+		this.options = funnel.getWithDefault("options", FilterOptions::new);
 
 		this.displayName = tag.getString("displayName");
 		this.layerId = tag.getInteger("layerId");

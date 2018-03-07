@@ -12,7 +12,7 @@ public interface IScheduleLayer extends NBT, IWorldObjectChild
 
 	boolean unlisten(IScheduleLayerListener listener);
 
-	ILayerOptions getOptions();
+	IFilterOptions getOptions();
 
 	String getDisplayName();
 

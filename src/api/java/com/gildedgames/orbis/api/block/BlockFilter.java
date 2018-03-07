@@ -2,6 +2,7 @@ package com.gildedgames.orbis.api.block;
 
 import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.IFilterOptions;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
 import com.google.common.collect.Lists;
@@ -59,35 +60,35 @@ public class BlockFilter implements NBT
 		return sample;
 	}
 
-	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData options, boolean choosePerBlock)
+	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData creationData, IFilterOptions options)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(positions, container, options, choosePerBlock);
+				layer.apply(positions, container, creationData, options);
 			}
 		}
 	}
 
-	public void apply(IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions, final ICreationData options, boolean choosePerBlock)
+	public void apply(IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions, final ICreationData creationData, IFilterOptions options)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(this, boundingBox, positions, options, choosePerBlock);
+				layer.apply(this, boundingBox, positions, creationData, options);
 			}
 		}
 	}
 
-	public void apply(final IShape shape, final ICreationData options, boolean choosePerBlock)
+	public void apply(final IShape shape, final ICreationData creationData, IFilterOptions options)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(this, shape, options, choosePerBlock);
+				layer.apply(this, shape, creationData, options);
 			}
 		}
 	}

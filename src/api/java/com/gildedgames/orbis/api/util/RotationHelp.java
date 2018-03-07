@@ -250,8 +250,34 @@ public class RotationHelp
 		final int width = getWidth(dimensions, rotation);
 		final int length = getLength(dimensions, rotation);
 
-		final BlockPos min = new BlockPos(centerX - width / 2, centerY, centerZ - length / 2);
-		final BlockPos max = new BlockPos(min.getX() + width - 1, min.getY() + dimensions.getHeight() - 1, min.getZ() + length - 1);
+		final int roundingX = getRounding(width);
+		final int roundingZ = getRounding(length);
+
+		int modX = 0;
+		int modZ = 0;
+
+		final boolean clockwise = getGoClockwise(rotation, Rotation.NONE);
+		int rotAmount = Math.abs(getRotationAmount(rotation, Rotation.NONE));
+
+		/*if (rotAmount == 1)
+		{
+			if (clockwise)
+			{
+				modZ = -roundingZ;
+			}
+			else
+			{
+				modX = -roundingX;
+			}
+		}
+		else
+		{
+			modX = -roundingX;
+			modZ = -roundingZ;
+		}*/
+
+		final BlockPos min = new BlockPos((centerX - width / 2) + modX, centerY, (centerZ - length / 2) + modZ);
+		final BlockPos max = new BlockPos((min.getX() + width - 1), min.getY() + dimensions.getHeight() - 1, (min.getZ() + length - 1));
 
 		return new Region(min, max);
 	}

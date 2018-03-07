@@ -3,6 +3,7 @@ package com.gildedgames.orbis.api.block;
 import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.IFilterOptions;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolder;
 import com.gildedgames.orbis.api.processing.BlockAccessBlockDataContainer;
 import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
@@ -126,16 +127,16 @@ public class BlockFilterLayer implements NBT
 		return replacementBlock.getBlockState();
 	}
 
-	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData options, boolean choosePerBlock)
+	public void apply(Iterable<BlockPos.MutableBlockPos> positions, BlockDataContainer container, ICreationData creationData, IFilterOptions options)
 	{
-		World world = options.getWorld();
+		World world = creationData.getWorld();
 
 		if (this.condition == null)
 		{
 			this.condition = new DataCondition();
 		}
 
-		if (!this.condition.isMet(options.getRandom(), world) || this.replacementBlocks.isEmpty())
+		if (!this.condition.isMet(creationData.getRandom(), world) || this.replacementBlocks.isEmpty())
 		{
 			return;
 		}
@@ -146,9 +147,9 @@ public class BlockFilterLayer implements NBT
 
 		BlockDataWithConditions replacementBlock = null;
 
-		if (!choosePerBlock)
+		if (!options.choosesPerBlock())
 		{
-			replacementBlock = this.getRandom(options.getRandom(), world);
+			replacementBlock = this.getRandom(creationData.getRandom(), world);
 		}
 
 		for (final BlockPos.MutableBlockPos pos : positions)
@@ -157,49 +158,49 @@ public class BlockFilterLayer implements NBT
 
 			state = access.getBlockState(pos);
 
-			if (!this.getFilterType().filter(state, this.requiredBlocks, world, options.getRandom()))
+			if (!this.getFilterType().filter(state, this.requiredBlocks, world, creationData.getRandom()))
 			{
 				continue;
 			}
 
-			if (choosePerBlock)
+			if (options.choosesPerBlock())
 			{
-				replacementBlock = this.getRandom(options.getRandom(), world);
+				replacementBlock = this.getRandom(creationData.getRandom(), world);
 			}
 
-			if (pos.getY() >= 256 || replacementBlock == null || !replacementBlock.getReplaceCondition().isMet(options.getRandom(), world))
-			{
-				continue;
-			}
-
-			if (!options.shouldCreate(replacementBlock, pos))
+			if (pos.getY() >= 256 || replacementBlock == null || !replacementBlock.getReplaceCondition().isMet(creationData.getRandom(), world))
 			{
 				continue;
 			}
 
-			primer.create(replacementBlock, pos.toImmutable(), options);
+			if (!creationData.shouldCreate(replacementBlock, pos))
+			{
+				continue;
+			}
+
+			primer.create(replacementBlock, pos.toImmutable(), creationData);
 		}
 	}
 
-	public void apply(final BlockFilter parentFilter, final IShape shape, final ICreationData options, boolean choosePerBlock)
+	public void apply(final BlockFilter parentFilter, final IShape shape, final ICreationData creationData, IFilterOptions options)
 	{
-		this.apply(parentFilter, shape, shape.createShapeData(), options, choosePerBlock);
+		this.apply(parentFilter, shape, shape.createShapeData(), creationData, options);
 	}
 
 	/**
 	 * Applies this layer to a shape
 	 */
 	public void apply(final BlockFilter parentFilter, IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions,
-			final ICreationData options, boolean choosePerBlock)
+			final ICreationData creationData, IFilterOptions options)
 	{
-		World world = options.getWorld();
+		World world = creationData.getWorld();
 
 		if (this.condition == null)
 		{
 			this.condition = new DataCondition();
 		}
 
-		if (!this.condition.isMet(options.getRandom(), world) || this.replacementBlocks.isEmpty())
+		if (!this.condition.isMet(creationData.getRandom(), world) || this.replacementBlocks.isEmpty())
 		{
 			return;
 		}
@@ -207,7 +208,7 @@ public class BlockFilterLayer implements NBT
 		IShape intersect = null;
 		IScheduleLayerHolder holder = null;
 
-		if (options.schedules())
+		if (creationData.schedules())
 		{
 			intersect = WorldObjectUtils.getIntersectingShape(world, boundingBox);
 
@@ -221,9 +222,9 @@ public class BlockFilterLayer implements NBT
 
 		BlockDataWithConditions replacementBlock = null;
 
-		if (!choosePerBlock)
+		if (!options.choosesPerBlock())
 		{
-			replacementBlock = this.getRandom(options.getRandom(), world);
+			replacementBlock = this.getRandom(creationData.getRandom(), world);
 		}
 
 		for (final BlockPos.MutableBlockPos pos : positions)
@@ -241,32 +242,32 @@ public class BlockFilterLayer implements NBT
 
 			final IBlockState state;
 
-			if (!options.schedules())
+			if (!creationData.schedules())
 			{
 				state = world.getBlockState(pos);
 
-				if (!this.getFilterType().filter(state, this.requiredBlocks, world, options.getRandom()))
+				if (!this.getFilterType().filter(state, this.requiredBlocks, world, creationData.getRandom()))
 				{
 					continue;
 				}
 			}
 
-			if (choosePerBlock)
+			if (options.choosesPerBlock())
 			{
-				replacementBlock = this.getRandom(options.getRandom(), world);
+				replacementBlock = this.getRandom(creationData.getRandom(), world);
 			}
 
-			if (pos.getY() >= 256 || replacementBlock == null || !replacementBlock.getReplaceCondition().isMet(options.getRandom(), world))
-			{
-				continue;
-			}
-
-			if (!options.shouldCreate(replacementBlock, pos))
+			if (pos.getY() >= 256 || replacementBlock == null || !replacementBlock.getReplaceCondition().isMet(creationData.getRandom(), world))
 			{
 				continue;
 			}
 
-			if (options.schedules() && holder != null)
+			if (!creationData.shouldCreate(replacementBlock, pos))
+			{
+				continue;
+			}
+
+			if (creationData.schedules() && holder != null)
 			{
 				BlockFilter posFilter = holder.getCurrentScheduleLayer().getFilterRecord().get(schedX, schedY, schedZ);
 
@@ -312,7 +313,7 @@ public class BlockFilterLayer implements NBT
 			}
 			else
 			{
-				primer.create(replacementBlock, pos.add(options.getPos()).toImmutable(), options);
+				primer.create(replacementBlock, pos.add(creationData.getPos()).toImmutable(), creationData);
 			}
 
 			// TODO: Re-enable event

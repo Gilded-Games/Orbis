@@ -2,20 +2,22 @@ package com.gildedgames.orbis.api.data.schedules;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class LayerOptions implements ILayerOptions
+public class FilterOptions implements IFilterOptions
 {
+
+	public static final IFilterOptions CHOOSES_PER_BLOCK = new FilterOptions().setChoosesPerBlock(true);
 
 	private boolean choosesPerBlock;
 
 	private float edgeNoise;
 
-	public LayerOptions()
+	public FilterOptions()
 	{
 
 	}
 
 	@Override
-	public ILayerOptions setChoosesPerBlock(boolean choosesPerBlock)
+	public IFilterOptions setChoosesPerBlock(boolean choosesPerBlock)
 	{
 		this.choosesPerBlock = choosesPerBlock;
 
@@ -35,7 +37,7 @@ public class LayerOptions implements ILayerOptions
 	}
 
 	@Override
-	public ILayerOptions setEdgeNoise(float edgeNoise)
+	public IFilterOptions setEdgeNoise(float edgeNoise)
 	{
 		this.edgeNoise = edgeNoise;
 

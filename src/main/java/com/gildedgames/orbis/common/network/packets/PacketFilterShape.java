@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.network.packets;
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.core.CreationData;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.schedules.FilterOptions;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import io.netty.buffer.ByteBuf;
@@ -63,7 +64,7 @@ public class PacketFilterShape implements IMessage
 			final IShape shape = message.funnel.get(player.world, "shape");
 			final BlockFilter filter = message.funnel.get("filter");
 
-			filter.apply(shape, new CreationData(player.world, player), true);
+			filter.apply(shape, new CreationData(player.world, player), FilterOptions.CHOOSES_PER_BLOCK);
 
 			return null;
 		}
