@@ -55,7 +55,7 @@ public class PacketTeleportOrbis implements IMessage
 			World world = player.getEntityWorld();
 			BlockPos pos = player.getPosition();
 
-			OrbisInstance instance = playerOrbis.getOrbisInstance();
+			final OrbisInstance instance = handler.get(playerOrbis, new BlockPosDimension(pos, world.provider.getDimension()));
 
 			if (player.dimension == instance.getDimensionId())
 			{
@@ -66,9 +66,7 @@ public class PacketTeleportOrbis implements IMessage
 			}
 			else
 			{
-				final OrbisInstance inst = handler.get(playerOrbis, new BlockPosDimension(pos, world.provider.getDimension()));
-
-				handler.teleportToInst((EntityPlayerMP) player, inst);
+				handler.teleportToInst((EntityPlayerMP) player, instance);
 			}
 
 			return null;

@@ -373,10 +373,12 @@ public class PlayerOrbis implements IPlayerOrbis
 			this.developerReach = tag.getDouble("developerReach");
 		}
 
-		this.orbisInstance = funnel.get("orbisInstance");
+		OrbisInstance inst = funnel.get("orbisInstance");
 
-		if (this.orbisInstance != null)
+		if (inst != null)
 		{
+			this.orbisInstance = inst;
+
 			OrbisCore.ORBIS_INSTANCE_HANDLER.registerInstance(this.orbisInstance);
 		}
 
