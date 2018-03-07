@@ -71,7 +71,7 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private OrbisInstance orbisInstance;
 
-	private IWorldActionLog worldActionLog = new WorldActionLog(this, 10);
+	private IWorldActionLog worldActionLog = new WorldActionLog(this, 20);
 
 	private IWorldActionLog worldActionLogClient = new WorldActionLogClient();
 
