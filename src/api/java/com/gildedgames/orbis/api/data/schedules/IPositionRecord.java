@@ -25,6 +25,6 @@ public interface IPositionRecord<DATA> extends IShape, IDimensions
 
 	void unmarkPos(int x, int y, int z);
 
-	Iterable<BlockPos.MutableBlockPos> getPositions(DATA data);
+	Iterable<BlockPos.MutableBlockPos> getPositions(DATA data, BlockPos offset);
 
 }

@@ -5,7 +5,6 @@ import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.core.CreationData;
 import com.gildedgames.orbis.api.core.ICreationData;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.schedules.FilterOptions;
 import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.api.util.BlueprintHelper;
@@ -48,7 +47,7 @@ public class WorldActionFilter implements IWorldAction
 
 		creationData.schedules(this.schedules);
 
-		this.filter.apply(this.shapeToFilter, creationData, FilterOptions.CHOOSES_PER_BLOCK);
+		this.filter.apply(this.shapeToFilter, creationData, player.powers().getFillPower().getFilterOptions());
 	}
 
 	@Override

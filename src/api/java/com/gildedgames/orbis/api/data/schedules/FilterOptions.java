@@ -5,8 +5,6 @@ import net.minecraft.nbt.NBTTagCompound;
 public class FilterOptions implements IFilterOptions
 {
 
-	public static final IFilterOptions CHOOSES_PER_BLOCK = new FilterOptions().setChoosesPerBlock(true);
-
 	private boolean choosesPerBlock;
 
 	private float edgeNoise;

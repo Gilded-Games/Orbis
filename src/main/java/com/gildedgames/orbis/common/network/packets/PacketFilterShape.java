@@ -3,9 +3,9 @@ package com.gildedgames.orbis.common.network.packets;
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.core.CreationData;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.schedules.FilterOptions;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -64,7 +64,7 @@ public class PacketFilterShape implements IMessage
 			final IShape shape = message.funnel.get(player.world, "shape");
 			final BlockFilter filter = message.funnel.get("filter");
 
-			filter.apply(shape, new CreationData(player.world, player), FilterOptions.CHOOSES_PER_BLOCK);
+			filter.apply(shape, new CreationData(player.world, player), PlayerOrbis.get(player).powers().getFillPower().getFilterOptions());
 
 			return null;
 		}

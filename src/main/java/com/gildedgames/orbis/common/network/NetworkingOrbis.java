@@ -103,6 +103,9 @@ public class NetworkingOrbis implements INetworkOrbis
 		instance.registerMessage(PacketRemoveEntrance.HandlerServer.class, PacketRemoveEntrance.class, discriminant++,
 				Side.SERVER);
 
+		instance.registerMessage(PacketSetFilterOptions.HandlerServer.class, PacketSetFilterOptions.class, discriminant++,
+				Side.SERVER);
+
 		// C L I E N T
 		instance.registerMessage(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, discriminant++, Side.CLIENT);
 		instance.registerMessage(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, discriminant++, Side.CLIENT);

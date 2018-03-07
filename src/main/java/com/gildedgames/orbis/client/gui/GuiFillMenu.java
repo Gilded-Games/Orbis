@@ -1,19 +1,20 @@
 package com.gildedgames.orbis.client.gui;
 
+import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.data.schedules.FilterOptions;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.client.gui.data.Text;
-import com.gildedgames.orbis.client.gui.util.GuiAbstractButton;
-import com.gildedgames.orbis.client.gui.util.GuiFactory;
-import com.gildedgames.orbis.client.gui.util.GuiText;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.gui.util.vanilla.GuiContainerCreativePublic;
 import com.gildedgames.orbis.client.gui.util.vanilla.GuiFrameCreative;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
+import com.gildedgames.orbis.common.network.packets.PacketSetFilterOptions;
 import com.gildedgames.orbis.common.util.InputHelper;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -41,9 +42,17 @@ public class GuiFillMenu extends GuiFrameCreative
 
 	private GuiText combineTitle;
 
+	private GuiInputSlider noise;
+
+	private GuiTickBox choosesPerBlock;
+
+	private PlayerOrbis playerOrbis;
+
 	public GuiFillMenu(final EntityPlayer player, final IInventory forgeInventory)
 	{
 		super(player);
+
+		this.playerOrbis = PlayerOrbis.get(player);
 
 		this.setExtraSlots(16);
 
@@ -71,9 +80,21 @@ public class GuiFillMenu extends GuiFrameCreative
 	}
 
 	@Override
+	public void onGuiClosed()
+	{
+		super.onGuiClosed();
+
+		this.playerOrbis.powers().getFillPower().getFilterOptions().setChoosesPerBlock(this.choosesPerBlock.isTicked())
+				.setEdgeNoise(this.noise.getSliderValue());
+
+		OrbisAPI.network().sendPacketToServer(
+				new PacketSetFilterOptions(new FilterOptions().setChoosesPerBlock(this.choosesPerBlock.isTicked()).setEdgeNoise(this.noise.getSliderValue())));
+	}
+
+	@Override
 	public void init()
 	{
-		final Pos2D center = Pos2D.flush((this.width / 2) + 100, this.height / 2);
+		Pos2D center = Pos2D.flush((this.width / 2) + 100, this.height / 2);
 
 		this.forgeButton = GuiFactory.createForgeButton();
 
@@ -90,6 +111,25 @@ public class GuiFillMenu extends GuiFrameCreative
 		this.addChildren(this.combineTitle);
 
 		this.addChildren(this.forgeButton);
+
+		center = InputHelper.getCenter();
+
+		GuiText noiseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(-41).addX(-200).flush(),
+				new Text(new TextComponentString("Edge Noise:"), 1.0F));
+
+		this.noise = new GuiInputSlider(Dim2D.build().height(20).width(60).flush(), 0, 100, 1.0F);
+
+		this.noise.dim().mod().width(80).pos(center).addX(-200).addY(-30).flush();
+
+		this.noise.setSliderValue(this.playerOrbis.powers().getFillPower().getFilterOptions().getEdgeNoise());
+
+		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(0).addX(-200).flush(),
+				new Text(new TextComponentString("Chooses Per Block:"), 1.0F));
+
+		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-200).addY(11).flush(),
+				this.playerOrbis.powers().getFillPower().getFilterOptions().choosesPerBlock());
+
+		this.addChildren(this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
 	}
 
 	@Override

@@ -64,17 +64,17 @@ public class BlockFilterLayer implements NBT
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
+	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
+		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
 	}
 
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
+	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
+		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
 	}
 
 	public List<BlockDataWithConditions> getReplacementBlocks()
@@ -82,14 +82,14 @@ public class BlockFilterLayer implements NBT
 		return this.replacementBlocks;
 	}
 
-	public void setReplacementBlocks(final BlockDataWithConditions... newBlocks)
-	{
-		this.replacementBlocks = Lists.newArrayList(Arrays.asList(newBlocks));
-	}
-
 	public void setReplacementBlocks(final List<BlockDataWithConditions> newBlocks)
 	{
 		this.replacementBlocks = newBlocks;
+	}
+
+	public void setReplacementBlocks(final BlockDataWithConditions... newBlocks)
+	{
+		this.replacementBlocks = Lists.newArrayList(Arrays.asList(newBlocks));
 	}
 
 	public BlockFilterType getFilterType()
@@ -302,18 +302,38 @@ public class BlockFilterLayer implements NBT
 					continue;
 				}
 
-				if (replacementBlock.isAir())
+				if (creationData.getRandom().nextFloat() > options.getEdgeNoise())
 				{
-					holder.getCurrentScheduleLayer().getFilterRecord().unmarkPos(schedX, schedY, schedZ);
-				}
-				else
-				{
-					holder.getCurrentScheduleLayer().getFilterRecord().markPos(parentFilter, schedX, schedY, schedZ);
+					if (replacementBlock.isAir())
+					{
+						holder.getCurrentScheduleLayer().getFilterRecord().unmarkPos(schedX, schedY, schedZ);
+					}
+					else
+					{
+						holder.getCurrentScheduleLayer().getFilterRecord().markPos(parentFilter, schedX, schedY, schedZ);
+					}
 				}
 			}
 			else
 			{
-				primer.create(replacementBlock, pos.add(creationData.getPos()).toImmutable(), creationData);
+				BlockPos createPos = pos.add(creationData.getPos()).toImmutable();
+
+				//TODO: Reprogram edge detection for performance - this is disgusting
+				/*BlockPos up = createPos.up();
+				BlockPos down = createPos.down();
+				BlockPos south = createPos.south();
+				BlockPos north = createPos.north();
+				BlockPos west = createPos.west();
+				BlockPos east = createPos.east();*/
+
+				/*boolean onEdge =
+						!boundingBox.contains(up) || !boundingBox.contains(down) || !boundingBox.contains(south) || !boundingBox.contains(north) || !boundingBox
+								.contains(west) || !boundingBox.contains(east);*/
+
+				if (creationData.getRandom().nextFloat() > options.getEdgeNoise())
+				{
+					primer.create(replacementBlock, createPos, creationData);
+				}
 			}
 
 			// TODO: Re-enable event

@@ -9,10 +9,10 @@ import com.gildedgames.orbis.api.core.util.BlueprintUtil;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.api.data.shapes.IterablePosShape;
 import com.gildedgames.orbis.api.util.OrbisTuple;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import net.minecraft.block.state.IBlockState;
@@ -278,13 +278,12 @@ public class DataPrimer
 	{
 		this.create(relocateTo, bData.getBlockDataContainer(), data, null);
 
-		IShape boundingBox = new Region(bData).translate(data.getPos());
-
 		for (IScheduleLayer layer : bData.getScheduleLayers().values())
 		{
 			for (BlockFilter filter : layer.getFilterRecord().getData())
 			{
-				filter.apply(boundingBox, layer.getFilterRecord().getPositions(filter), data, layer.getOptions());
+				filter.apply(new IterablePosShape(layer.getFilterRecord().getPositions(filter, data.getPos())),
+						layer.getFilterRecord().getPositions(filter, BlockPos.ORIGIN), data, layer.getOptions());
 			}
 
 			layer.getScheduleRecord().getSchedules(ISchedule.class).forEach(s -> s.onGenerateLayer(this, data));

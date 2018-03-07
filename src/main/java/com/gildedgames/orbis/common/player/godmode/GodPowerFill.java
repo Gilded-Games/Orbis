@@ -1,8 +1,11 @@
 package com.gildedgames.orbis.common.player.godmode;
 
 import com.gildedgames.orbis.api.block.BlockFilter;
+import com.gildedgames.orbis.api.data.schedules.FilterOptions;
+import com.gildedgames.orbis.api.data.schedules.IFilterOptions;
 import com.gildedgames.orbis.api.inventory.InventoryBlockForge;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
+import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.StagedInventory;
 import com.gildedgames.orbis.client.godmode.GodPowerFillClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
@@ -25,6 +28,8 @@ public class GodPowerFill implements IGodPower
 	private final StagedInventory<InventoryBlockForge> stagedInventory;
 
 	private GodPowerFillClient clientHandler = null;
+
+	private IFilterOptions filterOptions = new FilterOptions().setChoosesPerBlock(true);
 
 	public GodPowerFill(final PlayerOrbis playerOrbis, final World world)
 	{
@@ -51,13 +56,17 @@ public class GodPowerFill implements IGodPower
 	@Override
 	public void write(final NBTTagCompound tag)
 	{
+		NBTFunnel funnel = new NBTFunnel(tag);
 
+		funnel.set("filterOptions", this.filterOptions);
 	}
 
 	@Override
 	public void read(final NBTTagCompound tag)
 	{
+		NBTFunnel funnel = new NBTFunnel(tag);
 
+		this.filterOptions = funnel.getWithDefault("filterOptions", this::getFilterOptions);
 	}
 
 	@Override
@@ -97,5 +106,10 @@ public class GodPowerFill implements IGodPower
 	public IGodPowerClient getClientHandler()
 	{
 		return this.clientHandler;
+	}
+
+	public IFilterOptions getFilterOptions()
+	{
+		return this.filterOptions;
 	}
 }

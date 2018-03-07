@@ -5,7 +5,6 @@ import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.block.BlockFilterLayer;
 import com.gildedgames.orbis.api.block.BlockFilterType;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.schedules.FilterOptions;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
@@ -129,6 +128,6 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		final BlockFilter filter = new BlockFilter(layer);
 
-		filter.apply(selectedShape, creationData, FilterOptions.CHOOSES_PER_BLOCK);
+		filter.apply(selectedShape, creationData, playerOrbis.powers().getFillPower().getFilterOptions());
 	}
 }

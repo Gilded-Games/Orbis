@@ -250,6 +250,7 @@ public class RotationHelp
 		final int width = getWidth(dimensions, rotation);
 		final int length = getLength(dimensions, rotation);
 
+		//TODO: Check if this roudning is necessary before re-adding
 		final int roundingX = getRounding(width);
 		final int roundingZ = getRounding(length);
 
