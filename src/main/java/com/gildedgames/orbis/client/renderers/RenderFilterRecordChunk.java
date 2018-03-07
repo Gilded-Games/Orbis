@@ -6,6 +6,7 @@ import com.gildedgames.orbis.api.data.schedules.IPositionRecord;
 import com.gildedgames.orbis.api.util.mc.BlockUtil;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.client.renderers.util.BlockRenderUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
@@ -217,6 +218,11 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
+		if (!this.focused && !OrbisKeyBindings.keyBindControl.isKeyDown())
+		{
+			return;
+		}
+
 		if (this.lastPos == null)
 		{
 			this.lastPos = this.parentObject.getPos();
