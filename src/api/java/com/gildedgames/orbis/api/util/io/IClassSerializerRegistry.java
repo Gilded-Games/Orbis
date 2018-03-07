@@ -10,5 +10,7 @@ public interface IClassSerializerRegistry
 
 	IClassSerializer findSerializer(NBT nbt);
 
+	IClassSerializer findSerializer(Class<? extends NBT> clazz);
+
 	String findID(IClassSerializer serializer);
 }

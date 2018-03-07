@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.function.Supplier;
 
 public class NBTHelper
 {
@@ -273,6 +274,23 @@ public class NBTHelper
 		return tag;
 	}
 
+	public static <T extends NBT> T readWithDefault(final World world, final NBTTagCompound tag, Supplier<T> def)
+	{
+		if (tag == null || tag.getBoolean("_null") || !tag.hasKey("_null"))
+		{
+			return def.get();
+		}
+
+		IClassSerializer serializer = OrbisAPI.services().io().findSerializer(tag.getString("s_id"));
+
+		final int id = tag.getInteger("id");
+
+		final T obj = serializer.deserialize(world, id);
+		obj.read(tag.getCompoundTag("data"));
+
+		return obj;
+	}
+
 	public static <T extends NBT> T read(final World world, final NBTTagCompound tag)
 	{
 		if (tag == null || tag.getBoolean("_null") || !tag.hasKey("_null"))
@@ -285,6 +303,23 @@ public class NBTHelper
 		final int id = tag.getInteger("id");
 
 		final T obj = serializer.deserialize(world, id);
+		obj.read(tag.getCompoundTag("data"));
+
+		return obj;
+	}
+
+	public static <T extends NBT> T readWithDefault(final NBTTagCompound tag, Supplier<T> def)
+	{
+		if (tag == null || tag.getBoolean("_null") || !tag.hasKey("_null"))
+		{
+			return def.get();
+		}
+
+		IClassSerializer serializer = OrbisAPI.services().io().findSerializer(tag.getString("s_id"));
+
+		final int id = tag.getInteger("id");
+
+		final T obj = serializer.deserialize(id);
 		obj.read(tag.getCompoundTag("data"));
 
 		return obj;

@@ -13,6 +13,7 @@ import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class NBTFunnel
 {
@@ -76,9 +77,19 @@ public class NBTFunnel
 		return NBTHelper.read(this.tag.getCompoundTag(key));
 	}
 
+	public <T extends NBT> T getWithDefault(final String key, Supplier<T> def)
+	{
+		return NBTHelper.readWithDefault(this.tag.getCompoundTag(key), def);
+	}
+
 	public <T extends NBT> T get(final World world, final String key)
 	{
 		return NBTHelper.read(world, this.tag.getCompoundTag(key));
+	}
+
+	public <T extends NBT> T getWithDefault(final World world, final String key, Supplier<T> def)
+	{
+		return NBTHelper.readWithDefault(world, this.tag.getCompoundTag(key), def);
 	}
 
 	public void setPos(final String key, final BlockPos pos)

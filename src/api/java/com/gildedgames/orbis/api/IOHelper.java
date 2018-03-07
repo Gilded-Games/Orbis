@@ -49,15 +49,21 @@ public class IOHelper implements IClassSerializerRegistry
 	@Override
 	public IClassSerializer findSerializer(NBT nbt)
 	{
+		return this.findSerializer(nbt.getClass());
+	}
+
+	@Override
+	public IClassSerializer findSerializer(Class<? extends NBT> clazz)
+	{
 		for (IClassSerializer s : this.idToSerializer.values())
 		{
-			if (s.isRegistered(nbt.getClass()))
+			if (s.isRegistered(clazz))
 			{
 				return s;
 			}
 		}
 
-		throw new RuntimeException("This object has not been registered to a serializer: " + nbt);
+		throw new RuntimeException("This object has not been registered to a serializer: " + clazz);
 	}
 
 	@Override
