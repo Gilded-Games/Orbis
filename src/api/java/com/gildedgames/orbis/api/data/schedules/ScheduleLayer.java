@@ -21,13 +21,11 @@ public class ScheduleLayer implements IScheduleLayer
 
 	private IScheduleRecord scheduleRecord = new ScheduleRecord();
 
-	private float edgeNoise;
-
-	private boolean choosesPerBlock = true;
-
 	private IWorldObject worldObjectParent;
 
 	private int layerId;
+
+	private ILayerOptions options = new LayerOptions();
 
 	private ScheduleLayer()
 	{
@@ -60,15 +58,9 @@ public class ScheduleLayer implements IScheduleLayer
 	}
 
 	@Override
-	public void setChoosesPerBlock(boolean choosesPerBlock)
+	public ILayerOptions getOptions()
 	{
-		this.choosesPerBlock = choosesPerBlock;
-	}
-
-	@Override
-	public boolean choosesPerBlock()
-	{
-		return this.choosesPerBlock;
+		return this.options;
 	}
 
 	@Override
@@ -81,18 +73,6 @@ public class ScheduleLayer implements IScheduleLayer
 	public void setDisplayName(String displayName)
 	{
 		this.displayName = displayName;
-	}
-
-	@Override
-	public float getEdgeNoise()
-	{
-		return this.edgeNoise;
-	}
-
-	@Override
-	public void setEdgeNoise(float edgeNoise)
-	{
-		this.edgeNoise = edgeNoise;
 	}
 
 	@Override
@@ -133,10 +113,9 @@ public class ScheduleLayer implements IScheduleLayer
 		funnel.set("positionRecord", this.positionRecord);
 		funnel.set("scheduleRecord", this.scheduleRecord);
 
-		tag.setString("displayName", this.displayName);
-		tag.setFloat("edgeNoise", this.edgeNoise);
-		tag.setBoolean("choosesPerBlock", this.choosesPerBlock);
+		funnel.set("options", this.options);
 
+		tag.setString("displayName", this.displayName);
 		tag.setInteger("layerId", this.layerId);
 	}
 
@@ -147,17 +126,11 @@ public class ScheduleLayer implements IScheduleLayer
 
 		this.positionRecord = funnel.get("positionRecord");
 
-		IScheduleRecord record = funnel.get("scheduleRecord");
+		this.scheduleRecord = funnel.getWithDefault("scheduleRecord", this::getScheduleRecord);
 
-		if (record != null)
-		{
-			this.scheduleRecord = record;
-		}
+		this.options = funnel.getWithDefault("options", LayerOptions::new);
 
 		this.displayName = tag.getString("displayName");
-		this.edgeNoise = tag.getFloat("edgeNoise");
-		this.choosesPerBlock = tag.getBoolean("choosesPerBlock");
-
 		this.layerId = tag.getInteger("layerId");
 
 		if (this.scheduleRecord != null)

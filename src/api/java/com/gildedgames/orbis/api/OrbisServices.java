@@ -143,6 +143,7 @@ public class OrbisServices implements IOrbisServices
 			s.register(31, ScheduleRecord.class, new Instantiator<>(ScheduleRecord.class));
 			s.register(32, ScheduleBlueprint.class, new Instantiator<>(ScheduleBlueprint.class));
 			s.register(33, BlockPosDimension.class, new Instantiator<>(BlockPosDimension.class));
+			s.register(34, LayerOptions.class, new Instantiator<>(LayerOptions.class));
 
 			this.io.register(s);
 		}

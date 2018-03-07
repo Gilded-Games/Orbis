@@ -59,8 +59,8 @@ public class GuiScheduleLayerPanel extends GuiFrame
 			else if (InputHelper.isHovered(this.resetButton))
 			{
 				this.nameInput.getInner().setText(this.layer.getDisplayName());
-				this.noise.setSliderValue(this.layer.getEdgeNoise());
-				this.choosesPerBlock.setTicked(this.layer.choosesPerBlock());
+				this.noise.setSliderValue(this.layer.getOptions().getEdgeNoise());
+				this.choosesPerBlock.setTicked(this.layer.getOptions().choosesPerBlock());
 			}
 		}
 	}
@@ -92,12 +92,12 @@ public class GuiScheduleLayerPanel extends GuiFrame
 
 		this.noise.dim().mod().width(this.dim().width() - 40).x(20).y(75).flush();
 
-		this.noise.setSliderValue(this.layer.getEdgeNoise());
+		this.noise.setSliderValue(this.layer.getOptions().getEdgeNoise());
 
 		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).addY(102).addX(20).flush(),
 				new Text(new TextComponentString("Chooses Per Block:"), 1.0F));
 
-		this.choosesPerBlock = new GuiTickBox(Pos2D.flush(20, 115), this.layer.choosesPerBlock());
+		this.choosesPerBlock = new GuiTickBox(Pos2D.flush(20, 115), this.layer.getOptions().choosesPerBlock());
 
 		this.addChildren(this.title, this.nameInput, this.saveButton, this.resetButton, this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
 	}

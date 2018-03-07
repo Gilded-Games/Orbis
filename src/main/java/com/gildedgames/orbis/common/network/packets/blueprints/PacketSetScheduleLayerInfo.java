@@ -149,8 +149,8 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 					if (layer != null)
 					{
 						layer.setDisplayName(message.displayName);
-						layer.setEdgeNoise(message.edgeNoise);
-						layer.setChoosesPerBlock(message.choosesPerBlock);
+						layer.getOptions().setEdgeNoise(message.edgeNoise);
+						layer.getOptions().setChoosesPerBlock(message.choosesPerBlock);
 					}
 				}
 			}
@@ -197,8 +197,8 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 					if (layer != null)
 					{
 						layer.setDisplayName(message.displayName);
-						layer.setEdgeNoise(message.edgeNoise);
-						layer.setChoosesPerBlock(message.choosesPerBlock);
+						layer.getOptions().setEdgeNoise(message.edgeNoise);
+						layer.getOptions().setChoosesPerBlock(message.choosesPerBlock);
 					}
 
 					// TODO: Send just to people who have downloaded this project

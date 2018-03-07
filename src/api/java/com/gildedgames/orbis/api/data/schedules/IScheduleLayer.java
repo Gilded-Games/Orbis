@@ -12,17 +12,11 @@ public interface IScheduleLayer extends NBT, IWorldObjectChild
 
 	boolean unlisten(IScheduleLayerListener listener);
 
-	void setChoosesPerBlock(boolean choosesPerBlock);
-
-	boolean choosesPerBlock();
+	ILayerOptions getOptions();
 
 	String getDisplayName();
 
 	void setDisplayName(String displayName);
-
-	float getEdgeNoise();
-
-	void setEdgeNoise(float edgeNoise);
 
 	IPositionRecord<BlockFilter> getFilterRecord();
 
