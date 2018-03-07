@@ -4,7 +4,6 @@ import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,26 +13,24 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 public class PacketWorldObjectRemove implements IMessage
 {
 
-	private int groupId, objectId, dimensionId;
+	private int objectId, dimensionId;
 
 	public PacketWorldObjectRemove()
 	{
 
 	}
 
-	public PacketWorldObjectRemove(final int groupId, final int objectId, final int dimensionId)
+	public PacketWorldObjectRemove(final int objectId, final int dimensionId)
 	{
-		this.groupId = groupId;
 		this.objectId = objectId;
 		this.dimensionId = dimensionId;
 	}
 
-	public PacketWorldObjectRemove(final World world, final IWorldObjectGroup group, final IWorldObject object)
+	public PacketWorldObjectRemove(final World world, final IWorldObject object)
 	{
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
-		this.groupId = manager.getID(group);
-		this.objectId = group.getID(object);
+		this.objectId = manager.getID(object);
 		this.dimensionId = object.getWorld().provider.getDimension();
 	}
 
@@ -42,15 +39,13 @@ public class PacketWorldObjectRemove implements IMessage
 		//TODO: This assumes the player sending this message is in the world we want to add the World Object
 		//Clients cannot send a packet requestion a change in a different dimension.
 		final WorldObjectManager manager = WorldObjectManager.get(player.world);
-		final IWorldObjectGroup group = manager.getGroup(message.groupId);
 
-		group.removeObject(message.objectId);
+		manager.removeObject(message.objectId);
 	}
 
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-		this.groupId = buf.readInt();
 		this.objectId = buf.readInt();
 		this.dimensionId = buf.readInt();
 	}
@@ -58,7 +53,6 @@ public class PacketWorldObjectRemove implements IMessage
 	@Override
 	public void toBytes(final ByteBuf buf)
 	{
-		buf.writeInt(this.groupId);
 		buf.writeInt(this.objectId);
 		buf.writeInt(this.dimensionId);
 	}
@@ -92,7 +86,7 @@ public class PacketWorldObjectRemove implements IMessage
 			PacketWorldObjectRemove.onMessage(message, player);
 
 			OrbisAPI.network()
-					.sendPacketToDimension(new PacketWorldObjectRemove(message.groupId, message.objectId, message.dimensionId), message.dimensionId);
+					.sendPacketToDimension(new PacketWorldObjectRemove(message.objectId, message.dimensionId), message.dimensionId);
 
 			return null;
 		}

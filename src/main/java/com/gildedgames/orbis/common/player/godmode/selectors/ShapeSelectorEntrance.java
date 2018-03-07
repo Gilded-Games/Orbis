@@ -5,8 +5,7 @@ import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerEntranceClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerEntrance;
@@ -31,10 +30,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 	{
 		World world = playerOrbis.getWorld();
 
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		Blueprint b = group.getIntersectingShape(Blueprint.class, pos);
+		Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, pos);
 
 		if (b != null)
 		{
@@ -63,10 +59,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		Blueprint b = group.getIntersectingShape(Blueprint.class, shape);
+		Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, shape);
 
 		if (b != null)
 		{
@@ -100,10 +93,7 @@ public class ShapeSelectorEntrance implements IShapeSelector
 			return;
 		}
 
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		Blueprint b = group.getIntersectingShape(Blueprint.class, selectedShape);
+		Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, selectedShape);
 
 		if (b != null)
 		{

@@ -44,7 +44,7 @@ public class PacketSetSelectedRegion implements IMessage
 				return null;
 			}
 
-			final WorldShape shape = WorldObjectManager.get(player.world).getGroup(0).getObject(message.regionId);
+			final WorldShape shape = WorldObjectManager.get(player.world).getObject(message.regionId);
 
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 

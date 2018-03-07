@@ -35,7 +35,7 @@ public class PacketBlueprintSetCurrentScheduleLayer extends PacketMultipleParts
 
 	public PacketBlueprintSetCurrentScheduleLayer(final Blueprint blueprint, final int scheduleLayerIndex)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.scheduleLayerIndex = scheduleLayerIndex;
 	}
 
@@ -83,7 +83,7 @@ public class PacketBlueprintSetCurrentScheduleLayer extends PacketMultipleParts
 
 			try
 			{
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 				if (worldObject instanceof Blueprint)
 				{
@@ -113,7 +113,7 @@ public class PacketBlueprintSetCurrentScheduleLayer extends PacketMultipleParts
 
 			try
 			{
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 				if (worldObject instanceof Blueprint)
 				{

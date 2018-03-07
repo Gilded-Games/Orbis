@@ -2,8 +2,8 @@ package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.player.godmode.GodPowerFramework;
@@ -32,27 +32,22 @@ public class ShapeSelectorFramework implements IShapeSelector
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		return !group.isIntersectingShapes(shape);
+		return !WorldObjectUtils.isIntersectingShapes(world, shape);
 	}
 
 	@Override
 	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
 	{
 		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
 		final Framework framework = new Framework(world, selectedShape.getBoundingBox());
 
 		if (!world.isRemote)
 		{
-			group.addObject(framework);
+			manager.addObject(framework);
 
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
-				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(world, group, framework), world.provider.getDimension());
+				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(framework), world.provider.getDimension());
 			}
 		}
 	}

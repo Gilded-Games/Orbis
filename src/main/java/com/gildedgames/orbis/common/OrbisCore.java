@@ -10,7 +10,6 @@ import com.gildedgames.orbis.api.data.management.impl.DataCachePool;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.api.world.instances.InstanceEvents;
 import com.gildedgames.orbis.client.gui.data.Text;
@@ -89,11 +88,8 @@ public class OrbisCore implements IOrbisServicesListener
 
 		if (playerOrbis.powers().getSelectPower().getSelectedRegion() != null && !world.isRemote)
 		{
-			final WorldObjectManager manager = WorldObjectManager.get(world);
-			final IWorldObjectGroup group = manager.getGroup(0);
-
 			OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
-			OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(world, group, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+			OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
 
 			playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 		}

@@ -31,7 +31,7 @@ public class WorldActionAddSchedule implements IWorldAction
 	{
 		this.blueprint = blueprint;
 
-		this.blueprintId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(this.blueprint);
+		this.blueprintId = WorldObjectManager.get(blueprint.getWorld()).getID(this.blueprint);
 
 		this.schedule = schedule;
 		this.layer = layer;
@@ -42,7 +42,7 @@ public class WorldActionAddSchedule implements IWorldAction
 	{
 		if (this.blueprint == null)
 		{
-			this.blueprint = WorldObjectManager.get(world).getGroup(0).getObject(this.blueprintId);
+			this.blueprint = WorldObjectManager.get(world).getObject(this.blueprintId);
 		}
 
 		IScheduleLayer layer = this.blueprint.getData().getScheduleLayer(this.layer);
@@ -64,7 +64,7 @@ public class WorldActionAddSchedule implements IWorldAction
 	{
 		if (this.blueprint == null)
 		{
-			this.blueprint = WorldObjectManager.get(world).getGroup(0).getObject(this.blueprintId);
+			this.blueprint = WorldObjectManager.get(world).getObject(this.blueprintId);
 		}
 
 		IScheduleLayer layer = this.blueprint.getData().getScheduleLayer(this.layer);

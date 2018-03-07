@@ -6,8 +6,7 @@ import com.gildedgames.orbis.api.block.BlockFilterLayer;
 import com.gildedgames.orbis.api.block.BlockFilterType;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockPaletteRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -99,10 +98,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		return group.getIntersectingShapes(Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
+		return WorldObjectUtils.getIntersectingShapes(world, Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
 	}
 
 	@Override

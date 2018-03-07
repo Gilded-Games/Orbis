@@ -6,18 +6,16 @@ import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PacketWorldObjectAdd extends PacketMultipleParts
 {
-	private int groupId, dimensionId;
+	private int dimensionId, worldObjectId = -1;
 
 	private IWorldObject worldObject;
 
@@ -37,32 +35,23 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 		super(data);
 	}
 
-	public PacketWorldObjectAdd(final int groupId, final IWorldObject object, final int dimensionId)
+	public PacketWorldObjectAdd(final IWorldObject object, final int dimensionId)
 	{
-		this.groupId = groupId;
 		this.worldObject = object;
 		this.dimensionId = dimensionId;
 	}
 
-	public PacketWorldObjectAdd(final World world, final IWorldObjectGroup group, final IWorldObject object)
+	public PacketWorldObjectAdd(final IWorldObject object, final int dimensionId, int worldObjectId)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-
-		this.groupId = manager.getID(group);
 		this.worldObject = object;
-		this.dimensionId = object.getWorld().provider.getDimension();
+		this.dimensionId = dimensionId;
+		this.worldObjectId = worldObjectId;
 	}
 
-	public static void onMessage(final PacketWorldObjectAdd message, final EntityPlayer player)
+	public PacketWorldObjectAdd(final IWorldObject object)
 	{
-		//TODO: This assumes the player sending this message is in the world we want to add the World Object
-		//Clients cannot send a packet requestion a change in a different dimension.
-		final IWorldObject object = message.funnel.get(player.world, "worldObject");
-
-		final WorldObjectManager manager = WorldObjectManager.get(player.world);
-		final IWorldObjectGroup group = manager.getGroup(message.groupId);
-
-		group.addObject(object);
+		this.worldObject = object;
+		this.dimensionId = object.getWorld().provider.getDimension();
 	}
 
 	@Override
@@ -72,7 +61,6 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 
 		this.funnel = new NBTFunnel(tag);
 
-		this.groupId = buf.readInt();
 		this.dimensionId = buf.readInt();
 	}
 
@@ -82,11 +70,10 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 		final NBTTagCompound tag = new NBTTagCompound();
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
-		funnel.set("worldObject", this.worldObject);
+		funnel.set("w", this.worldObject);
 
 		ByteBufUtils.writeTag(buf, tag);
 
-		buf.writeInt(this.groupId);
 		buf.writeInt(this.dimensionId);
 	}
 
@@ -106,10 +93,14 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 				return null;
 			}
 
-			PacketWorldObjectAdd.onMessage(message, player);
+			final IWorldObject object = message.funnel.get(player.world, "w");
+
+			final WorldObjectManager manager = WorldObjectManager.get(player.world);
+
+			int id = manager.addObject(object);
 
 			OrbisAPI.network()
-					.sendPacketToDimension(new PacketWorldObjectAdd(message.groupId, message.worldObject, message.dimensionId), message.dimensionId);
+					.sendPacketToDimension(new PacketWorldObjectAdd(message.worldObject, message.dimensionId, id), message.dimensionId);
 
 			return null;
 		}
@@ -125,7 +116,14 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 				return null;
 			}
 
-			PacketWorldObjectAdd.onMessage(message, player);
+			if (message.worldObjectId != -1)
+			{
+				final IWorldObject object = message.funnel.get(player.world, "w");
+
+				final WorldObjectManager manager = WorldObjectManager.get(player.world);
+
+				manager.setObject(message.worldObjectId, object);
+			}
 
 			return null;
 		}

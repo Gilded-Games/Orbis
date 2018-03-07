@@ -1,8 +1,7 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddWorldObject;
@@ -31,10 +30,7 @@ public class ShapeSelectorBlueprint implements IShapeSelector
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		return !group.isIntersectingShapes(shape);
+		return !WorldObjectUtils.isIntersectingShapes(world, shape);
 	}
 
 	@Override

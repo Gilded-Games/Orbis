@@ -3,7 +3,6 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
@@ -19,7 +18,7 @@ public class WorldActionAddWorldObject implements IWorldAction
 
 	private WorldActionAddWorldObject()
 	{
-		
+
 	}
 
 	public WorldActionAddWorldObject(IWorldObject worldObject)
@@ -30,28 +29,36 @@ public class WorldActionAddWorldObject implements IWorldAction
 	@Override
 	public void redo(PlayerOrbis player, World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
+		if (world.isRemote)
+		{
+			return;
+		}
 
-		group.addObject(this.worldObject);
+		final WorldObjectManager manager = WorldObjectManager.get(world);
+
+		manager.addObject(this.worldObject);
 
 		if (world.getMinecraftServer().isDedicatedServer())
 		{
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(world, group, this.worldObject), world.provider.getDimension());
+			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(this.worldObject), world.provider.getDimension());
 		}
 	}
 
 	@Override
 	public void undo(PlayerOrbis player, World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
+		if (world.isRemote)
+		{
+			return;
+		}
 
-		group.removeObject(this.worldObject);
+		final WorldObjectManager manager = WorldObjectManager.get(world);
+
+		manager.removeObject(this.worldObject);
 
 		if (world.getMinecraftServer().isDedicatedServer())
 		{
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, group, this.worldObject), world.provider.getDimension());
+			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.worldObject), world.provider.getDimension());
 		}
 	}
 

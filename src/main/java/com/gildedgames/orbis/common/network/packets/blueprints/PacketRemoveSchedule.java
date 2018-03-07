@@ -45,7 +45,7 @@ public class PacketRemoveSchedule implements IMessage
 
 	public PacketRemoveSchedule(Blueprint blueprint, ISchedule schedule)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.scheduleId = schedule.getParent().getScheduleId(schedule);
 		this.layerId = schedule.getParent().getParent().getLayerId();
 	}
@@ -99,7 +99,7 @@ public class PacketRemoveSchedule implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -140,7 +140,7 @@ public class PacketRemoveSchedule implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

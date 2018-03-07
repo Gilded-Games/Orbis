@@ -6,25 +6,21 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class WorldRegion extends Region implements IWorldObject, IColored
 {
-
-	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
-
 	private IWorldRenderer renderer;
 
 	private World world;
+
+	private boolean isDirty;
 
 	protected WorldRegion(final World world)
 	{
@@ -50,6 +46,16 @@ public class WorldRegion extends Region implements IWorldObject, IColored
 	public WorldRegion(final BlockPos corner1, final BlockPos corner2, final World world)
 	{
 		super(corner1, corner2);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final HashCodeBuilder builder = new HashCodeBuilder();
+
+		builder.append(this.getMin().hashCode());
+
+		return builder.toHashCode();
 	}
 
 	@Override
@@ -80,18 +86,15 @@ public class WorldRegion extends Region implements IWorldObject, IColored
 	}
 
 	@Override
-	public void trackGroup(final IWorldObjectGroup group)
+	public void markClean()
 	{
-		if (!this.trackedGroups.contains(group))
-		{
-			this.trackedGroups.add(group);
-		}
+		this.isDirty = false;
 	}
 
 	@Override
-	public void untrackGroup(final IWorldObjectGroup group)
+	public boolean isDirty()
 	{
-		this.trackedGroups.remove(group);
+		return this.isDirty;
 	}
 
 	@Override

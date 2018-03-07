@@ -6,17 +6,14 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.List;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Simple wrapper around an IShape so it can be used as a WorldObject.
@@ -24,13 +21,13 @@ import java.util.List;
  */
 public class WorldShape implements IShape, IWorldObject, IColored
 {
-	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
-
 	private final World world;
 
 	private IShape shape;
 
 	private IWorldRenderer renderer;
+
+	private boolean isDirty;
 
 	private WorldShape(final World world)
 	{
@@ -44,18 +41,25 @@ public class WorldShape implements IShape, IWorldObject, IColored
 	}
 
 	@Override
-	public void trackGroup(final IWorldObjectGroup group)
+	public int hashCode()
 	{
-		if (!this.trackedGroups.contains(group))
-		{
-			this.trackedGroups.add(group);
-		}
+		final HashCodeBuilder builder = new HashCodeBuilder();
+
+		builder.append(this.getPos().hashCode());
+
+		return builder.toHashCode();
 	}
 
 	@Override
-	public void untrackGroup(final IWorldObjectGroup group)
+	public void markClean()
 	{
-		this.trackedGroups.remove(group);
+		this.isDirty = false;
+	}
+
+	@Override
+	public boolean isDirty()
+	{
+		return this.isDirty;
 	}
 
 	@Override

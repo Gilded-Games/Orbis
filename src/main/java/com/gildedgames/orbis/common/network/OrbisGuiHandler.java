@@ -3,7 +3,7 @@ package com.gildedgames.orbis.common.network;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.gui.blueprint.GuiLoadBlueprint;
 import com.gildedgames.orbis.client.gui.schedules.GuiEditScheduledRegion;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -38,7 +38,7 @@ public class OrbisGuiHandler implements IGuiHandler
 			case ORBIS_BLUEPRINT_LOAD:
 				return new ContainerBlueprintInventory(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
 			case EDIT_SCHEDULE_REGION:
-				IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
 				if (shape instanceof Blueprint)
 				{
@@ -72,7 +72,7 @@ public class OrbisGuiHandler implements IGuiHandler
 			case ORBIS_BLUEPRINT_LOAD:
 				return new GuiLoadBlueprint(null, playerOrbis);
 			case EDIT_SCHEDULE_REGION:
-				IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
 				if (shape instanceof Blueprint)
 				{

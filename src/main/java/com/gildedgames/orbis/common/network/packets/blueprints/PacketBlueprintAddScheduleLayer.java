@@ -49,7 +49,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 
 	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.displayName = displayName;
 		this.layerIndex = -1;
 	}
@@ -63,7 +63,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 
 	public PacketBlueprintAddScheduleLayer(final Blueprint blueprint, final String displayName, final int layerIndex)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.displayName = displayName;
 		this.layerIndex = layerIndex;
 	}
@@ -123,7 +123,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -164,7 +164,7 @@ public class PacketBlueprintAddScheduleLayer extends PacketMultipleParts
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

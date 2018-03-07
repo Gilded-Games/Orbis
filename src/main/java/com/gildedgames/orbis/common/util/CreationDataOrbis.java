@@ -2,8 +2,7 @@ package com.gildedgames.orbis.common.util;
 
 import com.gildedgames.orbis.api.block.BlockData;
 import com.gildedgames.orbis.api.core.CreationData;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,10 +29,7 @@ public class CreationDataOrbis extends CreationData
 	{
 		if (this.schedules())
 		{
-			final WorldObjectManager manager = WorldObjectManager.get(this.getWorld());
-			final IWorldObjectGroup group = manager.getGroup(0);
-
-			return group.getIntersectingShape(pos) != null;
+			return WorldObjectUtils.getIntersectingShape(this.getWorld(), pos) != null;
 		}
 
 		return true;

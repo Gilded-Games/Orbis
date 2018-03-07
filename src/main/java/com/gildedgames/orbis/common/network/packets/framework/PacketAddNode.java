@@ -48,7 +48,7 @@ public class PacketAddNode implements IMessage
 
 	public PacketAddNode(Framework framework, FrameworkNode node, final BlockPos pos)
 	{
-		this.worldObjectId = WorldObjectManager.get(framework.getWorld()).getGroup(0).getID(framework);
+		this.worldObjectId = WorldObjectManager.get(framework.getWorld()).getID(framework);
 		this.node = node;
 		this.pos = pos;
 	}
@@ -102,7 +102,7 @@ public class PacketAddNode implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -143,7 +143,7 @@ public class PacketAddNode implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

@@ -22,7 +22,6 @@ import com.gildedgames.orbis.api.util.io.Instantiator;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.io.SimpleSerializer;
 import com.gildedgames.orbis.api.util.mc.BlockPosDimension;
-import com.gildedgames.orbis.api.world.WorldObjectGroup;
 import com.gildedgames.orbis.api.world.instances.IInstanceRegistry;
 import com.gildedgames.orbis.api.world.instances.InstanceRegistryImpl;
 import com.google.common.collect.Lists;
@@ -113,7 +112,6 @@ public class OrbisServices implements IOrbisServices
 
 			s.register(0, Region.class, new Instantiator<>(Region.class));
 			s.register(1, BlueprintData.class, new Instantiator<>(BlueprintData.class));
-			s.register(2, WorldObjectGroup.class, new Instantiator<>(WorldObjectGroup.class));
 			s.register(3, BlockDataContainer.class, new Instantiator<>(BlockDataContainer.class));
 			s.register(4, SphereShape.class, new Instantiator<>(SphereShape.class));
 			s.register(5, LineShape.class, new Instantiator<>(LineShape.class));

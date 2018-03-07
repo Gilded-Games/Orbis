@@ -47,7 +47,7 @@ public class PacketBlueprintRemoveScheduleLayer extends PacketMultipleParts
 
 	public PacketBlueprintRemoveScheduleLayer(final Blueprint blueprint, final int scheduleLayerIndex)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.scheduleLayerIndex = scheduleLayerIndex;
 	}
 
@@ -103,7 +103,7 @@ public class PacketBlueprintRemoveScheduleLayer extends PacketMultipleParts
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -144,7 +144,7 @@ public class PacketBlueprintRemoveScheduleLayer extends PacketMultipleParts
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

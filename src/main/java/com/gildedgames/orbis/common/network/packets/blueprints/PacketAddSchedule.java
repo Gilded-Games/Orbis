@@ -48,14 +48,14 @@ public class PacketAddSchedule implements IMessage
 
 	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int layerId)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.schedule = schedule;
 		this.layerId = layerId;
 	}
 
 	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int layerId, int scheduleId)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
 	}
@@ -112,7 +112,7 @@ public class PacketAddSchedule implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -160,7 +160,7 @@ public class PacketAddSchedule implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

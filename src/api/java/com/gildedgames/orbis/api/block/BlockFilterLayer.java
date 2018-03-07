@@ -10,8 +10,7 @@ import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.api.processing.IBlockAccessExtended;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBT;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -64,17 +63,17 @@ public class BlockFilterLayer implements NBT
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
+	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
+		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
 	}
 
 	/**
 	 * Sets the list of blocks that trigger the filter
 	 */
-	public void setRequiredBlocks(final BlockDataWithConditions... requiredBlocks)
+	public void setRequiredBlocks(final List<BlockDataWithConditions> requiredBlocks)
 	{
-		this.requiredBlocks = Lists.newArrayList(Arrays.asList(requiredBlocks));
+		this.requiredBlocks = Lists.newArrayList(requiredBlocks);
 	}
 
 	public List<BlockDataWithConditions> getReplacementBlocks()
@@ -82,14 +81,14 @@ public class BlockFilterLayer implements NBT
 		return this.replacementBlocks;
 	}
 
-	public void setReplacementBlocks(final List<BlockDataWithConditions> newBlocks)
-	{
-		this.replacementBlocks = newBlocks;
-	}
-
 	public void setReplacementBlocks(final BlockDataWithConditions... newBlocks)
 	{
 		this.replacementBlocks = Lists.newArrayList(Arrays.asList(newBlocks));
+	}
+
+	public void setReplacementBlocks(final List<BlockDataWithConditions> newBlocks)
+	{
+		this.replacementBlocks = newBlocks;
 	}
 
 	public BlockFilterType getFilterType()
@@ -210,10 +209,7 @@ public class BlockFilterLayer implements NBT
 
 		if (options.schedules())
 		{
-			final WorldObjectManager manager = WorldObjectManager.get(world);
-			final IWorldObjectGroup group = manager.getGroup(0);
-
-			intersect = group.getIntersectingShape(boundingBox);
+			intersect = WorldObjectUtils.getIntersectingShape(world, boundingBox);
 
 			if (intersect instanceof IScheduleLayerHolder)
 			{

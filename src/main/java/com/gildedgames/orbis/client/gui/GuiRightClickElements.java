@@ -7,7 +7,6 @@ import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
@@ -33,8 +32,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				final WorldObjectManager manager = WorldObjectManager.get(player.world);
-				OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(region.getWorld(), manager.getGroup(0), region));
+				OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(region.getWorld(), region));
 			}
 		};
 	}

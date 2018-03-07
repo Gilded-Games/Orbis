@@ -8,7 +8,7 @@ import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.util.ObjectFilter;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -26,11 +26,11 @@ import java.util.List;
 public class OrbisRaytraceHelp
 {
 
-	public static final LocateWithPos<IShape> WORLD_OBJECT_LOCATOR = (world, pos) -> WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+	public static final LocateWithPos<IShape> WORLD_OBJECT_LOCATOR = (world, pos) -> WorldObjectUtils.getIntersectingShape(world, pos);
 
 	public static final LocateWithPos<IFrameworkNode> FRAMEWORK_NODE_LOCATOR = (world, pos) ->
 	{
-		IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
 		if (shape instanceof Framework)
 		{
@@ -44,7 +44,7 @@ public class OrbisRaytraceHelp
 
 	public static final LocateWithPos<ISchedule> SCHEDULE_LOCATOR = (world, pos) ->
 	{
-		IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
 		if (shape instanceof Blueprint)
 		{
@@ -58,7 +58,7 @@ public class OrbisRaytraceHelp
 
 	public static final LocateWithPos<Entrance> ENTRANCE_LOCATOR = (world, pos) ->
 	{
-		IShape shape = WorldObjectManager.get(world).getGroup(0).getIntersectingShape(pos);
+		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
 		if (shape instanceof Blueprint)
 		{

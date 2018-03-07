@@ -5,8 +5,8 @@ import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetSelectedRegion;
@@ -41,12 +41,9 @@ public class ShapeSelectorSelect implements IShapeSelector
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
 		if (playerOrbis.powers().isScheduling())
 		{
-			Blueprint b = group.getIntersectingShape(Blueprint.class, shape);
+			Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, shape);
 
 			if (b != null)
 			{
@@ -101,11 +98,10 @@ public class ShapeSelectorSelect implements IShapeSelector
 		}*/
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
 
 		if (playerOrbis.powers().isScheduling())
 		{
-			Blueprint b = group.getIntersectingShape(Blueprint.class, selectedShape);
+			Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, selectedShape);
 
 			if (b != null)
 			{
@@ -121,18 +117,18 @@ public class ShapeSelectorSelect implements IShapeSelector
 		{
 			final WorldShape region = new WorldShape(selectedShape, world);
 
-			final int regionId = group.addObject(region);
+			final int regionId = manager.addObject(region);
 
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
-				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(world, group, region), world.provider.getDimension());
+				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(region), world.provider.getDimension());
 			}
 
 			if (this.power.getSelectedRegion() != null)
 			{
 				OrbisAPI.network()
-						.sendPacketToDimension(new PacketWorldObjectRemove(world, group, this.power.getSelectedRegion()), world.provider.getDimension());
-				group.removeObject(this.power.getSelectedRegion());
+						.sendPacketToDimension(new PacketWorldObjectRemove(world, this.power.getSelectedRegion()), world.provider.getDimension());
+				manager.removeObject(this.power.getSelectedRegion());
 			}
 
 			this.power.setSelectedRegion(region);

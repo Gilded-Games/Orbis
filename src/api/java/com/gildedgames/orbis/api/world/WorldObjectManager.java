@@ -30,7 +30,7 @@ public class WorldObjectManager extends WorldSavedData
 
 	private World world;
 
-	private BiMap<Integer, IWorldObjectGroup> idToGroup = HashBiMap.create();
+	private BiMap<Integer, IWorldObject> idToObject = HashBiMap.create();
 
 	private int nextId;
 
@@ -107,11 +107,11 @@ public class WorldObjectManager extends WorldSavedData
 		this.world = world;
 	}
 
-	public void checkForDirtyGroups()
+	public void checkForDirtyObjects()
 	{
-		for (final IWorldObjectGroup group : this.idToGroup.values())
+		for (final IWorldObject obj : this.idToObject.values())
 		{
-			if (group.isDirty())
+			if (obj.isDirty())
 			{
 				this.markDirty();
 				break;
@@ -120,55 +120,84 @@ public class WorldObjectManager extends WorldSavedData
 
 		if (this.isDirty())
 		{
-			for (final IWorldObjectGroup group : this.idToGroup.values())
+			for (final IWorldObject obj : this.idToObject.values())
 			{
-				if (group.isDirty())
+				if (obj.isDirty())
 				{
-					group.markClean();
+					obj.markClean();
 				}
 			}
 		}
 	}
 
-	public <T extends IWorldObjectGroup> int getID(final T group)
+	public <T extends IWorldObject> boolean hasObject(final T object)
 	{
-		return this.idToGroup.inverse().get(group);
+		return this.idToObject.inverse().containsKey(object);
 	}
 
-	public <T extends IWorldObjectGroup> T getGroup(final int id)
+	public <T extends IWorldObject> int getID(final T object)
 	{
-		IWorldObjectGroup group = this.idToGroup.get(id);
-
-		if (!this.idToGroup.containsKey(id) || group == null)
+		if (object == null)
 		{
-			group = new WorldObjectGroup(this.world);
-
-			this.setGroup(id, group);
+			throw new NullPointerException();
 		}
 
-		return (T) group;
+		return this.idToObject.inverse().get(object);
 	}
 
-	public <T extends IWorldObjectGroup> void setGroup(final int id, final T object)
+	public <T extends IWorldObject> T getObject(final int id)
 	{
-		this.idToGroup.put(id, object);
+		return (T) this.idToObject.get(id);
+	}
+
+	public <T extends IWorldObject> void setObject(final int id, final T object)
+	{
+		this.idToObject.put(id, object);
 
 		for (final IWorldObjectManagerObserver observer : this.observers)
 		{
-			observer.onGroupAdded(this, object);
+			observer.onObjectAdded(this, object);
 		}
 
 		this.markDirty();
 	}
 
-	public <T extends IWorldObjectGroup> void addGroup(final T object)
+	public <T extends IWorldObject> int addObject(final T object)
 	{
-		this.setGroup(this.nextId++, object);
+		final int id = this.nextId;
+
+		this.setObject(this.nextId++, object);
+
+		return id;
 	}
 
-	public Collection<IWorldObjectGroup> getGroups()
+	public <T extends IWorldObject> boolean removeObject(final T object)
 	{
-		return this.idToGroup.values();
+		return this.removeObject(this.getID(object));
+	}
+
+	public boolean removeObject(final int id)
+	{
+		final IWorldObject object = this.idToObject.get(id);
+
+		if (this.idToObject.containsKey(id))
+		{
+			this.idToObject.remove(id);
+
+			for (final IWorldObjectManagerObserver observer : this.observers)
+			{
+				observer.onObjectRemoved(this, object);
+			}
+
+			this.markDirty();
+		}
+
+		return object != null;
+	}
+
+	public Collection<IWorldObject> getObjects()
+	{
+		return this.idToObject.values();
 	}
 
 	public void addObserver(final IWorldObjectManagerObserver observer)
@@ -201,7 +230,7 @@ public class WorldObjectManager extends WorldSavedData
 			this.world = DimensionManager.getWorld(this.dimension);
 		}
 
-		this.idToGroup = HashBiMap.create(funnel.getIntMap(this.world, "groups"));
+		this.idToObject = HashBiMap.create(funnel.getIntMap(this.world, "objects"));
 
 		for (final IWorldObjectManagerObserver observer : this.observers)
 		{
@@ -217,7 +246,7 @@ public class WorldObjectManager extends WorldSavedData
 		tag.setInteger("nextId", this.nextId);
 		tag.setInteger("dimension", this.dimension);
 
-		funnel.setIntMap("groups", this.idToGroup);
+		funnel.setIntMap("objects", this.idToObject);
 
 		return tag;
 	}

@@ -9,7 +9,6 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintEditing;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -28,8 +27,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Blueprint extends BlueprintRegion implements IWorldObject, IColored, IBlueprintDataListener,
 		IScheduleLayerHolder, IScheduleRecordListener
 {
-	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
-
 	private final List<IScheduleLayerHolderListener> listeners = Lists.newArrayList();
 
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -39,6 +36,8 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	private IWorldRenderer renderer;
 
 	private int currentScheduleLayer;
+
+	private boolean isDirty;
 
 	private Blueprint(final World world)
 	{
@@ -278,18 +277,15 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
-	public void trackGroup(final IWorldObjectGroup group)
+	public void markClean()
 	{
-		if (!this.trackedGroups.contains(group))
-		{
-			this.trackedGroups.add(group);
-		}
+		this.isDirty = false;
 	}
 
 	@Override
-	public void untrackGroup(final IWorldObjectGroup group)
+	public boolean isDirty()
 	{
-		this.trackedGroups.remove(group);
+		return this.isDirty;
 	}
 
 	@Override
@@ -330,6 +326,8 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 		this.currentScheduleLayer = tag.getInteger("currentScheduleLayer");
 		this.data.setWorldObjectParent(this);
+
+		this.data.getScheduleLayers().values().forEach(l -> l.getScheduleRecord().listen(this));
 	}
 
 	@Override
@@ -341,42 +339,46 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Override
 	public void onRemoveScheduleLayer(final IScheduleLayer layer, final int index)
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		layer.getScheduleRecord().unlisten(this);
+
+		this.isDirty = true;
 	}
 
 	@Override
 	public void onAddScheduleLayer(final IScheduleLayer layer, final int index)
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		layer.getScheduleRecord().listen(this);
+
+		this.isDirty = true;
 	}
 
 	@Override
 	public void onDataChanged()
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		this.isDirty = true;
 	}
 
 	@Override
 	public void onAddSchedule(ISchedule schedule)
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		this.isDirty = true;
 	}
 
 	@Override
 	public void onRemoveSchedule(ISchedule schedule)
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		this.isDirty = true;
 	}
 
 	@Override
 	public void onAddEntrance(Entrance entrance)
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		this.isDirty = true;
 	}
 
 	@Override
 	public void onRemoveEntrance(Entrance entrance)
 	{
-		this.trackedGroups.forEach(IWorldObjectGroup::markDirty);
+		this.isDirty = true;
 	}
 }

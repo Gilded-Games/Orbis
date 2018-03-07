@@ -1,7 +1,6 @@
 package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
@@ -42,10 +41,8 @@ public class GuiRightClickSelector extends GuiFrame
 					@Override
 					public void onClick(final GuiDropdownList list, final EntityPlayer player)
 					{
-						final WorldObjectManager manager = WorldObjectManager.get(player.world);
-
 						OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
-						OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(GuiRightClickSelector.this.region.getWorld(), manager.getGroup(0),
+						OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(GuiRightClickSelector.this.region.getWorld(),
 								GuiRightClickSelector.this.region));
 
 						GuiRightClickSelector.this.playerOrbis.powers().getSelectPower().setSelectedRegion(null);

@@ -461,7 +461,7 @@ public class RenderShape implements IWorldRenderer
 				final IWorldObject obj = (IWorldObject) this.getRenderedObject();
 
 				final WorldObjectManager manager = WorldObjectManager.get(this.world);
-				final IWorldObjectGroup group = manager.getGroup(0);
+				final IWorldObjectGroup group = manager;
 
 				if (group.hasObject(obj))
 				{

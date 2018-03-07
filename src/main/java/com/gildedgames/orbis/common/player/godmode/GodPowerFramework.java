@@ -5,8 +5,7 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerFrameworkClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -75,10 +74,7 @@ public class GodPowerFramework implements IGodPower
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && !pos.equals(this.getPrevPlacingPos()) && playerOrbis
 				.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower())
 		{
-			final WorldObjectManager manager = WorldObjectManager.get(player.world);
-			final IWorldObjectGroup group = manager.getGroup(0);
-
-			IShape shape = group.getIntersectingShape(pos);
+			IShape shape = WorldObjectUtils.getIntersectingShape(player.getEntityWorld(), pos);
 
 			if (shape instanceof Framework)
 			{

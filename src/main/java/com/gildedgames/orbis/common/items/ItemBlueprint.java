@@ -11,8 +11,7 @@ import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleBlueprint;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -161,13 +160,10 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 					palette.add(playerOrbis.powers().getBlueprintPower().getPlacingBlueprint(), condition);
 
-					final WorldObjectManager manager = WorldObjectManager.get(world);
-					final IWorldObjectGroup group = manager.getGroup(0);
-
 					Region r = new Region(palette.getLargestDim());
 					RegionHelp.translate(r, createPos);
 
-					Blueprint b = group.getIntersectingShape(Blueprint.class, r);
+					Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, r);
 
 					if (b != null && b.getCurrentScheduleLayer() != null)
 					{

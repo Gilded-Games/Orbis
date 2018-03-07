@@ -50,7 +50,7 @@ public class PacketSetTriggerId implements IMessage
 
 	public PacketSetTriggerId(Blueprint blueprint, ISchedule schedule, String triggerId)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 
 		this.layerId = schedule.getParent().getParent().getLayerId();
 		this.scheduleId = schedule.getParent().getScheduleId(schedule);
@@ -112,7 +112,7 @@ public class PacketSetTriggerId implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -153,7 +153,7 @@ public class PacketSetTriggerId implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

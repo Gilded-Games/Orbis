@@ -44,7 +44,7 @@ public class PacketRemoveEntrance implements IMessage
 
 	public PacketRemoveEntrance(Blueprint blueprint, Entrance entrance)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.entranceId = blueprint.getData().getEntranceId(entrance);
 	}
 
@@ -94,7 +94,7 @@ public class PacketRemoveEntrance implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -135,7 +135,7 @@ public class PacketRemoveEntrance implements IMessage
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

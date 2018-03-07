@@ -6,9 +6,8 @@ import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectGroup;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.gui.blueprint.GuiEditBlueprint;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
@@ -95,12 +94,9 @@ public class OrbisDeveloperEventsClient
 
 				if (playerOrbis.powers().getSelectPower().getSelectedRegion() != null)
 				{
-					final WorldObjectManager manager = WorldObjectManager.get(mc.world);
-					final IWorldObjectGroup group = manager.getGroup(0);
-
 					OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
 					OrbisAPI.network()
-							.sendPacketToServer(new PacketWorldObjectRemove(mc.world, group, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+							.sendPacketToServer(new PacketWorldObjectRemove(mc.world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
 
 					playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 
@@ -115,14 +111,11 @@ public class OrbisDeveloperEventsClient
 
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
 
-			WorldObjectManager manager = WorldObjectManager.get(mc.player.world);
-			WorldObjectGroup group = manager.getGroup(0);
-
 			final int x = MathHelper.floor(mc.player.posX);
 			final int y = MathHelper.floor(mc.player.posY);
 			final int z = MathHelper.floor(mc.player.posZ);
 
-			Blueprint blueprint = group.getIntersectingShape(Blueprint.class,
+			Blueprint blueprint = WorldObjectUtils.getIntersectingShape(mc.player.world, Blueprint.class,
 					new Region(new BlockPos(x, y, z), new BlockPos(x, MathHelper.floor(mc.player.posY + mc.player.height), z)));
 
 			if (blueprint != null)

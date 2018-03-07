@@ -2,8 +2,7 @@ package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -40,10 +39,7 @@ public class ShapeSelectorFilter implements IShapeSelector
 	@Override
 	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
 	{
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-		final IWorldObjectGroup group = manager.getGroup(0);
-
-		return group.getIntersectingShapes(Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
+		return WorldObjectUtils.getIntersectingShapes(world, Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
 	}
 
 	@Override

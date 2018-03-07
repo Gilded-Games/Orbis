@@ -1,12 +1,11 @@
 package com.gildedgames.orbis.api.world;
 
-
 public interface IWorldObjectManagerObserver
 {
 
-	void onGroupAdded(WorldObjectManager manager, IWorldObjectGroup group);
+	void onObjectAdded(WorldObjectManager manager, IWorldObject obj);
 
-	void onGroupRemoved(WorldObjectManager manager, IWorldObjectGroup group);
+	void onObjectRemoved(WorldObjectManager manager, IWorldObject obj);
 
 	void onReloaded(WorldObjectManager manager);
 

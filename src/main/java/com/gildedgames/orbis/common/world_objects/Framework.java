@@ -7,23 +7,19 @@ import com.gildedgames.orbis.api.data.region.*;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectGroup;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.framework.RenderFrameworkEditing;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.List;
 import java.util.Map;
 
 public class Framework extends AbstractRegion implements IWorldObject, IColored, IMutableRegion, IRotateable
 {
-	private final List<IWorldObjectGroup> trackedGroups = Lists.newArrayList();
-
 	protected Rotation rotation = Rotation.NONE;
 
 	protected BlockPos min = BlockPos.ORIGIN, max = BlockPos.ORIGIN;
@@ -35,6 +31,8 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	private IWorldRenderer renderer;
 
 	private FrameworkData data;
+
+	private boolean isDirty;
 
 	private Framework()
 	{
@@ -158,18 +156,15 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	}
 
 	@Override
-	public void trackGroup(IWorldObjectGroup group)
+	public void markClean()
 	{
-		if (!this.trackedGroups.contains(group))
-		{
-			this.trackedGroups.add(group);
-		}
+		this.isDirty = false;
 	}
 
 	@Override
-	public void untrackGroup(IWorldObjectGroup group)
+	public boolean isDirty()
 	{
-		this.trackedGroups.remove(group);
+		return this.isDirty;
 	}
 
 	@Override
@@ -237,5 +232,15 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	public Rotation getRotation()
 	{
 		return this.rotation;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final HashCodeBuilder builder = new HashCodeBuilder();
+
+		builder.append(this.min.hashCode());
+
+		return builder.toHashCode();
 	}
 }

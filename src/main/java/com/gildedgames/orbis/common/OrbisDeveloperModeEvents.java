@@ -107,7 +107,7 @@ public class OrbisDeveloperModeEvents
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(world);
 
-				manager.checkForDirtyGroups();
+				manager.checkForDirtyObjects();
 			}
 		}
 	}

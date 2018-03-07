@@ -49,7 +49,7 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 	public PacketSaveWorldObjectToProject(final IProject project, final IWorldObject object, final String location)
 	{
 		this.project = project.getProjectIdentifier();
-		this.worldObjectId = WorldObjectManager.get(object.getWorld()).getGroup(0).getID(object);
+		this.worldObjectId = WorldObjectManager.get(object.getWorld()).getID(object);
 		this.location = location;
 	}
 
@@ -96,7 +96,7 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 			try
 			{
 				final IProject project = OrbisCore.getProjectManager().findProject(message.project);
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 				if (project != null && worldObject.getData() != null)
 				{

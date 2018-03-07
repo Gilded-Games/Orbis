@@ -46,7 +46,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 	public PacketSetScheduleLayerInfo(final Blueprint blueprint, IScheduleLayer layer, String displayName, float edgeNoise, boolean choosesPerBlock)
 	{
-		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getGroup(0).getID(blueprint);
+		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 
 		this.displayName = displayName;
 		this.edgeNoise = edgeNoise;
@@ -131,7 +131,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}
@@ -179,7 +179,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getGroup(0).getObject(message.worldObjectId);
+					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
 					data = worldObject.getData();
 				}

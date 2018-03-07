@@ -4,7 +4,10 @@ import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.world.*;
+import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.api.world.IWorldObjectManagerObserver;
+import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.OrbisCapabilities;
 import com.gildedgames.orbis.common.capabilities.chunk_renderer.IChunkRendererCapability;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -22,7 +25,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectGroupObserver, IWorldObjectManagerObserver
+public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectManagerObserver
 {
 
 	private final static Minecraft mc = Minecraft.getMinecraft();
@@ -300,13 +303,13 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectGr
 	}
 
 	@Override
-	public void onObjectAdded(final IWorldObjectGroup group, final IWorldObject object)
+	public void onObjectAdded(final WorldObjectManager manager, final IWorldObject object)
 	{
 		this.addRenderer(object.getWorld(), object.getRenderer());
 	}
 
 	@Override
-	public void onObjectRemoved(final IWorldObjectGroup group, final IWorldObject object)
+	public void onObjectRemoved(final WorldObjectManager manager, final IWorldObject object)
 	{
 		if (object instanceof IShape)
 		{
@@ -325,38 +328,12 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectGr
 	}
 
 	@Override
-	public void onReloaded(final IWorldObjectGroup group)
-	{
-		for (final IWorldObject object : group.getObjects())
-		{
-			this.onObjectAdded(group, object);
-		}
-	}
-
-	@Override
-	public void onGroupAdded(final WorldObjectManager manager, final IWorldObjectGroup group)
-	{
-		if (!group.containsObserver(this))
-		{
-			group.addObserver(this);
-		}
-	}
-
-	@Override
-	public void onGroupRemoved(final WorldObjectManager manager, final IWorldObjectGroup group)
-	{
-		for (final IWorldObject object : group.getObjects())
-		{
-			this.onObjectRemoved(group, object);
-		}
-	}
-
-	@Override
 	public void onReloaded(final WorldObjectManager manager)
 	{
-		for (final IWorldObjectGroup group : manager.getGroups())
+		for (final IWorldObject object : manager.getObjects())
 		{
-			this.onGroupAdded(manager, group);
+			this.onObjectAdded(manager, object);
 		}
 	}
+
 }
