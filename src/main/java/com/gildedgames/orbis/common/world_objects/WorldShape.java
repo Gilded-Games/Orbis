@@ -21,7 +21,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class WorldShape implements IShape, IWorldObject, IColored
 {
-	private final World world;
+	private World world;
 
 	private IShape shape;
 
@@ -66,6 +66,12 @@ public class WorldShape implements IShape, IWorldObject, IColored
 	public World getWorld()
 	{
 		return this.world;
+	}
+
+	@Override
+	public void setWorld(World world)
+	{
+		this.world = world;
 	}
 
 	@Override

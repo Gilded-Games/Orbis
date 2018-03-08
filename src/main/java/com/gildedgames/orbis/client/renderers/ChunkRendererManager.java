@@ -332,6 +332,8 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 	{
 		for (final IWorldObject object : manager.getObjects())
 		{
+			object.setWorld(manager.getWorld());
+
 			this.onObjectAdded(manager, object);
 		}
 	}

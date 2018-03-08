@@ -21,6 +21,8 @@ public interface IWorldObject extends NBT
 
 	World getWorld();
 
+	void setWorld(World world);
+
 	BlockPos getPos();
 
 	void setPos(BlockPos pos);

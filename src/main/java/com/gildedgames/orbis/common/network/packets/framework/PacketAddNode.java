@@ -9,6 +9,7 @@ import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
@@ -21,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketAddNode implements IMessage
+public class PacketAddNode extends PacketMultipleParts
 {
 
 	private IDataIdentifier id;
@@ -37,6 +38,11 @@ public class PacketAddNode implements IMessage
 	public PacketAddNode()
 	{
 
+	}
+
+	private PacketAddNode(final byte[] data)
+	{
+		super(data);
 	}
 
 	public PacketAddNode(IDataIdentifier id, FrameworkNode node, final BlockPos pos)
@@ -61,7 +67,13 @@ public class PacketAddNode implements IMessage
 	}
 
 	@Override
-	public void fromBytes(final ByteBuf buf)
+	public PacketMultipleParts createPart(final byte[] data)
+	{
+		return new PacketAddNode(data);
+	}
+
+	@Override
+	public void read(final ByteBuf buf)
 	{
 		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
 		final NBTFunnel funnel = new NBTFunnel(tag);
@@ -73,7 +85,7 @@ public class PacketAddNode implements IMessage
 	}
 
 	@Override
-	public void toBytes(final ByteBuf buf)
+	public void write(final ByteBuf buf)
 	{
 		final NBTTagCompound tag = new NBTTagCompound();
 		final NBTFunnel funnel = new NBTFunnel(tag);

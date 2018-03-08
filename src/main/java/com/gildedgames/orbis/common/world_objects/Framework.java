@@ -39,23 +39,28 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 		this.data = new FrameworkData(300, 300, 300);
 	}
 
-	public Framework(World world, final IRegion region)
+	private Framework(World world)
 	{
 		this();
+	}
+
+	public Framework(World world, final IRegion region)
+	{
+		this(world);
 		this.world = world;
 		this.setBounds(region);
 	}
 
 	public Framework(World world, final BlockPos pos, final BlueprintData data)
 	{
-		this();
+		this(world);
 		this.world = world;
 		this.setPos(pos);
 	}
 
 	public Framework(World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
 	{
-		this();
+		this(world);
 		this.world = world;
 		this.rotation = rotation;
 
@@ -174,6 +179,12 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+		this.world = world;
+	}
+
+	@Override
 	public IShape getShape()
 	{
 		return this;
@@ -205,6 +216,10 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 
 		funnel.setPos("min", this.min);
 
+		tag.setInteger("width", this.width);
+		tag.setInteger("height", this.height);
+		tag.setInteger("length", this.length);
+
 		tag.setString("rotation", this.rotation.name());
 	}
 
@@ -214,6 +229,10 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.min = funnel.getPos("min");
+
+		this.width = tag.getInteger("width");
+		this.height = tag.getInteger("height");
+		this.length = tag.getInteger("length");
 
 		this.rotation = Rotation.valueOf(tag.getString("rotation"));
 

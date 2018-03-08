@@ -104,6 +104,12 @@ public class WorldRegion extends Region implements IWorldObject, IColored
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+		this.world = world;
+	}
+
+	@Override
 	public BlockPos getPos()
 	{
 		return this.getMin();

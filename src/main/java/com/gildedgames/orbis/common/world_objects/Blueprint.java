@@ -295,6 +295,12 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+		this.world = world;
+	}
+
+	@Override
 	public IShape getShape()
 	{
 		return this;
