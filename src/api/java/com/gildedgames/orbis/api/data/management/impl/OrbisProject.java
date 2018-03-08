@@ -360,9 +360,11 @@ public class OrbisProject implements IProject
 
 								final NBTFunnel funnel = new NBTFunnel(tag);
 
-								final String location = loc.replace(
-										loc.substring(0, loc.lastIndexOf(this.identifier.getProjectId()) + this.identifier.getProjectId().length() + 1),
-										"");
+								String projectsLoc = loc.substring(
+										loc.lastIndexOf("projects") + 9);
+
+								final String location = projectsLoc
+										.substring(projectsLoc.indexOf(this.identifier.getProjectId()) + this.identifier.getProjectId().length() + 1);
 
 								dataWalker.walk(funnel, location, file, uri);
 							}
