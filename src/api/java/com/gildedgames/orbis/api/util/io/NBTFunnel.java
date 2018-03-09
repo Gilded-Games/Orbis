@@ -4,19 +4,37 @@ import com.gildedgames.orbis.api.util.mc.NBT;
 import com.gildedgames.orbis.api.util.mc.NBTHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class NBTFunnel
 {
+	public static Function<BlockPos, NBTTagCompound> POS_SETTER = o ->
+	{
+		NBTFunnel f = new NBTFunnel(new NBTTagCompound());
+
+		f.setPos("p", o);
+
+		return f.getTag();
+	};
+
+	public static Function<NBTTagCompound, BlockPos> POS_GETTER = n ->
+	{
+		NBTFunnel f = new NBTFunnel(n);
+
+		return f.getPos("p");
+	};
 
 	private final NBTTagCompound tag;
 
@@ -31,6 +49,16 @@ public class NBTFunnel
 	public NBTTagCompound getTag()
 	{
 		return this.tag;
+	}
+
+	public void setStack(final String key, ItemStack stack)
+	{
+		this.tag.setTag(key, NBTHelper.writeStack(stack));
+	}
+
+	public ItemStack getStack(String key)
+	{
+		return NBTHelper.readStack(this.tag.getCompoundTag(key));
 	}
 
 	public void set(final String key, final NBT nbt)
@@ -182,6 +210,60 @@ public class NBTFunnel
 
 		this.tag.setTag(key + "_keys", writtenKeys);
 		this.tag.setTag(key + "_obj", writtenObjects);
+	}
+
+	public <L, R> void setMap(final String key, final Map<L, R> nbtMap, @Nullable Function<L, NBTTagCompound> leftSetter,
+			@Nullable Function<R, NBTTagCompound> rightSetter)
+	{
+		final NBTTagList writtenKeys = new NBTTagList();
+		final NBTTagList writtenObjects = new NBTTagList();
+
+		for (final Map.Entry<L, R> entrySet : nbtMap.entrySet())
+		{
+			final L keyNBT = entrySet.getKey();
+			final R valueNBT = entrySet.getValue();
+
+			if (leftSetter != null)
+			{
+				writtenKeys.appendTag(leftSetter.apply(keyNBT));
+			}
+			else
+			{
+				writtenKeys.appendTag(NBTHelper.write((NBT) keyNBT));
+			}
+
+			if (rightSetter != null)
+			{
+				writtenObjects.appendTag(rightSetter.apply(valueNBT));
+			}
+			else
+			{
+				writtenObjects.appendTag(NBTHelper.write((NBT) valueNBT));
+			}
+		}
+
+		this.tag.setTag(key + "_keys", writtenKeys);
+		this.tag.setTag(key + "_obj", writtenObjects);
+	}
+
+	public <L, R> Map<L, R> getMap(final String key, @Nullable Function<NBTTagCompound, L> leftGetter,
+			@Nullable Function<NBTTagCompound, R> rightGetter)
+	{
+		final Map<L, R> readObjects = Maps.newHashMap();
+
+		final NBTTagList keys = this.tag.getTagList(key + "_keys", 10);
+		final NBTTagList objects = this.tag.getTagList(key + "_obj", 10);
+
+		for (int i = 0; i < keys.tagCount(); i++)
+		{
+			final NBTTagCompound keyData = keys.getCompoundTagAt(i);
+			final NBTTagCompound valueData = objects.getCompoundTagAt(i);
+
+			readObjects.put(leftGetter != null ? leftGetter.apply(keyData) : NBTHelper.read(keyData),
+					rightGetter != null ? rightGetter.apply(valueData) : NBTHelper.read(valueData));
+		}
+
+		return readObjects;
 	}
 
 	private <K extends NBT, T extends NBT> Map<K, T> getMapInner(final World world, final String key)

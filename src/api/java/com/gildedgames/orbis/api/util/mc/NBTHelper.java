@@ -3,6 +3,8 @@ package com.gildedgames.orbis.api.util.mc;
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.util.io.IClassSerializer;
 import com.google.common.collect.AbstractIterator;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -109,6 +111,50 @@ public class NBTHelper
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static ItemStack readStack(NBTTagCompound tag)
+	{
+		if (tag == null || tag.getBoolean("_null") || !tag.hasKey("_null"))
+		{
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack itemstack = new ItemStack(Item.getItemById(tag.getShort("id")), tag.getByte("count"), tag.getShort("meta"));
+		itemstack.setTagCompound(tag.getCompoundTag("shareTag"));
+
+		return itemstack;
+	}
+
+	public static NBTBase writeStack(ItemStack stack)
+	{
+		final NBTTagCompound tag = new NBTTagCompound();
+
+		if (stack.isEmpty())
+		{
+			tag.setBoolean("_null", true);
+
+			return tag;
+		}
+
+		tag.setBoolean("_null", false);
+
+		tag.setShort("id", (short) Item.getIdFromItem(stack.getItem()));
+		tag.setByte("count", (byte) stack.getCount());
+		tag.setShort("meta", (short) stack.getMetadata());
+		NBTTagCompound nbttagcompound = null;
+
+		if (stack.getItem().isDamageable() || stack.getItem().getShareTag())
+		{
+			nbttagcompound = stack.getItem().getNBTShareTag(stack);
+		}
+
+		if (nbttagcompound != null)
+		{
+			tag.setTag("shareTag", nbttagcompound);
+		}
+
+		return tag;
 	}
 
 	public static BlockPos readBlockPos(final NBTTagCompound tag)
