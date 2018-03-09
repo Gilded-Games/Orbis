@@ -11,11 +11,12 @@ import com.gildedgames.orbis.api.util.BlueprintHelper;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.util.CreationDataOrbis;
-import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class WorldActionFilter implements IWorldAction
+import java.util.Random;
+
+public class WorldActionFilter extends WorldActionBase
 {
 
 	private BlockFilter filter;
@@ -41,9 +42,11 @@ public class WorldActionFilter implements IWorldAction
 	@Override
 	public void redo(PlayerOrbis player, World world)
 	{
+		super.redo(player, world);
+
 		this.oldContent = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
 
-		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity());
+		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).rand(new Random(this.getSeed()));
 
 		creationData.schedules(this.schedules);
 
@@ -53,6 +56,8 @@ public class WorldActionFilter implements IWorldAction
 	@Override
 	public void undo(PlayerOrbis player, World world)
 	{
+		super.undo(player, world);
+
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
 		primer.create(this.oldContent, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()));
@@ -61,20 +66,26 @@ public class WorldActionFilter implements IWorldAction
 	@Override
 	public void write(NBTTagCompound tag)
 	{
+		super.write(tag);
+
 		NBTFunnel funnel = new NBTFunnel(tag);
 
 		funnel.set("f", this.filter);
 		funnel.set("s", this.shapeToFilter);
 		tag.setBoolean("sc", this.schedules);
+
 	}
 
 	@Override
 	public void read(NBTTagCompound tag)
 	{
+		super.read(tag);
+
 		NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.filter = funnel.get("f");
 		this.shapeToFilter = funnel.get("s");
 		this.schedules = tag.getBoolean("sc");
+
 	}
 }

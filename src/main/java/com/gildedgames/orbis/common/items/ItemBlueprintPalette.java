@@ -13,9 +13,9 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.OrbisServerCaches;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.packets.PacketCreatePlacingBlueprintPalette;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintPalette;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -163,7 +163,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 				}
 				else
 				{
-					OrbisAPI.network().sendPacketToServer(new PacketCreatePlacingBlueprintPalette(createPos));
+					playerOrbis.getWorldActionLog().track(world, new WorldActionBlueprintPalette(createPos));
 				}
 			}
 		}

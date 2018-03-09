@@ -241,12 +241,15 @@ public class OrbisCore implements IOrbisServicesListener
 		s.register(10, Framework.class, new Instantiator<>(Framework.class));
 		s.register(11, BlueprintNode.class, new Instantiator<>(BlueprintNode.class));
 		s.register(12, OrbisInstance.class, new Instantiator<>(OrbisInstance.class));
+
 		s.register(13, WorldActionPathway.class, new Instantiator<>(WorldActionPathway.class));
 		s.register(14, WorldActionAddWorldObject.class, new Instantiator<>(WorldActionAddWorldObject.class));
 		s.register(15, WorldActionAddEntrance.class, new Instantiator<>(WorldActionAddEntrance.class));
 		s.register(16, WorldActionAddSchedule.class, new Instantiator<>(WorldActionAddSchedule.class));
-
-		s.register(13, WorldActionFilter.class, new Instantiator<>(WorldActionFilter.class));
+		s.register(17, WorldActionFilter.class, new Instantiator<>(WorldActionFilter.class));
+		s.register(18, WorldActionBlueprint.class, new Instantiator<>(WorldActionBlueprint.class));
+		s.register(19, WorldActionBlockDataContainer.class, new Instantiator<>(WorldActionBlockDataContainer.class));
+		s.register(20, WorldActionBlueprintPalette.class, new Instantiator<>(WorldActionBlueprintPalette.class));
 
 		OrbisAPI.services().io().register(s);
 	}

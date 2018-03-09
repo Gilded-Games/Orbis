@@ -17,9 +17,9 @@ import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.packets.PacketCreatePlacingBlueprint;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -186,7 +186,8 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 				}
 				else
 				{
-					OrbisAPI.network().sendPacketToServer(new PacketCreatePlacingBlueprint(createPos));
+					playerOrbis.getWorldActionLog()
+							.track(world, new WorldActionBlueprint(playerOrbis.powers().getBlueprintPower().getPlacingBlueprint(), createPos));
 				}
 			}
 		}

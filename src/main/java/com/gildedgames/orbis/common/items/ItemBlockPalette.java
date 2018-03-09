@@ -12,7 +12,7 @@ import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockPaletteRender
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis.common.util.CreationDataOrbis;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
@@ -106,10 +106,6 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
-		final CreationDataOrbis creationData = new CreationDataOrbis(world, playerOrbis.getEntity());
-
-		creationData.schedules(playerOrbis.powers().isScheduling());
-
 		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
 
 		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getReplacePower())
@@ -128,6 +124,6 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		final BlockFilter filter = new BlockFilter(layer);
 
-		filter.apply(selectedShape, creationData, playerOrbis.powers().getFillPower().getFilterOptions());
+		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
 	}
 }

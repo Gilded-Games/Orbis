@@ -8,9 +8,9 @@ import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockDataContainer
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.packets.PacketCreateItemBlockDataContainer;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataToCache;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDataContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -109,7 +109,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
-				OrbisAPI.network().sendPacketToServer(new PacketCreateItemBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
+				playerOrbis.getWorldActionLog().track(world, new WorldActionBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
 			}
 		}
 	}

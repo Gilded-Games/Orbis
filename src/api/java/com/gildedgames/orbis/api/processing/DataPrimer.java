@@ -260,7 +260,7 @@ public class DataPrimer
 
 	public void create(BlueprintDataPalette palette, ICreationData data)
 	{
-		final BlueprintData b = palette.fetchRandom(data.getWorld(), data.getWorld().rand);
+		final BlueprintData b = palette.fetchRandom(data.getWorld(), data.getRandom());
 
 		final Rotation rotation = data.getRotation();
 
