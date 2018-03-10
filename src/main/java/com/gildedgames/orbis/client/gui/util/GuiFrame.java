@@ -257,8 +257,8 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 		{
 			this.init();
 
-			this.guiLeft = 0;
-			this.guiTop = 0;
+			this.guiLeft = (int) this.dim().x();
+			this.guiTop = (int) this.dim().y();
 
 			this.xSize = (int) this.dim().width();
 			this.ySize = (int) this.dim().height();

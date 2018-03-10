@@ -83,11 +83,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	@Override
 	public void init()
 	{
-		this.guiLeft = this.width / 2 - 90 - (176 / 2);
-		this.guiTop = this.height / 2 - (147 / 2) + 12;
-
-		this.xSize = 179 * 2;
-		this.ySize = 169;
+		this.dim().mod().width(179 * 2).height(169).x(this.width / 2 - 90 - (176 / 2)).y(this.height / 2 - (147 / 2) + 12).flush();
 
 		final Pos2D center = Pos2D.flush((this.width / 2), this.height / 2);
 
