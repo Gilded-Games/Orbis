@@ -255,13 +255,13 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 		if (!this.hasInit)
 		{
+			this.init();
+
 			this.guiLeft = 0;
 			this.guiTop = 0;
 
 			this.xSize = (int) this.dim().width();
 			this.ySize = (int) this.dim().height();
-
-			this.init();
 
 			this.hasInit = true;
 		}
