@@ -122,7 +122,7 @@ public class OrbisDeveloperEventsClient
 			Blueprint blueprint = WorldObjectUtils.getIntersectingShape(mc.player.world, Blueprint.class,
 					new Region(new BlockPos(x, y, z), new BlockPos(x, MathHelper.floor(mc.player.posY + mc.player.height), z)));
 
-			if (blueprint != null)
+			if (blueprint != null && OrbisKeyBindings.keyBindControl.isKeyDown())
 			{
 				Minecraft.getMinecraft().displayGuiScreen(new GuiEditBlueprint(null, blueprint));
 

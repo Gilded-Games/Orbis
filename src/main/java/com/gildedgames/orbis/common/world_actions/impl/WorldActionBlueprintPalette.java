@@ -71,7 +71,7 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 	}
 
 	@Override
-	public void setWorld(World world)
+	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 
 	}

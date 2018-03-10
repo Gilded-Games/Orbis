@@ -30,6 +30,11 @@ public class WorldActionAddBlueprint implements IWorldAction
 
 	private BlockDataContainer oldContent;
 
+	private WorldActionAddBlueprint()
+	{
+
+	}
+
 	public WorldActionAddBlueprint(BlockPos createPos)
 	{
 		this.createPos = createPos;
@@ -43,17 +48,11 @@ public class WorldActionAddBlueprint implements IWorldAction
 			return;
 		}
 
-		if (this.blueprint == null)
-		{
-			Rotation rotation = player.powers().getBlueprintPower().getPlacingRotation();
-			BlueprintData data = player.powers().getBlueprintPower().getPlacingBlueprint();
-
-			IRegion bb = RotationHelp.regionFromCenter(this.createPos, data, rotation);
-
-			this.blueprint = new Blueprint(world, bb.getMin(), data);
-		}
-
 		this.oldContent = BlueprintHelper.fetchBlocksInside(this.blueprint, world);
+
+		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+
+		primer.create(this.blueprint.getBlockDataContainer(), new CreationData(world).pos(this.blueprint.getMin()));
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
@@ -63,10 +62,6 @@ public class WorldActionAddBlueprint implements IWorldAction
 		{
 			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(this.blueprint), world.provider.getDimension());
 		}
-
-		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
-
-		primer.create(this.blueprint.getBlockDataContainer(), new CreationData(world).pos(this.blueprint.getMin()));
 	}
 
 	@Override
@@ -77,6 +72,10 @@ public class WorldActionAddBlueprint implements IWorldAction
 			return;
 		}
 
+		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+
+		primer.create(this.oldContent, new CreationData(world).pos(this.blueprint.getMin()));
+
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
 		manager.removeObject(this.blueprint);
@@ -85,15 +84,26 @@ public class WorldActionAddBlueprint implements IWorldAction
 		{
 			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.blueprint), world.provider.getDimension());
 		}
+	}
 
-		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+	private void initBlueprint(PlayerOrbis player)
+	{
+		if (this.blueprint == null)
+		{
+			Rotation rotation = player.powers().getBlueprintPower().getPlacingRotation();
+			BlueprintData data = player.powers().getBlueprintPower().getPlacingBlueprint();
 
-		primer.create(this.oldContent, new CreationData(world).pos(this.blueprint.getMin()));
+			IRegion bb = RotationHelp.regionFromCenter(this.createPos, data, rotation);
+
+			this.blueprint = new Blueprint(player.getWorld(), bb.getMin(), data);
+		}
 	}
 
 	@Override
-	public void setWorld(World world)
+	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
+		this.initBlueprint(playerOrbis);
+
 		this.blueprint.setWorld(world);
 	}
 

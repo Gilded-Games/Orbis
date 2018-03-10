@@ -11,6 +11,6 @@ public interface IWorldAction extends NBT
 
 	void undo(PlayerOrbis player, World world);
 
-	void setWorld(World world);
+	void setWorld(PlayerOrbis playerOrbis, World world);
 
 }

@@ -64,7 +64,7 @@ public class WorldActionFilter extends WorldActionBase
 	}
 
 	@Override
-	public void setWorld(World world)
+	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 
 	}

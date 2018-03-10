@@ -66,7 +66,7 @@ public class WorldActionBlockDataContainer implements IWorldAction
 	}
 
 	@Override
-	public void setWorld(World world)
+	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 
 	}

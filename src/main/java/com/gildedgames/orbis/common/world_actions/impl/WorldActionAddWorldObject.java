@@ -63,7 +63,7 @@ public class WorldActionAddWorldObject implements IWorldAction
 	}
 
 	@Override
-	public void setWorld(World world)
+	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 		this.worldObject.setWorld(world);
 	}

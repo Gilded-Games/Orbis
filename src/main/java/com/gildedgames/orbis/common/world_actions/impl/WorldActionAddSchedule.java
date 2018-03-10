@@ -87,7 +87,7 @@ public class WorldActionAddSchedule implements IWorldAction
 	}
 
 	@Override
-	public void setWorld(World world)
+	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 		this.blueprint.setWorld(world);
 	}
