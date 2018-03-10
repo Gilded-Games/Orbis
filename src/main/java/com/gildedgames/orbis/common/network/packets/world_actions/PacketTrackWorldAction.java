@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.network.packets.world_actions;
 
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
@@ -10,7 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketTrackWorldAction implements IMessage
+public class PacketTrackWorldAction extends PacketMultipleParts
 {
 	private IWorldAction action;
 
@@ -19,13 +20,24 @@ public class PacketTrackWorldAction implements IMessage
 
 	}
 
+	private PacketTrackWorldAction(byte[] data)
+	{
+		super(data);
+	}
+
 	public PacketTrackWorldAction(IWorldAction action)
 	{
 		this.action = action;
 	}
 
 	@Override
-	public void fromBytes(final ByteBuf buf)
+	public PacketMultipleParts createPart(byte[] data)
+	{
+		return new PacketTrackWorldAction(data);
+	}
+
+	@Override
+	public void read(final ByteBuf buf)
 	{
 		NBTFunnel funnel = new NBTFunnel(ByteBufUtils.readTag(buf));
 
@@ -33,7 +45,7 @@ public class PacketTrackWorldAction implements IMessage
 	}
 
 	@Override
-	public void toBytes(final ByteBuf buf)
+	public void write(final ByteBuf buf)
 	{
 		final NBTTagCompound tag = new NBTTagCompound();
 		final NBTFunnel funnel = new NBTFunnel(tag);
