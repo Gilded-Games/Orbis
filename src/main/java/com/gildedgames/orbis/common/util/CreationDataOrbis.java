@@ -9,6 +9,11 @@ import net.minecraft.world.World;
 
 public class CreationDataOrbis extends CreationData
 {
+	private CreationDataOrbis()
+	{
+		super();
+	}
+
 	public CreationDataOrbis(final World world)
 	{
 		super(world);

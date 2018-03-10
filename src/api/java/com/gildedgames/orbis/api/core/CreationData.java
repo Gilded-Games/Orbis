@@ -7,13 +7,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import java.util.Random;
 
-public class CreationData implements ICreationData
+public class CreationData implements ICreationData<CreationData>
 {
 
 	private Random rand;
+
+	private long seed;
 
 	private BlockPos pos = BlockPos.ORIGIN;
 
@@ -24,6 +27,13 @@ public class CreationData implements ICreationData
 	private Rotation rotation = Rotation.NONE;
 
 	private boolean placeAir = true, schedules = false;
+
+	private int dimId;
+
+	protected CreationData()
+	{
+
+	}
 
 	public CreationData(final World world)
 	{
@@ -45,7 +55,7 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public ICreationData pos(final BlockPos pos)
+	public CreationData pos(final BlockPos pos)
 	{
 		this.pos = pos;
 
@@ -53,15 +63,20 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public ICreationData world(final World world)
+	public CreationData world(final World world)
 	{
 		this.world = world;
+
+		if (this.world != null)
+		{
+			this.dimId = this.world.provider.getDimension();
+		}
 
 		return this;
 	}
 
 	@Override
-	public ICreationData rotation(final Rotation rotation)
+	public CreationData rotation(final Rotation rotation)
 	{
 		this.rotation = rotation;
 
@@ -69,15 +84,17 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public ICreationData rand(final Random random)
+	public CreationData seed(long seed)
 	{
-		this.rand = random;
+		this.seed = seed;
+
+		this.rand = new Random(seed);
 
 		return this;
 	}
 
 	@Override
-	public ICreationData creator(final EntityPlayer creator)
+	public CreationData creator(final EntityPlayer creator)
 	{
 		this.creator = creator;
 
@@ -85,7 +102,7 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public ICreationData placesAir(final boolean placeAir)
+	public CreationData placesAir(final boolean placeAir)
 	{
 		this.placeAir = placeAir;
 
@@ -93,7 +110,7 @@ public class CreationData implements ICreationData
 	}
 
 	@Override
-	public ICreationData schedules(final boolean schedules)
+	public CreationData schedules(final boolean schedules)
 	{
 		this.schedules = schedules;
 
@@ -109,6 +126,11 @@ public class CreationData implements ICreationData
 	@Override
 	public World getWorld()
 	{
+		if (this.world == null)
+		{
+			this.world = DimensionManager.getWorld(this.dimId);
+		}
+
 		return this.world;
 	}
 
@@ -145,8 +167,13 @@ public class CreationData implements ICreationData
 	@Override
 	public ICreationData clone()
 	{
-		return new CreationData(this.world).pos(new BlockPos(this.pos)).rand(this.rand).rotation(this.rotation).creator(this.creator).placesAir(this.placeAir)
+		CreationData data = new CreationData(this.world).pos(new BlockPos(this.pos)).rotation(this.rotation).creator(this.creator).placesAir(this.placeAir)
 				.schedules(this.schedules);
+
+		data.seed = this.seed;
+		data.rand = this.rand;
+
+		return data;
 	}
 
 	@Override
@@ -162,6 +189,12 @@ public class CreationData implements ICreationData
 		tag.setString("rotation", this.rotation.name());
 		tag.setBoolean("placeAir", this.placeAir);
 		tag.setBoolean("schedules", this.schedules);
+		tag.setLong("seed", this.seed);
+
+		if (this.world != null)
+		{
+			tag.setInteger("dimId", this.world.provider.getDimension());
+		}
 	}
 
 	@Override
@@ -171,5 +204,13 @@ public class CreationData implements ICreationData
 		this.rotation = Rotation.valueOf(tag.getString("rotation"));
 		this.placeAir = tag.getBoolean("placeAir");
 		this.schedules = tag.getBoolean("schedules");
+		this.seed = tag.getLong("seed");
+
+		if (tag.hasKey("dimId"))
+		{
+			this.dimId = tag.getInteger("dimId");
+		}
+
+		this.rand = new Random(this.seed);
 	}
 }

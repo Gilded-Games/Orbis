@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class PlacedBlueprint implements NBT
 {
-	private final World world;
+	private World world;
 
 	private BlockDataChunk[] chunks;
 
@@ -46,6 +46,16 @@ public class PlacedBlueprint implements NBT
 	private boolean hasGeneratedAChunk;
 
 	private List<ScheduleRegion> scheduleRegions = Lists.newArrayList();
+
+	private PlacedBlueprint()
+	{
+
+	}
+
+	private PlacedBlueprint(World world)
+	{
+		this.world = world;
+	}
 
 	public PlacedBlueprint(final World world, final BlueprintDefinition def, final ICreationData data)
 	{
@@ -120,7 +130,8 @@ public class PlacedBlueprint implements NBT
 					if (stack.getItem() instanceof ItemMonsterPlacer)
 					{
 						BlockPos pos = this.getCreationData().getPos().add(s.getBounds().getMin());
-						pos.add(this.world.rand.nextInt(s.getBounds().getWidth()), 0, this.world.rand.nextInt(s.getBounds().getHeight()));
+						pos.add(this.getCreationData().getRandom().nextInt(s.getBounds().getWidth()), 0,
+								this.getCreationData().getRandom().nextInt(s.getBounds().getHeight()));
 
 						PlacedEntity placedEntity = new PlacedEntity(stack, pos);
 
@@ -293,11 +304,18 @@ public class PlacedBlueprint implements NBT
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.def = OrbisAPI.services().findDefinitionRegistry(tag.getString("registryId")).get(tag.getInteger("definitionId"));
+		this.registryId = tag.getString("registryId");
+		this.definitionID = tag.getInteger("definitionId");
 
-		this.data = funnel.get(this.world, "creation");
+		this.def = OrbisAPI.services().findDefinitionRegistry(this.registryId).get(this.definitionID);
+
+		this.data = funnel.get("creation");
 
 		this.hasGeneratedAChunk = tag.getBoolean("hasGeneratedAChunk");
+
+		this.bakeChunks();
+		this.placeEntities();
+		this.bakeScheduleRegions();
 	}
 
 	@Override

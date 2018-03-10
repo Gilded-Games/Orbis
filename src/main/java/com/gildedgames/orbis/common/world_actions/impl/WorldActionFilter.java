@@ -14,8 +14,6 @@ import com.gildedgames.orbis.common.util.CreationDataOrbis;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import java.util.Random;
-
 public class WorldActionFilter extends WorldActionBase
 {
 
@@ -46,7 +44,7 @@ public class WorldActionFilter extends WorldActionBase
 
 		this.oldContent = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
 
-		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).rand(new Random(this.getSeed()));
+		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).seed(this.getSeed());
 
 		creationData.schedules(this.schedules);
 

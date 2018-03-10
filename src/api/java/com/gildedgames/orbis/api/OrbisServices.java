@@ -3,6 +3,7 @@ package com.gildedgames.orbis.api;
 import com.gildedgames.orbis.api.block.*;
 import com.gildedgames.orbis.api.core.CreationData;
 import com.gildedgames.orbis.api.core.GameRegistrar;
+import com.gildedgames.orbis.api.core.PlacedBlueprint;
 import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.DataCondition;
@@ -146,6 +147,7 @@ public class OrbisServices implements IOrbisServices
 			s.register(33, BlockPosDimension.class, new Instantiator<>(BlockPosDimension.class));
 			s.register(34, FilterOptions.class, new Instantiator<>(FilterOptions.class));
 			s.register(35, FrameworkData.class, new Instantiator<>(FrameworkData.class));
+			s.register(36, PlacedBlueprint.class, new Instantiator<>(PlacedBlueprint.class));
 
 			this.io.register(s);
 		}

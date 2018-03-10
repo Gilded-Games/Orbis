@@ -16,8 +16,6 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Random;
-
 public class WorldActionBlueprintPalette extends WorldActionBase
 {
 
@@ -45,7 +43,7 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 		super.redo(player, world);
 
 		final Rotation rotation = player.powers().getBlueprintPower().getPlacingRotation();
-		ICreationData data = new CreationData(world, player.getEntity()).rotation(rotation).placesAir(false).rand(new Random(this.getSeed()));
+		ICreationData data = new CreationData(world, player.getEntity()).rotation(rotation).placesAir(false).seed(this.getSeed());
 
 		if (this.chosenBlueprint == null)
 		{

@@ -17,8 +17,6 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Random;
-
 public class WorldActionBlueprint extends WorldActionBase
 {
 
@@ -58,7 +56,7 @@ public class WorldActionBlueprint extends WorldActionBase
 		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
 		ICreationData creationData = new CreationData(world, player.getEntity()).pos(this.bb.getMin()).rotation(rotation).placesAir(false)
-				.rand(new Random(this.getSeed()));
+				.seed(this.getSeed());
 
 		primer.create(this.bb, this.data, creationData);
 	}

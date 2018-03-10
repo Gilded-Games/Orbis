@@ -10,22 +10,22 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public interface ICreationData extends NBT
+public interface ICreationData<SELF extends ICreationData> extends NBT
 {
 
-	ICreationData pos(BlockPos pos);
+	SELF pos(BlockPos pos);
 
-	ICreationData world(World world);
+	SELF world(World world);
 
-	ICreationData rotation(Rotation rotation);
+	SELF rotation(Rotation rotation);
 
-	ICreationData rand(Random random);
+	SELF seed(long seed);
 
-	ICreationData creator(EntityPlayer creator);
+	SELF creator(EntityPlayer creator);
 
-	ICreationData placesAir(boolean placeAir);
+	SELF placesAir(boolean placeAir);
 
-	ICreationData schedules(boolean schedules);
+	SELF schedules(boolean schedules);
 
 	/**
 	 * Should return the centered position if
@@ -34,6 +34,8 @@ public interface ICreationData extends NBT
 	 */
 	BlockPos getPos();
 
+	//TODO: Might need to remove this since World cannot be reliably serialized
+	//TODO: Alternatively, make it so it stores a dim id and constantly tries to fetch it
 	World getWorld();
 
 	Random getRandom();
