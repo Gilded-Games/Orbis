@@ -5,6 +5,7 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerFrameworkClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
@@ -99,7 +100,9 @@ public class GodPowerFramework implements IGodPower
 
 				this.prevPlacingPos = relativePos;
 
-				OrbisAPI.network().sendPacketToServer(new PacketAddNode(framework, node, relativePos));
+				RegionHelp.translate(node.getBounds(), relativePos);
+
+				OrbisAPI.network().sendPacketToServer(new PacketAddNode(framework, node));
 			}
 		}
 	}

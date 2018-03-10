@@ -1,27 +1,24 @@
-package com.gildedgames.orbis.client.gui.blueprint;
+package com.gildedgames.orbis.client.gui.framework;
 
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
 
-public class GuiRightClickBlueprint extends GuiFrame
+public class GuiRightClickFramework extends GuiFrame
 {
-	private final Blueprint blueprint;
+	private final Framework framework;
 
-	public GuiRightClickBlueprint(final Blueprint blueprint)
+	public GuiRightClickFramework(final Framework framework)
 	{
 		super(null, Dim2D.flush());
 
-		this.blueprint = blueprint;
+		this.framework = framework;
 	}
 
 	@Override
@@ -30,17 +27,7 @@ public class GuiRightClickBlueprint extends GuiFrame
 		this.dim().mod().width(this.width).height(this.height).flush();
 
 		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
-				new DropdownElement(new TextComponentString("Edit"))
-				{
-					@Override
-					public void onClick(final GuiDropdownList list, final EntityPlayer player)
-					{
-						Minecraft.getMinecraft().displayGuiScreen(new GuiEditBlueprint(null, GuiRightClickBlueprint.this.blueprint));
-					}
-				},
-				GuiRightClickElements.remove(this.blueprint),
-				GuiRightClickElements.fillWithVoid(this.blueprint),
-				GuiRightClickElements.copy(this.blueprint),
+				GuiRightClickElements.remove(this.framework),
 				GuiRightClickElements.close()));
 	}
 

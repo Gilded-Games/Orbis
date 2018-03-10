@@ -4,7 +4,8 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
-import com.gildedgames.orbis.api.data.region.IDimensions;
+import com.gildedgames.orbis.api.data.region.IMutableRegion;
+import com.gildedgames.orbis.api.world.IWorldObject;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.*;
@@ -28,7 +29,7 @@ public class ScheduleData implements IFrameworkNode
 	}
 
 	@Override
-	public IDimensions largestPossibleDim()
+	public IMutableRegion getBounds()
 	{
 		return null;
 	}
@@ -62,6 +63,18 @@ public class ScheduleData implements IFrameworkNode
 
 	@Override
 	public void read(NBTTagCompound tag)
+	{
+
+	}
+
+	@Override
+	public IWorldObject getWorldObjectParent()
+	{
+		return null;
+	}
+
+	@Override
+	public void setWorldObjectParent(IWorldObject worldObject)
 	{
 
 	}

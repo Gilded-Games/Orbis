@@ -9,6 +9,10 @@ import java.util.List;
 public interface IGuiFrame extends RectHolder
 {
 
+	float getAlpha();
+
+	void setAlpha(float alpha);
+
 	void clearChildren();
 
 	boolean hasInit();

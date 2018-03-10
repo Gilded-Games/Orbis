@@ -3,8 +3,9 @@ package com.gildedgames.orbis.api.data.framework;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
-import com.gildedgames.orbis.api.data.region.IDimensions;
+import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObject;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Collection;
@@ -19,6 +20,8 @@ public class FrameworkNode implements IFrameworkNode
 	private IFrameworkNode schedule;
 
 	//	private final boolean isNullAllowed = false;
+
+	private IWorldObject worldObjectParent;
 
 	private FrameworkNode()
 	{
@@ -42,9 +45,9 @@ public class FrameworkNode implements IFrameworkNode
 	}
 
 	@Override
-	public IDimensions largestPossibleDim()
+	public IMutableRegion getBounds()
 	{
-		return this.schedule.largestPossibleDim();
+		return this.schedule.getBounds();
 	}
 
 	@Override
@@ -76,5 +79,22 @@ public class FrameworkNode implements IFrameworkNode
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 		this.schedule = funnel.get("schedule");
+	}
+
+	@Override
+	public IWorldObject getWorldObjectParent()
+	{
+		return this.worldObjectParent;
+	}
+
+	@Override
+	public void setWorldObjectParent(IWorldObject parent)
+	{
+		this.worldObjectParent = parent;
+
+		if (this.schedule != null)
+		{
+			this.schedule.setWorldObjectParent(this.worldObjectParent);
+		}
 	}
 }

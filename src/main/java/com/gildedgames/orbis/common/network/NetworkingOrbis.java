@@ -9,6 +9,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
+import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.network.packets.projects.*;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWorldActions;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
@@ -106,6 +107,9 @@ public class NetworkingOrbis implements INetworkOrbis
 		instance.registerMessage(PacketSetFilterOptions.HandlerServer.class, PacketSetFilterOptions.class, discriminant++,
 				Side.SERVER);
 
+		instance.registerMessage(PacketRemoveNode.HandlerServer.class, PacketRemoveNode.class, discriminant++,
+				Side.SERVER);
+
 		// C L I E N T
 		instance.registerMessage(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, discriminant++, Side.CLIENT);
 		instance.registerMessage(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, discriminant++, Side.CLIENT);
@@ -144,6 +148,9 @@ public class NetworkingOrbis implements INetworkOrbis
 		instance.registerMessage(PacketRegisterInstance.Handler.class, PacketRegisterInstance.class, discriminant++, Side.CLIENT);
 
 		instance.registerMessage(PacketRemoveEntrance.HandlerClient.class, PacketRemoveEntrance.class, discriminant++,
+				Side.CLIENT);
+
+		instance.registerMessage(PacketRemoveNode.HandlerClient.class, PacketRemoveNode.class, discriminant++,
 				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());

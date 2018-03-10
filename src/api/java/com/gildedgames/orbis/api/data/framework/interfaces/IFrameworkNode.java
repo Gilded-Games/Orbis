@@ -2,8 +2,9 @@ package com.gildedgames.orbis.api.data.framework.interfaces;
 
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
-import com.gildedgames.orbis.api.data.region.IDimensions;
+import com.gildedgames.orbis.api.data.region.IMutableRegion;
 import com.gildedgames.orbis.api.util.mc.NBT;
+import com.gildedgames.orbis.api.world.IWorldObjectChild;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,20 +15,14 @@ import java.util.Random;
  * This is used in {@link FrameworkNode Framework nodes}.
  * Some implementations are <tt>ScheduleData</tt> and <tt>
  * FrameworkData</tt>.
- * @see ScheduleData
  * @see FrameworkData
  * @author Emile
  *
  */
-public interface IFrameworkNode extends NBT
+public interface IFrameworkNode extends NBT, IWorldObjectChild
 {
 
-	/**
-	 * Returns the largest possible dimension out of all
-	 * possible values that return from this node.
-	 * @return
-	 */
-	IDimensions largestPossibleDim();
+	IMutableRegion getBounds();
 
 	/**
 	 * Returns the possible values this data can take. The data

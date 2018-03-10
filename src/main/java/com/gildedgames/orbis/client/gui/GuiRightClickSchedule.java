@@ -27,6 +27,8 @@ public class GuiRightClickSchedule extends GuiFrame
 	@Override
 	public void init()
 	{
+		this.dim().mod().width(this.width).height(this.height).flush();
+
 		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
 				GuiRightClickElements.remove(this.blueprint, this.schedule),
 				GuiRightClickElements.close()));

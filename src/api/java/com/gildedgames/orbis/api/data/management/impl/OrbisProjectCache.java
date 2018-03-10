@@ -11,6 +11,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 public class OrbisProjectCache implements IProjectCache
 {
@@ -90,8 +91,17 @@ public class OrbisProjectCache implements IProjectCache
 
 		final int id = data.getMetadata().getIdentifier().getDataId();
 
+		if (this.idToData.containsKey(id) || Objects.equals(this.idToData.get(id), data.getMetadata()))
+		{
+			this.idToData.remove(id);
+		}
+
 		this.idToData.put(id, data);
-		this.idToMetadata.put(id, data.getMetadata());
+
+		if (!this.idToMetadata.containsKey(id) || !Objects.equals(this.idToMetadata.get(id), data.getMetadata()))
+		{
+			this.idToMetadata.put(id, data.getMetadata());
+		}
 
 		this.setDataLocation(id, location);
 
@@ -105,7 +115,10 @@ public class OrbisProjectCache implements IProjectCache
 	@Override
 	public void setDataLocation(final int dataId, final String location)
 	{
-		this.idToLocation.put(dataId, location);
+		if (!this.idToLocation.containsKey(dataId) || !Objects.equals(this.idToLocation.get(dataId), location))
+		{
+			this.idToLocation.put(dataId, location);
+		}
 	}
 
 	@Override

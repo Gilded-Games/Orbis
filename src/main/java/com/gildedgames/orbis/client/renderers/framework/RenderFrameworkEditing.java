@@ -13,7 +13,6 @@ import com.gildedgames.orbis.common.world_objects.Framework;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -53,6 +52,8 @@ public class RenderFrameworkEditing implements IWorldRenderer, IFrameworkDataLis
 			this.renderShape.colorBorder = this.framework.getColor();
 
 			this.subRenderers.add(this.renderShape);
+
+			this.framework.getData().getNodeToPosMap().keySet().forEach(p -> this.onAddNode(p.getValue()));
 		}
 		finally
 		{
@@ -157,16 +158,43 @@ public class RenderFrameworkEditing implements IWorldRenderer, IFrameworkDataLis
 	}
 
 	@Override
-	public void onAddNode(IFrameworkNode node, BlockPos initialRelativePos)
+	public void onAddNode(IFrameworkNode node)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
 
 		try
 		{
-			RenderFrameworkNode renderNode = new RenderFrameworkNode(this.framework, node, initialRelativePos);
+			RenderFrameworkNode renderNode = new RenderFrameworkNode(this.framework, node);
 
 			this.subRenderers.add(renderNode);
+		}
+		finally
+		{
+			w.unlock();
+		}
+	}
+
+	@Override
+	public void onRemoveNode(IFrameworkNode node)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			IWorldRenderer toRemove = null;
+
+			for (IWorldRenderer renderer : this.subRenderers)
+			{
+				if (renderer.getRenderedObject() == node)
+				{
+					toRemove = renderer;
+					break;
+				}
+			}
+
+			this.subRenderers.remove(toRemove);
 		}
 		finally
 		{

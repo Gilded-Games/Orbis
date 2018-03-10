@@ -316,23 +316,16 @@ public class BlockFilterLayer implements NBT
 			}
 			else
 			{
-				BlockPos createPos = pos.add(creationData.getPos()).toImmutable();
+				BlockPos c = pos.add(creationData.getPos()).toImmutable();
 
-				//TODO: Reprogram edge detection for performance - this is disgusting
-				/*BlockPos up = createPos.up();
-				BlockPos down = createPos.down();
-				BlockPos south = createPos.south();
-				BlockPos north = createPos.north();
-				BlockPos west = createPos.west();
-				BlockPos east = createPos.east();*/
+				boolean edge = !boundingBox.contains(c.getX(), c.getY() + 1, c.getZ()) || !boundingBox.contains(c.getX(), c.getY() - 1, c.getZ())
+						|| !boundingBox
+						.contains(c.getX() + 1, c.getY(), c.getZ()) || !boundingBox.contains(c.getX() - 1, c.getY(), c.getZ()) || !boundingBox
+						.contains(c.getX(), c.getY(), c.getZ() + 1) || !boundingBox.contains(c.getX(), c.getY(), c.getZ() - 1);
 
-				/*boolean onEdge =
-						!boundingBox.contains(up) || !boundingBox.contains(down) || !boundingBox.contains(south) || !boundingBox.contains(north) || !boundingBox
-								.contains(west) || !boundingBox.contains(east);*/
-
-				if (creationData.getRandom().nextFloat() > options.getEdgeNoise())
+				if (!edge || creationData.getRandom().nextFloat() > options.getEdgeNoise())
 				{
-					primer.create(replacementBlock, createPos, creationData);
+					primer.create(replacementBlock, c, creationData);
 				}
 			}
 

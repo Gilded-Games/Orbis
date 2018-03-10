@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiFrameUtils
 {
 
-	public static void applyAlpha(GuiFrame frame)
+	public static void applyAlpha(IGuiFrame frame)
 	{
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

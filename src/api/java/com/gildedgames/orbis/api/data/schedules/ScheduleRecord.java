@@ -81,16 +81,11 @@ public class ScheduleRecord implements IScheduleRecord
 			return false;
 		}
 
-		if (schedule instanceof ScheduleRegion)
+		for (ISchedule s : this.getSchedules(ISchedule.class))
 		{
-			ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-			for (ScheduleRegion s : this.getSchedules(ScheduleRegion.class))
+			if (RegionHelp.intersects(schedule.getBounds(), s.getBounds()))
 			{
-				if (RegionHelp.intersects(scheduleRegion.getBounds(), s.getBounds()))
-				{
-					return false;
-				}
+				return false;
 			}
 		}
 

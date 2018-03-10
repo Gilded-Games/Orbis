@@ -4,16 +4,22 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataMetadata;
+import com.gildedgames.orbis.api.data.management.impl.DataMetadata;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import com.gildedgames.orbis.api.data.region.IDimensions;
+import com.gildedgames.orbis.api.data.region.IMutableRegion;
+import com.gildedgames.orbis.api.data.region.IRegion;
+import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
@@ -65,31 +71,44 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 
 	/**
 	 * The underlying graph of a Framework. It is an undirected graph with at most
-	 * one edge between its nodes.  
+	 * one edge between its nodes.
 	 */
 	protected final Graph<FrameworkNode, FrameworkEdge> graph = new Graph<>();
+
+	/**
+	 * A map that contains what blueprint to use when two pathways intersect. This is only necessary
+	 * when {@link #type the FrameworkType} is {@link FrameworkType#RECTANGLES Rectangles}.
+	 */
+	private final Map<Pair<PathwayData, PathwayData>, BlueprintData> intersections = new HashMap<>();
+
+	private final List<IFrameworkDataListener> listeners = Lists.newArrayList();
+
+	private Map<Pair<Integer, IFrameworkNode>, BlockPos> nodeToPos = Maps.newHashMap();
+
+	private IDataMetadata metadata;
 
 	/**
 	 * The list of all conditions on the nodes.
 	 */
 	//	protected final List<Condition<Object>> conditions = new ArrayList<Condition<Object>>();
 
-	private final FrameworkType type = FrameworkType.RECTANGLES;
-
-	/**
-	 * A map that contains what blueprint to use when two pathways intersect. This is only necessary
-	 * when {@link #type the FrameworkType} is {@link FrameworkType#RECTANGLES Rectangles}.
-	 */
-	private final Map<Tuple<PathwayData, PathwayData>, BlueprintData> intersections = new HashMap<>();
-
-	private final Map<IFrameworkNode, BlockPos> nodeToPos = Maps.newHashMap();
-
-	private final List<IFrameworkDataListener> listeners = Lists.newArrayList();
+	private FrameworkType type = FrameworkType.RECTANGLES;
 
 	private int width, height, length;
 
+	private int nextId;
+
+	private IWorldObject worldObjectParent;
+
+	private FrameworkData()
+	{
+		this.metadata = new DataMetadata();
+	}
+
 	public FrameworkData(int width, int height, int length)
 	{
+		this();
+
 		this.width = width;
 		this.height = height;
 		this.length = length;
@@ -108,7 +127,7 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 		return this.listeners.remove(listener);
 	}
 
-	public Map<IFrameworkNode, BlockPos> getNodeToPosMap()
+	public Map<Pair<Integer, IFrameworkNode>, BlockPos> getNodeToPosMap()
 	{
 		return this.nodeToPos;
 	}
@@ -143,6 +162,56 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 		return this.nodeToPos.get(node);
 	}
 
+	public int getNodeId(IFrameworkNode node)
+	{
+		for (Pair<Integer, IFrameworkNode> pair : this.nodeToPos.keySet())
+		{
+			int id = pair.getKey();
+			IFrameworkNode n = pair.getValue();
+
+			if (node == n)
+			{
+				return id;
+			}
+		}
+
+		return -1;
+	}
+
+	public boolean removeNode(int nodeId)
+	{
+		Pair<Integer, IFrameworkNode> toRemove = null;
+
+		for (Pair<Integer, IFrameworkNode> pair : this.nodeToPos.keySet())
+		{
+			int id = pair.getKey();
+
+			if (id == nodeId)
+			{
+				toRemove = pair;
+				break;
+			}
+		}
+
+		if (toRemove != null)
+		{
+			final IFrameworkNode node = toRemove.getValue();
+
+			if (node instanceof FrameworkNode)
+			{
+				this.graph.removeVertice((FrameworkNode) node);
+			}
+
+			this.nodeToPos.remove(toRemove);
+
+			this.listeners.forEach(l -> l.onRemoveNode(node));
+
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * <p>Adds a node to the Framework. Throws an <tt>IllegalStateException</tt>
 	 * when there is already a node on the given position. Nodes should
@@ -152,25 +221,49 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 	 * unless it is the very first one. After the node is added,
 	 *
 	 * @param data The data inside of this node. Right now, this can be
-	 * @param initialRelativePos The initial relative position that the node is located
-	 *                           at within the Framework
 	 * @return The created FrameworkNode
 	 */
-	public FrameworkNode addNode(IFrameworkNode data, BlockPos initialRelativePos)
+	public Pair<Integer, FrameworkNode> addNode(IFrameworkNode data)
 	{
-		if (this.nodeToPos.values().contains(initialRelativePos))
+		if (this.nodeToPos.values().contains(data.getBounds().getMin()))
 		{
-			throw new IllegalStateException("Another node is already at this relative position. Offending pars: " + data + ", " + initialRelativePos);
+			return null;
+		}
+
+		IRegion bb = this.worldObjectParent.getShape().getBoundingBox();
+
+		BlockPos min = data.getBounds().getMin().add(bb.getMin());
+		BlockPos max = data.getBounds().getMax().add(bb.getMin());
+
+		if (max.getX() > bb.getMax().getX() || max.getY() > bb.getMax().getY() || max.getZ() > bb.getMax().getZ()
+				|| min.getX() < bb.getMin().getX() || min.getY() < bb.getMin().getY() || min.getZ() < bb.getMin().getZ())
+		{
+			return null;
+		}
+
+		for (Pair<Integer, IFrameworkNode> pair : this.nodeToPos.keySet())
+		{
+			IFrameworkNode n = pair.getValue();
+
+			if (RegionHelp.intersects(n.getBounds(), data.getBounds()))
+			{
+				return null;
+			}
 		}
 
 		final FrameworkNode newNode = new FrameworkNode(data);
+
+		newNode.setWorldObjectParent(this.worldObjectParent);
+
 		this.graph.addVertex(newNode);
 
-		this.nodeToPos.put(data, initialRelativePos);
+		int id = this.nextId++;
 
-		this.listeners.forEach(l -> l.onAddNode(data, initialRelativePos));
+		this.nodeToPos.put(Pair.of(id, newNode), data.getBounds().getMin());
 
-		return newNode;
+		this.listeners.forEach(l -> l.onAddNode(newNode));
+
+		return Pair.of(id, newNode);
 	}
 
 	/**
@@ -212,7 +305,7 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 		{
 			throw new IllegalArgumentException("Can only have intersection blueprints with 4 or more entrances");
 		}
-		this.intersections.put(new Tuple<>(pathway1, pathway2), blueprint);
+		this.intersections.put(Pair.of(pathway1, pathway2), blueprint);
 
 		this.listeners.forEach(l -> l.onAddIntersection(pathway1, pathway2, blueprint));
 	}
@@ -231,10 +324,10 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 
 	public BlueprintData getIntersection(PathwayData pathway1, PathwayData pathway2)
 	{
-		for (Tuple<PathwayData, PathwayData> t : this.intersections.keySet())
+		for (Pair<PathwayData, PathwayData> t : this.intersections.keySet())
 		{
-			if (t.getFirst() == pathway1 && t.getSecond() == pathway2 ||
-					t.getFirst() == pathway2 && t.getSecond() == pathway1)
+			if (t.getLeft() == pathway1 && t.getRight() == pathway2 ||
+					t.getLeft() == pathway2 && t.getRight() == pathway1)
 			{
 				return this.intersections.get(t);
 			}
@@ -243,9 +336,9 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 	}
 
 	@Override
-	public IDimensions largestPossibleDim()
+	public IMutableRegion getBounds()
 	{
-		return this;
+		return null;
 	}
 
 	@Override
@@ -275,19 +368,58 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 	@Override
 	public IData clone()
 	{
-		return null;
+		final FrameworkData data = new FrameworkData();
+
+		final NBTTagCompound tag = new NBTTagCompound();
+
+		this.write(tag);
+
+		data.read(tag);
+
+		return data;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final HashCodeBuilder builder = new HashCodeBuilder();
+
+		builder.append(this.metadata.getIdentifier());
+
+		return builder.toHashCode();
+	}
+
+	@Override
+	public boolean equals(final Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+		else if (obj instanceof FrameworkData)
+		{
+			final FrameworkData o = (FrameworkData) obj;
+
+			final EqualsBuilder builder = new EqualsBuilder();
+
+			builder.append(this.metadata.getIdentifier(), o.metadata.getIdentifier());
+
+			return builder.isEquals();
+		}
+
+		return false;
 	}
 
 	@Override
 	public String getFileExtension()
 	{
-		return null;
+		return "framework";
 	}
 
 	@Override
 	public IDataMetadata getMetadata()
 	{
-		return null;
+		return this.metadata;
 	}
 
 	@Override
@@ -295,14 +427,55 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
+		funnel.set("metadata", this.metadata);
+
 		tag.setInteger("type", this.type.ordinal());
 
+		tag.setInteger("width", this.width);
+		tag.setInteger("height", this.height);
+		tag.setInteger("length", this.length);
+
+		funnel.setMap("nodeToPos", this.nodeToPos, p ->
+		{
+			NBTFunnel f = new NBTFunnel(new NBTTagCompound());
+
+			f.getTag().setInteger("id", p.getKey());
+			f.set("node", p.getValue());
+
+			return f.getTag();
+		}, NBTFunnel.POS_SETTER);
 	}
 
 	@Override
 	public void read(NBTTagCompound tag)
 	{
+		NBTFunnel funnel = new NBTFunnel(tag);
 
+		this.metadata = funnel.get("metadata");
+
+		this.type = FrameworkType.values()[tag.getInteger("type")];
+
+		this.width = tag.getInteger("width");
+		this.height = tag.getInteger("height");
+		this.length = tag.getInteger("length");
+
+		this.nodeToPos = funnel.getMap("nodeToPos", t ->
+		{
+			NBTFunnel f = new NBTFunnel(t);
+
+			int id = f.getTag().getInteger("id");
+			IFrameworkNode node = f.get("node");
+
+			return Pair.of(id, node);
+		}, NBTFunnel.POS_GETTER);
+
+		this.nodeToPos.keySet().forEach(p ->
+		{
+			if (p.getValue() instanceof FrameworkNode)
+			{
+				this.graph.addVertex((FrameworkNode) p.getValue());
+			}
+		});
 	}
 
 	public Graph<FrameworkNode, FrameworkEdge> getGraph()
@@ -331,6 +504,22 @@ public class FrameworkData implements IFrameworkNode, IData, IDimensions
 	@Override
 	public void readMetadataOnly(NBTTagCompound tag)
 	{
+		final NBTFunnel funnel = new NBTFunnel(tag);
 
+		this.metadata = funnel.get("metadata");
+	}
+
+	@Override
+	public IWorldObject getWorldObjectParent()
+	{
+		return this.worldObjectParent;
+	}
+
+	@Override
+	public void setWorldObjectParent(IWorldObject parent)
+	{
+		this.worldObjectParent = parent;
+
+		this.nodeToPos.keySet().forEach(p -> p.getValue().setWorldObjectParent(this.worldObjectParent));
 	}
 }

@@ -46,6 +46,8 @@ public class WorldActionLog implements IWorldActionLog
 
 		this.past.push(action);
 
+		action.setWorld(world);
+
 		action.redo(this.playerOrbis, world);
 	}
 
@@ -58,6 +60,8 @@ public class WorldActionLog implements IWorldActionLog
 
 			if (action != null)
 			{
+				action.setWorld(world);
+
 				action.undo(this.playerOrbis, world);
 
 				this.future.push(action);
@@ -74,6 +78,8 @@ public class WorldActionLog implements IWorldActionLog
 
 			if (action != null)
 			{
+				action.setWorld(world);
+
 				action.redo(this.playerOrbis, world);
 
 				this.past.push(action);

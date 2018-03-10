@@ -7,6 +7,7 @@ import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis.api.data.management.impl.ProjectIdentifier;
 import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis.client.OrbisClientCaches;
 import com.gildedgames.orbis.client.gui.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.data.directory.DirectoryNavigator;
@@ -75,6 +76,8 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	@Override
 	public void init()
 	{
+		this.dim().mod().width(this.width).height(this.height).flush();
+
 		this.title = new GuiText(Dim2D.build().width(140).height(20).addY(3).addX(132).flush(),
 				new Text(new TextComponentString("Project Name:"), 1.0F));
 
@@ -174,46 +177,75 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 				final String location = file.getCanonicalPath().replace(this.project.getLocationAsFile().getCanonicalPath() + File.separator, "");
 
-				if (Minecraft.getMinecraft().isIntegratedServerRunning())
+				if (this.isOverwriting(file, location))
 				{
-					try
-					{
-						final IWorldObject worldObject = this.blueprint;
-
-						if (this.project != null && worldObject.getData() != null && !file.exists())
-						{
-							IData data = worldObject.getData();
-
-							/**
-							 * Check if the state has already been stored.
-							 * If so, we should addNew a new identifier for it as
-							 * a clone. Many issues are caused if two files use
-							 * the same identifier.
-							 */
-							if (data.getMetadata().getIdentifier() != null && this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId()))
-							{
-								data = data.clone();
-								data.getMetadata().setIdentifier(this.project.getCache().createNextIdentifier());
-							}
-
-							data.preSaveToDisk(worldObject);
-
-							this.project.getCache().setData(data, location);
-
-							this.project.writeData(data, file);
-							this.refreshNavigator();
-						}
-					}
-					catch (final OrbisMissingProjectException e)
-					{
-						OrbisCore.LOGGER.error(e);
-					}
+					Minecraft.getMinecraft().displayGuiScreen(new GuiSaveCallback(this, file, location));
 				}
 				else
 				{
-					OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.blueprint, location));
+					this.save(file, location, false);
 				}
 			}
+		}
+	}
+
+	public boolean isOverwriting(File file, String location)
+	{
+		if (Minecraft.getMinecraft().isIntegratedServerRunning())
+		{
+			return file.exists();
+		}
+
+		return false;
+	}
+
+	public void save(File file, String location, boolean canOverwrite)
+	{
+		if (Minecraft.getMinecraft().isIntegratedServerRunning())
+		{
+			try
+			{
+				final IWorldObject worldObject = this.blueprint;
+
+				//TODO: Make sure the new data has the same dimensions as the old data if you're overwriting
+				if (this.project != null && worldObject.getData() != null && (!file.exists() || canOverwrite))
+				{
+					IData data = worldObject.getData();
+
+					/**
+					 * Check if the state has already been stored.
+					 * If so, we should addNew a new identifier for it as
+					 * a clone. Many issues are caused if two files use
+					 * the same identifier.
+					 */
+					if (data.getMetadata().getIdentifier() != null && this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
+							&& !canOverwrite)
+					{
+						data = data.clone();
+						data.getMetadata().setIdentifier(this.project.getCache().createNextIdentifier());
+					}
+
+					data.preSaveToDisk(worldObject);
+
+					this.project.getCache().setData(data, location);
+
+					this.project.writeData(data, file);
+					this.refreshNavigator();
+
+					if (canOverwrite)
+					{
+						OrbisClientCaches.getBlueprintRenders().refresh(data.getMetadata().getIdentifier());
+					}
+				}
+			}
+			catch (final OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+		}
+		else
+		{
+			OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.blueprint, location));
 		}
 	}
 

@@ -153,6 +153,8 @@ public class GuiChoiceMenuHolder extends GuiFrame
 	@Override
 	public void init()
 	{
+		this.dim().mod().width(this.width).height(this.height).flush();
+
 		final Pos2D center = InputHelper.getCenter();
 
 		int i = 0;

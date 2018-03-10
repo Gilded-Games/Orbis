@@ -23,7 +23,7 @@ public class BlueprintRegion extends AbstractRegion implements IMutableRegion, I
 
 	protected BlockPos min = BlockPos.ORIGIN, max = BlockPos.ORIGIN;
 
-	private BlueprintRegion()
+	protected BlueprintRegion()
 	{
 
 	}
@@ -109,11 +109,6 @@ public class BlueprintRegion extends AbstractRegion implements IMutableRegion, I
 		this.max = RegionHelp.getMax(this.min, width, this.getHeight(), length);
 
 		this.notifyDataChange();
-	}
-
-	public void setPosNoAdjust(BlockPos pos)
-	{
-
 	}
 
 	@Override

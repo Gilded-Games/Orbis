@@ -5,8 +5,10 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.pathway.PathwayData;
-import com.gildedgames.orbis.api.data.region.IDimensions;
+import com.gildedgames.orbis.api.data.region.IMutableRegion;
+import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis.api.world.IWorldObject;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -26,6 +28,10 @@ public class BlueprintNode implements IFrameworkNode
 	private List<BlueprintData> values;
 
 	private int maxEntrances;
+
+	private IMutableRegion bounds;
+
+	private IWorldObject worldObjectParent;
 
 	private BlueprintNode()
 	{
@@ -49,9 +55,14 @@ public class BlueprintNode implements IFrameworkNode
 	}
 
 	@Override
-	public IDimensions largestPossibleDim()
+	public IMutableRegion getBounds()
 	{
-		return this.data != null ? this.data : this.palette.getLargestDim();
+		if (this.bounds == null)
+		{
+			this.bounds = new Region(this.data != null ? this.data : this.palette.getLargestDim());
+		}
+
+		return this.bounds;
 	}
 
 	@Override
@@ -79,6 +90,7 @@ public class BlueprintNode implements IFrameworkNode
 
 		funnel.set("data", this.data.getMetadata().getIdentifier());
 		funnel.set("palette", this.palette);
+		funnel.set("bounds", this.bounds);
 	}
 
 	@Override
@@ -88,6 +100,7 @@ public class BlueprintNode implements IFrameworkNode
 
 		this.data = OrbisAPI.services().getProjectManager().findData(funnel.get("data"));
 		this.palette = funnel.get("palette");
+		this.bounds = funnel.get("bounds");
 
 		if (this.data != null)
 		{
@@ -116,5 +129,17 @@ public class BlueprintNode implements IFrameworkNode
 		}
 
 		return builder.toHashCode();
+	}
+
+	@Override
+	public IWorldObject getWorldObjectParent()
+	{
+		return this.worldObjectParent;
+	}
+
+	@Override
+	public void setWorldObjectParent(IWorldObject parent)
+	{
+		this.worldObjectParent = parent;
 	}
 }

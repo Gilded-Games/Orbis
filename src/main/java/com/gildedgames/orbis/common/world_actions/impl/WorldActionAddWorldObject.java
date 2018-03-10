@@ -63,6 +63,12 @@ public class WorldActionAddWorldObject implements IWorldAction
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+		this.worldObject.setWorld(world);
+	}
+
+	@Override
 	public void write(NBTTagCompound tag)
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);

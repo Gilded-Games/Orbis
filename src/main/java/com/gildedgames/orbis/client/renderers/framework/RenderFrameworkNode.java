@@ -8,7 +8,6 @@ import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -33,7 +32,7 @@ public class RenderFrameworkNode implements IWorldRenderer
 
 	private Region boundingBox;
 
-	public RenderFrameworkNode(Framework framework, final IFrameworkNode node, BlockPos pos)
+	public RenderFrameworkNode(Framework framework, final IFrameworkNode node)
 	{
 		this.framework = framework;
 		this.node = node;
@@ -43,10 +42,9 @@ public class RenderFrameworkNode implements IWorldRenderer
 
 		try
 		{
-			this.boundingBox = new Region(this.node.largestPossibleDim());
+			this.boundingBox = new Region(this.node.getBounds());
 
 			this.boundingBox.add(framework.getPos());
-			this.boundingBox.add(pos);
 
 			this.renderShape = new RenderShape(this.boundingBox);
 
@@ -80,7 +78,7 @@ public class RenderFrameworkNode implements IWorldRenderer
 	@Override
 	public Object getRenderedObject()
 	{
-		return null;
+		return this.node;
 	}
 
 	@Override

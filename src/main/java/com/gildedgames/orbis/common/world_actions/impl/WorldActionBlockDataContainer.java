@@ -66,6 +66,12 @@ public class WorldActionBlockDataContainer implements IWorldAction
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+
+	}
+
+	@Override
 	public void write(NBTTagCompound tag)
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);

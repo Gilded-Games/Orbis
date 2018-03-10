@@ -9,7 +9,6 @@ import com.gildedgames.orbis.api.data.management.impl.DataMetadata;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.IRotateable;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.processing.DataPrimer;
@@ -22,7 +21,6 @@ import com.google.common.collect.Maps;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -371,14 +369,6 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		if (object instanceof IShape)
 		{
 			final IShape shape = (IShape) object;
-			Rotation rotation = Rotation.NONE;
-
-			if (object instanceof IRotateable)
-			{
-				final IRotateable rotateable = (IRotateable) object;
-
-				rotation = rotateable.getRotation();
-			}
 
 			this.dataContainer = BlueprintHelper.fetchBlocksInside(shape, object.getWorld());
 		}

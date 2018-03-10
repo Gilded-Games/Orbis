@@ -39,6 +39,11 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	private boolean isDirty;
 
+	private Blueprint()
+	{
+		super();
+	}
+
 	private Blueprint(final World world)
 	{
 		super(world);

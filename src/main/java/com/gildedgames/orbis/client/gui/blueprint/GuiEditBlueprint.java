@@ -55,6 +55,8 @@ public class GuiEditBlueprint extends GuiFrame
 	@Override
 	public void init()
 	{
+		this.dim().mod().width(this.width).height(this.height).flush();
+
 		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(75).flush());
 
 		this.saveButton.getInner().displayString = "Save As";

@@ -64,6 +64,12 @@ public class WorldActionFilter extends WorldActionBase
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+
+	}
+
+	@Override
 	public void write(NBTTagCompound tag)
 	{
 		super.write(tag);

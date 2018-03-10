@@ -47,15 +47,15 @@ public class FrameworkDataset
 	public static FrameworkData framework1()
 	{
 		final FrameworkData frameworkData = new FrameworkData(200, 200, 200);
-		final FrameworkNode node1 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node2 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node3 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node4 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node5 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node6 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node7 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node8 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
-		final FrameworkNode node9 = frameworkData.addNode(BlueprintDataset.schedule1(), BlockPos.ORIGIN);
+		final FrameworkNode node1 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node2 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node3 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node4 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node5 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node6 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node7 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node8 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
+		final FrameworkNode node9 = frameworkData.addNode(BlueprintDataset.schedule1()).getValue();
 
 		frameworkData.addEdge(node1, node2);
 		frameworkData.addEdge(node1, node3);
@@ -93,7 +93,7 @@ public class FrameworkDataset
 		List<FrameworkNode> nodes = new ArrayList<>();
 		for (int i = 0; i < amt_nodes; i++)
 		{
-			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway), BlockPos.ORIGIN));
+			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway)).getValue());
 		}
 		List<FrameworkNode> connectedNodes = new ArrayList<>();
 		Graph<FrameworkNode, FrameworkEdge> graph = frameworkData.getGraph();

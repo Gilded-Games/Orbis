@@ -17,7 +17,7 @@ public class WorldActionAddEntrance implements IWorldAction
 
 	private WorldActionAddEntrance()
 	{
-		
+
 	}
 
 	public WorldActionAddEntrance(Blueprint blueprint, Entrance entrance)
@@ -36,6 +36,12 @@ public class WorldActionAddEntrance implements IWorldAction
 	public void undo(PlayerOrbis player, World world)
 	{
 		this.blueprint.getData().removeEntrance(this.entrance);
+	}
+
+	@Override
+	public void setWorld(World world)
+	{
+		this.blueprint.setWorld(world);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.gui.util.vanilla;
 
 import com.gildedgames.orbis.api.util.ObjectFilter;
+import com.gildedgames.orbis.client.gui.util.GuiFrameUtils;
 import com.gildedgames.orbis.client.gui.util.IGuiFrame;
 import com.gildedgames.orbis.client.rect.ModDim2D;
 import com.gildedgames.orbis.client.rect.RectHolder;
@@ -31,6 +32,8 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 
 	private boolean hasInit, enabled = true, visible = true, hoverEntered = false;
 
+	private float alpha;
+
 	public GuiFrameCreative(final EntityPlayer player)
 	{
 		super(player);
@@ -39,6 +42,18 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 	public void setDrawDefaultBackground(final boolean flag)
 	{
 		this.drawDefaultBackground = flag;
+	}
+
+	@Override
+	public float getAlpha()
+	{
+		return this.alpha;
+	}
+
+	@Override
+	public void setAlpha(float alpha)
+	{
+		this.alpha = alpha;
 	}
 
 	@Override
@@ -285,14 +300,7 @@ public class GuiFrameCreative extends GuiContainerCreativePublic implements IGui
 
 		GlStateManager.translate(-x - this.dim().originX(), -y - this.dim().originY(), 0);
 
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-
-		GlStateManager.enableAlpha();
+		GuiFrameUtils.applyAlpha(this);
 
 		this.draw();
 

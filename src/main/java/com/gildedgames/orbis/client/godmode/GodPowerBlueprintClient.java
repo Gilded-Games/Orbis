@@ -3,7 +3,6 @@ package com.gildedgames.orbis.client.godmode;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.RotationHelp;
@@ -263,7 +262,7 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 	@Override
 	public Object raytraceObject(PlayerOrbis playerOrbis)
 	{
-		return playerOrbis.getSelectedRegion();
+		return playerOrbis.getSelectedRegion(Blueprint.class);
 	}
 
 	@Override
@@ -275,24 +274,21 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 		final int y = MathHelper.floor(entity.posY);
 		final int z = MathHelper.floor(entity.posZ);
 
-		if (foundObject instanceof IShape)
+		if (foundObject instanceof Blueprint)
 		{
-			IShape selectedShape = (IShape) foundObject;
+			Blueprint blueprint = (Blueprint) foundObject;
 
-			if (selectedShape instanceof Blueprint)
+			final boolean playerInside = blueprint.contains(x, y, z) || blueprint.contains(x, MathHelper.floor(entity.posY + entity.height), z);
+
+			if (entity.world.isRemote && !playerInside)
 			{
-				final boolean playerInside = selectedShape.contains(x, y, z) || selectedShape.contains(x, MathHelper.floor(entity.posY + entity.height), z);
-
-				if (entity.world.isRemote && !playerInside)
+				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
 				{
-					if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
-					{
-						Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickBlueprint((Blueprint) selectedShape));
-					}
+					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickBlueprint(blueprint));
 				}
-
-				return false;
 			}
+
+			return false;
 		}
 
 		return true;

@@ -4,12 +4,15 @@ import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.DataCondition;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.management.IDataMetadata;
+import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleBlueprint;
 import com.gildedgames.orbis.api.util.RegionHelp;
+import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
@@ -19,6 +22,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddBlueprint;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
@@ -26,6 +30,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -153,6 +158,9 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
+				final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
+				BlueprintData data = playerOrbis.powers().getBlueprintPower().getPlacingBlueprint();
+
 				if (playerOrbis.powers().isScheduling())
 				{
 					BlueprintDataPalette palette = new BlueprintDataPalette();
@@ -165,29 +173,40 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 					Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, r);
 
-					if (b != null && b.getCurrentScheduleLayer() != null)
+					if (b != null)
 					{
-						r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
-						r.subtract(r.getWidth() / 2, 0, r.getLength() / 2);
-
-						ScheduleBlueprint scheduleBlueprint = new ScheduleBlueprint("", palette, r);
-
-						if (!Minecraft.getMinecraft().isIntegratedServerRunning())
+						if (b.getCurrentScheduleLayer() != null)
 						{
-							OrbisAPI.network()
-									.sendPacketToDimension(new PacketAddSchedule(b, scheduleBlueprint, b.getCurrentScheduleLayerIndex()),
-											world.provider.getDimension());
+							r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
+							r.subtract(r.getWidth() / 2, 0, r.getLength() / 2);
+
+							ScheduleBlueprint scheduleBlueprint = new ScheduleBlueprint("", palette, r);
+
+							if (!Minecraft.getMinecraft().isIntegratedServerRunning())
+							{
+								OrbisAPI.network()
+										.sendPacketToDimension(new PacketAddSchedule(b, scheduleBlueprint, b.getCurrentScheduleLayerIndex()),
+												world.provider.getDimension());
+							}
+							else
+							{
+								b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleBlueprint);
+							}
 						}
-						else
-						{
-							b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleBlueprint);
-						}
+					}
+					else
+					{
+						IRegion bb = RotationHelp.regionFromCenter(createPos, data, rotation);
+
+						b = new Blueprint(world, bb.getMin(), rotation, data);
+
+						playerOrbis.getWorldActionLog().track(world, new WorldActionAddBlueprint(b));
 					}
 				}
 				else
 				{
 					playerOrbis.getWorldActionLog()
-							.track(world, new WorldActionBlueprint(playerOrbis.powers().getBlueprintPower().getPlacingBlueprint(), createPos));
+							.track(world, new WorldActionBlueprint(data, createPos));
 				}
 			}
 		}

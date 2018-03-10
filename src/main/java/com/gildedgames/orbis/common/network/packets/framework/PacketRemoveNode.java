@@ -4,7 +4,7 @@ import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
-import com.gildedgames.orbis.api.data.framework.FrameworkNode;
+import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
@@ -21,47 +21,45 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketAddNode extends PacketMultipleParts
+public class PacketRemoveNode extends PacketMultipleParts
 {
 
 	private IDataIdentifier id;
 
-	private int worldObjectId;
+	private int worldObjectId, nodeId;
 
-	private FrameworkNode node;
-
-	public PacketAddNode()
+	public PacketRemoveNode()
 	{
 
 	}
 
-	private PacketAddNode(final byte[] data)
+	private PacketRemoveNode(final byte[] data)
 	{
 		super(data);
 	}
 
-	public PacketAddNode(IDataIdentifier id, FrameworkNode node)
+	public PacketRemoveNode(IDataIdentifier id, int nodeId)
 	{
 		this.id = id;
-		this.node = node;
+		this.nodeId = nodeId;
 	}
 
-	public PacketAddNode(Framework framework, FrameworkNode node)
+	public PacketRemoveNode(Framework framework, IFrameworkNode node)
 	{
 		this.worldObjectId = WorldObjectManager.get(framework.getWorld()).getID(framework);
-		this.node = node;
+		this.nodeId = framework.getData().getNodeId(node);
 	}
 
-	public PacketAddNode(int worldObjectId, FrameworkNode node)
+	public PacketRemoveNode(int worldObjectId, int nodeId)
 	{
 		this.worldObjectId = worldObjectId;
-		this.node = node;
+		this.nodeId = nodeId;
 	}
 
 	@Override
 	public PacketMultipleParts createPart(final byte[] data)
 	{
-		return new PacketAddNode(data);
+		return new PacketRemoveNode(data);
 	}
 
 	@Override
@@ -72,7 +70,7 @@ public class PacketAddNode extends PacketMultipleParts
 
 		this.worldObjectId = tag.getInteger("w");
 		this.id = funnel.get("i");
-		this.node = funnel.get("n");
+		this.nodeId = tag.getInteger("ni");
 	}
 
 	@Override
@@ -83,15 +81,15 @@ public class PacketAddNode extends PacketMultipleParts
 
 		tag.setInteger("w", this.worldObjectId);
 		funnel.set("i", this.id);
-		funnel.set("n", this.node);
+		tag.setInteger("ni", this.nodeId);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
 
-	public static class HandlerClient extends MessageHandlerClient<PacketAddNode, IMessage>
+	public static class HandlerClient extends MessageHandlerClient<PacketRemoveNode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketAddNode message, final EntityPlayer player)
+		public IMessage onMessage(final PacketRemoveNode message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -117,7 +115,7 @@ public class PacketAddNode extends PacketMultipleParts
 				{
 					final FrameworkData fData = (FrameworkData) data;
 
-					fData.addNode(message.node);
+					fData.removeNode(message.nodeId);
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -129,10 +127,10 @@ public class PacketAddNode extends PacketMultipleParts
 		}
 	}
 
-	public static class HandlerServer extends MessageHandlerServer<PacketAddNode, IMessage>
+	public static class HandlerServer extends MessageHandlerServer<PacketRemoveNode, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketAddNode message, final EntityPlayer player)
+		public IMessage onMessage(final PacketRemoveNode message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -158,22 +156,22 @@ public class PacketAddNode extends PacketMultipleParts
 				{
 					final FrameworkData fData = (FrameworkData) data;
 
-					fData.addNode(message.node);
+					boolean removed = fData.removeNode(message.nodeId);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
 					// it downloaded on the client and up to date. That way we can
 					// just send it to those players. Along with this, addNew a helper
 					// method in NetworkingOrbis to sendPacketToProjectUsers
-					if (player.world.getMinecraftServer().isDedicatedServer())
+					if (removed && player.world.getMinecraftServer().isDedicatedServer())
 					{
 						if (message.id == null)
 						{
-							OrbisAPI.network().sendPacketToAllPlayers(new PacketAddNode(message.worldObjectId, message.node));
+							OrbisAPI.network().sendPacketToAllPlayers(new PacketRemoveNode(message.worldObjectId, message.nodeId));
 						}
 						else
 						{
-							OrbisAPI.network().sendPacketToAllPlayers(new PacketAddNode(message.id, message.node));
+							OrbisAPI.network().sendPacketToAllPlayers(new PacketRemoveNode(message.id, message.nodeId));
 						}
 					}
 				}

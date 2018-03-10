@@ -253,6 +253,16 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.selectedRegion;
 	}
 
+	public <T extends IShape> T getSelectedRegion(Class<T> clazz)
+	{
+		if (this.selectedRegion != null && this.selectedRegion.getClass() == clazz)
+		{
+			return (T) this.selectedRegion;
+		}
+
+		return null;
+	}
+
 	public IFrameworkNode getSelectedNode()
 	{
 		return this.selectedNode;

@@ -5,16 +5,11 @@ import com.gildedgames.orbis.client.rect.ModDim2D;
 import com.gildedgames.orbis.client.rect.Rect;
 import com.gildedgames.orbis.client.rect.RectHolder;
 import com.gildedgames.orbis.client.rect.RectModifier;
-import com.gildedgames.orbis.common.containers.ContainerGeneric;
 import com.gildedgames.orbis.common.util.InputHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -22,14 +17,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class GuiFrame extends GuiContainer implements IGuiFrame
+public abstract class GuiFrameNoContainer extends GuiScreen implements IGuiFrame
 {
 
 	public static boolean preventInnerTyping = false;
 
 	private final List<IGuiFrame> children = new CopyOnWriteArrayList<>();
 
-	private final GuiFrame prevFrame;
+	private final GuiFrameNoContainer prevFrame;
 
 	private final ModDim2D dim = new ModDim2D();
 
@@ -41,26 +36,21 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 	private boolean shouldScaleRender = true;
 
-	public GuiFrame()
+	public GuiFrameNoContainer()
 	{
-		super(new ContainerGeneric(Minecraft.getMinecraft().player));
+		super();
 
 		this.prevFrame = null;
 	}
 
-	public GuiFrame(final Rect rect)
+	public GuiFrameNoContainer(final Rect rect)
 	{
 		this(null, rect);
 	}
 
-	public GuiFrame(GuiFrame prevFrame, final Rect rect)
+	public GuiFrameNoContainer(GuiFrameNoContainer prevFrame, final Rect rect)
 	{
-		this(prevFrame, rect, new ContainerGeneric(Minecraft.getMinecraft().player));
-	}
-
-	public GuiFrame(GuiFrame prevFrame, final Rect rect, final Container inventorySlotsIn)
-	{
-		super(inventorySlotsIn);
+		super();
 
 		this.prevFrame = prevFrame;
 		this.dim.set(rect);
@@ -83,7 +73,7 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 		this.alpha = alpha;
 	}
 
-	public GuiFrame getPrevFrame()
+	public GuiFrameNoContainer getPrevFrame()
 	{
 		return this.prevFrame;
 	}
@@ -183,12 +173,6 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 	@Override
 	public void publicDrawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY)
 	{
-		this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-	}
-
-	@Override
-	protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY)
-	{
 		for (final IGuiFrame frame : this.children)
 		{
 			frame.publicDrawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
@@ -255,12 +239,6 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 
 		if (!this.hasInit)
 		{
-			this.guiLeft = 0;
-			this.guiTop = 0;
-
-			this.xSize = (int) this.dim().width();
-			this.ySize = (int) this.dim().height();
-
 			this.init();
 
 			this.hasInit = true;
@@ -440,20 +418,6 @@ public abstract class GuiFrame extends GuiContainer implements IGuiFrame
 		for (final IGuiFrame frame : this.children)
 		{
 			frame.publicMouseReleased(mouseX, mouseY, state);
-		}
-	}
-
-	@Override
-	protected void handleMouseClick(final Slot slotIn, final int slotId, final int mouseButton, final ClickType type)
-	{
-		if (!this.isEnabled())
-		{
-			return;
-		}
-
-		if (Minecraft.getMinecraft().currentScreen == this)
-		{
-			super.handleMouseClick(slotIn, slotId, mouseButton, type);
 		}
 	}
 

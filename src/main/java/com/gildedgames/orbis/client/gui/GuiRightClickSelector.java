@@ -33,6 +33,8 @@ public class GuiRightClickSelector extends GuiFrame
 	@Override
 	public void init()
 	{
+		this.dim().mod().width(this.width).height(this.height).flush();
+
 		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
 				GuiRightClickElements.delete(this.region),
 				GuiRightClickElements.copy(this.region),

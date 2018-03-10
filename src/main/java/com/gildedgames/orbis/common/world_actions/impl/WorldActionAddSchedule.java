@@ -87,6 +87,12 @@ public class WorldActionAddSchedule implements IWorldAction
 	}
 
 	@Override
+	public void setWorld(World world)
+	{
+		this.blueprint.setWorld(world);
+	}
+
+	@Override
 	public void write(NBTTagCompound tag)
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
