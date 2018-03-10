@@ -3,9 +3,12 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.core.CreationData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis.api.processing.DataPrimer;
 import com.gildedgames.orbis.api.util.BlueprintHelper;
+import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -14,23 +17,22 @@ import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WorldActionAddBlueprint implements IWorldAction
 {
 
+	private BlockPos createPos;
+
 	private Blueprint blueprint;
 
 	private BlockDataContainer oldContent;
 
-	private WorldActionAddBlueprint()
+	public WorldActionAddBlueprint(BlockPos createPos)
 	{
-
-	}
-
-	public WorldActionAddBlueprint(Blueprint blueprint)
-	{
-		this.blueprint = blueprint;
+		this.createPos = createPos;
 	}
 
 	@Override
@@ -39,6 +41,16 @@ public class WorldActionAddBlueprint implements IWorldAction
 		if (world.isRemote)
 		{
 			return;
+		}
+
+		if (this.blueprint == null)
+		{
+			Rotation rotation = player.powers().getBlueprintPower().getPlacingRotation();
+			BlueprintData data = player.powers().getBlueprintPower().getPlacingBlueprint();
+
+			IRegion bb = RotationHelp.regionFromCenter(this.createPos, data, rotation);
+
+			this.blueprint = new Blueprint(world, bb.getMin(), data);
 		}
 
 		this.oldContent = BlueprintHelper.fetchBlocksInside(this.blueprint, world);
@@ -90,7 +102,7 @@ public class WorldActionAddBlueprint implements IWorldAction
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		funnel.set("w", this.blueprint);
+		funnel.setPos("p", this.createPos);
 	}
 
 	@Override
@@ -98,6 +110,6 @@ public class WorldActionAddBlueprint implements IWorldAction
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.blueprint = funnel.get("w");
+		this.createPos = funnel.getPos("p");
 	}
 }

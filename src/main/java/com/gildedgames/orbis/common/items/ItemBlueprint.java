@@ -8,11 +8,9 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.management.IDataMetadata;
-import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.ScheduleBlueprint;
 import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
@@ -196,11 +194,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 					}
 					else
 					{
-						IRegion bb = RotationHelp.regionFromCenter(createPos, data, rotation);
-
-						b = new Blueprint(world, bb.getMin(), rotation, data);
-
-						playerOrbis.getWorldActionLog().track(world, new WorldActionAddBlueprint(b));
+						playerOrbis.getWorldActionLog().track(world, new WorldActionAddBlueprint(createPos));
 					}
 				}
 				else
