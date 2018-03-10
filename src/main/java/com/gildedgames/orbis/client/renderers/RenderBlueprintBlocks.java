@@ -387,12 +387,9 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 			if (useCamera)
 			{
-				if (!this.lastMin.equals(this.blueprint.getMin()))
-				{
-					GlStateManager.translate(this.blueprint.getMin().getX() - this.lastMin.getX(),
-							this.blueprint.getMin().getY() - this.lastMin.getY(),
-							this.blueprint.getMin().getZ() - this.lastMin.getZ());
-				}
+				GlStateManager.translate(this.blueprint.getMin().getX(),
+						this.blueprint.getMin().getY(),
+						this.blueprint.getMin().getZ());
 			}
 		}
 	}
