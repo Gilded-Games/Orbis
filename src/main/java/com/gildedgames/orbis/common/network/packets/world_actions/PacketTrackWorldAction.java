@@ -15,6 +15,8 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 {
 	private IWorldAction action;
 
+	private NBTFunnel funnel;
+
 	public PacketTrackWorldAction()
 	{
 
@@ -39,9 +41,7 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		NBTFunnel funnel = new NBTFunnel(ByteBufUtils.readTag(buf));
-
-		this.action = funnel.get("a");
+		this.funnel = new NBTFunnel(ByteBufUtils.readTag(buf));
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				playerOrbis.getWorldActionLog().track(player.getEntityWorld(), message.action);
+				playerOrbis.getWorldActionLog().track(player.getEntityWorld(), message.funnel.get("a"));
 			}
 
 			return null;

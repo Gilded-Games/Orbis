@@ -85,9 +85,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	{
 		this.dim().mod().width(179 * 2).height(169).x(this.width / 2 - 90 - (176 / 2)).y(this.height / 2 - (147 / 2) + 12).flush();
 
-		final Pos2D center = Pos2D.flush((this.width / 2), this.height / 2);
-
-		this.directoryViewer = new GuiDirectoryViewer(center.clone().addX(-90).flush(),
+		this.directoryViewer = new GuiDirectoryViewer(Pos2D.build().addX(80).addY(61).flush(),
 				new DirectoryNavigator(new OrbisNavigatorNodeFactory()));
 
 		this.directoryViewer.dim().mod().center(true).flush();
@@ -111,14 +109,14 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 		this.forgeButton = GuiFactory.createForgeButton();
 
-		this.forgeButton.dim().mod().pos(center).center(true).addY(52 - 6 - 102 + yOffset).addX(133 + xOffset).flush();
+		this.forgeButton.dim().mod().center(true).addY(yOffset + 7).addX(315 + xOffset).flush();
 
-		this.matrix = new GuiTexture(Dim2D.build().width(85).height(105).pos(center).addX(2 + xOffset).addY(-15 - 100 + yOffset).flush(), MATRIX_ICON);
-		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).x(this.width / 2 + 90 - 176 / 2).y(this.height / 2 + 5).flush(),
+		this.matrix = new GuiTexture(Dim2D.build().width(85).height(105).addX(180 + xOffset).addY(-54 + yOffset).flush(), MATRIX_ICON);
+		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).x(180).y(66).flush(),
 				BLUEPRINT_INVENTORY);
-		this.flow = new GuiTexture(Dim2D.build().width(20).height(14).pos(center).addX(95 + xOffset).addY(52 - 6 - 110 + yOffset).flush(), MERGE_ICON);
+		this.flow = new GuiTexture(Dim2D.build().width(20).height(14).addX(275 + xOffset).addY(yOffset).flush(), MERGE_ICON);
 
-		this.combineTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addX(44 + xOffset).addY(-49 - 9 - 47 + yOffset).flush(),
+		this.combineTitle = new GuiText(Dim2D.build().centerX(true).addX(223 + xOffset).addY(yOffset - 44).flush(),
 				new Text(new TextComponentString("Group"), 1.0F));
 
 		this.addChildren(this.matrix, this.flow, this.combineTitle, this.forgeButton, inventory);
@@ -127,6 +125,8 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 	@Override
 	public void drawScreen(final int mouseX, final int mouseY, final float partialTicks)
 	{
+		//Gui.drawRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), Integer.MIN_VALUE);
+
 		this.forgeButton.setEnabled(InventoryHelper.getItemStacks(this.container.slots).size() >= 2);
 
 		this.drawWorldBackground(0);
