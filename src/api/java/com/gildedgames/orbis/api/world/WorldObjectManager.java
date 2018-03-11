@@ -164,9 +164,9 @@ public class WorldObjectManager extends WorldSavedData
 
 	public <T extends IWorldObject> int addObject(final T object)
 	{
-		final int id = this.nextId;
+		final int id = this.nextId++;
 
-		this.setObject(this.nextId++, object);
+		this.setObject(id, object);
 
 		return id;
 	}
