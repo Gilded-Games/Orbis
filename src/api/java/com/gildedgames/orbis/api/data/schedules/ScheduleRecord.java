@@ -24,6 +24,8 @@ public class ScheduleRecord implements IScheduleRecord
 
 	private IScheduleLayer parent;
 
+	private int nextId;
+
 	public ScheduleRecord()
 	{
 
@@ -55,7 +57,7 @@ public class ScheduleRecord implements IScheduleRecord
 	@Override
 	public int addSchedule(ISchedule schedule)
 	{
-		int id = this.schedules.size();
+		int id = this.nextId++;
 
 		boolean success = this.setSchedule(id, schedule);
 
@@ -161,6 +163,8 @@ public class ScheduleRecord implements IScheduleRecord
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
+		tag.setInteger("nextId", this.nextId);
+
 		funnel.setIntMap("schedules", this.schedules);
 	}
 
@@ -168,6 +172,8 @@ public class ScheduleRecord implements IScheduleRecord
 	public void read(NBTTagCompound tag)
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.nextId = tag.getInteger("nextId");
 
 		this.schedules = funnel.getIntMap("schedules");
 
