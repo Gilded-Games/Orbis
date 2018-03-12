@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui.blueprint;
+package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
@@ -65,9 +65,9 @@ public class GuiSaveCallback extends GuiFrame
 
 		if (InputHelper.isHovered(this.yes) && mouseButton == 0)
 		{
-			if (this.getPrevFrame() instanceof GuiSaveBlueprint)
+			if (this.getPrevFrame() instanceof GuiSaveData)
 			{
-				GuiSaveBlueprint save = (GuiSaveBlueprint) this.getPrevFrame();
+				GuiSaveData save = (GuiSaveData) this.getPrevFrame();
 
 				save.save(this.file, this.location, true);
 

@@ -2,7 +2,7 @@ package com.gildedgames.orbis.client.gui.util.directory;
 
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
+import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
 import com.gildedgames.orbis.client.gui.util.GuiTextBox;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
@@ -30,7 +30,7 @@ public class GuiDirectoryNode extends GuiFrame
 
 	public static int WIDTH = 40, HEIGHT = 54;
 
-	private final IDirectoryNode directoryNode;
+	private final INavigatorNode directoryNode;
 
 	private final IDirectoryNavigator navigator;
 
@@ -48,7 +48,7 @@ public class GuiDirectoryNode extends GuiFrame
 
 	private GuiTextBox nameplate;
 
-	public GuiDirectoryNode(final Pos2D pos, final IDirectoryNode navigatorNode, final GuiDirectoryViewer viewer)
+	public GuiDirectoryNode(final Pos2D pos, final INavigatorNode navigatorNode, final GuiDirectoryViewer viewer)
 	{
 		super(Dim2D.build().width(WIDTH).height(HEIGHT).pos(pos).flush());
 

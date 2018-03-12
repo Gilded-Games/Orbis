@@ -10,7 +10,7 @@ import java.util.Collection;
  * A non-graphic interface for defining the characteristics of a
  * file type, such as directories, blueprints (in OrbisCore case), or whatever.
  */
-public interface IDirectoryNode
+public interface INavigatorNode
 {
 
 	/**

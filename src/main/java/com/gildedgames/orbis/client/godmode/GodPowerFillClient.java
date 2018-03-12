@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.gui.GuiFillMenu;
+import com.gildedgames.orbis.client.gui.fill.GuiFillMenu;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;

@@ -68,9 +68,10 @@ public class AirSelectionRenderer
 		boolean blueprintHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower()
 				&& playerOrbis.getSelectedRegion() != null;
 		boolean entranceHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getEntrancePower() && playerOrbis.getSelectedEntrance() != null;
+		boolean frameworkHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower() && playerOrbis.getSelectedRegion() != null;
 		boolean nodeHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower() && playerOrbis.getSelectedNode() != null;
 
-		if (!playerOrbis.inDeveloperMode() || scheduleHover || blueprintHover || entranceHover || nodeHover)
+		if (!playerOrbis.inDeveloperMode() || scheduleHover || blueprintHover || entranceHover || nodeHover || frameworkHover)
 		{
 			return;
 		}

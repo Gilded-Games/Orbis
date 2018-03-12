@@ -5,6 +5,6 @@ import java.io.File;
 public interface IDirectoryNodeFactory
 {
 
-	IDirectoryNode createFrom(File file, String extension);
+	INavigatorNode createFrom(File file, String extension);
 
 }

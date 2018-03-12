@@ -7,7 +7,7 @@ import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.blueprint.GuiRightClickBlueprint;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;

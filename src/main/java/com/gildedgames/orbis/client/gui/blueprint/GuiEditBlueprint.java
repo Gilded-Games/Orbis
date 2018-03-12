@@ -3,12 +3,14 @@ package com.gildedgames.orbis.client.gui.blueprint;
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
-import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.schedules.GuiScheduleLayerPanel;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
+import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
@@ -160,7 +162,7 @@ public class GuiEditBlueprint extends GuiFrame
 				}
 				else
 				{
-					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveBlueprint.");
+					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveData.");
 				}
 			}
 		};
@@ -224,7 +226,7 @@ public class GuiEditBlueprint extends GuiFrame
 
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveBlueprint(this, this.blueprint));
+			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.blueprint, OrbisNavigatorNodeFactory.BLUEPRINT));
 		}
 	}
 }

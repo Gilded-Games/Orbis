@@ -25,9 +25,9 @@ public interface IDirectoryNavigator
 	 */
 	boolean removeListener(IDirectoryNavigatorListener listener);
 
-	void onClickNode(IDirectoryNode node);
+	void onClickNode(INavigatorNode node);
 
-	void onOpenNode(IDirectoryNode node);
+	void onOpenNode(INavigatorNode node);
 
 	/**
 	 * Opens the provided file if it is a directory.
@@ -72,6 +72,6 @@ public interface IDirectoryNavigator
 	/**
 	 * Provides a list of navigator nodes within the current directory.
 	 */
-	List<IDirectoryNode> getNodes();
+	List<INavigatorNode> getNodes();
 
 }

@@ -5,9 +5,9 @@ import java.io.File;
 public interface IDirectoryNavigatorListener
 {
 
-	void onNodeClick(IDirectoryNavigator navigator, IDirectoryNode node);
+	void onNodeClick(IDirectoryNavigator navigator, INavigatorNode node);
 
-	void onNodeOpen(IDirectoryNavigator navigator, IDirectoryNode node);
+	void onNodeOpen(IDirectoryNavigator navigator, INavigatorNode node);
 
 	void onDirectoryOpen(IDirectoryNavigator navigator, File file);
 

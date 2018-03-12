@@ -5,7 +5,7 @@ import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.client.gui.data.DropdownElement;
 import com.gildedgames.orbis.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
+import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFactory;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public class ProjectNode implements IDirectoryNode
+public class NavigatorNodeProject implements INavigatorNode
 {
 	private static final ResourceLocation TEXTURE = OrbisCore.getResource("navigator/project.png");
 
@@ -32,11 +32,11 @@ public class ProjectNode implements IDirectoryNode
 
 	private final IProject project;
 
-	public ProjectNode(final File file, final IProject project)
+	public NavigatorNodeProject(final File file, final IProject project)
 	{
 		if (!file.isDirectory())
 		{
-			throw new RuntimeException("File given to FolderNode is not a directory! Aborting.");
+			throw new RuntimeException("File given to NavigatorNodeFolder is not a directory! Aborting.");
 		}
 
 		this.file = file;
@@ -99,8 +99,8 @@ public class ProjectNode implements IDirectoryNode
 				@Override
 				public void onClick(final GuiDropdownList list, final EntityPlayer player)
 				{
-					ProjectNode.this.project.getMetadata().setDownloading(true);
-					OrbisAPI.network().sendPacketToServer(new PacketRequestProject(ProjectNode.this.project.getProjectIdentifier()));
+					NavigatorNodeProject.this.project.getMetadata().setDownloading(true);
+					OrbisAPI.network().sendPacketToServer(new PacketRequestProject(NavigatorNodeProject.this.project.getProjectIdentifier()));
 				}
 			});
 		}

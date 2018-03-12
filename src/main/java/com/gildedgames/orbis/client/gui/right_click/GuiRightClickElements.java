@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.right_click;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.block.BlockFilter;

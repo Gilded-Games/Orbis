@@ -3,8 +3,8 @@ package com.gildedgames.orbis.client.gui.util.directory.nodes;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.impl.OrbisProjectManager;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNodeFactory;
+import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.common.OrbisCore;
 
 import java.io.File;
@@ -14,12 +14,26 @@ import java.nio.file.Paths;
 
 public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 {
-	private static final String BLUEPRINT = "blueprint";
+	public static final String BLUEPRINT = "blueprint";
+
+	public static final String FRAMEWORK = "framework";
+
+	private String viewOnly;
+
+	public OrbisNavigatorNodeFactory()
+	{
+
+	}
+
+	public OrbisNavigatorNodeFactory(String viewOnly)
+	{
+		this.viewOnly = viewOnly;
+	}
 
 	@Override
-	public IDirectoryNode createFrom(final File file, final String extension)
+	public INavigatorNode createFrom(final File file, final String extension)
 	{
-		IDirectoryNode node = null;
+		INavigatorNode node = null;
 
 		try
 		{
@@ -48,7 +62,7 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 						// TODO: Refresh cache in case contents of project changed outside of game.
 						//project.loadAndCacheData();
 
-						node = new ProjectNode(file, project);
+						node = new NavigatorNodeProject(file, project);
 					}
 				}
 				catch (final OrbisMissingProjectException e)
@@ -58,18 +72,26 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 			}
 			else
 			{
-				node = new FolderNode(file);
+				node = new NavigatorNodeFolder(file);
 			}
 		}
 		else
 		{
+			if (this.viewOnly != null && !extension.equals(this.viewOnly))
+			{
+				return null;
+			}
+
 			switch (extension)
 			{
 				case BLUEPRINT:
-					node = new BlueprintNode(file);
+					node = new NavigatorNodeBlueprint(file);
+					break;
+				case FRAMEWORK:
+					node = new NavigatorNodeFramework(file);
 					break;
 				default:
-					node = new FileNode(file);
+					node = new NavigatorNodeFile(file);
 			}
 		}
 

@@ -2,7 +2,7 @@ package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
 import com.gildedgames.orbis.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
+import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.GuiFactory;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
@@ -14,19 +14,19 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public class BlueprintNode implements IDirectoryNode
+public class NavigatorNodeFramework implements INavigatorNode
 {
-	private static final ResourceLocation TEXTURE = OrbisCore.getResource("navigator/blueprint_file.png");
+	private static final ResourceLocation TEXTURE = OrbisCore.getResource("navigator/framework_file.png");
 
 	private final File file;
 
 	private final GuiTexture icon = new GuiTexture(Dim2D.build().area(23).flush(), TEXTURE);
 
-	public BlueprintNode(final File file)
+	public NavigatorNodeFramework(final File file)
 	{
 		if (file.isDirectory())
 		{
-			throw new RuntimeException("File given to BlueprintNode is a directory! Aborting.");
+			throw new RuntimeException("File given to NavigatorNodeFramework is a directory! Aborting.");
 		}
 
 		this.file = file;

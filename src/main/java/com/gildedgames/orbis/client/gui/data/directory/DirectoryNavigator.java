@@ -19,7 +19,7 @@ public class DirectoryNavigator implements IDirectoryNavigator
 
 	private final Stack<File> futureHistory = new Stack<>();
 
-	private final List<IDirectoryNode> nodesInCurrentDirectory = Lists.newArrayList();
+	private final List<INavigatorNode> nodesInCurrentDirectory = Lists.newArrayList();
 
 	private final List<IDirectoryNavigatorListener> listeners = Lists.newArrayList();
 
@@ -45,13 +45,13 @@ public class DirectoryNavigator implements IDirectoryNavigator
 	}
 
 	@Override
-	public void onClickNode(IDirectoryNode node)
+	public void onClickNode(INavigatorNode node)
 	{
 		this.listeners.forEach(l -> l.onNodeClick(this, node));
 	}
 
 	@Override
-	public void onOpenNode(final IDirectoryNode node)
+	public void onOpenNode(final INavigatorNode node)
 	{
 		this.listeners.forEach(l -> l.onNodeOpen(this, node));
 	}
@@ -146,7 +146,7 @@ public class DirectoryNavigator implements IDirectoryNavigator
 
 				final String extension = file.isDirectory() ? "" : FilenameUtils.getExtension(file.getName());
 
-				final IDirectoryNode node = this.nodeFactory.createFrom(file, extension);
+				final INavigatorNode node = this.nodeFactory.createFrom(file, extension);
 
 				if (node != null)
 				{
@@ -189,7 +189,7 @@ public class DirectoryNavigator implements IDirectoryNavigator
 	}
 
 	@Override
-	public List<IDirectoryNode> getNodes()
+	public List<INavigatorNode> getNodes()
 	{
 		return this.nodesInCurrentDirectory;
 	}

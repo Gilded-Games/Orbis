@@ -2,8 +2,8 @@ package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.gui.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.GuiRightClickEntrance;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickEntrance;
 import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;

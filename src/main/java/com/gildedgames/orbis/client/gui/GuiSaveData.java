@@ -1,23 +1,24 @@
-package com.gildedgames.orbis.client.gui.blueprint;
+package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis.api.data.management.impl.ProjectIdentifier;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.client.OrbisClientCaches;
-import com.gildedgames.orbis.client.gui.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigatorListener;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
+import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
+import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProject;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.ProjectNode;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -25,16 +26,15 @@ import com.gildedgames.orbis.common.network.packets.projects.PacketRequestCreate
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis.common.network.packets.projects.PacketSaveWorldObjectToProject;
 import com.gildedgames.orbis.common.util.InputHelper;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
 
-public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorListener
+public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 {
-	private final Blueprint blueprint;
+	private final IWorldObject worldObject;
 
 	private GuiText title;
 
@@ -50,12 +50,15 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 	private boolean inProjectDirectory;
 
-	public GuiSaveBlueprint(GuiFrame prevFrame, final Blueprint blueprint)
+	private String viewOnlyDataType;
+
+	public GuiSaveData(GuiFrame prevFrame, final IWorldObject worldObject, String viewOnlyDataType)
 	{
 		super(prevFrame, Dim2D.flush());
 
 		this.setDrawDefaultBackground(true);
-		this.blueprint = blueprint;
+		this.worldObject = worldObject;
+		this.viewOnlyDataType = viewOnlyDataType;
 	}
 
 	public void refreshNavigator()
@@ -134,7 +137,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		}
 		else
 		{
-			this.title.setText(new Text(new TextComponentString("Blueprint Name:"), 1.0F));
+			this.title.setText(new Text(new TextComponentString("Data Name:"), 1.0F));
 		}
 	}
 
@@ -173,7 +176,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 			else
 			{
 				final File file = new File(this.directoryViewer.getNavigator().currentDirectory(),
-						this.nameInput.getInner().getText() + "." + this.blueprint.getData().getFileExtension());
+						this.nameInput.getInner().getText() + "." + this.worldObject.getData().getFileExtension());
 
 				final String location = file.getCanonicalPath().replace(this.project.getLocationAsFile().getCanonicalPath() + File.separator, "");
 
@@ -205,7 +208,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		{
 			try
 			{
-				final IWorldObject worldObject = this.blueprint;
+				final IWorldObject worldObject = this.worldObject;
 
 				//TODO: Make sure the new data has the same dimensions as the old data if you're overwriting
 				if (this.project != null && worldObject.getData() != null && (!file.exists() || canOverwrite))
@@ -232,7 +235,7 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 					this.project.writeData(data, file);
 					this.refreshNavigator();
 
-					if (canOverwrite)
+					if (canOverwrite && data instanceof BlueprintData)
 					{
 						OrbisClientCaches.getBlueprintRenders().refresh(data.getMetadata().getIdentifier());
 					}
@@ -245,22 +248,22 @@ public class GuiSaveBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 		}
 		else
 		{
-			OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.blueprint, location));
+			OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.worldObject, location));
 		}
 	}
 
 	@Override
-	public void onNodeClick(IDirectoryNavigator navigator, IDirectoryNode node)
+	public void onNodeClick(IDirectoryNavigator navigator, INavigatorNode node)
 	{
 
 	}
 
 	@Override
-	public void onNodeOpen(final IDirectoryNavigator navigator, final IDirectoryNode node)
+	public void onNodeOpen(final IDirectoryNavigator navigator, final INavigatorNode node)
 	{
-		if (node instanceof ProjectNode)
+		if (node instanceof NavigatorNodeProject)
 		{
-			final ProjectNode projectNode = (ProjectNode) node;
+			final NavigatorNodeProject projectNode = (NavigatorNodeProject) node;
 
 			this.project = projectNode.getProject();
 		}

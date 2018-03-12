@@ -5,7 +5,7 @@ import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
 import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.client.gui.blueprint.GuiSaveBlueprint;
+import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
@@ -103,9 +103,9 @@ public class PacketSendProjectListing extends PacketMultipleParts
 
 			OrbisCore.getProjectManager().refreshCache();
 
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveBlueprint)
+			if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveData)
 			{
-				final GuiSaveBlueprint viewProjects = (GuiSaveBlueprint) Minecraft.getMinecraft().currentScreen;
+				final GuiSaveData viewProjects = (GuiSaveData) Minecraft.getMinecraft().currentScreen;
 
 				viewProjects.refreshNavigator();
 			}

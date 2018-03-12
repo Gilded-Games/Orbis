@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.fill;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.schedules.FilterOptions;

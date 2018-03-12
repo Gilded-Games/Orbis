@@ -2,7 +2,7 @@ package com.gildedgames.orbis.client.gui.util.directory;
 
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigatorListener;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNode;
+import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.ModDim2D;
@@ -67,7 +67,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 	 * @param padding
 	 * @return
 	 */
-	private List<GuiDirectoryNode> listVisibleFiles(final List<IDirectoryNode> nodes, final int scrollCount, final int xOffset, final int yOffset,
+	private List<GuiDirectoryNode> listVisibleFiles(final List<INavigatorNode> nodes, final int scrollCount, final int xOffset, final int yOffset,
 			final int width, final int height,
 			final int padding)
 	{
@@ -104,7 +104,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 		for (int i = frontNodeIndex; i < backNodeIndex; i++)
 		{
-			final IDirectoryNode node = nodes.get(i);
+			final INavigatorNode node = nodes.get(i);
 
 			final int freshIndex = i - frontNodeIndex;
 
@@ -249,13 +249,13 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 	}
 
 	@Override
-	public void onNodeClick(IDirectoryNavigator navigator, IDirectoryNode node)
+	public void onNodeClick(IDirectoryNavigator navigator, INavigatorNode node)
 	{
 
 	}
 
 	@Override
-	public void onNodeOpen(final IDirectoryNavigator navigator, final IDirectoryNode node)
+	public void onNodeOpen(final IDirectoryNavigator navigator, final INavigatorNode node)
 	{
 
 	}

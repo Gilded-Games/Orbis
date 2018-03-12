@@ -1,6 +1,6 @@
-package com.gildedgames.orbis.client.gui;
+package com.gildedgames.orbis.client.gui.right_click;
 
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
+import com.gildedgames.orbis.api.data.pathway.Entrance;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
 import com.gildedgames.orbis.client.rect.Dim2D;
@@ -10,18 +10,18 @@ import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 
-public class GuiRightClickSchedule extends GuiFrame
+public class GuiRightClickEntrance extends GuiFrame
 {
 	private final Blueprint blueprint;
 
-	private final ISchedule schedule;
+	private final Entrance entrance;
 
-	public GuiRightClickSchedule(Blueprint blueprint, final ISchedule schedule)
+	public GuiRightClickEntrance(Blueprint blueprint, final Entrance entrance)
 	{
 		super(null, Dim2D.flush());
 
 		this.blueprint = blueprint;
-		this.schedule = schedule;
+		this.entrance = entrance;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class GuiRightClickSchedule extends GuiFrame
 		this.dim().mod().width(this.width).height(this.height).flush();
 
 		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
-				GuiRightClickElements.remove(this.blueprint, this.schedule),
+				GuiRightClickElements.remove(this.blueprint, this.entrance),
 				GuiRightClickElements.close()));
 	}
 

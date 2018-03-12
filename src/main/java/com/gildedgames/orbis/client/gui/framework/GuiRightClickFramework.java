@@ -1,12 +1,15 @@
 package com.gildedgames.orbis.client.gui.framework;
 
-import com.gildedgames.orbis.client.gui.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.data.DropdownElement;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
 
@@ -27,6 +30,14 @@ public class GuiRightClickFramework extends GuiFrame
 		this.dim().mod().width(this.width).height(this.height).flush();
 
 		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
+				new DropdownElement(new TextComponentString("Edit"))
+				{
+					@Override
+					public void onClick(final GuiDropdownList list, final EntityPlayer player)
+					{
+						Minecraft.getMinecraft().displayGuiScreen(new GuiEditFramework(null, GuiRightClickFramework.this.framework));
+					}
+				},
 				GuiRightClickElements.remove(this.framework),
 				GuiRightClickElements.close()));
 	}
