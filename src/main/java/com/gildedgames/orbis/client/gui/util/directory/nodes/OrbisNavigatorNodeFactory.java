@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.impl.OrbisProjectManager;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNodeFactory;
@@ -14,10 +16,6 @@ import java.nio.file.Paths;
 
 public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 {
-	public static final String BLUEPRINT = "blueprint";
-
-	public static final String FRAMEWORK = "framework";
-
 	private String viewOnly;
 
 	public OrbisNavigatorNodeFactory()
@@ -84,10 +82,10 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 
 			switch (extension)
 			{
-				case BLUEPRINT:
+				case BlueprintData.EXTENSION:
 					node = new NavigatorNodeBlueprint(file);
 					break;
-				case FRAMEWORK:
+				case FrameworkData.EXTENSION:
 					node = new NavigatorNodeFramework(file);
 					break;
 				default:

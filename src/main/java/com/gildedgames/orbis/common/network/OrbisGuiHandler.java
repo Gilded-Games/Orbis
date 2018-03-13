@@ -4,10 +4,10 @@ import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis.api.world.WorldObjectUtils;
-import com.gildedgames.orbis.client.gui.blueprint.GuiLoadBlueprint;
+import com.gildedgames.orbis.client.gui.GuiLoadData;
 import com.gildedgames.orbis.client.gui.schedules.GuiEditScheduledRegion;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.containers.ContainerBlueprintInventory;
+import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class OrbisGuiHandler implements IGuiHandler
 {
 
-	public static final int ORBIS_BLUEPRINT_LOAD = 1;
+	public static final int LOAD_DATA = 1;
 
 	public static final int EDIT_SCHEDULE_REGION = 2;
 
@@ -35,8 +35,8 @@ public class OrbisGuiHandler implements IGuiHandler
 
 		switch (id)
 		{
-			case ORBIS_BLUEPRINT_LOAD:
-				return new ContainerBlueprintInventory(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
+			case LOAD_DATA:
+				return new ContainerLoadData(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
 			case EDIT_SCHEDULE_REGION:
 				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
@@ -69,8 +69,8 @@ public class OrbisGuiHandler implements IGuiHandler
 
 		switch (id)
 		{
-			case ORBIS_BLUEPRINT_LOAD:
-				return new GuiLoadBlueprint(null, playerOrbis);
+			case LOAD_DATA:
+				return new GuiLoadData(null, playerOrbis);
 			case EDIT_SCHEDULE_REGION:
 				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 

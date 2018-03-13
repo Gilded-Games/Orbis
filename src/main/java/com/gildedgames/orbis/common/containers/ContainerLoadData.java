@@ -6,7 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 
-public class ContainerBlueprintInventory extends ContainerPlayer
+public class ContainerLoadData extends ContainerPlayer
 {
 	/** See {@link net.minecraft.client.gui.inventory.GuiContainerCreative#basicInventory} **/
 	private static final InventoryBasic dumbInventory = new InventoryBasic("tmp", true, 52);
@@ -17,7 +17,7 @@ public class ContainerBlueprintInventory extends ContainerPlayer
 
 	private Slot binSlot;
 
-	public ContainerBlueprintInventory(final IPlayerOrbis playerOrbis, final IInventory forgeInventory)
+	public ContainerLoadData(final IPlayerOrbis playerOrbis, final IInventory forgeInventory)
 	{
 		super(playerOrbis.getEntity().inventory, false, playerOrbis.getEntity());
 
@@ -79,7 +79,7 @@ public class ContainerBlueprintInventory extends ContainerPlayer
 
 		craftResult.xPos = craftResult.yPos = -2000;
 
-		this.binSlot = new Slot(ContainerBlueprintInventory.dumbInventory, this.inventorySlots.size(), 213, 26);
+		this.binSlot = new Slot(ContainerLoadData.dumbInventory, this.inventorySlots.size(), 213, 26);
 
 		this.binSlot.xPos = this.binSlot.yPos = -2000;
 

@@ -64,6 +64,17 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 		this.setBounds(region);
 	}
 
+	public Framework(World world, FrameworkData data)
+	{
+		this(world);
+
+		this.data = data;
+		this.data.setWorldObjectParent(this);
+		this.data.listen(this);
+
+		this.setBounds(new Region(BlockPos.ORIGIN, new BlockPos(data.getWidth(), data.getHeight(), data.getLength())));
+	}
+
 	public Collection<IFrameworkNode> findIntersectingNodes(IShape s)
 	{
 		List<IFrameworkNode> nodes = Lists.newArrayList();

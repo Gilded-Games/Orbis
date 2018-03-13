@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
 import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
@@ -10,7 +11,6 @@ import com.gildedgames.orbis.client.gui.schedules.GuiScheduleLayerPanel;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
@@ -226,7 +226,7 @@ public class GuiEditBlueprint extends GuiFrame
 
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.blueprint, OrbisNavigatorNodeFactory.BLUEPRINT));
+			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.blueprint, BlueprintData.EXTENSION));
 		}
 	}
 }

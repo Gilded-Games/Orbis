@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui.blueprint;
+package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
@@ -18,15 +18,17 @@ import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeBlueprint;
+import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeFramework;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProject;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.containers.ContainerBlueprintInventory;
+import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
+import com.gildedgames.orbis.common.items.ItemFramework;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
@@ -39,7 +41,7 @@ import net.minecraft.util.text.TextComponentString;
 import java.io.File;
 import java.io.IOException;
 
-public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorListener
+public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 {
 	private static final ResourceLocation MATRIX_ICON = OrbisCore.getResource("filter_gui/filter_matrix.png");
 
@@ -47,7 +49,7 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 	private static final ResourceLocation MERGE_ICON = OrbisCore.getResource("blueprint_gui/merge_icon_right.png");
 
-	private final ContainerBlueprintInventory container;
+	private final ContainerLoadData container;
 
 	private GuiAbstractButton forgeButton;
 
@@ -61,11 +63,11 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 	private IProject project;
 
-	public GuiLoadBlueprint(GuiFrame prevFrame, final PlayerOrbis playerOrbis)
+	public GuiLoadData(GuiFrame prevFrame, final PlayerOrbis playerOrbis)
 	{
 		super(prevFrame, Dim2D.flush(), null);
 
-		this.container = new ContainerBlueprintInventory(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
+		this.container = new ContainerLoadData(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
 
 		this.inventorySlots = this.container;
 		playerOrbis.getEntity().openContainer = this.inventorySlots;
@@ -199,9 +201,27 @@ public class GuiLoadBlueprint extends GuiFrame implements IDirectoryNavigatorLis
 
 			try
 			{
-				final IData data = OrbisCore.getProjectManager().findData(GuiLoadBlueprint.this.project, node.getFile());
+				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
 
 				ItemBlueprint.setBlueprint(stack, data.getMetadata().getIdentifier());
+
+				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
+				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+			}
+			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+		}
+		else if (node instanceof NavigatorNodeFramework)
+		{
+			final ItemStack stack = new ItemStack(ItemsOrbis.framework);
+
+			try
+			{
+				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+
+				ItemFramework.setDataId(stack, data.getMetadata().getIdentifier());
 
 				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
 				Minecraft.getMinecraft().player.inventory.setItemStack(stack);

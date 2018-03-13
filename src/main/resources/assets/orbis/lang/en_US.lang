@@ -3,6 +3,7 @@ item.orbis.block_chunk.name=Block Chunk
 item.orbis.block_palette.name=Block Palette
 item.orbis.blueprint.name=Blueprint
 item.orbis.blueprint_palette.name=Blueprint Palette
+item.orbis.framework.name=Framework
 
 #Blocks
 block.orbis.orbis_floor.name=Orbis Floor

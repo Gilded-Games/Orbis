@@ -1,17 +1,15 @@
 package com.gildedgames.orbis.client.renderers.tiles;
 
-import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.client.OrbisClientCaches;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
-import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
 import com.gildedgames.orbis.client.renderers.RenderUtil;
+import com.gildedgames.orbis.client.renderers.framework.RenderFrameworkEditing;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
-import com.gildedgames.orbis.common.tiles.TileEntityBlueprintPalette;
+import com.gildedgames.orbis.common.items.ItemFramework;
+import com.gildedgames.orbis.common.tiles.TileEntityFramework;
 import com.gildedgames.orbis.common.util.OpenGLHelper;
 import com.gildedgames.orbis.common.util.WorldRenderHelp;
-import com.google.common.base.Optional;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -33,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRenderer<TileEntityBlueprintPalette>
+public class TileEntityFrameworkRenderer extends TileEntitySpecialRenderer<TileEntityFramework>
 {
 
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -42,13 +40,13 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 
 	private ItemStack stack;
 
-	public TileEntityBlueprintPaletteRenderer()
+	public TileEntityFrameworkRenderer()
 	{
 
 	}
 
 	@Override
-	public void render(final TileEntityBlueprintPalette te, final double x, final double y, final double z, final float partialTicks,
+	public void render(final TileEntityFramework te, final double x, final double y, final double z, final float partialTicks,
 			final int destroyStage, float alpha)
 	{
 		try
@@ -58,36 +56,19 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 				return;
 			}
 
-			final BlueprintDataPalette palette = ItemBlueprintPalette.getBlueprintPalette(this.stack);
+			final IDataIdentifier id = ItemFramework.getDataId(this.stack);
 
-			if (palette == null || palette.getIDs().size() <= 0)
+			if (id == null)
 			{
 				return;
 			}
 
-			final int target = (int) ((System.currentTimeMillis() / 1000) % palette.getIDs().size());
-			int i = 0;
+			final RenderFrameworkEditing framework = OrbisClientCaches.getFrameworkRenders().get(id).orNull();
 
-			IDataIdentifier id = null;
-
-			for (final IDataIdentifier itId : palette.getIDs())
-			{
-				if (i == target)
-				{
-					id = itId;
-				}
-
-				i++;
-			}
-
-			final Optional<RenderBlueprintBlocks> opt = OrbisClientCaches.getBlueprintRenders().get(id);
-
-			if (!opt.isPresent())
+			if (framework == null)
 			{
 				return;
 			}
-
-			final RenderBlueprintBlocks blueprint = opt.get();
 
 			GlStateManager.pushMatrix();
 
@@ -95,17 +76,17 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 
 			if (!inGuiContext)
 			{
-				RenderUtil.transformForWorld(blueprint.getBoundingBox());
+				RenderUtil.transformForWorld(framework.getBoundingBox());
 				this.setLightmapDisabled(true);
 			}
 			else
 			{
-				RenderUtil.transformForGui(blueprint.getBoundingBox());
+				RenderUtil.transformForGui(framework.getBoundingBox());
 			}
 
-			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
+			framework.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
 
-			WorldRenderHelp.renderSubRenderers(blueprint);
+			WorldRenderHelp.renderSubRenderers(framework);
 
 			if (!inGuiContext)
 			{
@@ -122,7 +103,7 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 		}
 	}
 
-	public static class DummyTile extends TileEntityBlueprintPalette
+	public static class DummyTile extends TileEntityFramework
 	{
 	}
 
@@ -182,7 +163,7 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 			@Override
 			public IBakedModel handleItemState(final IBakedModel originalModel, final ItemStack stack, final World world, final EntityLivingBase entity)
 			{
-				TileEntityBlueprintPaletteRenderer.this.stack = stack;
+				TileEntityFrameworkRenderer.this.stack = stack;
 				return BakedModel.this;
 			}
 		}

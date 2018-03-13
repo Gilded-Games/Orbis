@@ -67,6 +67,8 @@ import java.util.*;
 public class FrameworkData implements IFrameworkNode, IData, IDimensions
 {
 
+	public static final String EXTENSION = "framework";
+
 	private final static Object stub = "aweoigh";
 
 	/**

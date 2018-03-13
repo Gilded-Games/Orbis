@@ -289,41 +289,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		return this.glIndex;
 	}
 
-	public void transformForWorld()
-	{
-		int maxval = Math.max(this.blueprint.getWidth(), this.blueprint.getHeight());
-		maxval = Math.max(this.blueprint.getLength(), maxval);
-
-		final float scalefactor = Math.min(1, (this.scale / maxval));
-
-		GlStateManager.translate(0.5F, 0.65F, 0.5F);
-
-		GlStateManager.scale(0.6F, 0.6F, 0.6F);
-		GlStateManager.scale(scalefactor, scalefactor, scalefactor);
-
-		GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-
-		GlStateManager.translate(-this.blueprint.getWidth() / 2.f, -this.blueprint.getHeight() / 2.f, -this.blueprint.getLength() / 2.f);
-	}
-
-	public void transformForGui()
-	{
-		int maxval = Math.max(this.blueprint.getWidth(), this.blueprint.getHeight());
-		maxval = Math.max(this.blueprint.getLength(), maxval);
-
-		final float scalefactor = Math.min(1, (this.scale / maxval));
-
-		GlStateManager.translate(0.5F, 0.5F, 0.5F);
-
-		GlStateManager.scale(0.6F, 0.6F, 0.6F);
-		GlStateManager.scale(scalefactor, scalefactor, scalefactor);
-
-		GlStateManager.rotate(45.0F, 0.0F, -1.0F, 0.0F);
-		GlStateManager.rotate(30.0F, 1.0F, 0.0F, -1.0F);
-
-		GlStateManager.translate(-this.blueprint.getWidth() / 2.f, -this.blueprint.getHeight() / 2.f, -this.blueprint.getLength() / 2.f);
-	}
-
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{

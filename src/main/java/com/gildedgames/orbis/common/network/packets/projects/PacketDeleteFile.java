@@ -9,7 +9,7 @@ import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
 import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
 import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.client.gui.blueprint.GuiLoadBlueprint;
+import com.gildedgames.orbis.client.gui.GuiLoadData;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
 import io.netty.buffer.ByteBuf;
@@ -100,9 +100,9 @@ public class PacketDeleteFile extends PacketMultipleParts
 						viewProjects.refreshNavigator();
 					}
 
-					if (Minecraft.getMinecraft().currentScreen instanceof GuiLoadBlueprint)
+					if (Minecraft.getMinecraft().currentScreen instanceof GuiLoadData)
 					{
-						final GuiLoadBlueprint loadBlueprints = (GuiLoadBlueprint) Minecraft.getMinecraft().currentScreen;
+						final GuiLoadData loadBlueprints = (GuiLoadData) Minecraft.getMinecraft().currentScreen;
 
 						loadBlueprints.refreshNavigator();
 					}

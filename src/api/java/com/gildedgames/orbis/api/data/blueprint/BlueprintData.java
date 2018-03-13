@@ -34,6 +34,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BlueprintData implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>, IWorldObjectChild
 {
+	public static final String EXTENSION = "blueprint";
+
 	private final List<IBlueprintDataListener> listeners = Lists.newArrayList();
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();

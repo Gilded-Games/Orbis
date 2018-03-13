@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.gui.framework;
 
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.util.InputHelper;
@@ -80,7 +80,7 @@ public class GuiEditFramework extends GuiFrame
 
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.framework, OrbisNavigatorNodeFactory.FRAMEWORK));
+			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.framework, FrameworkData.EXTENSION));
 		}
 	}
 }

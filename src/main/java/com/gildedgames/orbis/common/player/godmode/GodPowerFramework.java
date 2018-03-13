@@ -9,16 +9,18 @@ import com.gildedgames.orbis.api.util.RegionHelp;
 import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerFrameworkClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
-import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
+import com.gildedgames.orbis.common.items.ItemBlueprint;
+import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
+import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFramework;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -110,13 +112,15 @@ public class GodPowerFramework implements IGodPower
 	@Override
 	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
-		return false;
+		return true;
 	}
 
 	@Override
 	public void onOpenGui(final EntityPlayer player)
 	{
+		final BlockPos pos = player.getPosition();
 
+		player.openGui(OrbisCore.INSTANCE, OrbisGuiHandler.LOAD_DATA, player.world, pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	@Override
@@ -124,7 +128,7 @@ public class GodPowerFramework implements IGodPower
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
-		return !held.isEmpty() && (held.getItem() instanceof ItemBlock || held.getItem() instanceof ItemBlockDataContainer);
+		return !held.isEmpty() && !(held.getItem() instanceof ItemBlueprint) && !(held.getItem() instanceof ItemBlueprintPalette);
 	}
 
 	@Override

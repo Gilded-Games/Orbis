@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.api.data.management.impl;
 
 import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.management.*;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
@@ -43,7 +45,8 @@ public class OrbisProject implements IProject
 	{
 		this.cache = new OrbisProjectCache(this);
 
-		this.acceptedFileExtensions.add("blueprint");
+		this.acceptedFileExtensions.add(BlueprintData.EXTENSION);
+		this.acceptedFileExtensions.add(FrameworkData.EXTENSION);
 	}
 
 	/**

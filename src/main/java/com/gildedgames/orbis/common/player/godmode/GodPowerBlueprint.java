@@ -187,7 +187,7 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 	{
 		final BlockPos pos = player.getPosition();
 
-		player.openGui(OrbisCore.INSTANCE, OrbisGuiHandler.ORBIS_BLUEPRINT_LOAD, player.world, pos.getX(), pos.getY(), pos.getZ());
+		player.openGui(OrbisCore.INSTANCE, OrbisGuiHandler.LOAD_DATA, player.world, pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	@Override

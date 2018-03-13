@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
+import com.gildedgames.orbis.client.renderers.RenderUtil;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import com.gildedgames.orbis.common.tiles.TileEntityBlockDataContainer;
@@ -98,12 +99,12 @@ public class TileEntityBlockDataContainerRenderer extends TileEntitySpecialRende
 
 			if (!inGuiContext)
 			{
-				blueprint.transformForWorld();
+				RenderUtil.transformForWorld(blueprint.getBoundingBox());
 				this.setLightmapDisabled(true);
 			}
 			else
 			{
-				blueprint.transformForGui();
+				RenderUtil.transformForGui(blueprint.getBoundingBox());
 			}
 
 			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);

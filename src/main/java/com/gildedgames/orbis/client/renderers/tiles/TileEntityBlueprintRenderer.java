@@ -4,14 +4,12 @@ import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.client.OrbisClientCaches;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
+import com.gildedgames.orbis.client.renderers.RenderUtil;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.tiles.TileEntityBlueprint;
 import com.gildedgames.orbis.common.util.OpenGLHelper;
 import com.gildedgames.orbis.common.util.WorldRenderHelp;
-import com.google.common.base.Optional;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileEntityBlueprint>
-		implements RemovalListener<IDataIdentifier, Optional<RenderBlueprintBlocks>>
 {
 
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -79,12 +76,12 @@ public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileE
 
 			if (!inGuiContext)
 			{
-				blueprint.transformForWorld();
+				RenderUtil.transformForWorld(blueprint.getBoundingBox());
 				this.setLightmapDisabled(true);
 			}
 			else
 			{
-				blueprint.transformForGui();
+				RenderUtil.transformForGui(blueprint.getBoundingBox());
 			}
 
 			blueprint.render(mc.world, AirSelectionRenderer.PARTIAL_TICKS, false);
@@ -103,24 +100,6 @@ public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileE
 		catch (final ExecutionException e)
 		{
 			OrbisCore.LOGGER.error(e);
-		}
-	}
-
-	@Override
-	public void onRemoval(final RemovalNotification<IDataIdentifier, Optional<RenderBlueprintBlocks>> notification)
-	{
-		final Optional<RenderBlueprintBlocks> opt = notification.getValue();
-
-		if (opt == null)
-		{
-			return;
-		}
-
-		final RenderBlueprintBlocks blueprint = opt.orNull();
-
-		if (blueprint != null)
-		{
-			blueprint.onRemoved();
 		}
 	}
 

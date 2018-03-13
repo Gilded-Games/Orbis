@@ -2,10 +2,14 @@ package com.gildedgames.orbis.client;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
+import com.gildedgames.orbis.client.renderers.framework.RenderFrameworkEditing;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis.common.world_objects.Framework;
 import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import net.minecraft.client.Minecraft;
@@ -19,10 +23,39 @@ public class OrbisClientCaches
 {
 
 	@SideOnly(Side.CLIENT)
-	private static final LoadingCache<IDataIdentifier, Optional<RenderBlueprintBlocks>> blueprintRenderCache = CacheBuilder.newBuilder()
+	private static final LoadingCache<IDataIdentifier, Optional<RenderFrameworkEditing>> FRAMEWORK_RENDER_CACHE = CacheBuilder.newBuilder()
 			.maximumSize(1000)
 			.expireAfterWrite(10, TimeUnit.MINUTES)
-			.removalListener(new BlueprintRenderCacheRL())
+			.removalListener(new WorldRendererCacheRL())
+			.build(
+					new CacheLoader<IDataIdentifier, Optional<RenderFrameworkEditing>>()
+					{
+						@Override
+						public Optional<RenderFrameworkEditing> load(final IDataIdentifier id)
+						{
+							try
+							{
+								final FrameworkData data = OrbisCore.getProjectManager().findData(id);
+
+								final RenderFrameworkEditing framework = new RenderFrameworkEditing(
+										new Framework(Minecraft.getMinecraft().world, data));
+
+								return Optional.of(framework);
+							}
+							catch (final OrbisMissingDataException e)
+							{
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.FRAMEWORK_RENDER_CACHE: ", e);
+							}
+
+							return Optional.absent();
+						}
+					});
+
+	@SideOnly(Side.CLIENT)
+	private static final LoadingCache<IDataIdentifier, Optional<RenderBlueprintBlocks>> BLUEPRINT_RENDER_CACHE = CacheBuilder.newBuilder()
+			.maximumSize(1000)
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+			.removalListener(new WorldRendererCacheRL())
 			.build(
 					new CacheLoader<IDataIdentifier, Optional<RenderBlueprintBlocks>>()
 					{
@@ -41,7 +74,7 @@ public class OrbisClientCaches
 							}
 							catch (final OrbisMissingDataException e)
 							{
-								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.blueprintRenderCache: ", e);
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_RENDER_CACHE: ", e);
 							}
 
 							return Optional.absent();
@@ -51,27 +84,33 @@ public class OrbisClientCaches
 	@SideOnly(Side.CLIENT)
 	public static LoadingCache<IDataIdentifier, Optional<RenderBlueprintBlocks>> getBlueprintRenders()
 	{
-		return blueprintRenderCache;
+		return BLUEPRINT_RENDER_CACHE;
 	}
 
-	private static class BlueprintRenderCacheRL implements RemovalListener<IDataIdentifier, Optional<RenderBlueprintBlocks>>
+	@SideOnly(Side.CLIENT)
+	public static LoadingCache<IDataIdentifier, Optional<RenderFrameworkEditing>> getFrameworkRenders()
+	{
+		return FRAMEWORK_RENDER_CACHE;
+	}
+
+	private static class WorldRendererCacheRL implements RemovalListener<IDataIdentifier, Optional<? extends IWorldRenderer>>
 	{
 
 		@Override
-		public void onRemoval(final RemovalNotification<IDataIdentifier, Optional<RenderBlueprintBlocks>> notification)
+		public void onRemoval(final RemovalNotification<IDataIdentifier, Optional<? extends IWorldRenderer>> notification)
 		{
-			final Optional<RenderBlueprintBlocks> opt = notification.getValue();
+			final Optional<? extends IWorldRenderer> opt = notification.getValue();
 
 			if (opt == null)
 			{
 				return;
 			}
 
-			final RenderBlueprintBlocks blueprint = opt.orNull();
+			final IWorldRenderer worldRenderer = opt.orNull();
 
-			if (blueprint != null)
+			if (worldRenderer != null)
 			{
-				blueprint.onRemoved();
+				worldRenderer.onRemoved();
 			}
 		}
 	}

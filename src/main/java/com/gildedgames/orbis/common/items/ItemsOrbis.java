@@ -22,6 +22,8 @@ public class ItemsOrbis
 
 	public static final ItemEntity entity_item = new ItemEntity();
 
+	public static final ItemFramework framework = new ItemFramework();
+
 	@SubscribeEvent
 	public static void onRegisterItems(final RegistryEvent.Register<Item> event)
 	{
@@ -31,6 +33,7 @@ public class ItemsOrbis
 		items.register("block_chunk", block_chunk.setCreativeTab(null));
 		items.register("block_palette", block_palette.setCreativeTab(null));
 		items.register("blueprint_palette", blueprint_palette.setCreativeTab(null));
+		items.register("framework", framework.setCreativeTab(null));
 		//items.register("entity_item", entity_item.setCreativeTab(ENTITY_TAB));
 	}
 

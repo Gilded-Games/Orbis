@@ -15,6 +15,51 @@ public class RenderUtil
 
 	private final static Minecraft mc = Minecraft.getMinecraft();
 
+	public static void transformForWorld(IDimensions dim)
+	{
+		transformForWorld(dim, 1.0F);
+	}
+
+	public static void transformForWorld(IDimensions dim, float scale)
+	{
+		int maxval = Math.max(dim.getWidth(), dim.getHeight());
+		maxval = Math.max(dim.getLength(), maxval);
+
+		final float scalefactor = Math.min(1, (scale / maxval));
+
+		GlStateManager.translate(0.5F, 0.65F, 0.5F);
+
+		GlStateManager.scale(0.6F, 0.6F, 0.6F);
+		GlStateManager.scale(scalefactor, scalefactor, scalefactor);
+
+		GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+
+		GlStateManager.translate(-dim.getWidth() / 2.f, -dim.getHeight() / 2.f, -dim.getLength() / 2.f);
+	}
+
+	public static void transformForGui(IDimensions dim)
+	{
+		transformForGui(dim, 1.0F);
+	}
+
+	public static void transformForGui(IDimensions dim, float scale)
+	{
+		int maxval = Math.max(dim.getWidth(), dim.getHeight());
+		maxval = Math.max(dim.getLength(), maxval);
+
+		final float scalefactor = Math.min(1, (scale / maxval));
+
+		GlStateManager.translate(0.5F, 0.5F, 0.5F);
+
+		GlStateManager.scale(0.6F, 0.6F, 0.6F);
+		GlStateManager.scale(scalefactor, scalefactor, scalefactor);
+
+		GlStateManager.rotate(45.0F, 0.0F, -1.0F, 0.0F);
+		GlStateManager.rotate(30.0F, 1.0F, 0.0F, -1.0F);
+
+		GlStateManager.translate(-dim.getWidth() / 2.f, -dim.getHeight() / 2.f, -dim.getLength() / 2.f);
+	}
+
 	public static void rotateRender(IDimensions d, Rotation r)
 	{
 		float angle = 0.0F;
