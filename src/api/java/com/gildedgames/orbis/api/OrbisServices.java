@@ -299,7 +299,7 @@ public class OrbisServices implements IOrbisServices
 	}
 
 	@Override
-	public synchronized void startProjectManager()
+	public synchronized void startProjectManager(Object mod, String archiveBaseName)
 	{
 		if (this.projectManager != null)
 		{
@@ -313,17 +313,17 @@ public class OrbisServices implements IOrbisServices
 			if (data != null)
 			{
 				this.projectManager = new OrbisProjectManager(
-						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/projects/"));
+						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/projects/"), mod, archiveBaseName);
 			}
 			else
 			{
-				this.projectManager = new OrbisProjectManager(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/projects/"));
+				this.projectManager = new OrbisProjectManager(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/projects/"), mod, archiveBaseName);
 			}
 		}
 
 		if (this.projectManager == null)
 		{
-			this.projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"));
+			this.projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"), mod, archiveBaseName);
 		}
 
 		this.listeners.forEach(IOrbisServicesListener::onStartProjectManager);
@@ -348,11 +348,6 @@ public class OrbisServices implements IOrbisServices
 	@Override
 	public synchronized IProjectManager getProjectManager()
 	{
-		if (this.projectManager == null)
-		{
-			this.startProjectManager();
-		}
-
 		return this.projectManager;
 	}
 }

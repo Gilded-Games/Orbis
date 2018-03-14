@@ -29,7 +29,11 @@ public class OrbisProjectManager implements IProjectManager
 
 	private final Map<String, IProject> nameToProject = Maps.newHashMap();
 
-	public OrbisProjectManager(final File baseDirectory)
+	private Object mod;
+
+	private String archiveBaseName;
+
+	public OrbisProjectManager(final File baseDirectory, Object mod, String archiveBaseName)
 	{
 		if (!baseDirectory.exists() && !baseDirectory.mkdirs())
 		{
@@ -42,6 +46,8 @@ public class OrbisProjectManager implements IProjectManager
 		}
 
 		this.baseDirectory = baseDirectory;
+		this.mod = mod;
+		this.archiveBaseName = archiveBaseName;
 	}
 
 	public static boolean isProjectDirectory(final File file)
@@ -159,7 +165,7 @@ public class OrbisProjectManager implements IProjectManager
 	}
 
 	@Override
-	public void scanAndCacheProjects(Object mod, String archiveBaseName)
+	public void scanAndCacheProjects()
 	{
 		this.walkProjects((innerFile, file) ->
 		{
@@ -176,7 +182,7 @@ public class OrbisProjectManager implements IProjectManager
 
 				this.cacheProject(file.getName(), project);
 
-				project.setModAndArchiveLoadingFrom(mod, archiveBaseName);
+				project.setModAndArchiveLoadingFrom(this.mod, this.archiveBaseName);
 
 				project.loadAndCacheData();
 			}
@@ -193,6 +199,80 @@ public class OrbisProjectManager implements IProjectManager
 		return this.idToProject.values();
 	}
 
+	private boolean findAndLoadProject(String folderName)
+	{
+		final boolean[] flag = new boolean[1];
+
+		this.walkProjects((innerFile, file) ->
+		{
+			/** When found, load and cache the project into memory **/
+			try (FileInputStream in = new FileInputStream(innerFile))
+			{
+				final NBTTagCompound tag = CompressedStreamTools.readCompressed(in);
+
+				final NBTFunnel funnel = new NBTFunnel(tag);
+
+				final IProject project = funnel.get("project");
+
+				if (project.getLocationAsFile().getName().equals(folderName))
+				{
+					project.setLocationAsFile(file);
+
+					this.cacheProject(file.getName(), project);
+
+					project.setModAndArchiveLoadingFrom(this.mod, this.archiveBaseName);
+
+					project.loadAndCacheData();
+
+					flag[0] = true;
+				}
+			}
+			catch (final IOException e)
+			{
+				OrbisAPI.services().log().catching(e);
+			}
+		});
+
+		return flag[0];
+	}
+
+	private boolean findAndLoadProject(IProjectIdentifier identifier)
+	{
+		final boolean[] flag = new boolean[1];
+
+		this.walkProjects((innerFile, file) ->
+		{
+			/** When found, load and cache the project into memory **/
+			try (FileInputStream in = new FileInputStream(innerFile))
+			{
+				final NBTTagCompound tag = CompressedStreamTools.readCompressed(in);
+
+				final NBTFunnel funnel = new NBTFunnel(tag);
+
+				final IProject project = funnel.get("project");
+
+				if (project.getProjectIdentifier().equals(identifier))
+				{
+					project.setLocationAsFile(file);
+
+					this.cacheProject(file.getName(), project);
+
+					project.setModAndArchiveLoadingFrom(this.mod, this.archiveBaseName);
+
+					project.loadAndCacheData();
+
+					flag[0] = true;
+				}
+			}
+			catch (final IOException e)
+			{
+				OrbisAPI.services().log().catching(e);
+			}
+		});
+
+		return flag[0];
+	}
+
 	@Nullable
 	@Override
 	public <T extends IProject> T findProject(final String folderName) throws OrbisMissingProjectException
@@ -201,6 +281,12 @@ public class OrbisProjectManager implements IProjectManager
 
 		if (project == null)
 		{
+			// Try to find and load project if not loaded yet
+			if (this.findAndLoadProject(folderName))
+			{
+				return (T) this.nameToProject.get(folderName);
+			}
+
 			throw new OrbisMissingProjectException(folderName);
 		}
 
@@ -215,6 +301,12 @@ public class OrbisProjectManager implements IProjectManager
 
 		if (project == null)
 		{
+			// Try to find and load project if not loaded yet
+			if (this.findAndLoadProject(identifier))
+			{
+				return (T) this.idToProject.get(identifier);
+			}
+
 			throw new OrbisMissingProjectException(identifier);
 		}
 

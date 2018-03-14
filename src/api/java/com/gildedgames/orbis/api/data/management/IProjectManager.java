@@ -39,10 +39,8 @@ public interface IProjectManager
 	 * projects. Project structure should be a single folder with
 	 * a hidden .project file inside which contains all the necessary
 	 * metadata to handle the project.
-	 *
-	 * Once scanned, it should load all the projects into memory.
 	 */
-	void scanAndCacheProjects(Object mod, String archiveBaseName);
+	void scanAndCacheProjects();
 
 	/**
 	 * @return The projects currently loaded into memory.

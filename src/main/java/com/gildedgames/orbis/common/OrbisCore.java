@@ -303,7 +303,7 @@ public class OrbisCore implements IOrbisServicesListener
 	{
 		// Checks if listener is already in, don't worry
 		OrbisAPI.services().listen(OrbisCore.INSTANCE);
-		OrbisAPI.services().startProjectManager();
+		OrbisAPI.services().startProjectManager(OrbisCore.INSTANCE, "Orbis");
 		stopDataCache();
 
 		InstanceEvents.loadAllInstancesFromDisk();
@@ -312,6 +312,6 @@ public class OrbisCore implements IOrbisServicesListener
 	@Override
 	public void onStartProjectManager()
 	{
-		OrbisAPI.services().getProjectManager().scanAndCacheProjects(OrbisCore.INSTANCE, "Orbis");
+		OrbisAPI.services().getProjectManager().scanAndCacheProjects();
 	}
 }
