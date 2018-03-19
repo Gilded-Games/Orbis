@@ -74,7 +74,11 @@ public class DataPrimer
 	{
 		final BlockPos pos = data.getPos();
 
-		if (data.getPos().getY() + def.getData().getHeight() > 256)
+		final IRegion bb = BlueprintUtil.getRegionFromDefinition(def.getData(), data);
+
+		if ((!this.access
+				.canAccess(bb.getMin().getX(), bb.getMin().getY(), bb.getMin().getZ(), bb.getMax().getX(), bb.getMax().getY(), bb.getMax().getZ()))
+				|| bb.getMax().getY() > 256)
 		{
 			return false;
 		}
@@ -99,7 +103,7 @@ public class DataPrimer
 
 				for (final PlacementCondition condition : def.getConditions())
 				{
-					if (!this.access.canAccess(pos) || !condition.canPlace(def.getData(), this.access, pos, block, rotated))
+					if (!this.access.canAccess(rotated) || !condition.canPlace(def.getData(), this.access, pos, block, rotated))
 					{
 						return false;
 					}
@@ -118,9 +122,11 @@ public class DataPrimer
 				final int y = def.getData().getBlockDataContainer().getY(index) + pos.getY();
 				final int z = def.getData().getBlockDataContainer().getZ(index) + pos.getZ();
 
+				BlockPos xyz = new BlockPos(x, y, z);
+
 				for (final PlacementCondition condition : def.getConditions())
 				{
-					if (!this.access.canAccess(pos) || !condition.canPlace(def.getData(), this.access, pos, block, new BlockPos(x, y, z)))
+					if (!this.access.canAccess(xyz) || !condition.canPlace(def.getData(), this.access, pos, block, xyz))
 					{
 						return false;
 					}
@@ -157,7 +163,9 @@ public class DataPrimer
 
 		final IRegion bb = BlueprintUtil.getRegionFromDefinition(def.getData(), data);
 
-		if ((checkAreaLoaded && !world.isAreaLoaded(bb.getMin(), bb.getMax(), true)) || bb.getMax().getY() > world.getActualHeight())
+		if ((checkAreaLoaded && !this.access
+				.canAccess(bb.getMin().getX(), bb.getMin().getY(), bb.getMin().getZ(), bb.getMax().getX(), bb.getMax().getY(), bb.getMax().getZ()))
+				|| bb.getMax().getY() > world.getActualHeight())
 		{
 			return false;
 		}
@@ -182,7 +190,7 @@ public class DataPrimer
 
 				for (final PlacementCondition condition : def.getConditions())
 				{
-					if (!this.access.canAccess(pos) || !condition.canPlace(def.getData(), this.access, pos, block, rotated))
+					if (!this.access.canAccess(rotated) || !condition.canPlace(def.getData(), this.access, pos, block, rotated))
 					{
 						return false;
 					}
@@ -199,9 +207,11 @@ public class DataPrimer
 				final int y = def.getData().getBlockDataContainer().getY(index) + pos.getY();
 				final int z = def.getData().getBlockDataContainer().getZ(index) + pos.getZ();
 
+				BlockPos xyz = new BlockPos(x, y, z);
+
 				for (final PlacementCondition condition : def.getConditions())
 				{
-					if (!this.access.canAccess(pos) || !condition.canPlace(def.getData(), this.access, pos, block, new BlockPos(x, y, z)))
+					if (!this.access.canAccess(xyz) || !condition.canPlace(def.getData(), this.access, pos, block, xyz))
 					{
 						return false;
 					}
