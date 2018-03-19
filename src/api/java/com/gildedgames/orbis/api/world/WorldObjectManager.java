@@ -107,6 +107,14 @@ public class WorldObjectManager extends WorldSavedData
 		this.world = world;
 	}
 
+	public void updateObjects()
+	{
+		for (final IWorldObject obj : this.idToObject.values())
+		{
+			obj.onUpdate();
+		}
+	}
+
 	public void checkForDirtyObjects()
 	{
 		for (final IWorldObject obj : this.idToObject.values())

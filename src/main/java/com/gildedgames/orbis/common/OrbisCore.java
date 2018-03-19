@@ -258,6 +258,8 @@ public class OrbisCore implements IOrbisServicesListener
 	@Mod.EventHandler
 	public void onFMLConstruction(final FMLConstructionEvent event)
 	{
+		registerSerializations();
+
 		OrbisAPI.services().setNetwork(new NetworkingOrbis());
 	}
 
@@ -265,8 +267,6 @@ public class OrbisCore implements IOrbisServicesListener
 	public void onFMLPreInit(final FMLPreInitializationEvent event)
 	{
 		NetworkingOrbis.preInit();
-
-		registerSerializations();
 
 		OrbisTileEntities.preInit();
 
@@ -303,7 +303,7 @@ public class OrbisCore implements IOrbisServicesListener
 	{
 		// Checks if listener is already in, don't worry
 		OrbisAPI.services().listen(OrbisCore.INSTANCE);
-		OrbisAPI.services().startProjectManager(OrbisCore.INSTANCE, "Orbis");
+		OrbisAPI.services().startProjectManager();
 		stopDataCache();
 
 		InstanceEvents.loadAllInstancesFromDisk();

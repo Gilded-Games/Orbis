@@ -152,6 +152,12 @@ public class WorldRegion extends Region implements IWorldObject, IColored
 	}
 
 	@Override
+	public void onUpdate()
+	{
+		
+	}
+
+	@Override
 	public void write(final NBTTagCompound tag)
 	{
 		super.write(tag);

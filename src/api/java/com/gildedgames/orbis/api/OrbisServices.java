@@ -14,6 +14,7 @@ import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.IProjectManager;
 import com.gildedgames.orbis.api.data.management.impl.*;
 import com.gildedgames.orbis.api.data.pathway.Entrance;
+import com.gildedgames.orbis.api.data.pathway.PathwayData;
 import com.gildedgames.orbis.api.data.region.Region;
 import com.gildedgames.orbis.api.data.schedules.*;
 import com.gildedgames.orbis.api.data.shapes.*;
@@ -69,6 +70,10 @@ public class OrbisServices implements IOrbisServices
 	private INetworkOrbis network;
 
 	private IInstanceRegistry instancesRegistry = new InstanceRegistryImpl();
+
+	private Object mod;
+
+	private String archiveBaseName;
 
 	@Override
 	public Logger log()
@@ -148,6 +153,7 @@ public class OrbisServices implements IOrbisServices
 			s.register(34, FilterOptions.class, new Instantiator<>(FilterOptions.class));
 			s.register(35, FrameworkData.class, new Instantiator<>(FrameworkData.class));
 			s.register(36, PlacedBlueprint.class, new Instantiator<>(PlacedBlueprint.class));
+			s.register(37, PathwayData.class, new Instantiator<>(PathwayData.class));
 
 			this.io.register(s);
 		}
@@ -299,7 +305,7 @@ public class OrbisServices implements IOrbisServices
 	}
 
 	@Override
-	public synchronized void startProjectManager(Object mod, String archiveBaseName)
+	public synchronized void startProjectManager()
 	{
 		if (this.projectManager != null)
 		{
@@ -313,17 +319,20 @@ public class OrbisServices implements IOrbisServices
 			if (data != null)
 			{
 				this.projectManager = new OrbisProjectManager(
-						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/projects/"), mod, archiveBaseName);
+						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/projects/"), this.mod,
+						this.archiveBaseName);
 			}
 			else
 			{
-				this.projectManager = new OrbisProjectManager(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/projects/"), mod, archiveBaseName);
+				this.projectManager = new OrbisProjectManager(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/projects/"), this.mod,
+						this.archiveBaseName);
 			}
 		}
 
 		if (this.projectManager == null)
 		{
-			this.projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"), mod, archiveBaseName);
+			this.projectManager = new OrbisProjectManager(new File(DimensionManager.getCurrentSaveRootDirectory(), "/orbis/projects/"), this.mod,
+					this.archiveBaseName);
 		}
 
 		this.listeners.forEach(IOrbisServicesListener::onStartProjectManager);
@@ -348,6 +357,19 @@ public class OrbisServices implements IOrbisServices
 	@Override
 	public synchronized IProjectManager getProjectManager()
 	{
+		if (this.projectManager == null)
+		{
+			this.startProjectManager();
+		}
+
 		return this.projectManager;
 	}
+
+	@Override
+	public void setProjectManagerInitSource(Object mod, String archiveBaseName)
+	{
+		this.mod = mod;
+		this.archiveBaseName = archiveBaseName;
+	}
+
 }

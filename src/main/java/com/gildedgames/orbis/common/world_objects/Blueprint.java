@@ -245,6 +245,12 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
+	public void onUpdate()
+	{
+
+	}
+
+	@Override
 	public int hashCode()
 	{
 		final HashCodeBuilder builder = new HashCodeBuilder();

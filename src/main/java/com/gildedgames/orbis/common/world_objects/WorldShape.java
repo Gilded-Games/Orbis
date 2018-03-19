@@ -128,6 +128,12 @@ public class WorldShape implements IShape, IWorldObject, IColored
 	}
 
 	@Override
+	public void onUpdate()
+	{
+		
+	}
+
+	@Override
 	public Iterable<BlockPos.MutableBlockPos> createShapeData()
 	{
 		return this.shape.createShapeData();

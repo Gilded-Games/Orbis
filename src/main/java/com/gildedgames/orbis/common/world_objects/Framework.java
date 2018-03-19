@@ -242,6 +242,12 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	}
 
 	@Override
+	public void onUpdate()
+	{
+
+	}
+
+	@Override
 	public void write(NBTTagCompound tag)
 	{
 		final NBTFunnel funnel = new NBTFunnel(tag);

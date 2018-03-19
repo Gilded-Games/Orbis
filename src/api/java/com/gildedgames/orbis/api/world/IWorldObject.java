@@ -34,4 +34,6 @@ public interface IWorldObject extends NBT
 
 	IData getData();
 
+	void onUpdate();
+
 }

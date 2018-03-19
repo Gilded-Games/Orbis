@@ -55,7 +55,9 @@ public interface IOrbisServices
 
 	IProjectManager getProjectManager();
 
-	void startProjectManager(Object mod, String archiveBaseName);
+	void setProjectManagerInitSource(Object mod, String archiveBaseName);
+
+	void startProjectManager();
 
 	void stopProjectManager();
 

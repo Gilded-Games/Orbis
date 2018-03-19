@@ -12,6 +12,8 @@ public class CommonProxy
 
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		OrbisAPI.services().setProjectManagerInitSource(OrbisCore.INSTANCE, "Orbis");
+
 		WorldProviderOrbis.preInit();
 
 		final OrbisInstanceFactory factory = new OrbisInstanceFactory(WorldProviderOrbis.ORBIS);
