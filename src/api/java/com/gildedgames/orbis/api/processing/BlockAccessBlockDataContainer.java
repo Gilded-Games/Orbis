@@ -47,6 +47,13 @@ public class BlockAccessBlockDataContainer implements IBlockAccessExtended
 	}
 
 	@Override
+	public boolean canAccess(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+	{
+		return minX >= 0 && maxX < this.container.getWidth() && minY >= 0 && maxY < this.container.getHeight() && minZ >= 0
+				&& maxZ < this.container.getLength();
+	}
+
+	@Override
 	public BlockPos getTopPos(final BlockPos pos)
 	{
 		//TODO: use block data container

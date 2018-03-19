@@ -35,12 +35,21 @@ public class BlockAccessChunkPrimer implements IBlockAccessExtended
 	@Override
 	public boolean canAccess(final BlockPos pos)
 	{
+		//TODO:
 		return true;
 	}
 
 	@Override
 	public boolean canAccess(final int x, final int z)
 	{
+		//TODO:
+		return true;
+	}
+
+	@Override
+	public boolean canAccess(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+	{
+		//TODO:
 		return true;
 	}
 

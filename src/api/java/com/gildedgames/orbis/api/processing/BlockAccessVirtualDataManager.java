@@ -40,6 +40,12 @@ public class BlockAccessVirtualDataManager implements IBlockAccessExtended
 	}
 
 	@Override
+	public boolean canAccess(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+	{
+		return this.world.isAreaLoaded(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
+	}
+
+	@Override
 	public BlockPos getTopPos(final BlockPos pos)
 	{
 		return this.world.getTopSolidOrLiquidBlock(pos);
