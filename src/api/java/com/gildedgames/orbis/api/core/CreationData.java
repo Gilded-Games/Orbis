@@ -38,7 +38,11 @@ public class CreationData implements ICreationData<CreationData>
 	public CreationData(final World world)
 	{
 		this.world = world;
-		this.rand = world.rand;
+
+		if (world != null)
+		{
+			this.rand = world.rand;
+		}
 	}
 
 	public CreationData(final World world, final long seed)
