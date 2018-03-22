@@ -36,12 +36,16 @@ public class WorldActionAddWorldObject implements IWorldAction
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
-		manager.addObject(this.worldObject);
+		int id = manager.fetchNextId();
 
 		if (world.getMinecraftServer().isDedicatedServer())
 		{
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(this.worldObject), world.provider.getDimension());
+			manager.setObject(id, this.worldObject);
 		}
+
+		OrbisAPI.network()
+				.sendPacketToDimension(new PacketWorldObjectAdd(this.worldObject, world.provider.getDimension(), id),
+						world.provider.getDimension());
 	}
 
 	@Override
@@ -54,12 +58,12 @@ public class WorldActionAddWorldObject implements IWorldAction
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
-		manager.removeObject(this.worldObject);
-
 		if (world.getMinecraftServer().isDedicatedServer())
 		{
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.worldObject), world.provider.getDimension());
+			manager.removeObject(this.worldObject);
 		}
+
+		OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.worldObject), world.provider.getDimension());
 	}
 
 	@Override

@@ -43,12 +43,12 @@ public class ShapeSelectorFramework implements IShapeSelector
 
 		if (!world.isRemote)
 		{
-			manager.addObject(framework);
-
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
-				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(framework), world.provider.getDimension());
+				manager.addObject(framework);
 			}
+
+			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(framework), world.provider.getDimension());
 		}
 	}
 }

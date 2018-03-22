@@ -118,7 +118,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null)
+		if (Minecraft.getMinecraft().currentScreen != null || playerOrbis.getEntity() == Minecraft.getMinecraft().player)
 		{
 			return;
 		}

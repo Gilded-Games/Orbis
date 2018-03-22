@@ -117,21 +117,21 @@ public class ShapeSelectorSelect implements IShapeSelector
 		{
 			final WorldShape region = new WorldShape(selectedShape, world);
 
-			final int regionId = manager.addObject(region);
+			final int regionId = manager.fetchNextId();
 
-			if (world.getMinecraftServer().isDedicatedServer())
-			{
-				OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(region), world.provider.getDimension());
-			}
+			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(region, world.provider.getDimension(), regionId), world.provider.getDimension());
 
 			if (this.power.getSelectedRegion() != null)
 			{
+				manager.removeObject(this.power.getSelectedRegionId());
+
 				OrbisAPI.network()
-						.sendPacketToDimension(new PacketWorldObjectRemove(world, this.power.getSelectedRegion()), world.provider.getDimension());
-				manager.removeObject(this.power.getSelectedRegion());
+						.sendPacketToDimension(new PacketWorldObjectRemove(this.power.getSelectedRegionId(), world.provider.getDimension()),
+								world.provider.getDimension());
 			}
 
 			this.power.setSelectedRegion(region);
+			this.power.setSelectedRegionId(regionId);
 
 			OrbisAPI.network().sendPacketToPlayer(new PacketSetSelectedRegion(regionId), (EntityPlayerMP) playerOrbis.getEntity());
 		}

@@ -61,6 +61,7 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 
 		this.funnel = new NBTFunnel(tag);
 
+		this.worldObjectId = buf.readInt();
 		this.dimensionId = buf.readInt();
 	}
 
@@ -74,6 +75,7 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 
 		ByteBufUtils.writeTag(buf, tag);
 
+		buf.writeInt(this.worldObjectId);
 		buf.writeInt(this.dimensionId);
 	}
 

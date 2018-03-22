@@ -140,7 +140,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null)
+		if (Minecraft.getMinecraft().currentScreen != null || playerOrbis.getEntity() == Minecraft.getMinecraft().player)
 		{
 			return;
 		}

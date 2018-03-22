@@ -150,7 +150,9 @@ public class WorldObjectManager extends WorldSavedData
 			throw new NullPointerException();
 		}
 
-		return this.idToObject.inverse().get(object);
+		BiMap<IWorldObject, Integer> inverse = this.idToObject.inverse();
+
+		return inverse.get(object);
 	}
 
 	public <T extends IWorldObject> T getObject(final int id)
@@ -172,11 +174,16 @@ public class WorldObjectManager extends WorldSavedData
 
 	public <T extends IWorldObject> int addObject(final T object)
 	{
-		final int id = this.nextId++;
+		final int id = this.fetchNextId();
 
 		this.setObject(id, object);
 
 		return id;
+	}
+
+	public int fetchNextId()
+	{
+		return this.nextId++;
 	}
 
 	public <T extends IWorldObject> boolean removeObject(final T object)

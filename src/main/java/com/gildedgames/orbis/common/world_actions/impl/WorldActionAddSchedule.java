@@ -49,13 +49,13 @@ public class WorldActionAddSchedule implements IWorldAction
 
 		if (layer != null)
 		{
-			layer.getScheduleRecord().addSchedule(this.schedule);
-
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
-				OrbisAPI.network()
-						.sendPacketToDimension(new PacketAddSchedule(this.blueprint, this.schedule, this.layer), world.provider.getDimension());
+				layer.getScheduleRecord().addSchedule(this.schedule);
 			}
+
+			OrbisAPI.network()
+					.sendPacketToDimension(new PacketAddSchedule(this.blueprint, this.schedule, this.layer), world.provider.getDimension());
 		}
 	}
 
@@ -75,13 +75,13 @@ public class WorldActionAddSchedule implements IWorldAction
 
 			if (scheduleId != -1)
 			{
-				layer.getScheduleRecord().removeSchedule(scheduleId);
-
 				if (world.getMinecraftServer().isDedicatedServer())
 				{
-					OrbisAPI.network()
-							.sendPacketToDimension(new PacketRemoveSchedule(this.blueprint, this.schedule), world.provider.getDimension());
+					layer.getScheduleRecord().removeSchedule(scheduleId);
 				}
+
+				OrbisAPI.network()
+						.sendPacketToDimension(new PacketRemoveSchedule(this.blueprint, this.schedule), world.provider.getDimension());
 			}
 		}
 	}

@@ -20,6 +20,8 @@ public class GodPowerSelect implements IGodPower
 
 	private WorldShape selectedRegion;
 
+	private int selectedRegionId;
+
 	public GodPowerSelect(final World world)
 	{
 		if (world.isRemote)
@@ -88,5 +90,15 @@ public class GodPowerSelect implements IGodPower
 	public void setSelectedRegion(final WorldShape region)
 	{
 		this.selectedRegion = region;
+	}
+
+	public int getSelectedRegionId()
+	{
+		return this.selectedRegionId;
+	}
+
+	public void setSelectedRegionId(int id)
+	{
+		this.selectedRegionId = id;
 	}
 }

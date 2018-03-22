@@ -56,6 +56,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 @Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION)
+@Mod.EventBusSubscriber
 public class OrbisCore implements IOrbisServicesListener
 {
 
@@ -109,10 +110,10 @@ public class OrbisCore implements IOrbisServicesListener
 		 * directory/state as the integrated server (instead of having to
 		 * "download" state from the integrated server).
 		 */
-		if (!event.player.world.isRemote && event.player.getServer() != null && event.player.getServer().isDedicatedServer())
+		if (!event.player.world.isRemote)
 		{
 			OrbisAPI.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
-			OrbisAPI.network().sendPacketToPlayer(new PacketSendDataCachePool(dataCache), (EntityPlayerMP) event.player);
+			OrbisAPI.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
 		}
 	}
 

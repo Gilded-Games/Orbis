@@ -56,12 +56,14 @@ public class WorldActionAddBlueprint implements IWorldAction
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
-		manager.addObject(this.blueprint);
+		int id = manager.fetchNextId();
 
 		if (world.getMinecraftServer().isDedicatedServer())
 		{
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(this.blueprint), world.provider.getDimension());
+			manager.setObject(id, this.blueprint);
 		}
+
+		OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(this.blueprint, world.provider.getDimension(), id), world.provider.getDimension());
 	}
 
 	@Override
@@ -76,14 +78,14 @@ public class WorldActionAddBlueprint implements IWorldAction
 
 		primer.create(this.oldContent, new CreationData(world).pos(this.blueprint.getMin()));
 
-		final WorldObjectManager manager = WorldObjectManager.get(world);
-
-		manager.removeObject(this.blueprint);
-
 		if (world.getMinecraftServer().isDedicatedServer())
 		{
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.blueprint), world.provider.getDimension());
+			final WorldObjectManager manager = WorldObjectManager.get(world);
+
+			manager.removeObject(this.blueprint);
 		}
+
+		OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.blueprint), world.provider.getDimension());
 	}
 
 	private void initBlueprint(PlayerOrbis player)

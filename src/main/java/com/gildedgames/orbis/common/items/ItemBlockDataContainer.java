@@ -58,7 +58,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 
 		stack.getTagCompound().setInteger("dataId", id);
 
-		if (!player.world.isRemote && player.getServer() != null && player.getServer().isDedicatedServer() && shouldSend)
+		if (!player.world.isRemote && shouldSend)
 		{
 			OrbisAPI.network().sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
 		}
@@ -95,12 +95,13 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null)
+		if (Minecraft.getMinecraft().currentScreen != null || playerOrbis.getEntity() == Minecraft.getMinecraft().player)
 		{
 			return;
 		}
 
-		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
+		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1))
+				&& playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
 		{
 			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
 
