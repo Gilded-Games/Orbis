@@ -3,15 +3,13 @@ package com.gildedgames.orbis.api.data.shapes;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.util.LineHelp;
 import com.gildedgames.orbis.api.util.RotationHelp;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LineShape implements IShape
 {
@@ -46,117 +44,7 @@ public class LineShape implements IShape
 	@Override
 	public Iterable<BlockPos.MutableBlockPos> createShapeData()
 	{
-		final List<BlockPos.MutableBlockPos> lineData = new ArrayList<>();
-
-		for (int lineX = -this.lineRadius + 1; lineX < this.lineRadius - (this.lineRadius == 1 ? 0 : 1); lineX++)
-		{
-			for (int lineY = -this.lineRadius + 1; lineY < this.lineRadius - (this.lineRadius == 1 ? 0 : 1); lineY++)
-			{
-				for (int lineZ = -this.lineRadius + 1; lineZ < this.lineRadius - (this.lineRadius == 1 ? 0 : 1); lineZ++)
-				{
-					BlockPos start = this.start.add(lineX, lineY, lineZ);
-					BlockPos end = this.end.add(lineX, lineY, lineZ);
-
-					final boolean steepXY = Math.abs(end.getY() - start.getY()) > Math.abs(end.getX() - start.getX());
-
-					if (steepXY)
-					{
-						int tempY = start.getY();
-
-						start = new BlockPos(tempY, start.getX(), start.getZ());
-
-						tempY = end.getY();
-
-						end = new BlockPos(tempY, end.getX(), end.getZ());
-					}
-
-					final boolean steepXZ = Math.abs(end.getZ() - start.getZ()) > Math.abs(end.getX() - start.getX());
-
-					if (steepXZ)
-					{
-						int tempZ = start.getZ();
-
-						start = new BlockPos(tempZ, start.getY(), start.getX());
-
-						tempZ = end.getZ();
-
-						end = new BlockPos(tempZ, end.getY(), end.getX());
-					}
-
-					final int deltaX = Math.abs(end.getX() - start.getX());
-					final int deltaY = Math.abs(end.getY() - start.getY());
-					final int deltaZ = Math.abs(end.getZ() - start.getZ());
-
-					int errorXY = deltaX / 2;
-					int errorXZ = deltaX / 2;
-
-					final int stepX = start.getX() > end.getX() ? -1 : 1;
-					final int stepY = start.getY() > end.getY() ? -1 : 1;
-					final int stepZ = start.getZ() > end.getZ() ? -1 : 1;
-
-					int z = start.getZ();
-					int y = start.getY();
-
-					int lineSegments = 0;
-
-					for (int x = start.getX(); x != end.getX(); x += stepX)
-					{
-						int xCopy = x, yCopy = y, zCopy = z;
-
-						if (steepXZ)
-						{
-							final int tempZ = zCopy;
-
-							zCopy = xCopy;
-							xCopy = tempZ;
-						}
-
-						if (steepXY)
-						{
-							final int tempY = yCopy;
-
-							yCopy = xCopy;
-							xCopy = tempY;
-						}
-
-						for (int x1 = 0; x1 != stepX; x1 += stepX)
-						{
-							for (int z1 = 0; z1 != stepZ; z1 += stepZ)
-							{
-								for (int y1 = 0; y1 != stepY; y1 += stepY)
-								{
-									lineData.add(new BlockPos.MutableBlockPos(xCopy + x1, yCopy + y1, zCopy + z1));
-								}
-							}
-						}
-
-						lineSegments++;
-
-						if (lineSegments % 5 == 0)
-						{
-							//size = Math.max(1, size - 1);
-						}
-
-						errorXY -= deltaY;
-						errorXZ -= deltaZ;
-
-						if (errorXY < 0)
-						{
-							y += stepY;
-							errorXY += deltaX;
-						}
-
-						if (errorXZ < 0)
-						{
-							z += stepZ;
-							errorXZ += deltaX;
-						}
-					}
-				}
-			}
-		}
-
-		return lineData;
+		return LineHelp.createLinePositions(this.lineRadius, this.start, this.end);
 	}
 
 	@Override
