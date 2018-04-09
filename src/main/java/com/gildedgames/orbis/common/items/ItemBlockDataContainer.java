@@ -95,7 +95,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null || playerOrbis.getEntity() == Minecraft.getMinecraft().player)
+		if (Minecraft.getMinecraft().currentScreen != null || !playerOrbis.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID()))
 		{
 			return;
 		}

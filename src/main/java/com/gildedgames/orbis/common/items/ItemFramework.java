@@ -127,7 +127,7 @@ public class ItemFramework extends Item implements ModelRegisterCallback, ItemSt
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null || playerOrbis.getEntity() == Minecraft.getMinecraft().player)
+		if (Minecraft.getMinecraft().currentScreen != null || !playerOrbis.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID()))
 		{
 			return;
 		}
