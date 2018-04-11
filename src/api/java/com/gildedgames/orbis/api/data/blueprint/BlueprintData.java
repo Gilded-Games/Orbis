@@ -3,6 +3,7 @@ package com.gildedgames.orbis.api.data.blueprint;
 import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.block.BlockFilter;
 import com.gildedgames.orbis.api.core.PlacedEntity;
+import com.gildedgames.orbis.api.data.IDataHolder;
 import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataMetadata;
 import com.gildedgames.orbis.api.data.management.impl.DataMetadata;
@@ -22,17 +23,20 @@ import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class BlueprintData implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>, IWorldObjectChild
+public class BlueprintData
+		implements IDimensions, IData, IScheduleLayerListener, IPositionRecordListener<BlockFilter>, IWorldObjectChild, IDataHolder<BlueprintData>
 {
 	public static final String EXTENSION = "blueprint";
 
@@ -431,5 +435,29 @@ public class BlueprintData implements IDimensions, IData, IScheduleLayerListener
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.metadata = funnel.get("metadata");
+	}
+
+	@Override
+	public BlueprintData get(World world, Random random)
+	{
+		return this;
+	}
+
+	@Override
+	public int getLargestHeight()
+	{
+		return this.getHeight();
+	}
+
+	@Override
+	public int getLargestWidth()
+	{
+		return this.getWidth();
+	}
+
+	@Override
+	public int getLargestLength()
+	{
+		return this.getLength();
 	}
 }

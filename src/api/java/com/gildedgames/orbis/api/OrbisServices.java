@@ -8,6 +8,8 @@ import com.gildedgames.orbis.api.core.registry.IOrbisDefinitionRegistry;
 import com.gildedgames.orbis.api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis.api.data.DataCondition;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintDataHolder;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.framework.FrameworkNode;
 import com.gildedgames.orbis.api.data.management.IProject;
@@ -154,6 +156,8 @@ public class OrbisServices implements IOrbisServices
 			s.register(35, FrameworkData.class, new Instantiator<>(FrameworkData.class));
 			s.register(36, PlacedBlueprint.class, new Instantiator<>(PlacedBlueprint.class));
 			s.register(37, PathwayData.class, new Instantiator<>(PathwayData.class));
+			s.register(38, BlueprintDataHolder.class, new Instantiator<>(BlueprintDataHolder.class));
+			s.register(39, BlueprintStackerData.class, new Instantiator<>(BlueprintStackerData.class));
 
 			this.io.register(s);
 		}

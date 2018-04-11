@@ -36,7 +36,7 @@ public class PacketWorldObjectRemove implements IMessage
 
 	public static void onMessage(final PacketWorldObjectRemove message, final EntityPlayer player)
 	{
-		//TODO: This assumes the player sending this message is in the world we want to add the World Object
+		//TODO: This assumes the player sending this message is in the world we want to put the World Object
 		//Clients cannot send a packet requestion a change in a different dimension.
 		final WorldObjectManager manager = WorldObjectManager.get(player.world);
 

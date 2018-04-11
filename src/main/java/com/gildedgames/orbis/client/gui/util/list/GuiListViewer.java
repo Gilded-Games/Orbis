@@ -5,15 +5,10 @@ import com.gildedgames.orbis.client.gui.data.list.IListNavigatorListener;
 import com.gildedgames.orbis.client.gui.util.GuiAbstractButton;
 import com.gildedgames.orbis.client.gui.util.GuiFactory;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.ModDim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.client.rect.Rect;
-import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.util.InputHelper;
 import com.google.common.collect.Lists;
-import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +16,6 @@ import java.util.function.Function;
 
 public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame implements IListNavigatorListener<NODE>
 {
-	private static final ResourceLocation VIEWER_BACKDROP = OrbisCore.getResource("list/list_viewer.png");
-
 	private final IListNavigator<NODE> navigator;
 
 	private final List<NODE_GUI> visibleGuiNodes = Lists.newArrayList();
@@ -37,14 +30,16 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 
 	private GuiAbstractButton addButton;
 
-	private int currentScroll, maxScroll;
+	private int currentScroll, maxScroll, nodeHeight;
 
-	private Function<IListNavigator, Integer> newNodeIndex;
+	private List<IListViewerListener> listeners = Lists.newArrayList();
 
-	public GuiListViewer(final Pos2D pos, Function<IListNavigator, Integer> newNodeIndex, final IListNavigator<NODE> navigator,
-			final NodeFactory<NODE, NODE_GUI> guiFactory, final Function<Integer, NODE> nodeFactory)
+	private Function<IListNavigator<NODE>, Integer> newNodeIndex;
+
+	public GuiListViewer(final Rect dim, Function<IListNavigator<NODE>, Integer> newNodeIndex, final IListNavigator<NODE> navigator,
+			final NodeFactory<NODE, NODE_GUI> guiFactory, final Function<Integer, NODE> nodeFactory, int nodeHeight)
 	{
-		super(Dim2D.build().width(176).height(136).pos(pos).flush());
+		super(dim);
 
 		this.navigator = navigator;
 		this.navigator.addListener(this);
@@ -52,6 +47,20 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 		this.newNodeIndex = newNodeIndex;
 		this.guiFactory = guiFactory;
 		this.nodeFactory = nodeFactory;
+		this.nodeHeight = nodeHeight;
+	}
+
+	public void listen(IListViewerListener listener)
+	{
+		if (!this.listeners.contains(listener))
+		{
+			this.listeners.add(listener);
+		}
+	}
+
+	public boolean unlisten(IListViewerListener listener)
+	{
+		return this.listeners.remove(listener);
 	}
 
 	public NODE_GUI getNodeGui(final int index)
@@ -64,18 +73,25 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 		return this.navigator;
 	}
 
-	private List<NODE_GUI> listVisibleNodes(final List<NODE> nodes, final int scrollCount, final int xOffset, final int yOffset,
-			final int height, final int width, final int nodeHeight,
-			final int padding)
+	public int findPosition(NODE node)
+	{
+		return this.navigator.getNodes().inverse().get(node);
+	}
+
+	public List<NODE> getVisibleNodes()
+	{
+		return this.visibleNodes;
+	}
+
+	private List<NODE_GUI> listVisibleNodes(final List<NODE> nodes, final int scrollCount,
+			final int height, final int width)
 	{
 		final List<NODE_GUI> guis = Lists.newArrayList();
 
-		final Rect nodeRect = ModDim2D.build().mod().height(nodeHeight).scale(1.0F).flush();
+		final int nodeWidth = width - 20;
+		final int nodeHeight = this.nodeHeight;
 
-		final int nodeWidthPadded = width - 20 - padding;
-		final int nodeHeightPadded = (int) (nodeRect.height() + padding);
-
-		final int possibleNumberOfRows = height / nodeHeightPadded;
+		final int possibleNumberOfRows = height / nodeHeight;
 
 		if (nodes.size() < possibleNumberOfRows)
 		{
@@ -101,11 +117,11 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 
 			final int row = i - frontNodeIndex;
 
-			final Pos2D pos = Pos2D.flush(xOffset, yOffset + (row * nodeHeightPadded));
+			final Pos2D pos = Pos2D.flush(0, (row * nodeHeight));
 
 			final NODE_GUI guiNode = this.guiFactory.create(pos, node, i);
 
-			guiNode.dim().mod().width(nodeWidthPadded).height(nodeHeight).scale(nodeRect.scale()).flush();
+			guiNode.dim().mod().width(nodeWidth).height(nodeHeight).scale(1.0F).flush();
 
 			guis.add(guiNode);
 
@@ -116,9 +132,9 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 		{
 			this.addButton = GuiFactory.createAddButton();
 
-			final Pos2D pos = Pos2D.flush(xOffset + nodeWidthPadded, yOffset + ((backNodeIndex - frontNodeIndex) * nodeHeightPadded));
+			final Pos2D pos = Pos2D.flush(nodeWidth, ((backNodeIndex - frontNodeIndex) * nodeHeight));
 
-			this.addButton.dim().mod().x(nodeWidthPadded).pos(pos).scale(nodeRect.scale()).flush();
+			this.addButton.dim().mod().x(nodeWidth).pos(pos).scale(1.0F).flush();
 		}
 		else
 		{
@@ -137,7 +153,7 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 			{
 				int index = this.newNodeIndex.apply(this.getNavigator());
 
-				this.getNavigator().addNew(this.nodeFactory.apply(index), index);
+				this.getNavigator().put(this.nodeFactory.apply(index), index);
 				return;
 			}
 
@@ -150,13 +166,13 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 
 				if (InputHelper.isHovered(button) && button.isEnabled())
 				{
-					this.getNavigator().remove(node, i + this.currentScroll);
+					this.getNavigator().remove(node, this.navigator.getNodes().inverse().get(node));
 
 					return;
 				}
 				else if (InputHelper.isHovered(nodeGui) && nodeGui.isEnabled())
 				{
-					this.getNavigator().click(node, i + this.currentScroll);
+					this.getNavigator().click(node, this.navigator.getNodes().inverse().get(node));
 				}
 			}
 		}
@@ -174,7 +190,8 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 		this.visibleNodes.clear();
 
 		final List<NODE_GUI> guiNodes = this
-				.listVisibleNodes(this.navigator.getNodes(), this.currentScroll, 8, 8, (int) this.dim().height() - 16, (int) (this.dim().width() - 16), 20, 0);
+				.listVisibleNodes(Lists.newArrayList(this.navigator.getNodes().values()), this.currentScroll, (int) this.dim().height(),
+						(int) (this.dim().width()));
 
 		this.visibleDeletes.forEach(this::removeChild);
 		this.visibleGuiNodes.forEach(this::removeChild);
@@ -205,18 +222,18 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 	{
 		super.onMouseWheel(state);
 
+		int oldScroll = this.currentScroll;
+
 		this.currentScroll = Math.max(0, Math.min(this.maxScroll, this.currentScroll - (state / 120)));
 
 		this.refreshNodes();
+
+		this.listeners.forEach(l -> l.onScroll(oldScroll, this.currentScroll));
 	}
 
 	@Override
 	public void init()
 	{
-		final GuiTexture backdrop = new GuiTexture(Dim2D.buildWith(this).area().flush(), VIEWER_BACKDROP);
-
-		this.addChildren(backdrop);
-
 		this.refreshNodes();
 	}
 
@@ -230,12 +247,6 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 	public void onAddNode(final NODE node, final int index)
 	{
 		this.refreshNodes();
-	}
-
-	@Override
-	public void onNewNode(final NODE node, final int index)
-	{
-
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.DataCondition;
+import com.gildedgames.orbis.api.data.IDataHolder;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.region.IDimensions;
 import com.gildedgames.orbis.api.data.region.Region;
@@ -27,7 +28,7 @@ import java.util.Random;
  * (the tool), instead of the API. This means that palettes and other objects
  * from the API package cannot attempt to find state.
  */
-public class BlueprintDataPalette implements NBT
+public class BlueprintDataPalette implements NBT, IDataHolder<BlueprintData>
 {
 
 	private final Map<IDataIdentifier, BlueprintData> data = Maps.newHashMap();
@@ -219,5 +220,29 @@ public class BlueprintDataPalette implements NBT
 		builder.append(this.idToConditions);
 
 		return builder.toHashCode();
+	}
+
+	@Override
+	public BlueprintData get(World world, Random random)
+	{
+		return this.fetchRandom(world, random);
+	}
+
+	@Override
+	public int getLargestHeight()
+	{
+		return this.largestDim.getHeight();
+	}
+
+	@Override
+	public int getLargestWidth()
+	{
+		return this.largestDim.getWidth();
+	}
+
+	@Override
+	public int getLargestLength()
+	{
+		return this.largestDim.getLength();
 	}
 }

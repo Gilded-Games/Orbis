@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.client.gui.data.list;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -8,7 +10,7 @@ public class ListNavigator<T> implements IListNavigator<T>
 {
 	private final List<IListNavigatorListener<T>> listeners = Lists.newArrayList();
 
-	private final List<T> nodes = Lists.newArrayList();
+	private final BiMap<Integer, T> nodes = HashBiMap.create();
 
 	public ListNavigator()
 	{
@@ -28,29 +30,31 @@ public class ListNavigator<T> implements IListNavigator<T>
 	}
 
 	@Override
-	public void add(final T node, final int index)
+	public void put(final T node, final int index)
 	{
-		this.nodes.add(node);
+		this.nodes.put(index, node);
 
 		this.listeners.forEach(l -> l.onAddNode(node, index));
 	}
 
 	@Override
-	public void addNew(final T node, final int index)
-	{
-		this.add(node, index);
-
-		this.listeners.forEach(l -> l.onNewNode(node, index));
-	}
-
-	@Override
 	public boolean remove(final T node, final int index)
 	{
-		final boolean flag = this.nodes.remove(node);
+		final boolean flag = this.nodes.remove(index, node);
 
 		this.listeners.forEach(l -> l.onRemoveNode(node, index));
 
 		return flag;
+	}
+
+	@Override
+	public T remove(int index)
+	{
+		T node = this.nodes.remove(index);
+
+		this.listeners.forEach(l -> l.onRemoveNode(node, index));
+
+		return node;
 	}
 
 	@Override
@@ -60,7 +64,7 @@ public class ListNavigator<T> implements IListNavigator<T>
 	}
 
 	@Override
-	public List<T> getNodes()
+	public BiMap<Integer, T> getNodes()
 	{
 		return this.nodes;
 	}

@@ -36,6 +36,8 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 {
 	private final IWorldObject worldObject;
 
+	private final IData data;
+
 	private GuiText title;
 
 	private GuiInput nameInput;
@@ -52,6 +54,16 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private String viewOnlyDataType;
 
+	public GuiSaveData(GuiFrame prevFrame, final IData data, String viewOnlyDataType)
+	{
+		super(prevFrame, Dim2D.flush());
+
+		this.setDrawDefaultBackground(true);
+		this.worldObject = null;
+		this.viewOnlyDataType = viewOnlyDataType;
+		this.data = data;
+	}
+
 	public GuiSaveData(GuiFrame prevFrame, final IWorldObject worldObject, String viewOnlyDataType)
 	{
 		super(prevFrame, Dim2D.flush());
@@ -59,6 +71,7 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 		this.setDrawDefaultBackground(true);
 		this.worldObject = worldObject;
 		this.viewOnlyDataType = viewOnlyDataType;
+		this.data = null;
 	}
 
 	public void refreshNavigator()
@@ -175,8 +188,10 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 			}
 			else
 			{
+				IData data = this.worldObject != null ? this.worldObject.getData() : this.data;
+
 				final File file = new File(this.directoryViewer.getNavigator().currentDirectory(),
-						this.nameInput.getInner().getText() + "." + this.worldObject.getData().getFileExtension());
+						this.nameInput.getInner().getText() + "." + data.getFileExtension());
 
 				final String location = file.getCanonicalPath().replace(this.project.getLocationAsFile().getCanonicalPath() + File.separator, "");
 
@@ -211,9 +226,9 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 				final IWorldObject worldObject = this.worldObject;
 
 				//TODO: Make sure the new data has the same dimensions as the old data if you're overwriting
-				if (this.project != null && worldObject.getData() != null && (!file.exists() || canOverwrite))
+				if (this.project != null && (this.data != null || worldObject.getData() != null) && (!file.exists() || canOverwrite))
 				{
-					IData data = worldObject.getData();
+					IData data = worldObject == null ? this.data : worldObject.getData();
 
 					/**
 					 * Check if the state has already been stored.
@@ -228,7 +243,10 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 						data.getMetadata().setIdentifier(this.project.getCache().createNextIdentifier());
 					}
 
-					data.preSaveToDisk(worldObject);
+					if (worldObject != null)
+					{
+						data.preSaveToDisk(worldObject);
+					}
 
 					this.project.getCache().setData(data, location);
 
@@ -248,7 +266,14 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 		}
 		else
 		{
-			OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.worldObject, location));
+			if (this.worldObject != null)
+			{
+				OrbisAPI.network().sendPacketToServer(new PacketSaveWorldObjectToProject(this.project, this.worldObject, location));
+			}
+			else
+			{
+				//TODO: Save this.data, this only works for world objects
+			}
 		}
 	}
 

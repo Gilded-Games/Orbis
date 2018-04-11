@@ -24,6 +24,8 @@ public class ItemsOrbis
 
 	public static final ItemFramework framework = new ItemFramework();
 
+	public static final ItemBlueprintStacker blueprint_stacker = new ItemBlueprintStacker();
+
 	@SubscribeEvent
 	public static void onRegisterItems(final RegistryEvent.Register<Item> event)
 	{
@@ -34,6 +36,7 @@ public class ItemsOrbis
 		items.register("block_palette", block_palette.setCreativeTab(null));
 		items.register("blueprint_palette", blueprint_palette.setCreativeTab(null));
 		items.register("framework", framework.setCreativeTab(null));
+		items.register("blueprint_stacker", blueprint_stacker.setCreativeTab(null));
 		//items.register("entity_item", entity_item.setCreativeTab(ENTITY_TAB));
 	}
 

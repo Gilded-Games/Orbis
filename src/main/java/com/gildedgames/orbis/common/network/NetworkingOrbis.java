@@ -10,6 +10,9 @@ import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiAddSlot;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiDisplaySlots;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiRemoveSlot;
 import com.gildedgames.orbis.common.network.packets.projects.*;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWorldActions;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
@@ -108,6 +111,15 @@ public class NetworkingOrbis implements INetworkOrbis
 				Side.SERVER);
 
 		instance.registerMessage(PacketRemoveNode.HandlerServer.class, PacketRemoveNode.class, discriminant++,
+				Side.SERVER);
+
+		instance.registerMessage(PacketBlueprintStackerGuiAddSlot.HandlerServer.class, PacketBlueprintStackerGuiAddSlot.class, discriminant++,
+				Side.SERVER);
+
+		instance.registerMessage(PacketBlueprintStackerGuiRemoveSlot.HandlerServer.class, PacketBlueprintStackerGuiRemoveSlot.class, discriminant++,
+				Side.SERVER);
+
+		instance.registerMessage(PacketBlueprintStackerGuiDisplaySlots.HandlerServer.class, PacketBlueprintStackerGuiDisplaySlots.class, discriminant++,
 				Side.SERVER);
 
 		// C L I E N T

@@ -1,7 +1,9 @@
 package com.gildedgames.orbis.client;
 
+import com.gildedgames.orbis.api.block.BlockDataContainer;
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
@@ -17,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class OrbisClientCaches
@@ -82,9 +85,88 @@ public class OrbisClientCaches
 					});
 
 	@SideOnly(Side.CLIENT)
+	private static final LoadingCache<IDataIdentifier, Optional<BlockDataContainer[]>> BLUEPRINT_STACKER_BDC_CACHE = CacheBuilder.newBuilder()
+			.maximumSize(1000)
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+			.build(
+					new CacheLoader<IDataIdentifier, Optional<BlockDataContainer[]>>()
+					{
+						@Override
+						public Optional<BlockDataContainer[]> load(final IDataIdentifier id)
+						{
+							try
+							{
+								final BlueprintStackerData data = OrbisCore.getProjectManager().findData(id);
+
+								BlockDataContainer[] bdc = new BlockDataContainer[data.getSegments().length];
+
+								Random rand = new Random();
+
+								for (int i = 0; i < data.getSegments().length; i++)
+								{
+									BlockDataContainer container = data.get(Minecraft.getMinecraft().world, rand, i);
+
+									bdc[i] = container;
+								}
+
+								return Optional.of(bdc);
+							}
+							catch (final OrbisMissingDataException e)
+							{
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_BDC_CACHE: ", e);
+							}
+
+							return Optional.absent();
+						}
+					});
+
+	@SideOnly(Side.CLIENT)
+	private static final LoadingCache<IDataIdentifier, Optional<RenderBlueprintBlocks>> BLUEPRINT_STACKER_RENDER_CACHE = CacheBuilder.newBuilder()
+			.maximumSize(1000)
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+			.build(
+					new CacheLoader<IDataIdentifier, Optional<RenderBlueprintBlocks>>()
+					{
+						@Override
+						public Optional<RenderBlueprintBlocks> load(final IDataIdentifier id)
+						{
+							try
+							{
+								final BlueprintStackerData data = OrbisCore.getProjectManager().findData(id);
+
+								BlockDataContainer container = data.get(Minecraft.getMinecraft().world, new Random(), data.getSegments().length);
+
+								final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
+										new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, new BlueprintData(container)),
+										Minecraft.getMinecraft().world);
+
+								return Optional.of(blueprint);
+							}
+							catch (final OrbisMissingDataException e)
+							{
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_RENDER_CACHE: ", e);
+							}
+
+							return Optional.absent();
+						}
+					});
+
+	@SideOnly(Side.CLIENT)
 	public static LoadingCache<IDataIdentifier, Optional<RenderBlueprintBlocks>> getBlueprintRenders()
 	{
 		return BLUEPRINT_RENDER_CACHE;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static LoadingCache<IDataIdentifier, Optional<BlockDataContainer[]>> getBlueprintStackerBDC()
+	{
+		return BLUEPRINT_STACKER_BDC_CACHE;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static LoadingCache<IDataIdentifier, Optional<RenderBlueprintBlocks>> getBlueprintStackerRenders()
+	{
+		return BLUEPRINT_STACKER_RENDER_CACHE;
 	}
 
 	@SideOnly(Side.CLIENT)

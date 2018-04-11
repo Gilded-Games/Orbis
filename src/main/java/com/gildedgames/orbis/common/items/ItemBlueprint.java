@@ -88,6 +88,20 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 		return id;
 	}
 
+	public static BlueprintData getBlueprint(final ItemStack stack)
+	{
+		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("blueprint_id"))
+		{
+			return null;
+		}
+
+		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
+
+		final IDataIdentifier id = funnel.get("blueprint_id");
+
+		return OrbisAPI.services().getProjectManager().findData(id);
+	}
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModel()

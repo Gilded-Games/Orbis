@@ -7,8 +7,6 @@ public interface IListNavigatorListener<T>
 
 	void onAddNode(T node, int index);
 
-	void onNewNode(T node, int index);
-
 	void onNodeClicked(T node, int index);
 
 }

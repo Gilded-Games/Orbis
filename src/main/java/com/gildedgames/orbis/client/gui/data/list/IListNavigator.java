@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.gui.data.list;
 
-import java.util.List;
+import com.google.common.collect.BiMap;
 
 public interface IListNavigator<T>
 {
@@ -9,14 +9,14 @@ public interface IListNavigator<T>
 
 	boolean removeListener(IListNavigatorListener<T> listener);
 
-	void add(T node, int index);
-
-	void addNew(T node, int index);
+	void put(T node, int index);
 
 	boolean remove(T node, int index);
 
+	T remove(int index);
+
 	void click(T node, int index);
 
-	List<T> getNodes();
+	BiMap<Integer, T> getNodes();
 
 }

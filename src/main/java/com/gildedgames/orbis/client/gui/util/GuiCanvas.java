@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 /**
  * Used to bring gui children to the forefront of the interface.
- * Add this to your GuiFrame then add children to it.
+ * Add this to your GuiFrame then put children to it.
  */
 public class GuiCanvas extends GuiFrame
 {

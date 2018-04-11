@@ -1,21 +1,36 @@
 package com.gildedgames.orbis.common.containers;
 
+import com.gildedgames.orbis.client.gui.data.list.IListNavigator;
+import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.common.capabilities.player.IPlayerOrbis;
+import com.gildedgames.orbis.common.containers.inventory.InventoryBasicExpandable;
+import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 
+import java.util.List;
+
 public class ContainerLoadData extends ContainerPlayer
 {
-	/** See {@link net.minecraft.client.gui.inventory.GuiContainerCreative#basicInventory} **/
+
 	private static final InventoryBasic dumbInventory = new InventoryBasic("tmp", true, 52);
+
+	public final InventoryBasicExpandable stackerInventory = new InventoryBasicExpandable("tmp", true, 3);
 
 	private final IPlayerOrbis playerOrbis;
 
 	public SlotForge[] slots;
 
-	private Slot binSlot;
+	private List<Slot> stackerSlots = Lists.newArrayList();
+
+	private Slot topStackerSlot, bottomStackerSlot;
+
+	private boolean displayedStacker;
+
+	private IListNavigator<SlotBlueprintStacker> navigator = new ListNavigator<>();
 
 	public ContainerLoadData(final IPlayerOrbis playerOrbis, final IInventory forgeInventory)
 	{
@@ -24,6 +39,19 @@ public class ContainerLoadData extends ContainerPlayer
 		this.playerOrbis = playerOrbis;
 
 		this.createSlots(forgeInventory);
+
+		this.startStackerInterface();
+	}
+
+	public IListNavigator<SlotBlueprintStacker> getNavigator()
+	{
+		return this.navigator;
+	}
+
+	@Override
+	public void putStackInSlot(int slotID, ItemStack stack)
+	{
+		super.putStackInSlot(slotID, stack);
 	}
 
 	@Override
@@ -39,6 +67,123 @@ public class ContainerLoadData extends ContainerPlayer
 			{
 				itemstack.getItem().onUpdate(itemstack, this.playerOrbis.getEntity().getEntityWorld(), this.playerOrbis.getEntity(), i, false);
 			}
+		}
+	}
+
+	public void startStackerInterface()
+	{
+		if (!this.displayedStacker)
+		{
+			this.topStackerSlot = this.addSlotToContainer(new SlotBlueprintStacker(this.stackerInventory, 40, 41, 6, -24));
+			this.bottomStackerSlot = this.addSlotToContainer(new SlotBlueprintStacker(this.stackerInventory, 40, 42, 6, 132));
+
+			this.displayedStacker = true;
+		}
+	}
+
+	public Slot getTopStackerSlot()
+	{
+		return this.topStackerSlot;
+	}
+
+	public Slot getBottomStackerSlot()
+	{
+		return this.bottomStackerSlot;
+	}
+
+	public void addStackerSlot(SlotBlueprintStacker slot)
+	{
+		this.stackerSlots.add(this.addSlotToContainer(slot));
+	}
+
+	public int findPosition(Slot slot)
+	{
+		for (int i = 0; i < this.inventorySlots.size(); i++)
+		{
+			Slot s = this.inventorySlots.get(i);
+
+			if (slot == s)
+			{
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	public void removeStackerSlot(SlotBlueprintStacker slot)
+	{
+		if (this.stackerSlots.remove(slot))
+		{
+			int slotPos = this.findPosition(slot);
+
+			this.inventorySlots.remove(slot);
+			this.inventoryItemStacks.remove(slotPos);
+
+			for (int i = slotPos; i < this.inventorySlots.size(); i++)
+			{
+				Slot s = this.inventorySlots.get(i);
+
+				if (s instanceof SlotBlueprintStacker)
+				{
+					SlotBlueprintStacker bp = (SlotBlueprintStacker) s;
+
+					bp.oldY -= 24;
+
+					bp.resetPos();
+				}
+			}
+		}
+	}
+
+	public void display(List<SlotBlueprintStacker> visible)
+	{
+		this.stopStackerInterface();
+		this.startStackerInterface();
+
+		for (int i = 0; i < visible.size(); i++)
+		{
+			SlotBlueprintStacker slot = visible.get(i);
+
+			slot.yPos = 6 + (i * 24);
+
+			this.addStackerSlot(slot);
+		}
+	}
+
+	public void stopStackerInterface()
+	{
+		if (this.displayedStacker)
+		{
+			this.inventorySlots.remove(this.topStackerSlot);
+			this.inventorySlots.remove(this.bottomStackerSlot);
+
+			this.inventoryItemStacks.remove(0);
+			this.inventoryItemStacks.remove(0);
+
+			for (int i = 0; i < this.stackerSlots.size(); i++)
+			{
+				Slot slot = this.stackerSlots.get(i);
+
+				if (slot != null)
+				{
+					int slotPos = this.findPosition(slot);
+
+					this.inventorySlots.remove(slot);
+					this.inventoryItemStacks.remove(slotPos);
+
+					if (slot instanceof SlotBlueprintStacker)
+					{
+						SlotBlueprintStacker bp = (SlotBlueprintStacker) slot;
+
+						bp.resetPos();
+					}
+				}
+			}
+
+			this.stackerSlots.clear();
+
+			this.displayedStacker = false;
 		}
 	}
 
@@ -79,10 +224,6 @@ public class ContainerLoadData extends ContainerPlayer
 
 		craftResult.xPos = craftResult.yPos = -2000;
 
-		this.binSlot = new Slot(ContainerLoadData.dumbInventory, this.inventorySlots.size(), 213, 26);
-
-		this.binSlot.xPos = this.binSlot.yPos = -2000;
-
 		this.slots = new SlotForge[4 * 4];
 
 		final int indexOffset = this.inventorySlots.size();
@@ -103,22 +244,12 @@ public class ContainerLoadData extends ContainerPlayer
 	@Override
 	public ItemStack slotClick(final int slotId, final int dragType, final ClickType clickTypeIn, final EntityPlayer player)
 	{
-		if (slotId == this.binSlot.slotNumber && player.capabilities.isCreativeMode)
-		{
-			this.playerOrbis.getEntity().inventory.setItemStack(ItemStack.EMPTY);
-		}
-
 		return super.slotClick(slotId, dragType, clickTypeIn, player);
 	}
 
 	@Override
 	public ItemStack transferStackInSlot(final EntityPlayer player, final int slotNumber)
 	{
-		if (slotNumber == this.binSlot.slotNumber && this.playerOrbis.getEntity().capabilities.isCreativeMode)
-		{
-			this.playerOrbis.getEntity().inventory.clear();
-		}
-
 		return super.transferStackInSlot(player, slotNumber);
 	}
 
@@ -127,4 +258,5 @@ public class ContainerLoadData extends ContainerPlayer
 	{
 		return true;
 	}
+
 }

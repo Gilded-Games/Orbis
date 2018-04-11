@@ -2,6 +2,7 @@ package com.gildedgames.orbis.api.data.management.impl;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.management.*;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -47,6 +48,7 @@ public class OrbisProject implements IProject
 
 		this.acceptedFileExtensions.add(BlueprintData.EXTENSION);
 		this.acceptedFileExtensions.add(FrameworkData.EXTENSION);
+		this.acceptedFileExtensions.add(BlueprintStackerData.EXTENSION);
 	}
 
 	/**

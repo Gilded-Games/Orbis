@@ -11,6 +11,7 @@ import com.gildedgames.orbis.client.gui.schedules.GuiScheduleLayerPanel;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
 import com.gildedgames.orbis.client.gui.util.GuiFrame;
+import com.gildedgames.orbis.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
@@ -22,12 +23,15 @@ import com.gildedgames.orbis.common.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.util.Map;
 
 public class GuiEditBlueprint extends GuiFrame
 {
+	private static final ResourceLocation VIEWER_BACKDROP = OrbisCore.getResource("list/list_viewer.png");
+
 	private final Blueprint blueprint;
 
 	private GuiButtonVanilla saveButton, closeButton;
@@ -70,7 +74,8 @@ public class GuiEditBlueprint extends GuiFrame
 		this.addChildren(this.saveButton);
 		this.addChildren(this.closeButton);
 
-		this.layerViewer = new GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled>(Pos2D.build().add(20, 45).flush(),
+		this.layerViewer = new GuiListViewer<IScheduleLayer, GuiButtonVanillaToggled>(
+				Dim2D.build().width(156).pos(Pos2D.build().add(30, 55).flush()).flush(),
 				navigator -> this.blueprint.getData().findNextAvailableId(), new ListNavigator<>(), (p, n, i) ->
 		{
 			final GuiButtonVanillaToggled button = new GuiButtonVanillaToggled(Dim2D.build().pos(p).width(130).height(20).flush(), i);
@@ -84,16 +89,16 @@ public class GuiEditBlueprint extends GuiFrame
 
 			return button;
 		}, i -> new ScheduleLayer("Layer " + String.valueOf(i + 1),
-				GuiEditBlueprint.this.blueprint))
+				GuiEditBlueprint.this.blueprint), 20)
 		{
 			@Override
-			public void onNewNode(final IScheduleLayer node, final int index)
+			public void onAddNode(final IScheduleLayer node, final int index)
 			{
 				super.onAddNode(node, index);
 
 				final Blueprint b = GuiEditBlueprint.this.blueprint;
 
-				if (this.mc.isIntegratedServerRunning())
+				if (Minecraft.getMinecraft().isIntegratedServerRunning())
 				{
 					b.getData().addScheduleLayer(node);
 				}
@@ -167,7 +172,12 @@ public class GuiEditBlueprint extends GuiFrame
 			}
 		};
 
-		this.layerViewer.dim().mod().height(this.height - 65).flush();
+		final GuiTexture backdrop = new GuiTexture(Dim2D.build().pos(Pos2D.build().add(20, 45).flush()).width(176).flush(), VIEWER_BACKDROP);
+
+		this.layerViewer.dim().mod().height(this.height - 85).flush();
+		backdrop.dim().mod().height(this.height - 65).flush();
+
+		this.addChildren(backdrop);
 
 		if (!OrbisCore.getProjectManager().getLocation().exists())
 		{
@@ -182,7 +192,7 @@ public class GuiEditBlueprint extends GuiFrame
 			int i = e.getKey();
 			IScheduleLayer layer = e.getValue();
 
-			this.layerViewer.getNavigator().add(layer, i);
+			this.layerViewer.getNavigator().put(layer, i);
 
 			GuiScheduleLayerPanel panel = new GuiScheduleLayerPanel(Dim2D.build().width(this.width - 250).height(this.height - 65).flush(), this.blueprint,
 					layer);

@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
 import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis.api.data.framework.FrameworkData;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.data.management.impl.OrbisProjectManager;
@@ -87,6 +88,9 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 					break;
 				case FrameworkData.EXTENSION:
 					node = new NavigatorNodeFramework(file);
+					break;
+				case BlueprintStackerData.EXTENSION:
+					node = new NavigatorNodeBlueprintStacker(file);
 					break;
 				default:
 					node = new NavigatorNodeFile(file);

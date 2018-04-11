@@ -10,6 +10,7 @@ import com.gildedgames.orbis.api.data.management.IData;
 import com.gildedgames.orbis.api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.api.data.management.IProject;
 import com.gildedgames.orbis.api.util.mc.InventoryHelper;
+import com.gildedgames.orbis.client.gui.blueprint.GuiCreateBlueprintStacker;
 import com.gildedgames.orbis.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
@@ -17,27 +18,24 @@ import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigatorListen
 import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeBlueprint;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeFramework;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProject;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
+import com.gildedgames.orbis.client.gui.util.directory.nodes.*;
 import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
-import com.gildedgames.orbis.common.items.ItemBlueprint;
-import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
-import com.gildedgames.orbis.common.items.ItemFramework;
-import com.gildedgames.orbis.common.items.ItemsOrbis;
+import com.gildedgames.orbis.common.items.*;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis.common.util.InputHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
@@ -49,7 +47,23 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private static final ResourceLocation MERGE_ICON = OrbisCore.getResource("blueprint_gui/merge_icon_right.png");
 
+	private static final ResourceLocation TAB = OrbisCore.getResource("blueprint_gui/tab.png");
+
+	private static final ResourceLocation TAB_PRESSED = OrbisCore.getResource("blueprint_gui/tab_pressed.png");
+
+	private static final ResourceLocation SEARCH = OrbisCore.getResource("blueprint_gui/search.png");
+
+	private static final ResourceLocation STACKER = OrbisCore.getResource("blueprint_gui/stacker.png");
+
+	private final int tabCount = 2;
+
 	private final ContainerLoadData container;
+
+	private int tabIndex;
+
+	private GuiTexture[] tabs = new GuiTexture[this.tabCount];
+
+	private GuiFrame[] tabFrames = new GuiFrame[this.tabCount];
 
 	private GuiAbstractButton forgeButton;
 
@@ -104,7 +118,13 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
-		this.addChildren(this.directoryViewer);
+		this.tabFrames[0] = this.directoryViewer;
+
+		GuiCreateBlueprintStacker bp = new GuiCreateBlueprintStacker(this, this.container);
+
+		bp.dim().mod().addX(-8).addY(-34).flush();
+
+		this.tabFrames[1] = bp;
 
 		final int xOffset = 15;
 		final int yOffset = 7;
@@ -122,6 +142,70 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 				new Text(new TextComponentString("Group"), 1.0F));
 
 		this.addChildren(this.matrix, this.flow, this.combineTitle, this.forgeButton, inventory);
+
+		for (int i = 0; i < this.tabCount; i++)
+		{
+			GuiTexture tab = new GuiTexture(Dim2D.build().width(22).height(19).flush(), TAB);
+
+			tab.dim().mod().addY(-53).addX(i * 23).flush();
+
+			this.tabs[i] = tab;
+			this.tabFrames[i].setVisible(false);
+
+			this.addChildren(tab);
+			this.addChildren(this.tabFrames[i]);
+		}
+
+		this.setTabIndex(0);
+
+		GuiTexture search = new GuiTexture(Dim2D.build().pos(Pos2D.build().x(5).y(-48).flush()).width(13).height(13).flush(), SEARCH);
+		GuiTexture stacker = new GuiTexture(Dim2D.build().pos(Pos2D.build().x(27).y(-48).flush()).width(13).height(13).flush(), STACKER);
+
+		this.addChildren(search, stacker);
+	}
+
+	public void setTabIndex(int index)
+	{
+		this.tabIndex = index;
+
+		for (int i = 0; i < this.tabCount; i++)
+		{
+			GuiTexture tab = this.tabs[i];
+
+			if (i == this.tabIndex)
+			{
+				tab.setResourceLocation(TAB_PRESSED);
+				this.tabFrames[i].setVisible(true);
+				this.tabFrames[i].setEnabled(true);
+			}
+			else
+			{
+				tab.setResourceLocation(TAB);
+				this.tabFrames[i].setVisible(false);
+				this.tabFrames[i].setEnabled(false);
+			}
+		}
+
+		if (index == 1)
+		{
+			this.container.startStackerInterface();
+		}
+		else
+		{
+			this.container.stopStackerInterface();
+		}
+	}
+
+	@Override
+	public void handleMouseInput() throws IOException
+	{
+		super.handleMouseInput();
+	}
+
+	@Override
+	protected void handleMouseClick(@Nullable Slot slotIn, int slotId, int mouseButton, ClickType type)
+	{
+		super.handleMouseClick(slotIn, slotId, mouseButton, type);
 	}
 
 	@Override
@@ -150,6 +234,16 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
+
+		for (int i = 0; i < this.tabs.length; i++)
+		{
+			GuiTexture tab = this.tabs[i];
+
+			if (InputHelper.isHovered(tab))
+			{
+				this.setTabIndex(i);
+			}
+		}
 
 		if (InputHelper.isHovered(this.forgeButton) && mouseButton == 0)
 		{
@@ -222,6 +316,22 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
 
 				ItemFramework.setDataId(stack, data.getMetadata().getIdentifier());
+
+				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
+				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+			}
+			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			{
+				OrbisCore.LOGGER.error(e);
+			}
+		}
+		else if (node instanceof NavigatorNodeBlueprintStacker)
+		{
+			final ItemStack stack = new ItemStack(ItemsOrbis.blueprint_stacker);
+
+			try
+			{
+				ItemBlueprintStacker.setBlueprintStacker(stack, OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile()));
 
 				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
 				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
