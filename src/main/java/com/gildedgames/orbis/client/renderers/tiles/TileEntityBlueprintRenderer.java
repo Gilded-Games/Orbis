@@ -63,7 +63,7 @@ public class TileEntityBlueprintRenderer extends TileEntitySpecialRenderer<TileE
 				return;
 			}
 
-			final RenderBlueprintBlocks blueprint = OrbisClientCaches.getBlueprintStackerRenders().get(id).orNull();
+			final RenderBlueprintBlocks blueprint = OrbisClientCaches.getBlueprintRenders().get(id).orNull();
 
 			if (blueprint == null)
 			{
