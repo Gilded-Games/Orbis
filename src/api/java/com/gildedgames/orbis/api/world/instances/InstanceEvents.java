@@ -2,8 +2,10 @@ package com.gildedgames.orbis.api.world.instances;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.util.mc.NBTHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -23,6 +25,20 @@ public class InstanceEvents
 		for (final IInstanceHandler<?> handler : OrbisAPI.instances().getInstanceHandlers())
 		{
 			handler.sendUnregisterInstancesPacket((EntityPlayerMP) event.player);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onPlayerTravel(EntityTravelToDimensionEvent event)
+	{
+		if (event.getEntity() instanceof EntityPlayer)
+		{
+			final IPlayerInstances hook = OrbisAPI.instances().getPlayer((EntityPlayer) event.getEntity());
+
+			if (hook.getInstance() != null)
+			{
+				hook.getInstance().onLeave((EntityPlayer) event.getEntity());
+			}
 		}
 	}
 
