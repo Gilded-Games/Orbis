@@ -27,6 +27,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 public class GuiEditBlueprint extends GuiFrame
 {
@@ -187,19 +188,29 @@ public class GuiEditBlueprint extends GuiFrame
 			}
 		}
 
-		for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
+		Lock w = this.blueprint.getData().getLock().readLock();
+		w.lock();
+
+		try
 		{
-			int i = e.getKey();
-			IScheduleLayer layer = e.getValue();
+			for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
+			{
+				int i = e.getKey();
+				IScheduleLayer layer = e.getValue();
 
-			this.layerViewer.getNavigator().put(layer, i);
+				this.layerViewer.getNavigator().put(layer, i);
 
-			GuiScheduleLayerPanel panel = new GuiScheduleLayerPanel(Dim2D.build().width(this.width - 250).height(this.height - 65).flush(), this.blueprint,
-					layer);
+				GuiScheduleLayerPanel panel = new GuiScheduleLayerPanel(Dim2D.build().width(this.width - 250).height(this.height - 65).flush(), this.blueprint,
+						layer);
 
-			panel.dim().mod().addX(this.width - panel.dim().width() - 20).addY(45).flush();
+				panel.dim().mod().addX(this.width - panel.dim().width() - 20).addY(45).flush();
 
-			GuiEditBlueprint.this.cachedPanels.put(i, panel);
+				GuiEditBlueprint.this.cachedPanels.put(i, panel);
+			}
+		}
+		finally
+		{
+			w.unlock();
 		}
 
 		this.addChildren(this.layerViewer);

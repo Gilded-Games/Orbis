@@ -222,14 +222,24 @@ public class BlueprintData
 
 	public void setScheduleLayer(final int index, final IScheduleLayer layer)
 	{
-		this.listeners.forEach(o -> o.onAddScheduleLayer(layer, this.scheduleLayers.size()));
+		final Lock w = this.lock.writeLock();
+		w.lock();
 
-		layer.setWorldObjectParent(this.worldObjectParent);
-		layer.setLayerId(index);
+		try
+		{
+			this.listeners.forEach(o -> o.onAddScheduleLayer(layer, this.scheduleLayers.size()));
 
-		this.scheduleLayers.put(index, layer);
+			layer.setWorldObjectParent(this.worldObjectParent);
+			layer.setLayerId(index);
 
-		layer.listen(this);
+			this.scheduleLayers.put(index, layer);
+
+			layer.listen(this);
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	public int findNextAvailableId()
@@ -255,15 +265,25 @@ public class BlueprintData
 
 	public boolean removeScheduleLayer(final int index)
 	{
-		final boolean removed = this.scheduleLayers.get(index) != null;
+		final Lock w = this.lock.writeLock();
+		w.lock();
 
-		final IScheduleLayer layer = this.scheduleLayers.remove(index);
+		try
+		{
+			final boolean removed = this.scheduleLayers.get(index) != null;
 
-		this.listeners.forEach(o -> o.onRemoveScheduleLayer(layer, index));
+			final IScheduleLayer layer = this.scheduleLayers.remove(index);
 
-		layer.unlisten(this);
+			this.listeners.forEach(o -> o.onRemoveScheduleLayer(layer, index));
 
-		return removed;
+			layer.unlisten(this);
+
+			return removed;
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	public IScheduleLayer getScheduleLayer(int id)
@@ -273,15 +293,25 @@ public class BlueprintData
 
 	public int getScheduleLayerId(final IScheduleLayer layer)
 	{
-		for (Map.Entry<Integer, IScheduleLayer> entry : this.scheduleLayers.entrySet())
-		{
-			int i = entry.getKey();
-			final IScheduleLayer s = entry.getValue();
+		final Lock w = this.lock.readLock();
+		w.lock();
 
-			if (layer.equals(s))
+		try
+		{
+			for (Map.Entry<Integer, IScheduleLayer> entry : this.scheduleLayers.entrySet())
 			{
-				return i;
+				int i = entry.getKey();
+				final IScheduleLayer s = entry.getValue();
+
+				if (layer.equals(s))
+				{
+					return i;
+				}
 			}
+		}
+		finally
+		{
+			w.unlock();
 		}
 
 		return -1;
@@ -459,5 +489,10 @@ public class BlueprintData
 	public int getLargestLength()
 	{
 		return this.getLength();
+	}
+
+	public ReadWriteLock getLock()
+	{
+		return this.lock;
 	}
 }
