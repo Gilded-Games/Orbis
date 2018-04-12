@@ -174,7 +174,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 	}
 
 	@Override
-	public void onAddNode(SlotBlueprintStacker node, int index)
+	public void onAddNode(SlotBlueprintStacker node, int index, boolean newNode)
 	{
 		this.container.stackerInventory.expand(index + 43);
 		this.container.addStackerSlot(node);

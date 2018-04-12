@@ -9,7 +9,7 @@ public interface IListNavigator<T>
 
 	boolean removeListener(IListNavigatorListener<T> listener);
 
-	void put(T node, int index);
+	void put(T node, int index, boolean newNode);
 
 	boolean remove(T node, int index);
 

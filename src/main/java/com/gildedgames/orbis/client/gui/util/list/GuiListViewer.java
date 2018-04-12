@@ -153,7 +153,7 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 			{
 				int index = this.newNodeIndex.apply(this.getNavigator());
 
-				this.getNavigator().put(this.nodeFactory.apply(index), index);
+				this.getNavigator().put(this.nodeFactory.apply(index), index, true);
 				return;
 			}
 
@@ -244,7 +244,7 @@ public class GuiListViewer<NODE, NODE_GUI extends GuiFrame> extends GuiFrame imp
 	}
 
 	@Override
-	public void onAddNode(final NODE node, final int index)
+	public void onAddNode(final NODE node, final int index, boolean newNode)
 	{
 		this.refreshNodes();
 	}

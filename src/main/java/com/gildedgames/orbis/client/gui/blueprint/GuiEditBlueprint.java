@@ -4,6 +4,7 @@ import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis.api.util.Callback;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
@@ -21,13 +22,14 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRe
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
 import com.gildedgames.orbis.common.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 
 public class GuiEditBlueprint extends GuiFrame
 {
@@ -93,9 +95,14 @@ public class GuiEditBlueprint extends GuiFrame
 				GuiEditBlueprint.this.blueprint), 20)
 		{
 			@Override
-			public void onAddNode(final IScheduleLayer node, final int index)
+			public void onAddNode(final IScheduleLayer node, final int index, boolean newNode)
 			{
-				super.onAddNode(node, index);
+				super.onAddNode(node, index, newNode);
+
+				if (!newNode)
+				{
+					return;
+				}
 
 				final Blueprint b = GuiEditBlueprint.this.blueprint;
 
@@ -188,17 +195,17 @@ public class GuiEditBlueprint extends GuiFrame
 			}
 		}
 
-		Lock w = this.blueprint.getData().getLock().readLock();
-		w.lock();
+		List<Callback> calls = Lists.newArrayList();
 
-		try
+		for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
 		{
-			for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
-			{
-				int i = e.getKey();
-				IScheduleLayer layer = e.getValue();
+			int i = e.getKey();
+			IScheduleLayer layer = e.getValue();
 
-				this.layerViewer.getNavigator().put(layer, i);
+			// To prevent concurrent modification exception
+			calls.add(() ->
+			{
+				this.layerViewer.getNavigator().put(layer, i, false);
 
 				GuiScheduleLayerPanel panel = new GuiScheduleLayerPanel(Dim2D.build().width(this.width - 250).height(this.height - 65).flush(), this.blueprint,
 						layer);
@@ -206,12 +213,11 @@ public class GuiEditBlueprint extends GuiFrame
 				panel.dim().mod().addX(this.width - panel.dim().width() - 20).addY(45).flush();
 
 				GuiEditBlueprint.this.cachedPanels.put(i, panel);
-			}
+			});
 		}
-		finally
-		{
-			w.unlock();
-		}
+
+		calls.forEach(Callback::call);
+		calls.clear();
 
 		this.addChildren(this.layerViewer);
 

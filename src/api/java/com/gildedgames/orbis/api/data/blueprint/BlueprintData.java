@@ -222,24 +222,14 @@ public class BlueprintData
 
 	public void setScheduleLayer(final int index, final IScheduleLayer layer)
 	{
-		final Lock w = this.lock.writeLock();
-		w.lock();
+		this.listeners.forEach(o -> o.onAddScheduleLayer(layer, this.scheduleLayers.size()));
 
-		try
-		{
-			this.listeners.forEach(o -> o.onAddScheduleLayer(layer, this.scheduleLayers.size()));
+		layer.setWorldObjectParent(this.worldObjectParent);
+		layer.setLayerId(index);
 
-			layer.setWorldObjectParent(this.worldObjectParent);
-			layer.setLayerId(index);
+		this.scheduleLayers.put(index, layer);
 
-			this.scheduleLayers.put(index, layer);
-
-			layer.listen(this);
-		}
-		finally
-		{
-			w.unlock();
-		}
+		layer.listen(this);
 	}
 
 	public int findNextAvailableId()
@@ -265,25 +255,15 @@ public class BlueprintData
 
 	public boolean removeScheduleLayer(final int index)
 	{
-		final Lock w = this.lock.writeLock();
-		w.lock();
+		final boolean removed = this.scheduleLayers.get(index) != null;
 
-		try
-		{
-			final boolean removed = this.scheduleLayers.get(index) != null;
+		final IScheduleLayer layer = this.scheduleLayers.remove(index);
 
-			final IScheduleLayer layer = this.scheduleLayers.remove(index);
+		this.listeners.forEach(o -> o.onRemoveScheduleLayer(layer, index));
 
-			this.listeners.forEach(o -> o.onRemoveScheduleLayer(layer, index));
+		layer.unlisten(this);
 
-			layer.unlisten(this);
-
-			return removed;
-		}
-		finally
-		{
-			w.unlock();
-		}
+		return removed;
 	}
 
 	public IScheduleLayer getScheduleLayer(int id)
@@ -293,25 +273,15 @@ public class BlueprintData
 
 	public int getScheduleLayerId(final IScheduleLayer layer)
 	{
-		final Lock w = this.lock.readLock();
-		w.lock();
-
-		try
+		for (Map.Entry<Integer, IScheduleLayer> entry : this.scheduleLayers.entrySet())
 		{
-			for (Map.Entry<Integer, IScheduleLayer> entry : this.scheduleLayers.entrySet())
+			int i = entry.getKey();
+			final IScheduleLayer s = entry.getValue();
+
+			if (layer.equals(s))
 			{
-				int i = entry.getKey();
-				final IScheduleLayer s = entry.getValue();
-
-				if (layer.equals(s))
-				{
-					return i;
-				}
+				return i;
 			}
-		}
-		finally
-		{
-			w.unlock();
 		}
 
 		return -1;
@@ -413,7 +383,7 @@ public class BlueprintData
 	@Override
 	public String getFileExtension()
 	{
-		return "blueprint";
+		return BlueprintData.EXTENSION;
 	}
 
 	@Override
@@ -489,10 +459,5 @@ public class BlueprintData
 	public int getLargestLength()
 	{
 		return this.getLength();
-	}
-
-	public ReadWriteLock getLock()
-	{
-		return this.lock;
 	}
 }

@@ -58,7 +58,7 @@ public class PacketBlueprintStackerGuiAddSlot implements IMessage
 
 				SlotBlueprintStacker slot = new SlotBlueprintStacker(container.stackerInventory, 40, message.slotId, message.posX, message.posY);
 
-				container.getNavigator().put(slot, message.slotId - 43);
+				container.getNavigator().put(slot, message.slotId - 43, true);
 				container.addStackerSlot(slot);
 			}
 

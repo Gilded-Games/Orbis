@@ -30,11 +30,14 @@ public class ListNavigator<T> implements IListNavigator<T>
 	}
 
 	@Override
-	public void put(final T node, final int index)
+	public void put(final T node, final int index, boolean newNode)
 	{
-		this.nodes.put(index, node);
+		if (!this.nodes.containsKey(index) || this.nodes.get(index) != node)
+		{
+			this.nodes.put(index, node);
 
-		this.listeners.forEach(l -> l.onAddNode(node, index));
+			this.listeners.forEach(l -> l.onAddNode(node, index, newNode));
+		}
 	}
 
 	@Override
