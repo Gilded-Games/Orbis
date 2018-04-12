@@ -63,7 +63,7 @@ public class PlacementConditions
 
 	public static PlacementCondition replaceableGround()
 	{
-		return replaceable(true, Material.GROUND, Material.GRASS, Material.AIR);
+		return replaceable(true, Material.GROUND, Material.GRASS, Material.AIR, Material.SNOW);
 	}
 
 	public static PlacementCondition replaceable(final Material... acceptedMaterials)
