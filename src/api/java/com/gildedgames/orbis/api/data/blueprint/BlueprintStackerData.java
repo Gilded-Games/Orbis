@@ -73,14 +73,14 @@ public class BlueprintStackerData implements IData, IDataHolder<BlockDataContain
 		for (IDataHolder<BlueprintData> holder : this.segments)
 		{
 			width = Math.max(width, holder.getLargestWidth());
-			length = Math.max(length, holder.getLargestWidth());
+			length = Math.max(length, holder.getLargestLength());
 		}
 
 		width = Math.max(width, this.top.getLargestWidth());
-		length = Math.max(length, this.top.getLargestWidth());
+		length = Math.max(length, this.top.getLargestLength());
 
 		width = Math.max(width, this.bottom.getLargestWidth());
-		length = Math.max(length, this.bottom.getLargestWidth());
+		length = Math.max(length, this.bottom.getLargestLength());
 
 		this.largestDim = new Region(BlockPos.ORIGIN, new BlockPos(width - 1, height - 1, length - 1));
 	}
