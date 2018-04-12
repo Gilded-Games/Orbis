@@ -87,6 +87,12 @@ public class BlockAccessExtendedWrapper implements IBlockAccessExtended
 		this.world.spawnEntity(entity);
 	}
 
+	@Override
+	public Biome getServerBiome(BlockPos pos)
+	{
+		return this.world.getBiome(pos);
+	}
+
 	@Nullable
 	@Override
 	public TileEntity getTileEntity(final BlockPos pos)

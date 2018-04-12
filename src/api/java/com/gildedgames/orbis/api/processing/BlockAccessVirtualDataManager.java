@@ -87,6 +87,12 @@ public class BlockAccessVirtualDataManager implements IBlockAccessExtended
 
 	}
 
+	@Override
+	public Biome getServerBiome(BlockPos pos)
+	{
+		return this.world.getBiome(pos);
+	}
+
 	@Nullable
 	@Override
 	public TileEntity getTileEntity(final BlockPos pos)

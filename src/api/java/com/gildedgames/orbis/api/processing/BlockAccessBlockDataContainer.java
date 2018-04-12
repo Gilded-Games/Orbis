@@ -101,6 +101,12 @@ public class BlockAccessBlockDataContainer implements IBlockAccessExtended
 
 	}
 
+	@Override
+	public Biome getServerBiome(BlockPos pos)
+	{
+		return null;
+	}
+
 	@Nullable
 	@Override
 	public TileEntity getTileEntity(final BlockPos pos)
