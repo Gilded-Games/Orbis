@@ -2,7 +2,9 @@ package com.gildedgames.orbis.api;
 
 import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
 import com.gildedgames.orbis.api.world.instances.IInstanceRegistry;
+import com.gildedgames.orbis.api.world.instances.InstanceEvents;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +43,8 @@ public class OrbisAPI
 		if (OrbisAPI.services == null)
 		{
 			OrbisAPI.services = new OrbisServices();
+
+			MinecraftForge.EVENT_BUS.register(InstanceEvents.class);
 		}
 
 		return OrbisAPI.services;
