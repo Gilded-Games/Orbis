@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api;
 
 import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
+import com.gildedgames.orbis.api.world.WorldObjectManagerEvents;
 import com.gildedgames.orbis.api.world.instances.IInstanceRegistry;
 import com.gildedgames.orbis.api.world.instances.InstanceEvents;
 import net.minecraftforge.common.DimensionManager;
@@ -45,6 +46,7 @@ public class OrbisAPI
 			OrbisAPI.services = new OrbisServices();
 
 			MinecraftForge.EVENT_BUS.register(InstanceEvents.class);
+			MinecraftForge.EVENT_BUS.register(WorldObjectManagerEvents.class);
 		}
 
 		return OrbisAPI.services;
