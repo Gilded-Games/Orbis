@@ -108,7 +108,20 @@ public class BlockAccessChunkPrimer implements IBlockAccessExtended
 	@Override
 	public boolean setBlockState(final BlockPos pos, final IBlockState state, final int flags)
 	{
-		this.primer.setBlockState(Math.abs(pos.getX() % 16), pos.getY(), Math.abs(pos.getZ() % 16), state);
+		int xDif = pos.getX() % 16;
+		int zDif = pos.getZ() % 16;
+
+		if (xDif < 0)
+		{
+			xDif = 16 - Math.abs(xDif);
+		}
+
+		if (zDif < 0)
+		{
+			zDif = 16 - Math.abs(zDif);
+		}
+
+		this.primer.setBlockState(xDif, pos.getY(), zDif, state);
 
 		return true;
 	}
