@@ -218,6 +218,8 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		this.drawWorldBackground(0);
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
+
+		this.renderHoveredToolTip(mouseX, mouseY);
 	}
 
 	@Override
