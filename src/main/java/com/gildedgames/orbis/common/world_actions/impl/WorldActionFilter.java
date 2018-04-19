@@ -48,7 +48,7 @@ public class WorldActionFilter extends WorldActionBase
 
 		creationData.schedules(this.schedules);
 
-		this.filter.apply(this.shapeToFilter, creationData, player.powers().getFillPower().getFilterOptions());
+		this.filter.apply(null, this.shapeToFilter, creationData, player.powers().getFillPower().getFilterOptions());
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.gildedgames.orbis.api.data.shapes;
 
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis.api.data.region.Region;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -11,9 +12,13 @@ public class IterablePosShape implements IShape
 
 	private Iterable<BlockPos.MutableBlockPos> positions;
 
-	public IterablePosShape(Iterable<BlockPos.MutableBlockPos> positions)
+	private IRegion bb;
+
+	public IterablePosShape(Iterable<BlockPos.MutableBlockPos> positions, BlockPos pos, int width, int height, int length)
 	{
 		this.positions = positions;
+
+		this.bb = new Region(pos, pos.add(width, height, length));
 	}
 
 	@Override
@@ -49,8 +54,7 @@ public class IterablePosShape implements IShape
 	@Override
 	public IRegion getBoundingBox()
 	{
-		//TODO:
-		return null;
+		return this.bb;
 	}
 
 	@Override

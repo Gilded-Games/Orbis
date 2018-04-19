@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.api.block;
 
 import com.gildedgames.orbis.api.core.ICreationData;
+import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.IShape;
 import com.gildedgames.orbis.api.data.schedules.IFilterOptions;
 import com.gildedgames.orbis.api.util.io.NBTFunnel;
@@ -71,24 +72,14 @@ public class BlockFilter implements NBT
 		}
 	}
 
-	public void apply(IShape boundingBox, Iterable<BlockPos.MutableBlockPos> positions, final ICreationData creationData, IFilterOptions options)
+	public void apply(IRegion relocateTo, IShape boundingBox, final ICreationData creationData,
+			IFilterOptions options)
 	{
 		for (final BlockFilterLayer layer : this.filters)
 		{
 			if (layer != null)
 			{
-				layer.apply(this, boundingBox, positions, creationData, options);
-			}
-		}
-	}
-
-	public void apply(final IShape shape, final ICreationData creationData, IFilterOptions options)
-	{
-		for (final BlockFilterLayer layer : this.filters)
-		{
-			if (layer != null)
-			{
-				layer.apply(this, shape, creationData, options);
+				layer.apply(relocateTo, this, boundingBox, creationData, options);
 			}
 		}
 	}

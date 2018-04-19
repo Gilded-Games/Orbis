@@ -10,6 +10,7 @@ import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.api.data.region.IRegion;
 import com.gildedgames.orbis.api.data.region.Region;
+import com.gildedgames.orbis.api.data.schedules.IPositionRecord;
 import com.gildedgames.orbis.api.data.schedules.ISchedule;
 import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis.api.data.shapes.IterablePosShape;
@@ -292,8 +293,10 @@ public class DataPrimer
 		{
 			for (BlockFilter filter : layer.getFilterRecord().getData())
 			{
-				filter.apply(new IterablePosShape(layer.getFilterRecord().getPositions(filter, data.getPos())),
-						layer.getFilterRecord().getPositions(filter, BlockPos.ORIGIN), data, layer.getOptions());
+				IPositionRecord<BlockFilter> r = layer.getFilterRecord();
+
+				filter.apply(relocateTo, new IterablePosShape(r.getPositions(filter, data.getPos()), data.getPos(), r.getWidth(), r.getHeight(), r.getLength()),
+						data, layer.getOptions());
 			}
 
 			layer.getScheduleRecord().getSchedules(ISchedule.class).forEach(s -> s.onGenerateLayer(this, data));
