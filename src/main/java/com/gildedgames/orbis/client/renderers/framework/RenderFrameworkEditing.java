@@ -128,6 +128,18 @@ public class RenderFrameworkEditing implements IWorldRenderer, IFrameworkDataLis
 	}
 
 	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+		
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
 	public List<IWorldRenderer> getSubRenderers(final World world)
 	{
 		return this.subRenderers;

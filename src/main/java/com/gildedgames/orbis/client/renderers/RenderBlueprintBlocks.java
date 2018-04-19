@@ -82,7 +82,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 				if (layer != null)
 				{
-					RenderScheduleLayer render = new RenderScheduleLayer(layer, this.blueprint, this.blueprint);
+					RenderScheduleLayer render = new RenderScheduleLayer(layer, this.blueprint, this.blueprint, true);
 
 					render.setFocused(true);
 
@@ -310,8 +310,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 			return;
 		}
 
-		GodPowerBlueprint bp = PlayerOrbis.get(this.mc.player).powers().getBlueprintPower();
-
 		final double offsetPlayerX = this.mc.player.lastTickPosX + (this.mc.player.posX - this.mc.player.lastTickPosX) * partialTicks;
 		final double offsetPlayerY = this.mc.player.lastTickPosY + (this.mc.player.posY - this.mc.player.lastTickPosY) * partialTicks;
 		final double offsetPlayerZ = this.mc.player.lastTickPosZ + (this.mc.player.posZ - this.mc.player.lastTickPosZ) * partialTicks;
@@ -320,6 +318,8 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		if (useCamera)
 		{
+			GodPowerBlueprint bp = PlayerOrbis.get(this.mc.player).powers().getBlueprintPower();
+
 			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
 
 			GlStateManager.translate(this.blueprint.getMin().getX(),
@@ -366,6 +366,18 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		{
 			GlStateManager.popMatrix();
 		}
+	}
+
+	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
 	}
 
 	@Override

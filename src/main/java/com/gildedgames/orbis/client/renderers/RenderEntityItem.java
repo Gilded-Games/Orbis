@@ -214,6 +214,18 @@ public class RenderEntityItem implements IWorldRenderer
 
 	}
 
+	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
 	public void transformForWorld()
 	{
 		int maxval = Math.max(this.bb.getWidth(), this.bb.getHeight());

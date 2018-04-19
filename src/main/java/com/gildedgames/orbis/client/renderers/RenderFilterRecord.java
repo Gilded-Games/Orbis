@@ -36,10 +36,16 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 
 	private IScheduleLayerHolder layerHolder;
 
-	public RenderFilterRecord(final IPositionRecord<BlockFilter> positionRecord, IScheduleLayerHolder holder, final IWorldObject parentObject)
+	private BlockPos lastPos;
+
+	private boolean rotateData;
+
+	public RenderFilterRecord(final IPositionRecord<BlockFilter> positionRecord, IScheduleLayerHolder holder, final IWorldObject parentObject,
+			boolean rotateData)
 	{
 		this.positionRecord = positionRecord;
 		this.parentObject = parentObject;
+		this.rotateData = rotateData;
 
 		this.layerHolder = holder;
 
@@ -137,6 +143,17 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	}
 
 	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
 	public List<IWorldRenderer> getSubRenderers(final World world)
 	{
 		return this.subRenderers;
@@ -187,7 +204,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 			}
 		}
 
-		final RenderFilterRecordChunk chunk = new RenderFilterRecordChunk(this.positionRecord, this.parentObject, chunkPos);
+		final RenderFilterRecordChunk chunk = new RenderFilterRecordChunk(this.positionRecord, this.parentObject, chunkPos, this.rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();

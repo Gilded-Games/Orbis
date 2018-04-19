@@ -36,6 +36,10 @@ public interface IWorldRenderer extends NBT
 
 	void postRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera);
 
+	void preRenderAllSubs(World world, float partialTicks, boolean useCamera);
+
+	void postRenderAllSubs(World world, float partialTicks, boolean useCamera);
+
 	List<IWorldRenderer> getSubRenderers(World world);
 
 	ReadWriteLock getSubRenderersLock();

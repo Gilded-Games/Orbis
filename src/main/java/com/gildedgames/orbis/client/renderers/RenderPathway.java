@@ -244,6 +244,18 @@ public class RenderPathway implements IWorldRenderer
 	}
 
 	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+		
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
 	public void onRemoved()
 	{
 		for (RenderBlueprintBlocks render : this.pieceToRenderCache.values())

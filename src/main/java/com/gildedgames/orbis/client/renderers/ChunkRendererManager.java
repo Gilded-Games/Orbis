@@ -129,6 +129,8 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 
 			try
 			{
+				renderer.preRenderAllSubs(world, partialTicks, true);
+
 				for (final IWorldRenderer sub : renderer.getSubRenderers(world))
 				{
 					renderer.preRenderSub(sub, world, partialTicks, true);
@@ -137,6 +139,8 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 
 					renderer.postRenderSub(sub, world, partialTicks, true);
 				}
+
+				renderer.postRenderAllSubs(world, partialTicks, true);
 			}
 			finally
 			{

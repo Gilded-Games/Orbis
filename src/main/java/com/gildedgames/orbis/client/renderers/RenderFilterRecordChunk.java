@@ -7,7 +7,9 @@ import com.gildedgames.orbis.api.util.mc.BlockUtil;
 import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
-import com.gildedgames.orbis.client.renderers.util.BlockRenderUtil;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -23,8 +25,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,8 +38,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
-	private static final BlockRenderUtil blockRenderer = new BlockRenderUtil(
-			ObfuscationReflectionHelper.getPrivateValue(BlockModelRenderer.class, mc.getBlockRendererDispatcher().getBlockModelRenderer(), 0));
+	private static final BlockRendererDispatcher blockRenderer = mc.getBlockRendererDispatcher();
 
 	private final IPositionRecord<BlockFilter> positionRecord;
 
@@ -59,15 +60,16 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 	private int glIndex = -1;
 
-	private boolean shouldRedraw, focused;
+	private boolean shouldRedraw, focused, rotateData;
 
-	public RenderFilterRecordChunk(final IPositionRecord<BlockFilter> positionRecord, final IWorldObject parentObject, BlockPos chunkPos)
+	public RenderFilterRecordChunk(final IPositionRecord<BlockFilter> positionRecord, final IWorldObject parentObject, BlockPos chunkPos, boolean rotateData)
 	{
 		this.positionRecord = positionRecord;
 		this.parentObject = parentObject;
 
 		this.chunkPos = chunkPos;
-		this.stateAccess = new FilterRecordAccess(mc.world, positionRecord, parentObject.getPos());
+		this.stateAccess = new FilterRecordAccess(mc.world, positionRecord, BlockPos.ORIGIN);
+		this.rotateData = rotateData;
 	}
 
 	public void setFocused(boolean focused)
@@ -118,13 +120,15 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 			GlStateManager.shadeModel(GL11.GL_FLAT);
 		}
 
+		//GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+
 		int chunkX = this.chunkPos.getX() * 16;
 		int chunkY = this.chunkPos.getY() * 16;
 		int chunkZ = this.chunkPos.getZ() * 16;
 
-		int minX = this.parentObject.getPos().getX();
-		int minY = this.parentObject.getPos().getY();
-		int minZ = this.parentObject.getPos().getZ();
+		int minX = 0;//this.parentObject.getPos().getX();
+		int minY = 0;//this.parentObject.getPos().getY();
+		int minZ = 0;//this.parentObject.getPos().getZ();
 
 		int maxX = minX + this.positionRecord.getBoundingBox().getMax().getX();
 		int maxY = minY + this.positionRecord.getBoundingBox().getMax().getY();
@@ -150,6 +154,11 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 						{
 							pos.setPos(xDif + minX, yDif + minY, zDif + minZ);
 
+							if (pos.getX() == 0 && pos.getY() == 0 && pos.getZ() == 0)
+							{
+								OrbisCore.LOGGER.info("hmmm");
+							}
+
 							this.renderPos(filter, pos, buffer);
 						}
 					}
@@ -162,6 +171,10 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		tessellator.draw();
 
 		RenderHelper.enableStandardItemLighting();
+
+		//GL11.glPopAttrib();
+
+		//GlStateManager.enableDepth();
 
 		GlStateManager.glEndList();
 
@@ -185,8 +198,8 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 			final IBakedModel modelBaked = mc.getBlockRendererDispatcher().getModelForState(state);
 
-			blockRenderer.renderModel(this.stateAccess, modelBaked, state, renderPos, buffer, true, MathHelper.getPositionRandom(renderPos),
-					this.focused ? 0xFFFFFFFF : 0x80FFFFFF);
+			blockRenderer.getBlockModelRenderer()
+					.renderModel(this.stateAccess, modelBaked, state, renderPos, buffer, true, MathHelper.getPositionRandom(renderPos));
 		}
 	}
 
@@ -247,14 +260,18 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 		if (useCamera)
 		{
-			if (!this.lastPos.equals(this.parentObject.getPos()))
-			{
-				GlStateManager.translate(this.parentObject.getPos().getX() - this.lastPos.getX(),
-						this.parentObject.getPos().getY() - this.lastPos.getY(),
-						this.parentObject.getPos().getZ() - this.lastPos.getZ());
-			}
+			GodPowerBlueprint bp = PlayerOrbis.get(mc.player).powers().getBlueprintPower();
 
 			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
+
+			GlStateManager.translate(this.parentObject.getPos().getX(),
+					this.parentObject.getPos().getY(),
+					this.parentObject.getPos().getZ());
+
+			if (this.rotateData)
+			{
+				RenderUtil.rotateRender(this.parentObject.getShape().getBoundingBox(), bp.getPlacingRotation());
+			}
 		}
 
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -267,7 +284,22 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
+		if (!this.focused)
+		{
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GL11.GL_CONSTANT_ALPHA, GL11.GL_ONE_MINUS_CONSTANT_ALPHA);
+
+			GL14.glBlendColor(1F, 1F, 1F, 0.5F);
+		}
+
 		GlStateManager.callList(this.glIndex);
+
+		if (!this.focused)
+		{
+			GL14.glBlendColor(1F, 1F, 1F, 1F);
+
+			GlStateManager.disableBlend();
+		}
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -289,6 +321,18 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 	@Override
 	public void postRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
 	{
 
 	}

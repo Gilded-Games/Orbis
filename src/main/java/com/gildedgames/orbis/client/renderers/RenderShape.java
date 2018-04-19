@@ -486,6 +486,18 @@ public class RenderShape implements IWorldRenderer
 	}
 
 	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+		
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
 	public void onRemoved()
 	{
 		if (this.glIndex != -1)

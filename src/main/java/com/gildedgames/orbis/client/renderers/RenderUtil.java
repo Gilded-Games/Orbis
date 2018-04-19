@@ -71,14 +71,17 @@ public class RenderUtil
 				break;
 			case CLOCKWISE_90:
 				GlStateManager.translate(d.getLength(), 0, 0);
+
 				angle = 270.0F;
 				break;
 			case CLOCKWISE_180:
 				GlStateManager.translate(d.getWidth(), 0, d.getLength());
+
 				angle = 180.0F;
 				break;
 			case COUNTERCLOCKWISE_90:
 				GlStateManager.translate(0, 0, d.getWidth());
+
 				angle = 90.0F;
 				break;
 		}

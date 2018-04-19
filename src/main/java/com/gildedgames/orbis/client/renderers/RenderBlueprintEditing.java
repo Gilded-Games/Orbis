@@ -79,7 +79,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 				if (layer != null)
 				{
-					this.subRenderers.add(new RenderScheduleLayer(layer, this.blueprint, this.blueprint));
+					this.subRenderers.add(new RenderScheduleLayer(layer, this.blueprint, this.blueprint, false));
 				}
 			}
 
@@ -162,6 +162,18 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	}
 
 	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
 	public List<IWorldRenderer> getSubRenderers(final World world)
 	{
 		return this.subRenderers;
@@ -228,7 +240,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 				if (found == null)
 				{
-					this.focusedRender = new RenderScheduleLayer(this.focusedLayer, this.blueprint, this.blueprint);
+					this.focusedRender = new RenderScheduleLayer(this.focusedLayer, this.blueprint, this.blueprint, false);
 					this.focusedRender.setFocused(true);
 
 					this.subRenderers.add(this.focusedRender);

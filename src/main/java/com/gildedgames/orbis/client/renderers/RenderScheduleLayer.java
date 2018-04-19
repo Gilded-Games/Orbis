@@ -26,7 +26,7 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 	private boolean disabled;
 
-	public RenderScheduleLayer(final IScheduleLayer layer, IScheduleLayerHolder holder, final IWorldObject parentObject)
+	public RenderScheduleLayer(final IScheduleLayer layer, IScheduleLayerHolder holder, final IWorldObject parentObject, boolean rotateData)
 	{
 		this.layer = layer;
 		this.parentObject = parentObject;
@@ -36,7 +36,7 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			layer.getScheduleRecord().listen(this);
 		}
 
-		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getFilterRecord(), holder, this.parentObject);
+		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getFilterRecord(), holder, this.parentObject, rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -144,6 +144,18 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 	@Override
 	public void postRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
+	{
+
+	}
+
+	@Override
+	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
 	{
 
 	}
