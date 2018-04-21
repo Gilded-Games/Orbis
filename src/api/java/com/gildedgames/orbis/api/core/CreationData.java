@@ -26,7 +26,7 @@ public class CreationData implements ICreationData<CreationData>
 
 	private Rotation rotation = Rotation.NONE;
 
-	private boolean placeAir = true, schedules = false;
+	private boolean placeAir = true, schedules = false, placesVoid = false;
 
 	private int dimId;
 
@@ -56,6 +56,14 @@ public class CreationData implements ICreationData<CreationData>
 		this(world);
 
 		this.creator = creator;
+	}
+
+	@Override
+	public CreationData placesVoid(boolean placesVoid)
+	{
+		this.placesVoid = placesVoid;
+
+		return this;
 	}
 
 	@Override
@@ -169,10 +177,16 @@ public class CreationData implements ICreationData<CreationData>
 	}
 
 	@Override
+	public boolean placesVoid()
+	{
+		return this.placesVoid;
+	}
+
+	@Override
 	public ICreationData clone()
 	{
 		CreationData data = new CreationData(this.world).pos(new BlockPos(this.pos)).rotation(this.rotation).creator(this.creator).placesAir(this.placeAir)
-				.schedules(this.schedules);
+				.schedules(this.schedules).placesVoid(this.placesVoid);
 
 		data.seed = this.seed;
 		data.rand = this.rand;
@@ -192,6 +206,7 @@ public class CreationData implements ICreationData<CreationData>
 		tag.setTag("pos", NBTHelper.writeBlockPos(this.pos));
 		tag.setString("rotation", this.rotation.name());
 		tag.setBoolean("placeAir", this.placeAir);
+		tag.setBoolean("placesVoid", this.placesVoid);
 		tag.setBoolean("schedules", this.schedules);
 		tag.setLong("seed", this.seed);
 
@@ -207,6 +222,7 @@ public class CreationData implements ICreationData<CreationData>
 		this.pos = NBTHelper.readBlockPos(tag.getCompoundTag("pos"));
 		this.rotation = Rotation.valueOf(tag.getString("rotation"));
 		this.placeAir = tag.getBoolean("placeAir");
+		this.placesVoid = tag.getBoolean("placesVoid");
 		this.schedules = tag.getBoolean("schedules");
 		this.seed = tag.getLong("seed");
 

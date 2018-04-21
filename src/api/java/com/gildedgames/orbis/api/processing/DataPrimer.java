@@ -250,7 +250,7 @@ public class DataPrimer
 			return;
 		}
 
-		if (!blockData.isVoid())
+		if (!blockData.isVoid() || creationData.placesVoid())
 		{
 			final IBlockState rotated = blockData.getRotatedBlockState(creationData.getRotation());
 
@@ -260,7 +260,9 @@ public class DataPrimer
 			{
 				blockData.getTileEntity().setWorld(this.access.getWorld());
 
-				this.access.setTileEntity(pos, TileEntity.create(this.access.getWorld(), blockData.getTileEntity().serializeNBT()));
+				TileEntity te = TileEntity.create(this.access.getWorld(), blockData.getTileEntity().serializeNBT());
+
+				this.access.setTileEntity(pos, te);
 			}
 		}
 

@@ -52,7 +52,7 @@ public class WorldActionAddBlueprint implements IWorldAction
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.blueprint.getBlockDataContainer(), new CreationData(world).pos(this.blueprint.getMin()));
+		primer.create(this.blueprint.getBlockDataContainer(), new CreationData(world).pos(this.blueprint.getMin()).placesVoid(true));
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 

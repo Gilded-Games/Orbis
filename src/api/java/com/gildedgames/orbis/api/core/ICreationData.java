@@ -13,6 +13,8 @@ import java.util.Random;
 public interface ICreationData<SELF extends ICreationData> extends NBT
 {
 
+	SELF placesVoid(boolean placesVoid);
+
 	SELF pos(BlockPos pos);
 
 	SELF world(World world);
@@ -48,6 +50,8 @@ public interface ICreationData<SELF extends ICreationData> extends NBT
 	boolean placeAir();
 
 	boolean schedules();
+
+	boolean placesVoid();
 
 	ICreationData clone();
 
