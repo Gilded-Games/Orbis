@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.network;
 
+import com.gildedgames.orbis.api.packets.PacketWorldSeed;
 import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
 import com.gildedgames.orbis.api.packets.instances.PacketRegisterDimension;
 import com.gildedgames.orbis.api.packets.instances.PacketRegisterInstance;
@@ -164,6 +165,8 @@ public class NetworkingOrbis implements INetworkOrbis
 
 		instance.registerMessage(PacketRemoveNode.HandlerClient.class, PacketRemoveNode.class, discriminant++,
 				Side.CLIENT);
+
+		instance.registerMessage(PacketWorldSeed.Handler.class, PacketWorldSeed.class, discriminant++, Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());
 	}

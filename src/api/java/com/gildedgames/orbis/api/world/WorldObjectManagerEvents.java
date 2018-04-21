@@ -2,7 +2,9 @@ package com.gildedgames.orbis.api.world;
 
 import com.gildedgames.orbis.api.OrbisAPI;
 import com.gildedgames.orbis.api.packets.PacketWorldSeed;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -20,7 +22,19 @@ public class WorldObjectManagerEvents
 			int dimension = entry.getKey();
 			long seed = entry.getValue();
 
-			OrbisAPI.network().sendPacketToAllPlayers(new PacketWorldSeed(dimension, seed));
+			OrbisAPI.network().sendPacketToPlayer(new PacketWorldSeed(dimension, seed), (EntityPlayerMP) event.player);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onWorldLoad(WorldEvent.Load event)
+	{
+		final World world = event.getWorld();
+
+		if (!world.isRemote)
+		{
+			WorldObjectManager.setWorldSeed(world.provider.getDimension(), world.getSeed());
+			OrbisAPI.network().sendPacketToAllPlayers(new PacketWorldSeed(world.provider.getDimension(), world.getSeed()));
 		}
 	}
 

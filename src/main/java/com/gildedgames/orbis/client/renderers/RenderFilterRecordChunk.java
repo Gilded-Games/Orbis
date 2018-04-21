@@ -120,8 +120,6 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 			GlStateManager.shadeModel(GL11.GL_FLAT);
 		}
 
-		//GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-
 		int chunkX = this.chunkPos.getX() * 16;
 		int chunkY = this.chunkPos.getY() * 16;
 		int chunkZ = this.chunkPos.getZ() * 16;
@@ -171,10 +169,6 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		tessellator.draw();
 
 		RenderHelper.enableStandardItemLighting();
-
-		//GL11.glPopAttrib();
-
-		//GlStateManager.enableDepth();
 
 		GlStateManager.glEndList();
 
