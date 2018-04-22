@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.client.gui.right_click;
 
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
 import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
@@ -101,9 +103,10 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
+				PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 				final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewVoidLayer());
 
-				OrbisCore.network().sendPacketToServer(new PacketFilterShape(shape, filter));
+				playerOrbis.getWorldActionLog().track(player.getEntityWorld(), new WorldActionFilter(shape, filter, playerOrbis.powers().isScheduling()));
 			}
 		};
 	}
