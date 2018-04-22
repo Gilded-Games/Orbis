@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.common.world.orbis_instance;
 
-import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.blocks.BlocksOrbis;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.math.BlockPos;
@@ -48,8 +47,6 @@ public class ChunkProviderOrbis implements IChunkGenerator
 	@Override
 	public Chunk generateChunk(final int chunkX, final int chunkZ)
 	{
-		final OrbisInstance inst = OrbisCore.ORBIS_INSTANCE_HANDLER.getFromDimId(this.world.provider.getDimension());
-
 		this.random.setSeed(chunkX * 0x4f9939f508L + chunkZ * 0x1ef1565bd5L);
 
 		final ChunkPrimer primer = new ChunkPrimer();

@@ -218,12 +218,9 @@ public class InstanceHandler<T extends IInstance> implements IInstanceHandler<T>
 		{
 			final IPlayerInstances hook = OrbisAPI.instances().getPlayer(player);
 
-			if (hook.getInstance() == null)
-			{
-				hook.setOutside(new BlockPosDimension((int) player.posX, (int) player.posY, (int) player.posZ, player.dimension));
-			}
+			hook.setOutside(new BlockPosDimension((int) player.posX, (int) player.posY, (int) player.posZ, player.dimension));
 
-			final int dimId = this.instances.inverse().get(instance);
+			final int dimId = instance.getDimensionId();
 
 			final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 
@@ -232,7 +229,7 @@ public class InstanceHandler<T extends IInstance> implements IInstanceHandler<T>
 			final Teleporter teleporter = this.factory.getTeleporter(world);
 
 			final PlayerList playerList = server.getPlayerList();
-			playerList.transferPlayerToDimension(player, this.instances.inverse().get(instance), teleporter);
+			playerList.transferPlayerToDimension(player, dimId, teleporter);
 
 			player.timeUntilPortal = player.getPortalCooldown();
 

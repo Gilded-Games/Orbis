@@ -82,6 +82,8 @@ public class OrbisCore implements IOrbisServicesListener
 
 	private static IDataCachePool dataCache;
 
+	private static boolean loadedInstances;
+
 	private static void clearSelection(final EntityPlayer player)
 	{
 		final World world = player.world;
@@ -178,6 +180,14 @@ public class OrbisCore implements IOrbisServicesListener
 		if (dataCache.findCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE) == null)
 		{
 			dataCache.registerCache(new DataCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE));
+		}
+	}
+
+	public static void saveDataCache()
+	{
+		if (dataCache != null)
+		{
+			dataCache.flushToDisk();
 		}
 	}
 
@@ -288,10 +298,12 @@ public class OrbisCore implements IOrbisServicesListener
 	public void onServerStopping(final FMLServerStoppingEvent event)
 	{
 		OrbisAPI.services().stopProjectManager();
-		startDataCache();
+		stopDataCache();
 
 		//TODO: Move this over to WorldData saver or something. This currently sucks.
 		InstanceEvents.saveAllInstancesToDisk();
+
+		loadedInstances = false;
 	}
 
 	@Mod.EventHandler
@@ -306,9 +318,14 @@ public class OrbisCore implements IOrbisServicesListener
 		// Checks if listener is already in, don't worry
 		OrbisAPI.services().listen(OrbisCore.INSTANCE);
 		OrbisAPI.services().startProjectManager();
-		stopDataCache();
+		startDataCache();
 
-		InstanceEvents.loadAllInstancesFromDisk();
+		if (!loadedInstances)
+		{
+			InstanceEvents.loadAllInstancesFromDisk();
+
+			loadedInstances = true;
+		}
 	}
 
 	@Override

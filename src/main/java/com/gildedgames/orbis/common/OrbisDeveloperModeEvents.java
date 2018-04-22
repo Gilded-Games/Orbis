@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common;
 
 import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.api.world.instances.InstanceEvents;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -14,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -21,6 +23,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 @Mod.EventBusSubscriber()
 public class OrbisDeveloperModeEvents
 {
+
+	@SubscribeEvent
+	public static void onWorldSaved(final WorldEvent.Save event)
+	{
+		OrbisCore.saveDataCache();
+		InstanceEvents.saveAllInstancesToDisk();
+	}
 
 	@SubscribeEvent
 	public static void onCommandEvent(final CommandEvent event)

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.DimensionType;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 
@@ -104,6 +105,34 @@ public class OrbisInstance implements IInstance
 	public void setDimensionId(int dimensionId)
 	{
 		this.dimensionId = dimensionId;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+
+		if (obj instanceof OrbisInstance)
+		{
+			OrbisInstance instance = (OrbisInstance) obj;
+
+			return instance.getDimensionId() == this.getDimensionId();
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		HashCodeBuilder builder = new HashCodeBuilder();
+
+		builder.append(this.dimensionId);
+
+		return builder.toHashCode();
 	}
 
 }

@@ -9,7 +9,6 @@ import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.api.util.mc.NBTHelper;
 import com.gildedgames.orbis.api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.OrbisCapabilities;
-import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
@@ -388,8 +387,6 @@ public class PlayerOrbis implements IPlayerOrbis
 		if (inst != null)
 		{
 			this.orbisInstance = inst;
-
-			OrbisCore.ORBIS_INSTANCE_HANDLER.registerInstance(this.orbisInstance);
 		}
 
 		final NBTTagList modules = tag.getTagList("modules", 10);
