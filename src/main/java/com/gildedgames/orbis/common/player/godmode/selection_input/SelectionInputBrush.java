@@ -1,20 +1,21 @@
 package com.gildedgames.orbis.common.player.godmode.selection_input;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.shapes.AbstractShape;
-import com.gildedgames.orbis.api.util.RotationHelp;
-import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputBrushClient;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.shapes.AbstractShape;
+import com.gildedgames.orbis_api.util.RotationHelp;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
@@ -118,7 +119,7 @@ public class SelectionInputBrush implements ISelectionInput
 						{
 							if (this.playerOrbis.getWorld().isRemote)
 							{
-								OrbisAPI.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), null, null));
+								OrbisCore.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), null, null));
 							}
 						}
 					}

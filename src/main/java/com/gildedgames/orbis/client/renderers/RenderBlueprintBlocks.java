@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.pathway.Entrance;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.util.mc.BlockUtil;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.util.mc.BlockUtil;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.blueprint.BlueprintRenderCache;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;

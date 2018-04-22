@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.schedules.*;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.*;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;

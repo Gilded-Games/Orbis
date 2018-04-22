@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;

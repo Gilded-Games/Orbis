@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.management.IProject;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -97,7 +97,7 @@ public class PacketSendProjectListing extends PacketMultipleParts
 						.isDownloaded())
 				{
 					project.getMetadata().setDownloading(true);
-					OrbisAPI.network().sendPacketToServer(new PacketRequestProject(project.getProjectIdentifier()));
+					OrbisCore.network().sendPacketToServer(new PacketRequestProject(project.getProjectIdentifier()));
 				}
 			}
 

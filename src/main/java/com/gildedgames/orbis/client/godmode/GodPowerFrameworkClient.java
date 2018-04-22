@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.framework.GuiRightClickFramework;
 import com.gildedgames.orbis.client.gui.framework.GuiRightClickFrameworkNode;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Framework;

@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

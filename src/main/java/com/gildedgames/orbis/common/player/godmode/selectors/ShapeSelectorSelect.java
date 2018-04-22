@@ -1,12 +1,13 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetSelectedRegion;
@@ -119,13 +120,13 @@ public class ShapeSelectorSelect implements IShapeSelector
 
 			final int regionId = manager.fetchNextId();
 
-			OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(region, world.provider.getDimension(), regionId), world.provider.getDimension());
+			OrbisCore.network().sendPacketToDimension(new PacketWorldObjectAdd(region, world.provider.getDimension(), regionId), world.provider.getDimension());
 
 			if (this.power.getSelectedRegion() != null)
 			{
 				manager.removeObject(this.power.getSelectedRegionId());
 
-				OrbisAPI.network()
+				OrbisCore.network()
 						.sendPacketToDimension(new PacketWorldObjectRemove(this.power.getSelectedRegionId(), world.provider.getDimension()),
 								world.provider.getDimension());
 			}
@@ -133,7 +134,7 @@ public class ShapeSelectorSelect implements IShapeSelector
 			this.power.setSelectedRegion(region);
 			this.power.setSelectedRegionId(regionId);
 
-			OrbisAPI.network().sendPacketToPlayer(new PacketSetSelectedRegion(regionId), (EntityPlayerMP) playerOrbis.getEntity());
+			OrbisCore.network().sendPacketToPlayer(new PacketSetSelectedRegion(regionId), (EntityPlayerMP) playerOrbis.getEntity());
 		}
 	}
 }

@@ -1,17 +1,17 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.client.gui.data.Text;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.gui.util.GuiText;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.client.gui.data.Text;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetScheduling;
 import com.gildedgames.orbis.common.network.packets.PacketTeleportOrbis;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -254,7 +254,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
 				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE_UNPRESSED);
 
-				OrbisAPI.network().sendPacketToServer(new PacketSetScheduling(false));
+				OrbisCore.network().sendPacketToServer(new PacketSetScheduling(false));
 				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(false);
 			}
 
@@ -263,13 +263,13 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
 				this.left.setResourceLocation(LEFT_PLACEMENT_MODE_UNPRESSED);
 
-				OrbisAPI.network().sendPacketToServer(new PacketSetScheduling(true));
+				OrbisCore.network().sendPacketToServer(new PacketSetScheduling(true));
 				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(true);
 			}
 
 			if (InputHelper.isHovered(this.portal))
 			{
-				OrbisAPI.network().sendPacketToServer(new PacketTeleportOrbis());
+				OrbisCore.network().sendPacketToServer(new PacketTeleportOrbis());
 			}
 		}
 

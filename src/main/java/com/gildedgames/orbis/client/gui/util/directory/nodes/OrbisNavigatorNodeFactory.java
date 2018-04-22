@@ -1,14 +1,14 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
-import com.gildedgames.orbis.api.data.framework.FrameworkData;
-import com.gildedgames.orbis.api.data.management.IProject;
-import com.gildedgames.orbis.api.data.management.impl.OrbisProjectManager;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNodeFactory;
-import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNodeFactory;
+import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
+import com.gildedgames.orbis_api.data.framework.FrameworkData;
+import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis_api.data.management.impl.OrbisProjectManager;
 
 import java.io.File;
 import java.io.IOException;

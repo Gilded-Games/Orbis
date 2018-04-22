@@ -1,33 +1,37 @@
 package com.gildedgames.orbis.client.gui;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.DataCondition;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis.api.data.management.IData;
-import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.management.IProject;
-import com.gildedgames.orbis.api.util.mc.InventoryHelper;
 import com.gildedgames.orbis.client.gui.blueprint.GuiCreateBlueprintStacker;
-import com.gildedgames.orbis.client.gui.data.Text;
-import com.gildedgames.orbis.client.gui.data.directory.DirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigatorListener;
-import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis_api.client.gui.data.Text;
+import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
+import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.*;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.items.*;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.DataCondition;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.management.IData;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis_api.util.mc.InventoryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
@@ -283,7 +287,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 			ItemBlueprintPalette.setBlueprintPalette(stack, palette);
 
-			OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
+			OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
 			Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 		}
 	}
@@ -301,7 +305,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 				ItemBlueprint.setBlueprint(stack, data.getMetadata().getIdentifier());
 
-				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
+				OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
 				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -319,7 +323,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 				ItemFramework.setDataId(stack, data.getMetadata().getIdentifier());
 
-				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
+				OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
 				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -335,7 +339,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			{
 				ItemBlueprintStacker.setBlueprintStacker(stack, OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile()));
 
-				OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(stack));
+				OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
 				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -379,7 +383,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 	{
 		if (!Minecraft.getMinecraft().isIntegratedServerRunning() && this.requestListing)
 		{
-			OrbisAPI.network().sendPacketToServer(new PacketRequestProjectListing());
+			OrbisCore.network().sendPacketToServer(new PacketRequestProjectListing());
 		}
 	}
 

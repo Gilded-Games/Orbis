@@ -1,12 +1,9 @@
 package com.gildedgames.orbis.common.player.godmode.selection_input;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.shapes.AbstractShape;
-import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputDraggedClient;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
@@ -14,6 +11,10 @@ import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.shapes.AbstractShape;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -100,7 +101,7 @@ public class SelectionInputDragged implements ISelectionInput
 				{
 					final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
 
-					OrbisAPI.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
+					OrbisCore.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 				}
 
 				this.activeSelection = null;
@@ -218,7 +219,7 @@ public class SelectionInputDragged implements ISelectionInput
 		{
 			final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(PlayerOrbis.get(this.player));
 
-			OrbisAPI.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
+			OrbisCore.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 		}
 	}
 

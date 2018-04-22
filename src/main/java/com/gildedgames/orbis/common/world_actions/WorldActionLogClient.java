@@ -1,10 +1,11 @@
 package com.gildedgames.orbis.common.world_actions;
 
-import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWorldActions;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketTrackWorldAction;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketUndoWorldAction;
+import com.gildedgames.orbis_api.OrbisAPI;
 import net.minecraft.world.World;
 
 public class WorldActionLogClient implements IWorldActionLog
@@ -17,24 +18,24 @@ public class WorldActionLogClient implements IWorldActionLog
 			return;
 		}
 
-		OrbisAPI.network().sendPacketToServer(new PacketTrackWorldAction(action));
+		OrbisCore.network().sendPacketToServer(new PacketTrackWorldAction(action));
 	}
 
 	@Override
 	public void redo(World world)
 	{
-		OrbisAPI.network().sendPacketToServer(new PacketRedoWorldAction());
+		OrbisCore.network().sendPacketToServer(new PacketRedoWorldAction());
 	}
 
 	@Override
 	public void undo(World world)
 	{
-		OrbisAPI.network().sendPacketToServer(new PacketUndoWorldAction());
+		OrbisCore.network().sendPacketToServer(new PacketUndoWorldAction());
 	}
 
 	@Override
 	public void clear()
 	{
-		OrbisAPI.network().sendPacketToServer(new PacketClearWorldActions());
+		OrbisCore.network().sendPacketToServer(new PacketClearWorldActions());
 	}
 }

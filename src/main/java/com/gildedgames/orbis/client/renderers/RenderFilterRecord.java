@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.schedules.*;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.*;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.network;
 
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.gui.GuiLoadData;
 import com.gildedgames.orbis.client.gui.schedules.GuiEditScheduledRegion;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;

@@ -1,9 +1,11 @@
 package com.gildedgames.orbis.client.gui.util;
 
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
+import com.gildedgames.orbis_api.common.util.InputHelper;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;

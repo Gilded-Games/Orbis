@@ -1,21 +1,24 @@
 package com.gildedgames.orbis.client.gui.fill;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.schedules.FilterOptions;
-import com.gildedgames.orbis.api.util.BlockFilterHelper;
-import com.gildedgames.orbis.client.gui.data.Text;
+import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
+import com.gildedgames.orbis_api.client.gui.util.GuiInputSlider;
+import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiContainerCreativePublic;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiFrameCreative;
+import com.gildedgames.orbis_api.data.schedules.FilterOptions;
+import com.gildedgames.orbis_api.util.BlockFilterHelper;
+import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
-import com.gildedgames.orbis.client.gui.util.vanilla.GuiContainerCreativePublic;
-import com.gildedgames.orbis.client.gui.util.vanilla.GuiFrameCreative;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetFilterOptions;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
@@ -87,7 +90,7 @@ public class GuiFillMenu extends GuiFrameCreative
 		this.playerOrbis.powers().getFillPower().getFilterOptions().setChoosesPerBlock(this.choosesPerBlock.isTicked())
 				.setEdgeNoise(this.noise.getSliderValue());
 
-		OrbisAPI.network().sendPacketToServer(
+		OrbisCore.network().sendPacketToServer(
 				new PacketSetFilterOptions(new FilterOptions().setChoosesPerBlock(this.choosesPerBlock.isTicked()).setEdgeNoise(this.noise.getSliderValue())));
 	}
 

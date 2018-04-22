@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.containers;
 
-import com.gildedgames.orbis.client.gui.data.list.IListNavigator;
-import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
+import com.gildedgames.orbis_api.client.gui.data.list.IListNavigator;
+import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.common.capabilities.player.IPlayerOrbis;
 import com.gildedgames.orbis.common.containers.inventory.InventoryBasicExpandable;
 import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;

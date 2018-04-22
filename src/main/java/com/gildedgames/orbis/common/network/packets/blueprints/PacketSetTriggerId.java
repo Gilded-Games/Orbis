@@ -1,17 +1,17 @@
 package com.gildedgames.orbis.common.network.packets.blueprints;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.management.IData;
-import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.management.IData;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import io.netty.buffer.ByteBuf;
@@ -177,12 +177,12 @@ public class PacketSetTriggerId implements IMessage
 					{
 						if (message.id == null)
 						{
-							OrbisAPI.network().sendPacketToAllPlayers(
+							OrbisCore.network().sendPacketToAllPlayers(
 									new PacketSetTriggerId(message.worldObjectId, message.layerId, message.scheduleId, message.triggerId));
 						}
 						else
 						{
-							OrbisAPI.network()
+							OrbisCore.network()
 									.sendPacketToAllPlayers(new PacketSetTriggerId(message.id, message.layerId, message.scheduleId, message.triggerId));
 						}
 					}

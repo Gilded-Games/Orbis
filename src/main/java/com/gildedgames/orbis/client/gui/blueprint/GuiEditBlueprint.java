@@ -1,26 +1,25 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.ScheduleLayer;
-import com.gildedgames.orbis.api.util.Callback;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis_api.util.Callback;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
-import com.gildedgames.orbis.client.gui.data.list.ListNavigator;
+import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.schedules.GuiScheduleLayerPanel;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
 import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintAddScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRemoveScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -114,12 +113,12 @@ public class GuiEditBlueprint extends GuiFrame
 				{
 					if (b.getData().getMetadata().getIdentifier() == null)
 					{
-						OrbisAPI.network().sendPacketToServer(
+						OrbisCore.network().sendPacketToServer(
 								new PacketBlueprintAddScheduleLayer(b, node.getDisplayName()));
 					}
 					else
 					{
-						OrbisAPI.network().sendPacketToServer(
+						OrbisCore.network().sendPacketToServer(
 								new PacketBlueprintAddScheduleLayer(b.getData().getMetadata().getIdentifier(), node.getDisplayName()));
 					}
 				}
@@ -141,12 +140,12 @@ public class GuiEditBlueprint extends GuiFrame
 
 				if (b.getData().getMetadata().getIdentifier() == null)
 				{
-					OrbisAPI.network().sendPacketToServer(
+					OrbisCore.network().sendPacketToServer(
 							new PacketBlueprintRemoveScheduleLayer(b, b.getData().getScheduleLayerId(node)));
 				}
 				else
 				{
-					OrbisAPI.network().sendPacketToServer(
+					OrbisCore.network().sendPacketToServer(
 							new PacketBlueprintRemoveScheduleLayer(b.getData().getMetadata().getIdentifier(), b.getData().getScheduleLayerId(node)));
 				}
 			}
@@ -164,7 +163,7 @@ public class GuiEditBlueprint extends GuiFrame
 
 				if (layerIndex != -1)
 				{
-					OrbisAPI.network().sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
+					OrbisCore.network().sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
 
 					GuiEditBlueprint.this.currentPanel = GuiEditBlueprint.this.cachedPanels.get(index);
 

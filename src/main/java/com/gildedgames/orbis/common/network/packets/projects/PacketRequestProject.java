@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.management.IProject;
-import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.OrbisCore;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -76,7 +76,7 @@ public class PacketRequestProject extends PacketMultipleParts
 			{
 				final IProject project = OrbisCore.getProjectManager().findProject(message.project);
 
-				OrbisAPI.network().sendPacketToPlayer(new PacketSendProject(project), (EntityPlayerMP) player);
+				OrbisCore.network().sendPacketToPlayer(new PacketSendProject(project), (EntityPlayerMP) player);
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{

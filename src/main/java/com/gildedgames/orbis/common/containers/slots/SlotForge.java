@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.containers.slots;
 
-import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
@@ -49,7 +49,7 @@ public class SlotForge extends Slot
 
 		if (OrbisCore.isClient() && Keyboard.isKeyDown(OrbisKeyBindings.keyBindControl.getKeyCode()))
 		{
-			OrbisAPI.network().sendPacketToServer(new PacketSetItemStack(s));
+			OrbisCore.network().sendPacketToServer(new PacketSetItemStack(s));
 			Minecraft.getMinecraft().player.inventory.setItemStack(s);
 		}
 	}

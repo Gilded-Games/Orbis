@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.gui.framework;
 
-import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.client.Minecraft;
 

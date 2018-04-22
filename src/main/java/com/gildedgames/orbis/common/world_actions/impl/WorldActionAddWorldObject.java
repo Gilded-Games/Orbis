@@ -1,13 +1,14 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -43,7 +44,7 @@ public class WorldActionAddWorldObject implements IWorldAction
 			manager.setObject(id, this.worldObject);
 		}
 
-		OrbisAPI.network()
+		OrbisCore.network()
 				.sendPacketToDimension(new PacketWorldObjectAdd(this.worldObject, world.provider.getDimension(), id),
 						world.provider.getDimension());
 	}
@@ -63,7 +64,7 @@ public class WorldActionAddWorldObject implements IWorldAction
 			manager.removeObject(this.worldObject);
 		}
 
-		OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.worldObject), world.provider.getDimension());
+		OrbisCore.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.worldObject), world.provider.getDimension());
 	}
 
 	@Override

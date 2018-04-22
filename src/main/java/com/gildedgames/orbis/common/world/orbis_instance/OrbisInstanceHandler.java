@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.common.world.orbis_instance;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.util.mc.BlockPosDimension;
-import com.gildedgames.orbis.api.world.instances.IInstanceHandler;
-import com.gildedgames.orbis.api.world.instances.IPlayerInstances;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.util.mc.BlockPosDimension;
+import com.gildedgames.orbis_api.world.instances.IInstanceHandler;
+import com.gildedgames.orbis_api.world.instances.IPlayerInstances;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 

@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.client.gui.util.list;
 
-import com.gildedgames.orbis.client.gui.data.list.IListNavigator;
-import com.gildedgames.orbis.client.gui.data.list.IListNavigatorListener;
-import com.gildedgames.orbis.client.gui.util.GuiAbstractButton;
 import com.gildedgames.orbis.client.gui.util.GuiFactory;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.rect.Pos2D;
-import com.gildedgames.orbis.client.rect.Rect;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.client.gui.data.list.IListNavigator;
+import com.gildedgames.orbis_api.client.gui.data.list.IListNavigatorListener;
+import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.rect.Rect;
+import com.gildedgames.orbis_api.common.util.InputHelper;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;

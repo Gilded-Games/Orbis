@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.world_objects;
 
-import com.gildedgames.orbis.api.data.management.IData;
-import com.gildedgames.orbis.api.data.region.IColored;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.management.IData;
+import com.gildedgames.orbis_api.data.region.IColored;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.nbt.NBTTagCompound;

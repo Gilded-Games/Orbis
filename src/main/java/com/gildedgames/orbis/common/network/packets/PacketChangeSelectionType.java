@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selection_types.ISelectionType;
 import io.netty.buffer.ByteBuf;

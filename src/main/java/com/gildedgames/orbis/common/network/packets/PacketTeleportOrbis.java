@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.util.mc.BlockPosDimension;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.util.mc.BlockPosDimension;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.player.modules;
 
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.management.IProject;
-import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PlayerProjectModule extends PlayerOrbisModule

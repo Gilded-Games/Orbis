@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldObjectManagerObserver;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.IWorldObjectManagerObserver;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.OrbisCapabilities;
 import com.gildedgames.orbis.common.capabilities.chunk_renderer.IChunkRendererCapability;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;

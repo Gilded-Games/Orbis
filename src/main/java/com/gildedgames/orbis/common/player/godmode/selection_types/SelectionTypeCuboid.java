@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.common.player.godmode.selection_types;
 
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.shapes.CuboidShape;
 import com.gildedgames.orbis.client.godmode.selection_types.ISelectionTypeClient;
 import com.gildedgames.orbis.client.godmode.selection_types.SelectionTypeClientCuboid;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.shapes.CuboidShape;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 

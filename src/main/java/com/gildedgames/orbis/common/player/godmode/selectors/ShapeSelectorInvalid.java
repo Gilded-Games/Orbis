@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
-import com.gildedgames.orbis.api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

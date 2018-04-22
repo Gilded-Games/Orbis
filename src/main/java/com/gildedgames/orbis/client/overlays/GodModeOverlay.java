@@ -5,7 +5,7 @@ import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClie
 import com.gildedgames.orbis.client.godmode.selection_types.ISelectionTypeClient;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,18 +1,19 @@
 package com.gildedgames.orbis.common;
 
-import com.gildedgames.orbis.api.IOrbisServicesListener;
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis.api.data.management.IDataCachePool;
-import com.gildedgames.orbis.api.data.management.IProjectManager;
-import com.gildedgames.orbis.api.data.management.impl.DataCache;
-import com.gildedgames.orbis.api.data.management.impl.DataCachePool;
-import com.gildedgames.orbis.api.util.io.IClassSerializer;
-import com.gildedgames.orbis.api.util.io.Instantiator;
-import com.gildedgames.orbis.api.util.io.SimpleSerializer;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
-import com.gildedgames.orbis.api.world.instances.InstanceEvents;
-import com.gildedgames.orbis.client.gui.data.Text;
+import com.gildedgames.orbis_api.IOrbisServicesListener;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.management.IDataCachePool;
+import com.gildedgames.orbis_api.data.management.IProjectManager;
+import com.gildedgames.orbis_api.data.management.impl.DataCache;
+import com.gildedgames.orbis_api.data.management.impl.DataCachePool;
+import com.gildedgames.orbis_api.network.INetworkMultipleParts;
+import com.gildedgames.orbis_api.util.io.IClassSerializer;
+import com.gildedgames.orbis_api.util.io.Instantiator;
+import com.gildedgames.orbis_api.util.io.SimpleSerializer;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.world.instances.InstanceEvents;
+import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -55,7 +56,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION)
+@Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION,
+		dependencies = OrbisCore.MOD_DEPENDENCIES)
 @Mod.EventBusSubscriber
 public class OrbisCore implements IOrbisServicesListener
 {
@@ -65,6 +67,8 @@ public class OrbisCore implements IOrbisServicesListener
 	public static final String MOD_ID = "orbis";
 
 	public static final String MOD_VERSION = "1.12.2-1.0.0";
+
+	public static final String MOD_DEPENDENCIES = "required-after:orbis_api";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
@@ -91,8 +95,8 @@ public class OrbisCore implements IOrbisServicesListener
 
 		if (playerOrbis.powers().getSelectPower().getSelectedRegion() != null && !world.isRemote)
 		{
-			OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
-			OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+			OrbisCore.network().sendPacketToServer(new PacketClearSelectedRegion());
+			OrbisCore.network().sendPacketToServer(new PacketWorldObjectRemove(world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
 
 			playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 		}
@@ -114,8 +118,8 @@ public class OrbisCore implements IOrbisServicesListener
 		 */
 		if (!event.player.world.isRemote)
 		{
-			OrbisAPI.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
-			OrbisAPI.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
+			OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
+			OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
 		}
 	}
 
@@ -131,7 +135,7 @@ public class OrbisCore implements IOrbisServicesListener
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(player.getServer().getWorld(world.provider.getDimension()));
 
-				OrbisAPI.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
 			}
 		}
 	}
@@ -146,6 +150,11 @@ public class OrbisCore implements IOrbisServicesListener
 	public static void onPlayerChangedDimension(final PlayerEvent.PlayerChangedDimensionEvent event)
 	{
 		clearSelection(event.player);
+	}
+
+	public static INetworkMultipleParts network()
+	{
+		return NetworkingOrbis.network();
 	}
 
 	public static void startDataCache()
@@ -271,8 +280,6 @@ public class OrbisCore implements IOrbisServicesListener
 	public void onFMLConstruction(final FMLConstructionEvent event)
 	{
 		registerSerializations();
-
-		OrbisAPI.services().setNetwork(new NetworkingOrbis());
 	}
 
 	@Mod.EventHandler

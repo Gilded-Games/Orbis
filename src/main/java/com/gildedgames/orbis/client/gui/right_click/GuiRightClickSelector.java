@@ -1,15 +1,16 @@
 package com.gildedgames.orbis.client.gui.right_click;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.client.gui.data.DropdownElement;
-import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.OrbisAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
@@ -43,8 +44,8 @@ public class GuiRightClickSelector extends GuiFrame
 					@Override
 					public void onClick(final GuiDropdownList list, final EntityPlayer player)
 					{
-						OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
-						OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(GuiRightClickSelector.this.region.getWorld(),
+						OrbisCore.network().sendPacketToServer(new PacketClearSelectedRegion());
+						OrbisCore.network().sendPacketToServer(new PacketWorldObjectRemove(GuiRightClickSelector.this.region.getWorld(),
 								GuiRightClickSelector.this.region));
 
 						GuiRightClickSelector.this.playerOrbis.powers().getSelectPower().setSelectedRegion(null);

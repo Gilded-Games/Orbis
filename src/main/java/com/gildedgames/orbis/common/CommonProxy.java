@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common;
 
-import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceFactory;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;

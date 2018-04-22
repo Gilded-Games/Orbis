@@ -1,13 +1,5 @@
 package com.gildedgames.orbis.client;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.util.BlockFilterHelper;
-import com.gildedgames.orbis.api.util.RotationHelp;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.gui.blueprint.GuiEditBlueprint;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
@@ -27,6 +19,14 @@ import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.util.BlockFilterHelper;
+import com.gildedgames.orbis_api.util.RotationHelp;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -91,15 +91,15 @@ public class OrbisDeveloperEventsClient
 				{
 					selectionInput.clearSelection();
 
-					OrbisAPI.network().sendPacketToServer(new PacketClearSelection());
+					OrbisCore.network().sendPacketToServer(new PacketClearSelection());
 
 					event.setCanceled(true);
 				}
 
 				if (playerOrbis.powers().getSelectPower().getSelectedRegion() != null)
 				{
-					OrbisAPI.network().sendPacketToServer(new PacketClearSelectedRegion());
-					OrbisAPI.network()
+					OrbisCore.network().sendPacketToServer(new PacketClearSelectedRegion());
+					OrbisCore.network()
 							.sendPacketToServer(new PacketWorldObjectRemove(mc.world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
 
 					playerOrbis.powers().getSelectPower().setSelectedRegion(null);
@@ -133,7 +133,7 @@ public class OrbisDeveloperEventsClient
 				playerOrbis.powers().getCurrentPower().onOpenGui(mc.player);
 				playerOrbis.powers().getCurrentPower().getClientHandler().onOpenGui(mc.player);
 
-				OrbisAPI.network().sendPacketToServer(new PacketOpenPowerGui());
+				OrbisCore.network().sendPacketToServer(new PacketOpenPowerGui());
 
 				event.setCanceled(true);
 			}
@@ -160,20 +160,20 @@ public class OrbisDeveloperEventsClient
 
 				if (OrbisKeyBindings.keyBindAlt.isPressed())
 				{
-					OrbisAPI.network().sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
+					OrbisCore.network().sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
 					playerOrbis.powers().setScheduling(!playerOrbis.powers().isScheduling());
 				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
 				{
 					playerOrbis.setDeveloperReach(reach + 1);
-					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
+					OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
 				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindDecreaseReach.getKeyCode()))
 				{
 					playerOrbis.setDeveloperReach(reach - 1);
-					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
+					OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 				}
 
 				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
@@ -195,7 +195,7 @@ public class OrbisDeveloperEventsClient
 					{
 						final ItemStack item = new ItemStack(ItemsOrbis.block_chunk);
 
-						OrbisAPI.network().sendPacketToServer(new PacketSetBlockDataContainerInHand(item, select.getSelectedRegion()));
+						OrbisCore.network().sendPacketToServer(new PacketSetBlockDataContainerInHand(item, select.getSelectedRegion()));
 						mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, item);
 					}
 				}
@@ -217,7 +217,7 @@ public class OrbisDeveloperEventsClient
 					if (power.getPlacingBlueprint() != null || power.getPlacingPalette() != null)
 					{
 						power.setPlacingRotation(RotationHelp.getNextRotation(power.getPlacingRotation(), true));
-						OrbisAPI.network().sendPacketToServer(new PacketRotateBlueprint());
+						OrbisCore.network().sendPacketToServer(new PacketRotateBlueprint());
 					}
 				}
 
@@ -249,7 +249,7 @@ public class OrbisDeveloperEventsClient
 				prevSelection = null;
 				playerOrbis.setDeveloperReach(prevReach);
 
-				OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(prevReach));
+				OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(prevReach));
 			}
 		}
 		else
@@ -310,7 +310,7 @@ public class OrbisDeveloperEventsClient
 			if (event.getDwheel() > 0)
 			{
 				playerOrbis.setDeveloperReach(reach + 1);
-				OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
+				OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
 
 				event.setCanceled(true);
 			}
@@ -329,13 +329,13 @@ public class OrbisDeveloperEventsClient
 					final float distance = MathHelper.floor((float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
 
 					playerOrbis.setDeveloperReach(distance);
-					OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(distance));
+					OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(distance));
 
 					reach = playerOrbis.getReach();
 				}
 
 				playerOrbis.setDeveloperReach(reach - 1);
-				OrbisAPI.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
+				OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 
 				event.setCanceled(true);
 			}

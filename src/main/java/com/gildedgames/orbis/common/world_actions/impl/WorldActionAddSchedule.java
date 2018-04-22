@@ -1,10 +1,11 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSchedule;
@@ -54,7 +55,7 @@ public class WorldActionAddSchedule implements IWorldAction
 				layer.getScheduleRecord().addSchedule(this.schedule);
 			}
 
-			OrbisAPI.network()
+			OrbisCore.network()
 					.sendPacketToDimension(new PacketAddSchedule(this.blueprint, this.schedule, this.layer), world.provider.getDimension());
 		}
 	}
@@ -80,7 +81,7 @@ public class WorldActionAddSchedule implements IWorldAction
 					layer.getScheduleRecord().removeSchedule(scheduleId);
 				}
 
-				OrbisAPI.network()
+				OrbisCore.network()
 						.sendPacketToDimension(new PacketRemoveSchedule(this.blueprint, this.schedule), world.provider.getDimension());
 			}
 		}

@@ -1,18 +1,5 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.DataCondition;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.management.IDataMetadata;
-import com.gildedgames.orbis.api.data.region.Region;
-import com.gildedgames.orbis.api.data.schedules.ScheduleBlueprint;
-import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -23,6 +10,19 @@ import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddBlueprint;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.DataCondition;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.data.management.IDataMetadata;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.data.schedules.ScheduleBlueprint;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -196,7 +196,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 							if (!Minecraft.getMinecraft().isIntegratedServerRunning())
 							{
-								OrbisAPI.network()
+								OrbisCore.network()
 										.sendPacketToDimension(new PacketAddSchedule(b, scheduleBlueprint, b.getCurrentScheduleLayerIndex()),
 												world.provider.getDimension());
 							}

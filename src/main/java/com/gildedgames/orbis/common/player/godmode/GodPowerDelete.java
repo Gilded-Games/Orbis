@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.player.godmode;
 
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.util.BlockFilterHelper;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.util.BlockFilterHelper;
 import com.gildedgames.orbis.client.godmode.GodPowerDeleteClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;

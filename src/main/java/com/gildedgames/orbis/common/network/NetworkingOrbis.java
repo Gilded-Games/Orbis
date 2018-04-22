@@ -1,11 +1,5 @@
 package com.gildedgames.orbis.common.network;
 
-import com.gildedgames.orbis.api.packets.PacketWorldSeed;
-import com.gildedgames.orbis.api.packets.instances.INetworkOrbis;
-import com.gildedgames.orbis.api.packets.instances.PacketRegisterDimension;
-import com.gildedgames.orbis.api.packets.instances.PacketRegisterInstance;
-import com.gildedgames.orbis.api.packets.instances.PacketUnregisterDimension;
-import com.gildedgames.orbis.api.packets.util.IMessageMultipleParts;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
@@ -19,256 +13,136 @@ import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWor
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketTrackWorldAction;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketUndoWorldAction;
-import com.google.common.collect.Maps;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EntityTracker;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import com.gildedgames.orbis_api.network.INetworkMultipleParts;
+import com.gildedgames.orbis_api.network.NetworkMultipleParts;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-public class NetworkingOrbis implements INetworkOrbis
+public class NetworkingOrbis
 {
-	private static final HashMap<Integer, ArrayList<byte[]>> packetParts = Maps.newHashMap();
+	private static INetworkMultipleParts network = new NetworkMultipleParts(OrbisCore.MOD_ID);
 
-	private static SimpleNetworkWrapper instance;
-
-	private static int discriminant;
+	public static INetworkMultipleParts network()
+	{
+		return network;
+	}
 
 	public static void preInit()
 	{
-		instance = NetworkRegistry.INSTANCE.newSimpleChannel(OrbisCore.MOD_ID);
-
 		// S E R V E R
-		instance.registerMessage(PacketDeveloperReach.HandlerServer.class, PacketDeveloperReach.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketWorldObjectAdd.HandlerServer.class, PacketWorldObjectAdd.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketWorldObjectRemove.HandlerServer.class, PacketWorldObjectRemove.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketActiveSelection.HandlerServer.class, PacketActiveSelection.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketChangePower.HandlerServer.class, PacketChangePower.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketOpenPowerGui.HandlerServer.class, PacketOpenPowerGui.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketSetItemStack.HandlerServer.class, PacketSetItemStack.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketChangeSelectionType.HandlerServer.class, PacketChangeSelectionType.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketFilterShape.HandlerServer.class, PacketFilterShape.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketRequestProject.HandlerServer.class, PacketRequestProject.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketRequestProjectListing.HandlerServer.class, PacketRequestProjectListing.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketSaveWorldObjectToProject.HandlerServer.class, PacketSaveWorldObjectToProject.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketRequestCreateProject.HandlerServer.class, PacketRequestCreateProject.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketDeleteFile.HandlerServer.class, PacketDeleteFile.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketClearSelection.HandlerServer.class, PacketClearSelection.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketRotateBlueprint.HandlerServer.class, PacketRotateBlueprint.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketClearSelectedRegion.HandlerServer.class, PacketClearSelectedRegion.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketSetItemStackInHand.HandlerServer.class, PacketSetItemStackInHand.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketSetBlockDataContainerInHand.HandlerServer.class, PacketSetBlockDataContainerInHand.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketChangeSelectionInput.HandlerServer.class, PacketChangeSelectionInput.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketCreatePlacingBlueprint.HandlerServer.class, PacketCreatePlacingBlueprint.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketCreateItemBlockDataContainer.HandlerServer.class, PacketCreateItemBlockDataContainer.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketCreatePlacingBlueprintPalette.HandlerServer.class, PacketCreatePlacingBlueprintPalette.class, discriminant++,
+		network.reg(PacketDeveloperReach.HandlerServer.class, PacketDeveloperReach.class, Side.SERVER);
+		network.reg(PacketWorldObjectAdd.HandlerServer.class, PacketWorldObjectAdd.class, Side.SERVER);
+		network.reg(PacketWorldObjectRemove.HandlerServer.class, PacketWorldObjectRemove.class, Side.SERVER);
+		network.reg(PacketActiveSelection.HandlerServer.class, PacketActiveSelection.class, Side.SERVER);
+		network.reg(PacketChangePower.HandlerServer.class, PacketChangePower.class, Side.SERVER);
+		network.reg(PacketOpenPowerGui.HandlerServer.class, PacketOpenPowerGui.class, Side.SERVER);
+		network.reg(PacketSetItemStack.HandlerServer.class, PacketSetItemStack.class, Side.SERVER);
+		network.reg(PacketChangeSelectionType.HandlerServer.class, PacketChangeSelectionType.class, Side.SERVER);
+		network.reg(PacketFilterShape.HandlerServer.class, PacketFilterShape.class, Side.SERVER);
+		network.reg(PacketRequestProject.HandlerServer.class, PacketRequestProject.class, Side.SERVER);
+		network.reg(PacketRequestProjectListing.HandlerServer.class, PacketRequestProjectListing.class, Side.SERVER);
+		network.reg(PacketSaveWorldObjectToProject.HandlerServer.class, PacketSaveWorldObjectToProject.class, Side.SERVER);
+		network.reg(PacketRequestCreateProject.HandlerServer.class, PacketRequestCreateProject.class, Side.SERVER);
+		network.reg(PacketDeleteFile.HandlerServer.class, PacketDeleteFile.class, Side.SERVER);
+		network.reg(PacketClearSelection.HandlerServer.class, PacketClearSelection.class, Side.SERVER);
+		network.reg(PacketRotateBlueprint.HandlerServer.class, PacketRotateBlueprint.class, Side.SERVER);
+		network.reg(PacketClearSelectedRegion.HandlerServer.class, PacketClearSelectedRegion.class, Side.SERVER);
+		network.reg(PacketSetItemStackInHand.HandlerServer.class, PacketSetItemStackInHand.class, Side.SERVER);
+		network.reg(PacketSetBlockDataContainerInHand.HandlerServer.class, PacketSetBlockDataContainerInHand.class, Side.SERVER);
+		network.reg(PacketChangeSelectionInput.HandlerServer.class, PacketChangeSelectionInput.class, Side.SERVER);
+		network.reg(PacketCreatePlacingBlueprint.HandlerServer.class, PacketCreatePlacingBlueprint.class, Side.SERVER);
+		network.reg(PacketCreateItemBlockDataContainer.HandlerServer.class, PacketCreateItemBlockDataContainer.class, Side.SERVER);
+		network.reg(PacketCreatePlacingBlueprintPalette.HandlerServer.class, PacketCreatePlacingBlueprintPalette.class,
 				Side.SERVER);
-		instance.registerMessage(PacketOpenGui.HandlerServer.class, PacketOpenGui.class, discriminant++,
-				Side.SERVER);
-
-		instance.registerMessage(PacketBlueprintAddScheduleLayer.HandlerServer.class, PacketBlueprintAddScheduleLayer.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketBlueprintRemoveScheduleLayer.HandlerServer.class, PacketBlueprintRemoveScheduleLayer.class, discriminant++, Side.SERVER);
-		instance.registerMessage(PacketBlueprintSetCurrentScheduleLayer.HandlerServer.class, PacketBlueprintSetCurrentScheduleLayer.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketAddNode.HandlerServer.class, PacketAddNode.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketSetScheduling.HandlerServer.class, PacketSetScheduling.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketAddSchedule.HandlerServer.class, PacketAddSchedule.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketRemoveSchedule.HandlerServer.class, PacketRemoveSchedule.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketSetTriggerId.HandlerServer.class, PacketSetTriggerId.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketSetScheduleLayerInfo.HandlerServer.class, PacketSetScheduleLayerInfo.class, discriminant++,
-				Side.SERVER);
-		instance.registerMessage(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class, discriminant++,
+		network.reg(PacketOpenGui.HandlerServer.class, PacketOpenGui.class,
 				Side.SERVER);
 
-		instance.registerMessage(PacketTrackWorldAction.HandlerServer.class, PacketTrackWorldAction.class, discriminant++,
+		network.reg(PacketBlueprintAddScheduleLayer.HandlerServer.class, PacketBlueprintAddScheduleLayer.class, Side.SERVER);
+		network.reg(PacketBlueprintRemoveScheduleLayer.HandlerServer.class, PacketBlueprintRemoveScheduleLayer.class, Side.SERVER);
+		network.reg(PacketBlueprintSetCurrentScheduleLayer.HandlerServer.class, PacketBlueprintSetCurrentScheduleLayer.class,
 				Side.SERVER);
-		instance.registerMessage(PacketRedoWorldAction.HandlerServer.class, PacketRedoWorldAction.class, discriminant++,
+		network.reg(PacketAddNode.HandlerServer.class, PacketAddNode.class,
 				Side.SERVER);
-		instance.registerMessage(PacketUndoWorldAction.HandlerServer.class, PacketUndoWorldAction.class, discriminant++,
+		network.reg(PacketSetScheduling.HandlerServer.class, PacketSetScheduling.class,
 				Side.SERVER);
-		instance.registerMessage(PacketClearWorldActions.HandlerServer.class, PacketClearWorldActions.class, discriminant++,
+		network.reg(PacketAddSchedule.HandlerServer.class, PacketAddSchedule.class,
 				Side.SERVER);
-
-		instance.registerMessage(PacketRemoveEntrance.HandlerServer.class, PacketRemoveEntrance.class, discriminant++,
+		network.reg(PacketRemoveSchedule.HandlerServer.class, PacketRemoveSchedule.class,
 				Side.SERVER);
-
-		instance.registerMessage(PacketSetFilterOptions.HandlerServer.class, PacketSetFilterOptions.class, discriminant++,
+		network.reg(PacketSetTriggerId.HandlerServer.class, PacketSetTriggerId.class,
 				Side.SERVER);
-
-		instance.registerMessage(PacketRemoveNode.HandlerServer.class, PacketRemoveNode.class, discriminant++,
+		network.reg(PacketSetScheduleLayerInfo.HandlerServer.class, PacketSetScheduleLayerInfo.class,
 				Side.SERVER);
-
-		instance.registerMessage(PacketBlueprintStackerGuiAddSlot.HandlerServer.class, PacketBlueprintStackerGuiAddSlot.class, discriminant++,
+		network.reg(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class,
 				Side.SERVER);
 
-		instance.registerMessage(PacketBlueprintStackerGuiRemoveSlot.HandlerServer.class, PacketBlueprintStackerGuiRemoveSlot.class, discriminant++,
+		network.reg(PacketTrackWorldAction.HandlerServer.class, PacketTrackWorldAction.class,
+				Side.SERVER);
+		network.reg(PacketRedoWorldAction.HandlerServer.class, PacketRedoWorldAction.class,
+				Side.SERVER);
+		network.reg(PacketUndoWorldAction.HandlerServer.class, PacketUndoWorldAction.class,
+				Side.SERVER);
+		network.reg(PacketClearWorldActions.HandlerServer.class, PacketClearWorldActions.class,
 				Side.SERVER);
 
-		instance.registerMessage(PacketBlueprintStackerGuiDisplaySlots.HandlerServer.class, PacketBlueprintStackerGuiDisplaySlots.class, discriminant++,
+		network.reg(PacketRemoveEntrance.HandlerServer.class, PacketRemoveEntrance.class,
+				Side.SERVER);
+
+		network.reg(PacketSetFilterOptions.HandlerServer.class, PacketSetFilterOptions.class,
+				Side.SERVER);
+
+		network.reg(PacketRemoveNode.HandlerServer.class, PacketRemoveNode.class,
+				Side.SERVER);
+
+		network.reg(PacketBlueprintStackerGuiAddSlot.HandlerServer.class, PacketBlueprintStackerGuiAddSlot.class,
+				Side.SERVER);
+
+		network.reg(PacketBlueprintStackerGuiRemoveSlot.HandlerServer.class, PacketBlueprintStackerGuiRemoveSlot.class,
+				Side.SERVER);
+
+		network.reg(PacketBlueprintStackerGuiDisplaySlots.HandlerServer.class, PacketBlueprintStackerGuiDisplaySlots.class,
 				Side.SERVER);
 
 		// C L I E N T
-		instance.registerMessage(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketDeveloperReach.HandlerClient.class, PacketDeveloperReach.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketSendProject.HandlerClient.class, PacketSendProject.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketSendProjectListing.HandlerClient.class, PacketSendProjectListing.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketWorldObjectRemove.HandlerClient.class, PacketWorldObjectRemove.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketWorldObjectAdd.HandlerClient.class, PacketWorldObjectAdd.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketDeleteFile.HandlerClient.class, PacketDeleteFile.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketChangePower.HandlerClient.class, PacketChangePower.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketSetSelectedRegion.HandlerClient.class, PacketSetSelectedRegion.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketSendDataCachePool.HandlerClient.class, PacketSendDataCachePool.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketSendDataToCache.HandlerClient.class, PacketSendDataToCache.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketStagedInventoryChanged.HandlerClient.class, PacketStagedInventoryChanged.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketChangeSelectionInput.HandlerClient.class, PacketChangeSelectionInput.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketChangeSelectionType.HandlerClient.class, PacketChangeSelectionType.class, discriminant++, Side.CLIENT);
+		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);
+		network.reg(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, Side.CLIENT);
+		network.reg(PacketDeveloperReach.HandlerClient.class, PacketDeveloperReach.class, Side.CLIENT);
+		network.reg(PacketSendProject.HandlerClient.class, PacketSendProject.class, Side.CLIENT);
+		network.reg(PacketSendProjectListing.HandlerClient.class, PacketSendProjectListing.class, Side.CLIENT);
+		network.reg(PacketWorldObjectRemove.HandlerClient.class, PacketWorldObjectRemove.class, Side.CLIENT);
+		network.reg(PacketWorldObjectAdd.HandlerClient.class, PacketWorldObjectAdd.class, Side.CLIENT);
+		network.reg(PacketDeleteFile.HandlerClient.class, PacketDeleteFile.class, Side.CLIENT);
+		network.reg(PacketChangePower.HandlerClient.class, PacketChangePower.class, Side.CLIENT);
+		network.reg(PacketSetSelectedRegion.HandlerClient.class, PacketSetSelectedRegion.class, Side.CLIENT);
+		network.reg(PacketSendDataCachePool.HandlerClient.class, PacketSendDataCachePool.class, Side.CLIENT);
+		network.reg(PacketSendDataToCache.HandlerClient.class, PacketSendDataToCache.class, Side.CLIENT);
+		network.reg(PacketStagedInventoryChanged.HandlerClient.class, PacketStagedInventoryChanged.class, Side.CLIENT);
+		network.reg(PacketChangeSelectionInput.HandlerClient.class, PacketChangeSelectionInput.class, Side.CLIENT);
+		network.reg(PacketChangeSelectionType.HandlerClient.class, PacketChangeSelectionType.class, Side.CLIENT);
 
-		instance.registerMessage(PacketBlueprintAddScheduleLayer.HandlerClient.class, PacketBlueprintAddScheduleLayer.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketBlueprintRemoveScheduleLayer.HandlerClient.class, PacketBlueprintRemoveScheduleLayer.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketBlueprintSetCurrentScheduleLayer.HandlerClient.class, PacketBlueprintSetCurrentScheduleLayer.class, discriminant++,
+		network.reg(PacketBlueprintAddScheduleLayer.HandlerClient.class, PacketBlueprintAddScheduleLayer.class, Side.CLIENT);
+		network.reg(PacketBlueprintRemoveScheduleLayer.HandlerClient.class, PacketBlueprintRemoveScheduleLayer.class, Side.CLIENT);
+		network.reg(PacketBlueprintSetCurrentScheduleLayer.HandlerClient.class, PacketBlueprintSetCurrentScheduleLayer.class,
 				Side.CLIENT);
-		instance.registerMessage(PacketAddNode.HandlerClient.class, PacketAddNode.class, discriminant++,
+		network.reg(PacketAddNode.HandlerClient.class, PacketAddNode.class,
 				Side.CLIENT);
-		instance.registerMessage(PacketSetScheduling.HandlerClient.class, PacketSetScheduling.class, discriminant++,
+		network.reg(PacketSetScheduling.HandlerClient.class, PacketSetScheduling.class,
 				Side.CLIENT);
-		instance.registerMessage(PacketAddSchedule.HandlerClient.class, PacketAddSchedule.class, discriminant++,
+		network.reg(PacketAddSchedule.HandlerClient.class, PacketAddSchedule.class,
 				Side.CLIENT);
-		instance.registerMessage(PacketRemoveSchedule.HandlerClient.class, PacketRemoveSchedule.class, discriminant++,
+		network.reg(PacketRemoveSchedule.HandlerClient.class, PacketRemoveSchedule.class,
 				Side.CLIENT);
-		instance.registerMessage(PacketSetTriggerId.HandlerClient.class, PacketSetTriggerId.class, discriminant++,
+		network.reg(PacketSetTriggerId.HandlerClient.class, PacketSetTriggerId.class,
 				Side.CLIENT);
-		instance.registerMessage(PacketSetScheduleLayerInfo.HandlerClient.class, PacketSetScheduleLayerInfo.class, discriminant++,
-				Side.CLIENT);
-		instance.registerMessage(PacketRegisterDimension.Handler.class, PacketRegisterDimension.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketUnregisterDimension.Handler.class, PacketUnregisterDimension.class, discriminant++, Side.CLIENT);
-		instance.registerMessage(PacketRegisterInstance.Handler.class, PacketRegisterInstance.class, discriminant++, Side.CLIENT);
-
-		instance.registerMessage(PacketRemoveEntrance.HandlerClient.class, PacketRemoveEntrance.class, discriminant++,
+		network.reg(PacketSetScheduleLayerInfo.HandlerClient.class, PacketSetScheduleLayerInfo.class,
 				Side.CLIENT);
 
-		instance.registerMessage(PacketRemoveNode.HandlerClient.class, PacketRemoveNode.class, discriminant++,
+		network.reg(PacketRemoveEntrance.HandlerClient.class, PacketRemoveEntrance.class,
 				Side.CLIENT);
 
-		instance.registerMessage(PacketWorldSeed.Handler.class, PacketWorldSeed.class, discriminant++, Side.CLIENT);
+		network.reg(PacketRemoveNode.HandlerClient.class, PacketRemoveNode.class,
+				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());
-	}
-
-	@Override
-	public Map<Integer, ArrayList<byte[]>> getPacketParts()
-	{
-		return NetworkingOrbis.packetParts;
-	}
-
-	private IMessage[] fetchParts(final IMessage message)
-	{
-		final IMessage[] parts;
-
-		if (message instanceof IMessageMultipleParts)
-		{
-			final IMessageMultipleParts multipleParts = (IMessageMultipleParts) message;
-			parts = multipleParts.getParts();
-		}
-		else
-		{
-			parts = new IMessage[1];
-
-			parts[0] = message;
-		}
-
-		return parts;
-	}
-
-	@Override
-	public void sendPacketToDimension(final IMessage message, final int dimension)
-	{
-		for (final IMessage part : this.fetchParts(message))
-		{
-			NetworkingOrbis.instance.sendToDimension(part, dimension);
-		}
-	}
-
-	@Override
-	public void sendPacketToAllPlayers(final IMessage message)
-	{
-		for (final IMessage part : this.fetchParts(message))
-		{
-			NetworkingOrbis.instance.sendToAll(part);
-		}
-	}
-
-	@Override
-	public void sendPacketToAllPlayersExcept(final IMessage message, final EntityPlayerMP player)
-	{
-		final PlayerList playerList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
-
-		for (final IMessage part : this.fetchParts(message))
-		{
-			for (final EntityPlayerMP p : playerList.getPlayers())
-			{
-				if (p != player)
-				{
-					NetworkingOrbis.instance.sendTo(part, p);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void sendPacketToPlayer(final IMessage message, final EntityPlayerMP player)
-	{
-		for (final IMessage part : this.fetchParts(message))
-		{
-			NetworkingOrbis.instance.sendTo(part, player);
-		}
-	}
-
-	@Override
-	public void sendPacketToWatching(final IMessage message, final EntityLivingBase entity, final boolean includeSelf)
-	{
-		for (final IMessage part : this.fetchParts(message))
-		{
-			final WorldServer world = (WorldServer) entity.world;
-
-			final EntityTracker tracker = world.getEntityTracker();
-
-			for (final EntityPlayer player : tracker.getTrackingPlayers(entity))
-			{
-				this.sendPacketToPlayer(part, (EntityPlayerMP) player);
-			}
-
-			// Entities don't watch themselves, take special care here
-			if (includeSelf && entity instanceof EntityPlayer)
-			{
-				this.sendPacketToPlayer(part, (EntityPlayerMP) entity);
-			}
-		}
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void sendPacketToServer(final IMessage message)
-	{
-		for (final IMessage part : this.fetchParts(message))
-		{
-			NetworkingOrbis.instance.sendToServer(part);
-		}
 	}
 }

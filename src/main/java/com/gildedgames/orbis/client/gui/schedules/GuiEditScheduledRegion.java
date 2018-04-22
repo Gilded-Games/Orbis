@@ -1,18 +1,21 @@
 package com.gildedgames.orbis.client.gui.schedules;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis.api.inventory.InventorySpawnEggs;
-import com.gildedgames.orbis.client.gui.data.Text;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiInput;
+import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis_api.inventory.InventorySpawnEggs;
+import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.util.*;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetTriggerId;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -125,7 +128,7 @@ public class GuiEditScheduledRegion extends GuiFrame
 		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
 		{
 			Blueprint b = (Blueprint) this.scheduleRegion.getWorldObjectParent();
-			OrbisAPI.network().sendPacketToServer(
+			OrbisCore.network().sendPacketToServer(
 					new PacketSetTriggerId(b, this.scheduleRegion, this.nameInput.getInner().getText()));
 		}
 	}

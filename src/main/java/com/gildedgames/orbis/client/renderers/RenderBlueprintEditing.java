@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.blueprint.IBlueprintDataListener;
-import com.gildedgames.orbis.api.data.pathway.Entrance;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayerHolderListener;
-import com.gildedgames.orbis.api.data.shapes.CuboidShape;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayerHolderListener;
+import com.gildedgames.orbis_api.data.shapes.CuboidShape;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;

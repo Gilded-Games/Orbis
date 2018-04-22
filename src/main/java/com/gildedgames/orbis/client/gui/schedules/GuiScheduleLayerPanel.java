@@ -1,14 +1,19 @@
 package com.gildedgames.orbis.client.gui.schedules;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis.client.gui.data.Text;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiInput;
+import com.gildedgames.orbis_api.client.gui.util.GuiInputSlider;
+import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
-import com.gildedgames.orbis.client.rect.Rect;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
+import com.gildedgames.orbis_api.client.rect.Rect;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetScheduleLayerInfo;
-import com.gildedgames.orbis.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.text.TextComponentString;
@@ -51,7 +56,7 @@ public class GuiScheduleLayerPanel extends GuiFrame
 		{
 			if (InputHelper.isHovered(this.saveButton))
 			{
-				OrbisAPI.network()
+				OrbisCore.network()
 						.sendPacketToServer(
 								new PacketSetScheduleLayerInfo(this.blueprint, this.layer, this.nameInput.getInner().getText(), this.noise.getSliderValue(),
 										this.choosesPerBlock.isTicked()));

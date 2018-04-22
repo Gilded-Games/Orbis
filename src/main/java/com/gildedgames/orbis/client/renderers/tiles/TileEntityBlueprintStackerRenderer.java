@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.renderers.tiles;
 
-import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
+import com.gildedgames.orbis_api.common.util.OpenGLHelper;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis.client.OrbisClientCaches;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
@@ -8,7 +9,6 @@ import com.gildedgames.orbis.client.renderers.RenderUtil;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemBlueprintStacker;
 import com.gildedgames.orbis.common.tiles.TileEntityBlueprintStacker;
-import com.gildedgames.orbis.common.util.OpenGLHelper;
 import com.gildedgames.orbis.common.util.WorldRenderHelp;
 import com.google.common.base.Optional;
 import mcp.MethodsReturnNonnullByDefault;

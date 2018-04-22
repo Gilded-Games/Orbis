@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
-import com.gildedgames.orbis.client.gui.data.IDropdownElement;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis.client.gui.util.GuiFactory;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
+import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
 

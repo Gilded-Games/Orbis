@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.containers.inventory;
 
-import com.gildedgames.orbis.api.inventory.IInventoryNBT;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
+import com.gildedgames.orbis_api.inventory.IInventoryNBT;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;

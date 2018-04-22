@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.data.schedules.IPositionRecord;
-import com.gildedgames.orbis.api.util.mc.BlockUtil;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
+import com.gildedgames.orbis_api.util.mc.BlockUtil;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;

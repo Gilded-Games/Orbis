@@ -1,11 +1,12 @@
 package com.gildedgames.orbis.common.player.modules;
 
-import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.*;
+import com.gildedgames.orbis_api.OrbisAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -157,7 +158,7 @@ public class PlayerPowerModule extends PlayerOrbisModule
 
 			if (this.getWorld().isRemote)
 			{
-				OrbisAPI.network().sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
+				OrbisCore.network().sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
 			}
 		}
 	}

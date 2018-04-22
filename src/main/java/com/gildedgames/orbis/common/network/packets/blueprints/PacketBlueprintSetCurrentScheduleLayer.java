@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.common.network.packets.blueprints;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import io.netty.buffer.ByteBuf;
@@ -123,7 +123,7 @@ public class PacketBlueprintSetCurrentScheduleLayer extends PacketMultipleParts
 
 					if (player.world.getMinecraftServer().isDedicatedServer())
 					{
-						OrbisAPI.network()
+						OrbisCore.network()
 								.sendPacketToAllPlayers(new PacketBlueprintSetCurrentScheduleLayer(message.worldObjectId, message.scheduleLayerIndex));
 					}
 				}

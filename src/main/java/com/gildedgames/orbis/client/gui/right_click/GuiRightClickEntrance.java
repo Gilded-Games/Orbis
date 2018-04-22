@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.gui.right_click;
 
-import com.gildedgames.orbis.api.data.pathway.Entrance;
-import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 

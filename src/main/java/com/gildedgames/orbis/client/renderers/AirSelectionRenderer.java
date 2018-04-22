@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.region.IMutableRegion;
-import com.gildedgames.orbis.api.world.IWorldObject;
+import com.gildedgames.orbis_api.data.region.IMutableRegion;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;

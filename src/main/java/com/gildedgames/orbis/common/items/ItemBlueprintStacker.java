@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintStackerData;
-import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintStackerRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -138,7 +138,7 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 
 						if (!Minecraft.getMinecraft().isIntegratedServerRunning())
 						{
-							OrbisAPI.network()
+							OrbisCore.network()
 									.sendPacketToDimension(new PacketAddSchedule(b, scheduleBlueprint, b.getCurrentScheduleLayerIndex()),
 											world.provider.getDimension());
 						}

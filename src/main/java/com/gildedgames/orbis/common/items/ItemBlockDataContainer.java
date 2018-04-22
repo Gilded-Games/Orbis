@@ -1,8 +1,5 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.block.BlockDataContainer;
-import com.gildedgames.orbis.api.data.management.IDataCache;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockDataContainerRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -11,6 +8,9 @@ import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataToCache;
 import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDataContainer;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockDataContainer;
+import com.gildedgames.orbis_api.data.management.IDataCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,7 +60,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 
 		if (!player.world.isRemote && shouldSend)
 		{
-			OrbisAPI.network().sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
+			OrbisCore.network().sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
 		}
 	}
 

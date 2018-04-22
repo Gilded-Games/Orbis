@@ -1,21 +1,22 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.block.BlockDataContainer;
-import com.gildedgames.orbis.api.core.CreationData;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis.api.processing.DataPrimer;
-import com.gildedgames.orbis.api.util.BlueprintHelper;
-import com.gildedgames.orbis.api.util.RotationHelp;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockDataContainer;
+import com.gildedgames.orbis_api.core.CreationData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis_api.processing.DataPrimer;
+import com.gildedgames.orbis_api.util.BlueprintHelper;
+import com.gildedgames.orbis_api.util.RotationHelp;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -63,7 +64,7 @@ public class WorldActionAddBlueprint implements IWorldAction
 			manager.setObject(id, this.blueprint);
 		}
 
-		OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectAdd(this.blueprint, world.provider.getDimension(), id), world.provider.getDimension());
+		OrbisCore.network().sendPacketToDimension(new PacketWorldObjectAdd(this.blueprint, world.provider.getDimension(), id), world.provider.getDimension());
 	}
 
 	@Override
@@ -85,7 +86,7 @@ public class WorldActionAddBlueprint implements IWorldAction
 			manager.removeObject(this.blueprint);
 		}
 
-		OrbisAPI.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.blueprint), world.provider.getDimension());
+		OrbisCore.network().sendPacketToDimension(new PacketWorldObjectRemove(world, this.blueprint), world.provider.getDimension());
 	}
 
 	private void initBlueprint(PlayerOrbis player)

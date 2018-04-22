@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis.api.block.BlockDataWithConditions;
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.block.BlockFilterLayer;
-import com.gildedgames.orbis.api.block.BlockFilterType;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
+import com.gildedgames.orbis_api.block.BlockDataWithConditions;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.block.BlockFilterLayer;
+import com.gildedgames.orbis_api.block.BlockFilterType;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockPaletteRenderer;
 import com.gildedgames.orbis.common.OrbisCore;

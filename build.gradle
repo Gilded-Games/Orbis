@@ -39,14 +39,7 @@ if (ciVersion != null) {
 	version = "${config.mod_version}.git-${gitVersion}"
 }
 
-sourceSets {
-	api {
-		java { srcDir "src/api/java" }
-	}
-}
-
 jar {
-	from sourceSets.api.output
 	from sourceSets.main.output
 }
 
@@ -92,13 +85,6 @@ static def loadConfig(File config) {
 	return new ConfigSlurper().parse(props)
 }
 
-task apiJar(type: Jar) {
-	classifier = "api"
-
-	from sourceSets.api.output
-}
-
 artifacts {
 	archives jar
-	archives apiJar
 }

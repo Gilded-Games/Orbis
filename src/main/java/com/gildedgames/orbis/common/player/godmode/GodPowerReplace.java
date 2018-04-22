@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.player.godmode;
 
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.util.BlockFilterHelper;
 import com.gildedgames.orbis.client.godmode.GodPowerReplaceClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFilter;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.util.BlockFilterHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

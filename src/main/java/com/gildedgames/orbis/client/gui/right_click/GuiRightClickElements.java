@@ -1,15 +1,8 @@
 package com.gildedgames.orbis.client.gui.right_click;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis.api.data.pathway.Entrance;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.data.schedules.ISchedule;
-import com.gildedgames.orbis.api.util.BlockFilterHelper;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.client.gui.data.DropdownElement;
-import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketFilterShape;
 import com.gildedgames.orbis.common.network.packets.PacketSetBlockDataContainerInHand;
@@ -19,6 +12,14 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSched
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.util.BlockFilterHelper;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -35,7 +36,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				OrbisAPI.network().sendPacketToServer(new PacketWorldObjectRemove(region.getWorld(), region));
+				OrbisCore.network().sendPacketToServer(new PacketWorldObjectRemove(region.getWorld(), region));
 			}
 		};
 	}
@@ -47,7 +48,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				OrbisAPI.network().sendPacketToServer(new PacketRemoveNode(framework, node));
+				OrbisCore.network().sendPacketToServer(new PacketRemoveNode(framework, node));
 			}
 		};
 	}
@@ -59,7 +60,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				OrbisAPI.network().sendPacketToServer(new PacketRemoveSchedule(blueprint, schedule));
+				OrbisCore.network().sendPacketToServer(new PacketRemoveSchedule(blueprint, schedule));
 			}
 		};
 	}
@@ -71,7 +72,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				OrbisAPI.network().sendPacketToServer(new PacketRemoveEntrance(blueprint, entrance));
+				OrbisCore.network().sendPacketToServer(new PacketRemoveEntrance(blueprint, entrance));
 			}
 		};
 	}
@@ -87,7 +88,7 @@ public class GuiRightClickElements
 
 				final Minecraft mc = Minecraft.getMinecraft();
 
-				OrbisAPI.network().sendPacketToServer(new PacketSetBlockDataContainerInHand(item, shape));
+				OrbisCore.network().sendPacketToServer(new PacketSetBlockDataContainerInHand(item, shape));
 				mc.player.inventory.setInventorySlotContents(mc.player.inventory.currentItem, item);
 			}
 		};
@@ -102,7 +103,7 @@ public class GuiRightClickElements
 			{
 				final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewVoidLayer());
 
-				OrbisAPI.network().sendPacketToServer(new PacketFilterShape(shape, filter));
+				OrbisCore.network().sendPacketToServer(new PacketFilterShape(shape, filter));
 			}
 		};
 	}
@@ -117,7 +118,7 @@ public class GuiRightClickElements
 				// TODO: DESIGN DECISION: It deletes according to your current main hand. Might be confusing.
 				final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewDeleteLayer(player.getHeldItemMainhand()));
 
-				OrbisAPI.network().sendPacketToServer(new PacketFilterShape(shape, filter));
+				OrbisCore.network().sendPacketToServer(new PacketFilterShape(shape, filter));
 			}
 		};
 	}

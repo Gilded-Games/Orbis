@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.block.BlockFilter;
-import com.gildedgames.orbis.api.data.schedules.IPositionRecord;
+import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;

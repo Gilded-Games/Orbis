@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.player.modules;
 
-import com.gildedgames.orbis.api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
@@ -100,7 +100,7 @@ public class PlayerSelectionInputModule extends PlayerOrbisModule
 
 		if (this.getWorld().isRemote)
 		{
-			OrbisAPI.network().sendPacketToServer(new PacketChangeSelectionInput(this.currentSelectionTypeIndex));
+			OrbisCore.network().sendPacketToServer(new PacketChangeSelectionInput(this.currentSelectionTypeIndex));
 		}
 	}
 

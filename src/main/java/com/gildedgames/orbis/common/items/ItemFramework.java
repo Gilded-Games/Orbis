@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis.api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis.api.data.management.IDataIdentifier;
-import com.gildedgames.orbis.api.data.management.IDataMetadata;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.data.management.IDataMetadata;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityFrameworkRenderer;
 import com.gildedgames.orbis.common.OrbisCore;

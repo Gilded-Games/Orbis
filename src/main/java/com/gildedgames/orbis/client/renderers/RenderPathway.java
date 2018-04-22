@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.framework.generation.searching.PathwayNode;
-import com.gildedgames.orbis.api.data.region.IRegion;
-import com.gildedgames.orbis.api.util.RotationHelp;
-import com.gildedgames.orbis.api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayNode;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.util.RotationHelp;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

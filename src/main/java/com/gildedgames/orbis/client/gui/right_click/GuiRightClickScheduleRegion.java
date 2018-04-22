@@ -1,15 +1,16 @@
 package com.gildedgames.orbis.client.gui.right_click;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis.client.gui.data.DropdownElement;
-import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis.client.gui.util.GuiFrame;
-import com.gildedgames.orbis.client.rect.Dim2D;
-import com.gildedgames.orbis.client.rect.Pos2D;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.network.packets.PacketOpenGui;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -45,7 +46,7 @@ public class GuiRightClickScheduleRegion extends GuiFrame
 						BlockPos pos = GuiRightClickScheduleRegion.this.blueprint.getPos().add(
 								GuiRightClickScheduleRegion.this.schedule.getBounds().getMin());
 
-						OrbisAPI.network().sendPacketToServer(new PacketOpenGui(OrbisGuiHandler.EDIT_SCHEDULE_REGION, pos.getX(), pos.getY(), pos.getZ()));
+						OrbisCore.network().sendPacketToServer(new PacketOpenGui(OrbisGuiHandler.EDIT_SCHEDULE_REGION, pos.getX(), pos.getY(), pos.getZ()));
 					}
 				},
 				GuiRightClickElements.remove(this.blueprint, this.schedule),

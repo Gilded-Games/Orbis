@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.player.godmode;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis.api.data.framework.FrameworkNode;
-import com.gildedgames.orbis.api.data.region.IShape;
-import com.gildedgames.orbis.api.util.RegionHelp;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.framework.FrameworkNode;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerFrameworkClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -104,7 +104,7 @@ public class GodPowerFramework implements IGodPower
 
 				RegionHelp.translate(node.getBounds(), relativePos);
 
-				OrbisAPI.network().sendPacketToServer(new PacketAddNode(framework, node));
+				OrbisCore.network().sendPacketToServer(new PacketAddNode(framework, node));
 			}
 		}
 	}

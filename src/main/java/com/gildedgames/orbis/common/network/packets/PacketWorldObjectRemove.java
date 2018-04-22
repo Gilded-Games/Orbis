@@ -1,10 +1,11 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -85,7 +86,7 @@ public class PacketWorldObjectRemove implements IMessage
 
 			PacketWorldObjectRemove.onMessage(message, player);
 
-			OrbisAPI.network()
+			OrbisCore.network()
 					.sendPacketToDimension(new PacketWorldObjectRemove(message.objectId, message.dimensionId), message.dimensionId);
 
 			return null;

@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.world.orbis_instance;
 
-import com.gildedgames.orbis.api.util.mc.BlockPosDimension;
-import com.gildedgames.orbis.api.util.mc.NBTHelper;
-import com.gildedgames.orbis.api.world.instances.IInstance;
+import com.gildedgames.orbis_api.util.mc.BlockPosDimension;
+import com.gildedgames.orbis_api.util.mc.NBTHelper;
+import com.gildedgames.orbis_api.world.instances.IInstance;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

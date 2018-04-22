@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.util;
 
-import com.gildedgames.orbis.api.block.BlockData;
-import com.gildedgames.orbis.api.core.CreationData;
-import com.gildedgames.orbis.api.world.WorldObjectUtils;
+import com.gildedgames.orbis_api.block.BlockData;
+import com.gildedgames.orbis_api.core.CreationData;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

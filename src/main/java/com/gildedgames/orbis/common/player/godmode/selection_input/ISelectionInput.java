@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.common.player.godmode.selection_input;
 
-import com.gildedgames.orbis.api.util.mc.NBT;
-import com.gildedgames.orbis.api.world.IWorldObject;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
+import com.gildedgames.orbis_api.util.mc.NBT;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraftforge.client.event.MouseEvent;
 
 public interface ISelectionInput extends NBT

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.network.packets.gui;
 
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;
 import io.netty.buffer.ByteBuf;

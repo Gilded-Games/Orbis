@@ -1,17 +1,17 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.management.IProject;
-import com.gildedgames.orbis.client.gui.data.DropdownElement;
-import com.gildedgames.orbis.client.gui.data.IDropdownElement;
-import com.gildedgames.orbis.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis.client.gui.util.GuiFactory;
-import com.gildedgames.orbis.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProject;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
+import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
+import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.data.management.IProject;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -100,7 +100,7 @@ public class NavigatorNodeProject implements INavigatorNode
 				public void onClick(final GuiDropdownList list, final EntityPlayer player)
 				{
 					NavigatorNodeProject.this.project.getMetadata().setDownloading(true);
-					OrbisAPI.network().sendPacketToServer(new PacketRequestProject(NavigatorNodeProject.this.project.getProjectIdentifier()));
+					OrbisCore.network().sendPacketToServer(new PacketRequestProject(NavigatorNodeProject.this.project.getProjectIdentifier()));
 				}
 			});
 		}

@@ -1,12 +1,13 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerClient;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
-import com.gildedgames.orbis.api.world.IWorldObject;
-import com.gildedgames.orbis.api.world.WorldObjectManager;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.IWorldObject;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -101,7 +102,7 @@ public class PacketWorldObjectAdd extends PacketMultipleParts
 
 			int id = manager.addObject(object);
 
-			OrbisAPI.network()
+			OrbisCore.network()
 					.sendPacketToDimension(new PacketWorldObjectAdd(message.worldObject, message.dimensionId, id), message.dimensionId);
 
 			return null;

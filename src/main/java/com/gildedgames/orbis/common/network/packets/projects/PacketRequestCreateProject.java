@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
-import com.gildedgames.orbis.api.OrbisAPI;
-import com.gildedgames.orbis.api.data.management.IProjectIdentifier;
-import com.gildedgames.orbis.api.packets.instances.MessageHandlerServer;
-import com.gildedgames.orbis.api.packets.util.PacketMultipleParts;
-import com.gildedgames.orbis.api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import io.netty.buffer.ByteBuf;
@@ -79,7 +79,7 @@ public class PacketRequestCreateProject extends PacketMultipleParts
 			{
 				OrbisCore.getProjectManager().createAndSaveProject(message.name, message.projectIdentifier);
 
-				OrbisAPI.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) player);
+				OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) player);
 			}
 
 			return null;
