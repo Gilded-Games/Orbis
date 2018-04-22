@@ -4,7 +4,7 @@ import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrameUtils;
 import com.gildedgames.orbis_api.client.rect.Rect;
-import com.gildedgames.orbis_api.common.util.InputHelper;
+import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;

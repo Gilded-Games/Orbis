@@ -8,6 +8,7 @@ import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -31,8 +32,11 @@ public class RenderScheduleRegion implements IWorldRenderer
 
 	private Region bb;
 
+	private IWorldObject parentObject;
+
 	public RenderScheduleRegion(IWorldObject parentObject, final ScheduleRegion scheduleRegion)
 	{
+		this.parentObject = parentObject;
 		this.scheduleRegion = scheduleRegion;
 
 		final Lock w = this.lock.writeLock();
@@ -41,7 +45,6 @@ public class RenderScheduleRegion implements IWorldRenderer
 		try
 		{
 			this.bb = new Region(this.scheduleRegion.getBounds());
-			this.bb.add(parentObject.getPos());
 
 			this.renderShape = new RenderShape(this.bb);
 
@@ -127,13 +130,15 @@ public class RenderScheduleRegion implements IWorldRenderer
 	@Override
 	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
 	{
-		
+		GlStateManager.pushMatrix();
+
+		GlStateManager.translate(this.parentObject.getPos().getX(), this.parentObject.getPos().getY(), this.parentObject.getPos().getZ());
 	}
 
 	@Override
 	public void postRenderAllSubs(World world, float partialTicks, boolean useCamera)
 	{
-
+		GlStateManager.popMatrix();
 	}
 
 	@Override
