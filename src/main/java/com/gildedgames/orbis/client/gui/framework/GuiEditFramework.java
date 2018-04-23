@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.gui.framework;
 
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
-import com.gildedgames.orbis.client.gui.util.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;

@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis.client.gui.util.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.util.InputHelper;

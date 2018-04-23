@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.gui.schedules;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiInput;
 import com.gildedgames.orbis_api.client.gui.util.GuiInputSlider;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
