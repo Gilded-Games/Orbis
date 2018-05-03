@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
-import com.gildedgames.orbis.client.gui.util.list.GuiListViewer;
+import com.gildedgames.orbis_api.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.gui.util.directory;
 
-import com.gildedgames.orbis.client.gui.util.GuiFactory;
+import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
@@ -216,9 +216,9 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 	@Override
 	public void init()
 	{
-		this.refreshButton = GuiFactory.createRefreshButton();
-		this.backButton = GuiFactory.createLeftArrowButton();
-		this.forwardButton = GuiFactory.createRightArrowButton();
+		this.refreshButton = GuiFactoryOrbis.createRefreshButton();
+		this.backButton = GuiFactoryOrbis.createLeftArrowButton();
+		this.forwardButton = GuiFactoryOrbis.createRightArrowButton();
 
 		this.refreshButton.dim().mod().pos(this.dim().width() - 18, 7).flush();
 

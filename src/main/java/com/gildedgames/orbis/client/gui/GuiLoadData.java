@@ -22,7 +22,6 @@ import com.gildedgames.orbis.common.items.*;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
 import com.gildedgames.orbis_api.util.InputHelper;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.DataCondition;
@@ -53,7 +52,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private static final ResourceLocation TAB = OrbisCore.getResource("blueprint_gui/tab.png");
 
-	private static final ResourceLocation TAB_PRESSED = OrbisCore.getResource("blueprint_gui/tab_pressed.png");
+	private static final ResourceLocation TAB_PRESSED = OrbisCore.getResource("blueprint_gui/ltab_pressed.png");
 
 	private static final ResourceLocation SEARCH = OrbisCore.getResource("blueprint_gui/search.png");
 
@@ -133,7 +132,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		final int xOffset = 15;
 		final int yOffset = 7;
 
-		this.forgeButton = GuiFactory.createForgeButton();
+		this.forgeButton = GuiFactoryOrbis.createForgeButton();
 
 		this.forgeButton.dim().mod().center(true).addY(yOffset + 7).addX(315 + xOffset).flush();
 

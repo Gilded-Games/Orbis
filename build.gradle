@@ -18,6 +18,10 @@ import org.ajoberstar.grgit.*
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
 
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
 ext.config = loadConfig(file('build.properties'))
 ext.repo = Grgit.open()
 
@@ -28,15 +32,10 @@ allprojects {
 
 version = "${config.mod_version}"
 group = "com.gildedgames.orbis"
-archivesBaseName = "Orbis"
+archivesBaseName = "orbis"
 
-ext.ciVersion = System.getenv("BUILD_NUMBER")
-ext.gitVersion = repo.head().abbreviatedId
-
-if (ciVersion != null) {
-	version = "${config.mod_version}.build-${ciVersion}"
-} else {
-	version = "${config.mod_version}.git-${gitVersion}"
+dependencies {
+    compile "com.gildedgames.orbis_api:orbis_api:1.0.2"
 }
 
 jar {

@@ -99,7 +99,7 @@ public class GuiFillMenu extends GuiFrameCreative
 	{
 		Pos2D center = Pos2D.flush((this.width / 2) + 100, this.height / 2);
 
-		this.forgeButton = GuiFactory.createForgeButton();
+		this.forgeButton = GuiFactoryOrbis.createForgeButton();
 
 		this.forgeButton.dim().mod().pos(center).center(true).addY(72 - 6).addX(60).flush();
 

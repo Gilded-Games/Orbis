@@ -1,9 +1,8 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
-import com.gildedgames.orbis.client.gui.util.GuiFactory;
+import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProject;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
@@ -105,7 +104,7 @@ public class NavigatorNodeProject implements INavigatorNode
 			});
 		}
 
-		elements.add(GuiFactory.createCloseDropdownElement(this.file, navigator));
+		elements.add(GuiFactoryOrbis.createCloseDropdownElement(this.file, navigator));
 
 		return elements;
 	}

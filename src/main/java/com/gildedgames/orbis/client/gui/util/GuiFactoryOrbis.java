@@ -16,7 +16,7 @@ import net.minecraft.util.text.TextComponentString;
 import java.io.File;
 import java.util.Collections;
 
-public class GuiFactory
+public class GuiFactoryOrbis
 {
 
 	public static final ResourceLocation REFRESH_ICON = OrbisCore.getResource("navigator/refresh.png");
@@ -67,7 +67,7 @@ public class GuiFactory
 
 	public static final ResourceLocation ADD_HOVERED = OrbisCore.getResource("list/add_hovered.png");
 
-	private GuiFactory()
+	private GuiFactoryOrbis()
 	{
 
 	}
