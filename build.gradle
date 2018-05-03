@@ -31,11 +31,11 @@ allprojects {
 }
 
 version = "${config.mod_version}"
-group = "com.gildedgames.orbis"
+group = "com.gildedgames"
 archivesBaseName = "orbis"
 
 dependencies {
-    compile "com.gildedgames.orbis_api:orbis_api:1.0.2"
+    compile "com.gildedgames:orbis_api:1.0.2"
 }
 
 jar {
