@@ -12,7 +12,7 @@ public class CommonProxy
 
 	public void preInit(FMLPreInitializationEvent event)
 	{
-		OrbisAPI.services().setProjectManagerInitSource(OrbisCore.INSTANCE, "Orbis");
+		OrbisAPI.services().setProjectManagerInitSource(OrbisCore.INSTANCE, "orbis");
 
 		WorldProviderOrbis.preInit();
 
