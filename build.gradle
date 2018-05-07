@@ -8,7 +8,6 @@ buildscript {
 	}
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-		classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
 		classpath 'org.ajoberstar:grgit:2.1.1'
 	}
 }
@@ -16,11 +15,6 @@ buildscript {
 import org.ajoberstar.grgit.*
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'idea'
 
 ext.config = loadConfig(file('build.properties'))
 ext.repo = Grgit.open()
