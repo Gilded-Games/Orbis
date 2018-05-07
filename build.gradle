@@ -29,7 +29,7 @@ group = "com.gildedgames"
 archivesBaseName = "orbis"
 
 dependencies {
-    compile "com.gildedgames:orbis_api:1.0.2"
+    compile project(":OrbisAPI")
 }
 
 jar {
