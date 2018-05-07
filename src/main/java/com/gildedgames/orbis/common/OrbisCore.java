@@ -86,8 +86,6 @@ public class OrbisCore implements IOrbisServicesListener
 
 	private static IDataCachePool dataCache;
 
-	private static boolean loadedInstances;
-
 	private static void clearSelection(final EntityPlayer player)
 	{
 		final World world = player.world;
@@ -306,11 +304,6 @@ public class OrbisCore implements IOrbisServicesListener
 	{
 		OrbisAPI.services().stopProjectManager();
 		stopDataCache();
-
-		//TODO: Move this over to WorldData saver or something. This currently sucks.
-		InstanceEvents.saveAllInstancesToDisk();
-
-		loadedInstances = false;
 	}
 
 	@Mod.EventHandler
@@ -326,13 +319,6 @@ public class OrbisCore implements IOrbisServicesListener
 		OrbisAPI.services().listen(OrbisCore.INSTANCE);
 		OrbisAPI.services().startProjectManager();
 		startDataCache();
-
-		if (!loadedInstances)
-		{
-			InstanceEvents.loadAllInstancesFromDisk();
-
-			loadedInstances = true;
-		}
 	}
 
 	@Override
