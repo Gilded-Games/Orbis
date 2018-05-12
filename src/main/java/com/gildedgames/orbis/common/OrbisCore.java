@@ -12,7 +12,6 @@ import com.gildedgames.orbis_api.util.io.IClassSerializer;
 import com.gildedgames.orbis_api.util.io.Instantiator;
 import com.gildedgames.orbis_api.util.io.SimpleSerializer;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis_api.world.instances.InstanceEvents;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
@@ -309,7 +308,7 @@ public class OrbisCore implements IOrbisServicesListener
 	@Mod.EventHandler
 	public void onServerStopped(final FMLServerStoppedEvent event)
 	{
-		InstanceEvents.unregisterAllInstances();
+
 	}
 
 	@Mod.EventHandler

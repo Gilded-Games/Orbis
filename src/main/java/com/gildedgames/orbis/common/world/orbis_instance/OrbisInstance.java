@@ -108,6 +108,12 @@ public class OrbisInstance implements IInstance
 	}
 
 	@Override
+	public boolean isTemporary()
+	{
+		return false;
+	}
+
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj == this)

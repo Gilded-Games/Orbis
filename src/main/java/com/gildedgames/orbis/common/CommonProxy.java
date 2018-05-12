@@ -18,7 +18,7 @@ public class CommonProxy
 
 		final OrbisInstanceFactory factory = new OrbisInstanceFactory(WorldProviderOrbis.ORBIS);
 
-		OrbisCore.ORBIS_INSTANCE_HANDLER = new OrbisInstanceHandler(OrbisAPI.instances().createAndRegisterInstanceHandler(factory));
+		OrbisCore.ORBIS_INSTANCE_HANDLER = new OrbisInstanceHandler(OrbisAPI.instances().createInstanceHandler(factory));
 	}
 
 	public void init(FMLInitializationEvent event)
