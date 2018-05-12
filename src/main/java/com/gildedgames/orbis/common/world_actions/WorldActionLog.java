@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.world_actions;
 
-import com.gildedgames.orbis_api.util.FixedStack;
+import com.gildedgames.orbis.common.util.FixedStack;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.world.World;
 

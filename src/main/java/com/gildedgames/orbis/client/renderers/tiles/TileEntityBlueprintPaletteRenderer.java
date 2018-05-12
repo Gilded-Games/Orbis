@@ -1,8 +1,5 @@
 package com.gildedgames.orbis.client.renderers.tiles;
 
-import com.gildedgames.orbis_api.common.util.OpenGLHelper;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis.client.OrbisClientCaches;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.RenderBlueprintBlocks;
@@ -11,6 +8,9 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.tiles.TileEntityBlueprintPalette;
 import com.gildedgames.orbis.common.util.WorldRenderHelp;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.util.OpenGLHelper;
 import com.google.common.base.Optional;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;

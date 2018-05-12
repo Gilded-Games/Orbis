@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.util;
 
-import com.gildedgames.orbis_api.block.BlockData;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,7 +30,7 @@ public class CreationDataOrbis extends CreationData
 	}
 
 	@Override
-	public boolean shouldCreate(final BlockData data, final BlockPos pos)
+	public boolean shouldCreate(final IBlockState data, final BlockPos pos)
 	{
 		if (this.schedules())
 		{

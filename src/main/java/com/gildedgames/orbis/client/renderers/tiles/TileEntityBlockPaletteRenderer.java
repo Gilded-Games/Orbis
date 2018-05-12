@@ -10,8 +10,8 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.block.BlockDataWithConditions;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
-import com.gildedgames.orbis_api.common.util.OpenGLHelper;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.util.OpenGLHelper;
 import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import mcp.MethodsReturnNonnullByDefault;
@@ -80,7 +80,7 @@ public class TileEntityBlockPaletteRenderer extends TileEntitySpecialRenderer<Ti
 								final int x = i % minSize;
 								final int y = i / minSize;
 
-								container.set(block, x, y, 0);
+								container.setBlockState(block.getBlockState(), x, y, 0);
 
 								i++;
 							}

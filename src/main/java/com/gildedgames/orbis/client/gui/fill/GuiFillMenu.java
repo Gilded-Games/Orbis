@@ -7,7 +7,7 @@ import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiContainerCreativePublic;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiFrameCreative;
 import com.gildedgames.orbis_api.data.schedules.FilterOptions;
-import com.gildedgames.orbis_api.util.BlockFilterHelper;
+import com.gildedgames.orbis.common.util.BlockFilterHelper;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.gui.util.*;
 import com.gildedgames.orbis_api.client.rect.Dim2D;

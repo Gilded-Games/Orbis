@@ -9,7 +9,7 @@ import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.schedules.FilterOptions;
 import com.gildedgames.orbis_api.data.schedules.IFilterOptions;
 import com.gildedgames.orbis_api.inventory.InventoryBlockForge;
-import com.gildedgames.orbis_api.util.BlockFilterHelper;
+import com.gildedgames.orbis.common.util.BlockFilterHelper;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.util.mc.StagedInventory;
 import net.minecraft.entity.player.EntityPlayer;

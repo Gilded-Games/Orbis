@@ -6,7 +6,6 @@ import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.data.schedules.ScheduleLayer;
-import com.gildedgames.orbis_api.util.Callback;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
@@ -194,7 +193,7 @@ public class GuiEditBlueprint extends GuiFrame
 			}
 		}
 
-		List<Callback> calls = Lists.newArrayList();
+		List<Runnable> calls = Lists.newArrayList();
 
 		for (Map.Entry<Integer, IScheduleLayer> e : this.blueprint.getData().getScheduleLayers().entrySet())
 		{
@@ -215,7 +214,7 @@ public class GuiEditBlueprint extends GuiFrame
 			});
 		}
 
-		calls.forEach(Callback::call);
+		calls.forEach(Runnable::run);
 		calls.clear();
 
 		this.addChildren(this.layerViewer);

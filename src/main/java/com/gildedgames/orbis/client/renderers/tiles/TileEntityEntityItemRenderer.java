@@ -6,7 +6,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.items.ItemEntity;
 import com.gildedgames.orbis.common.tiles.TileEntityEntityItem;
 import com.gildedgames.orbis.common.util.WorldRenderHelp;
-import com.gildedgames.orbis_api.common.util.OpenGLHelper;
+import com.gildedgames.orbis_api.util.OpenGLHelper;
 import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import mcp.MethodsReturnNonnullByDefault;

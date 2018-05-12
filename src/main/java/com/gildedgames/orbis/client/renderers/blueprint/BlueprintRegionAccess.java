@@ -1,8 +1,9 @@
 package com.gildedgames.orbis.client.renderers.blueprint;
 
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.block.BlockData;
 import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -28,9 +29,7 @@ public class BlueprintRegionAccess implements IBlockAccess
 	@Override
 	public TileEntity getTileEntity(final BlockPos pos)
 	{
-		final BlockData data = this.blueprint.getBlockDataContainer().get(pos);
-
-		return data.getTileEntity();
+		return null;
 	}
 
 	@Override
@@ -47,22 +46,22 @@ public class BlueprintRegionAccess implements IBlockAccess
 			return Blocks.AIR.getDefaultState();
 		}
 
-		final BlockData data = this.blueprint.getBlockDataContainer().get(pos);
+		final IBlockState data = this.blueprint.getBlockDataContainer().getBlockState(pos);
 
 		if (data == null)
 		{
 			return Blocks.AIR.getDefaultState();
 		}
 
-		return data.getRotatedBlockState(this.blueprint.getRotation());
+		return data.withRotation(this.blueprint.getRotation());
 	}
 
 	@Override
 	public boolean isAirBlock(final BlockPos pos)
 	{
-		final BlockData data = this.blueprint.getBlockDataContainer().get(pos);
+		final IBlockState data = this.blueprint.getBlockDataContainer().getBlockState(pos);
 
-		return data.isAir();
+		return data.getMaterial() == Material.AIR;
 	}
 
 	@Override

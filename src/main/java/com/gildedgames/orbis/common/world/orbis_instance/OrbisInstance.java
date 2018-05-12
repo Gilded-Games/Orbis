@@ -102,12 +102,6 @@ public class OrbisInstance implements IInstance
 	}
 
 	@Override
-	public void setDimensionId(int dimensionId)
-	{
-		this.dimensionId = dimensionId;
-	}
-
-	@Override
 	public boolean isTemporary()
 	{
 		return false;

@@ -14,13 +14,12 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSched
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
-import com.gildedgames.orbis_api.util.BlockFilterHelper;
+import com.gildedgames.orbis.common.util.BlockFilterHelper;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
