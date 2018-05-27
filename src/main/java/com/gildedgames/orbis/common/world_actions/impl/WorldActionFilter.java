@@ -44,7 +44,7 @@ public class WorldActionFilter extends WorldActionBase
 
 		this.oldContent = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
 
-		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).seed(this.getSeed());
+		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).seed(this.getSeed()).placesVoid(true);
 
 		creationData.schedules(this.schedules);
 
@@ -58,7 +58,7 @@ public class WorldActionFilter extends WorldActionBase
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.oldContent, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()));
+		primer.create(this.oldContent, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()).placesVoid(true));
 	}
 
 	@Override
