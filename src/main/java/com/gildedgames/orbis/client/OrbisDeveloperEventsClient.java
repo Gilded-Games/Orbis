@@ -5,7 +5,6 @@ import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionInputs;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionTypes;
-import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import com.gildedgames.orbis.client.renderers.ChunkRendererManager;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -16,13 +15,13 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.BlockFilterHelper;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis.common.util.BlockFilterHelper;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
@@ -167,13 +166,11 @@ public class OrbisDeveloperEventsClient
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
 				{
 					playerOrbis.setDeveloperReach(reach + 1);
-					OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
 				}
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindDecreaseReach.getKeyCode()))
 				{
 					playerOrbis.setDeveloperReach(reach - 1);
-					OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 				}
 
 				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
@@ -248,8 +245,6 @@ public class OrbisDeveloperEventsClient
 			{
 				prevSelection = null;
 				playerOrbis.setDeveloperReach(prevReach);
-
-				OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(prevReach));
 			}
 		}
 		else
@@ -303,14 +298,12 @@ public class OrbisDeveloperEventsClient
 				prevReach = playerOrbis.getDeveloperReach();
 			}
 
-			final RayTraceResult blockRaytrace = RaytraceHelp
-					.rayTraceNoBlocks(playerOrbis.getReach(), AirSelectionRenderer.PARTIAL_TICKS, playerOrbis.getEntity());
+			final RayTraceResult blockRaytrace = OrbisRaytraceHelp.getStandardRaytrace(playerOrbis.getEntity());
 			double reach = playerOrbis.getReach();
 
 			if (event.getDwheel() > 0)
 			{
 				playerOrbis.setDeveloperReach(reach + 1);
-				OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach + 1));
 
 				event.setCanceled(true);
 			}
@@ -329,13 +322,11 @@ public class OrbisDeveloperEventsClient
 					final float distance = MathHelper.floor((float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
 
 					playerOrbis.setDeveloperReach(distance);
-					OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(distance));
 
 					reach = playerOrbis.getReach();
 				}
 
 				playerOrbis.setDeveloperReach(reach - 1);
-				OrbisCore.network().sendPacketToServer(new PacketDeveloperReach(reach - 1));
 
 				event.setCanceled(true);
 			}

@@ -6,7 +6,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddBlueprint;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -163,7 +163,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 				.getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
 			{

@@ -7,7 +7,7 @@ import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
@@ -137,7 +137,7 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 
 		if (this.server.getPlacingPalette() != null)
 		{
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			final Blueprint blueprint;
 
@@ -191,7 +191,7 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 
 		if (this.server.getPlacingBlueprint() != null)
 		{
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			IRegion r = new Region(RotationHelp.regionFromCenter(pos, this.server.getPlacingBlueprint(), this.server.getPlacingRotation()));
 

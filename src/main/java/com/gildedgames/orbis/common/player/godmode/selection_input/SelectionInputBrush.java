@@ -8,9 +8,8 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.shapes.AbstractShape;
@@ -70,7 +69,7 @@ public class SelectionInputBrush implements ISelectionInput
 				this.changed = true;
 			}
 
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(this.playerOrbis, this.playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(this.playerOrbis.getEntity());
 
 			if (!pos.equals(this.changingSizePos) && this.changingSize)
 			{
@@ -155,7 +154,7 @@ public class SelectionInputBrush implements ISelectionInput
 			{
 				if (event.isButtonstate())
 				{
-					this.changingSizeOrigin = RaytraceHelp.doOrbisRaytrace(this.playerOrbis, this.playerOrbis.raytraceWithRegionSnapping());
+					this.changingSizeOrigin = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 					this.changingSize = true;
 				}

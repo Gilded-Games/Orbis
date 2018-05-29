@@ -1,16 +1,16 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis_api.data.management.IDataIdentifier;
-import com.gildedgames.orbis_api.data.management.IDataMetadata;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityFrameworkRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.data.management.IDataMetadata;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -136,7 +136,7 @@ public class ItemFramework extends Item implements ModelRegisterCallback, ItemSt
 				.getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
 			{

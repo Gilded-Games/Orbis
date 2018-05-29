@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis_api.data.region.IMutableRegion;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
@@ -7,7 +8,6 @@ import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerCreative;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import net.minecraft.block.state.IBlockState;
@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -101,7 +100,7 @@ public class AirSelectionRenderer
 
 		if (!(playerOrbis.powers().getCurrentPower() instanceof GodPowerCreative))
 		{
-			Minecraft.getMinecraft().objectMouseOver = new RayTraceResult(mc.player, mc.player.getLook(1.0F));
+			//Minecraft.getMinecraft().objectMouseOver = new RayTraceResult(mc.player, mc.player.getLook(1.0F));
 		}
 
 		if (region == null || renderRegion == null)
@@ -140,22 +139,7 @@ public class AirSelectionRenderer
 			prevSlotIndex = mc.player.inventory.currentItem;
 		}
 
-		final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, airRaytrace);
-
-		final IBlockState state = mc.world.getBlockState(pos);
-
-		/*if (state != Blocks.AIR.getDefaultState())
-		{
-			final int color = state.getBlock().getMapColor(state, mc.world, pos).colorValue;
-
-			renderRegion.colorBorder = color;
-			renderRegion.colorGrid = color;
-		}
-		else
-		{
-			renderRegion.colorBorder = 0xFFFFFF;
-			renderRegion.colorGrid = 0xFFFFFF;
-		}*/
+		final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 		renderRegion.colorBorder = 0xFFFFFF;
 		renderRegion.colorGrid = 0xFFFFFF;

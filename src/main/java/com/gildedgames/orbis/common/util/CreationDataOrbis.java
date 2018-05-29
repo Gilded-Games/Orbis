@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.util;
 
+import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.block.state.IBlockState;
@@ -32,6 +33,14 @@ public class CreationDataOrbis extends CreationData
 	@Override
 	public boolean shouldCreate(final IBlockState data, final BlockPos pos)
 	{
+		if (this.getWorld().provider.getDimensionType() == WorldProviderOrbis.ORBIS)
+		{
+			if (pos.getY() <= 0)
+			{
+				return false;
+			}
+		}
+
 		if (this.schedules())
 		{
 			return WorldObjectUtils.getIntersectingShape(this.getWorld(), pos) != null;

@@ -30,7 +30,6 @@ public class NetworkingOrbis
 	public static void preInit()
 	{
 		// S E R V E R
-		network.reg(PacketDeveloperReach.HandlerServer.class, PacketDeveloperReach.class, Side.SERVER);
 		network.reg(PacketWorldObjectAdd.HandlerServer.class, PacketWorldObjectAdd.class, Side.SERVER);
 		network.reg(PacketWorldObjectRemove.HandlerServer.class, PacketWorldObjectRemove.class, Side.SERVER);
 		network.reg(PacketActiveSelection.HandlerServer.class, PacketActiveSelection.class, Side.SERVER);
@@ -106,7 +105,6 @@ public class NetworkingOrbis
 		// C L I E N T
 		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);
 		network.reg(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, Side.CLIENT);
-		network.reg(PacketDeveloperReach.HandlerClient.class, PacketDeveloperReach.class, Side.CLIENT);
 		network.reg(PacketSendProject.HandlerClient.class, PacketSendProject.class, Side.CLIENT);
 		network.reg(PacketSendProjectListing.HandlerClient.class, PacketSendProjectListing.class, Side.CLIENT);
 		network.reg(PacketWorldObjectRemove.HandlerClient.class, PacketWorldObjectRemove.class, Side.CLIENT);

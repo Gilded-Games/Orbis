@@ -1,8 +1,5 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis.client.renderers.RenderPathway;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -11,7 +8,10 @@ import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
 import com.gildedgames.orbis.common.player.godmode.selection_input.SelectionInputDragged;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -94,7 +94,7 @@ public class GodPowerPathwayClient implements IGodPowerClient
 		{
 			SelectionInputDragged input = (SelectionInputDragged) playerOrbis.selectionInputs().getCurrentSelectionInput();
 
-			final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
+			final BlockPos endPos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!endPos.equals(this.prevEndPos) && input.getSelectPos() != null)
 			{

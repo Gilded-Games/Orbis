@@ -14,7 +14,6 @@ import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world_actions.IWorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogClient;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IShape;
@@ -35,6 +34,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,9 +56,8 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private final List<PlayerOrbisObserver> observers = Lists.newArrayList();
 
+	@SideOnly(Side.CLIENT)
 	private double developerReach = 5.0D;
-
-	private boolean reachSet;
 
 	private boolean developerModeEnabled;
 
@@ -156,7 +156,6 @@ public class PlayerOrbis implements IPlayerOrbis
 	public void sendFullUpdate()
 	{
 		OrbisCore.network().sendPacketToPlayer(new PacketDeveloperMode(this.inDeveloperMode()), (EntityPlayerMP) this.getEntity());
-		OrbisCore.network().sendPacketToPlayer(new PacketDeveloperReach(this.getDeveloperReach()), (EntityPlayerMP) this.getEntity());
 		OrbisCore.network()
 				.sendPacketToPlayer(new PacketChangePower(this.powers().getCurrentPowerIndex()), (EntityPlayerMP) this.getEntity());
 		OrbisCore.network()
@@ -288,23 +287,20 @@ public class PlayerOrbis implements IPlayerOrbis
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public BlockPos raytraceNoSnapping()
 	{
 		return OrbisRaytraceHelp.raytraceNoSnapping(this.getEntity());
 	}
 
-	public BlockPos raytraceWithRegionSnapping()
-	{
-		return OrbisRaytraceHelp.raytraceNoSnapping(this.getEntity());
-	}
-
+	@SideOnly(Side.CLIENT)
 	public double getReach()
 	{
 		final boolean creativeMode = this.getEntity().capabilities.isCreativeMode;
 
 		if (this.inDeveloperMode())
 		{
-			return OrbisRaytraceHelp.getFinalExtendedReach(this.getEntity());
+			return OrbisRaytraceHelp.getFinalExtendedReach(this.getEntity(), this.developerReach);
 		}
 		else
 		{
@@ -312,29 +308,25 @@ public class PlayerOrbis implements IPlayerOrbis
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public double getDeveloperReach()
 	{
 		return this.developerReach;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void setDeveloperReach(final double reach)
 	{
 		this.developerReach = Math.max(1, reach);
-		this.reachSet = true;
-
-		if (!this.getEntity().world.isRemote)
-		{
-			OrbisCore.network().sendPacketToPlayer(new PacketDeveloperReach(this.developerReach), (EntityPlayerMP) this.getEntity());
-		}
 	}
 
 	@Override
 	public void onUpdate(LivingUpdateEvent event)
 	{
-		this.selectedRegion = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.WORLD_OBJECT_LOCATOR);
-		this.selectedNode = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.FRAMEWORK_NODE_LOCATOR);
-		this.selectedSchedule = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.SCHEDULE_LOCATOR);
-		this.selectedEntrance = OrbisRaytraceHelp.raytraceShapes(this.getEntity(), null, this.getReach(), 1, OrbisRaytraceHelp.ENTRANCE_LOCATOR);
+		this.selectedRegion = OrbisRaytraceHelp.raytraceLocateObject(this.getEntity(), 1, OrbisRaytraceHelp.WORLD_OBJECT_LOCATOR);
+		this.selectedNode = OrbisRaytraceHelp.raytraceLocateObject(this.getEntity(), 1, OrbisRaytraceHelp.FRAMEWORK_NODE_LOCATOR);
+		this.selectedSchedule = OrbisRaytraceHelp.raytraceLocateObject(this.getEntity(), 1, OrbisRaytraceHelp.SCHEDULE_LOCATOR);
+		this.selectedEntrance = OrbisRaytraceHelp.raytraceLocateObject(this.getEntity(), 1, OrbisRaytraceHelp.ENTRANCE_LOCATOR);
 
 		for (final PlayerOrbisModule module : this.modules)
 		{
@@ -354,9 +346,6 @@ public class PlayerOrbis implements IPlayerOrbis
 
 		tag.setBoolean("developerModeEnabled", this.developerModeEnabled);
 
-		tag.setBoolean("reachSet", this.reachSet);
-		tag.setDouble("developerReach", this.developerReach);
-
 		funnel.set("orbisInstance", this.orbisInstance);
 
 		final NBTTagList modules = new NBTTagList();
@@ -375,13 +364,6 @@ public class PlayerOrbis implements IPlayerOrbis
 		NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.developerModeEnabled = tag.getBoolean("developerModeEnabled");
-
-		this.reachSet = tag.getBoolean("reachSet");
-
-		if (this.reachSet)
-		{
-			this.developerReach = tag.getDouble("developerReach");
-		}
 
 		OrbisInstance inst = funnel.get("orbisInstance");
 

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.framework.FrameworkNode;
@@ -18,7 +18,6 @@ import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFramework;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -72,7 +71,7 @@ public class GodPowerFramework implements IGodPower
 			return;
 		}
 
-		final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+		final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && !pos.equals(this.getPrevPlacingPos()) && playerOrbis
 				.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower())

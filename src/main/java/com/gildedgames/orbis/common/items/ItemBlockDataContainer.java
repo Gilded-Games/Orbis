@@ -6,9 +6,8 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataToCache;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDataContainer;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.data.management.IDataCache;
 import net.minecraft.client.Minecraft;
@@ -103,7 +102,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1))
 				&& playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
 		{
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
 			{

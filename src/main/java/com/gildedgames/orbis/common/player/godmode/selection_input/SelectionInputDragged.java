@@ -9,9 +9,7 @@ import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.shapes.AbstractShape;
 import com.gildedgames.orbis_api.world.IWorldObject;
@@ -99,7 +97,7 @@ public class SelectionInputDragged implements ISelectionInput
 			{
 				if (playerOrbis.getWorld().isRemote)
 				{
-					final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
+					final BlockPos endPos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 					OrbisCore.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 				}
@@ -132,13 +130,18 @@ public class SelectionInputDragged implements ISelectionInput
 	@Override
 	public void onUpdate(final boolean isActive, final IShapeSelector selector)
 	{
+		if (!this.player.world.isRemote)
+		{
+			return;
+		}
+
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(this.player);
 
 		if (isActive)
 		{
 			if (this.selectPos != null)
 			{
-				final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(playerOrbis);
+				final BlockPos endPos = OrbisRaytraceHelp.raytraceNoSnapping(this.player);
 
 				if (this.activeSelection != null && !endPos.equals(this.prevPos))
 				{
@@ -217,7 +220,7 @@ public class SelectionInputDragged implements ISelectionInput
 
 		if (this.player.getEntityWorld().isRemote && this.activeSelection != null)
 		{
-			final BlockPos endPos = RaytraceHelp.doOrbisRaytrace(PlayerOrbis.get(this.player));
+			final BlockPos endPos = OrbisRaytraceHelp.raytraceNoSnapping(this.player);
 
 			OrbisCore.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), this.selectPos, endPos));
 		}

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.data.schedules.ScheduleBlueprint;
@@ -14,7 +14,6 @@ import com.gildedgames.orbis.common.OrbisServerCaches;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
-import com.gildedgames.orbis.common.util.RaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintPalette;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
@@ -128,7 +127,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && palette != null && playerOrbis.powers().getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
-			final BlockPos pos = RaytraceHelp.doOrbisRaytrace(playerOrbis, playerOrbis.raytraceWithRegionSnapping());
+			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
 			{
