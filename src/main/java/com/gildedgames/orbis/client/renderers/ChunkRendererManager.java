@@ -1,5 +1,9 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.common.OrbisCapabilities;
+import com.gildedgames.orbis.common.capabilities.chunk_renderer.IChunkRendererCapability;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisObserver;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.region.Region;
@@ -8,10 +12,6 @@ import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldObjectManagerObserver;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis.common.OrbisCapabilities;
-import com.gildedgames.orbis.common.capabilities.chunk_renderer.IChunkRendererCapability;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisObserver;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -119,11 +119,6 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 	{
 		if (!renderer.isDisabled())
 		{
-			if (RegionHelp.intersects2D(renderer.getBoundingBox(), encompassing))
-			{
-				renderer.render(world, partialTicks, true);
-			}
-
 			final Lock w = renderer.getSubRenderersLock().readLock();
 			w.lock();
 
@@ -145,6 +140,11 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 			finally
 			{
 				w.unlock();
+			}
+
+			if (RegionHelp.intersects2D(renderer.getBoundingBox(), encompassing))
+			{
+				renderer.render(world, partialTicks, true);
 			}
 		}
 	}

@@ -1,11 +1,12 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
-import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis_api.data.region.IShape;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public interface IShapeSelector
 {
@@ -20,5 +21,7 @@ public interface IShapeSelector
 	boolean canSelectShape(PlayerOrbis playerOrbis, IShape shape, World world);
 
 	void onSelect(PlayerOrbis playerOrbis, IShape selectedShape, World world, @Nullable BlockPos start, @Nullable BlockPos end);
+
+	void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions);
 
 }

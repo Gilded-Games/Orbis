@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IRegion;
@@ -7,8 +9,6 @@ import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayerHolderListener;
 import com.gildedgames.orbis_api.data.shapes.CuboidShape;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,15 +50,6 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 		try
 		{
-			this.renderShape = new RenderShape(this.blueprint);
-
-			this.renderShape.useCustomColors = true;
-
-			this.renderShape.colorGrid = this.blueprint.getColor();
-			this.renderShape.colorBorder = this.blueprint.getColor();
-
-			this.subRenderers.add(this.renderShape);
-
 			this.renderOutskirts = new RenderShape(new CuboidShape(this.blueprint.getMin().add(1, 1, 1), this.blueprint.getMax().add(-1, -1, -1), false));
 
 			this.renderOutskirts.useCustomColors = true;
@@ -84,6 +75,15 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 			}
 
 			this.blueprint.getData().entrances().forEach(this::onAddEntrance);
+
+			this.renderShape = new RenderShape(this.blueprint);
+
+			this.renderShape.useCustomColors = true;
+
+			this.renderShape.colorGrid = this.blueprint.getColor();
+			this.renderShape.colorBorder = this.blueprint.getColor();
+
+			this.subRenderers.add(this.renderShape);
 		}
 		finally
 		{

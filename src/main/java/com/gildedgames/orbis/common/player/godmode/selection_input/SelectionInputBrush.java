@@ -5,7 +5,7 @@ import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClie
 import com.gildedgames.orbis.client.godmode.selection_inputs.SelectionInputBrushClient;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.packets.PacketActiveSelection;
+import com.gildedgames.orbis.common.network.packets.PacketActiveSelectionMultiple;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
@@ -15,6 +15,7 @@ import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.shapes.AbstractShape;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.world.IWorldObject;
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
@@ -22,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 import org.lwjgl.input.Mouse;
+
+import java.util.List;
 
 public class SelectionInputBrush implements ISelectionInput
 {
@@ -33,11 +36,13 @@ public class SelectionInputBrush implements ISelectionInput
 
 	private BlockPos changingSizeOrigin, changingSizePos;
 
-	private BlockPos prevPlacingPos;
-
 	private boolean changed, changingSize;
 
 	private IGodPower prevPower;
+
+	private List<BlockPos> paintedPositions = Lists.newArrayList();
+
+	private boolean painting;
 
 	public SelectionInputBrush(final PlayerOrbis playerOrbis, final World world)
 	{
@@ -107,20 +112,13 @@ public class SelectionInputBrush implements ISelectionInput
 
 			if (world.isRemote)
 			{
-				if (Mouse.isButtonDown(0) && Minecraft.getMinecraft().currentScreen == null)
+				if (Mouse.isButtonDown(0) && this.painting && Minecraft.getMinecraft().currentScreen == null)
 				{
-					if (!pos.equals(this.prevPlacingPos))
+					if (!this.paintedPositions.contains(pos))
 					{
-						this.prevPlacingPos = pos;
-
-						if (this.activeSelection != null && selector
-								.canSelectShape(this.playerOrbis, this.activeSelection.getShape(), this.playerOrbis.getWorld()))
-						{
-							if (this.playerOrbis.getWorld().isRemote)
-							{
-								OrbisCore.network().sendPacketToServer(new PacketActiveSelection(this.activeSelection.getShape(), null, null));
-							}
-						}
+						this.paintedPositions.add(pos.add(-this.activeSelection.getShape().getBoundingBox().getWidth() / 2,
+								-this.activeSelection.getShape().getBoundingBox().getHeight() / 2,
+								-this.activeSelection.getShape().getBoundingBox().getLength() / 2));
 					}
 				}
 			}
@@ -140,6 +138,22 @@ public class SelectionInputBrush implements ISelectionInput
 			{
 				event.setCanceled(true);
 
+				if (event.getButton() == 0)
+				{
+					this.painting = event.isButtonstate();
+
+					if (!this.painting)
+					{
+						if (this.playerOrbis.getWorld().isRemote)
+						{
+							OrbisCore.network()
+									.sendPacketToServer(new PacketActiveSelectionMultiple(this.activeSelection.getShape(), this.paintedPositions));
+						}
+
+						this.paintedPositions.clear();
+					}
+				}
+
 				IGodPowerClient client = playerOrbis.powers().getCurrentPower().getClientHandler();
 
 				Object raytracedObject = client.raytraceObject(playerOrbis);
@@ -150,7 +164,7 @@ public class SelectionInputBrush implements ISelectionInput
 				}
 			}
 
-			if (event.getButton() == 1)
+			if (event.getButton() == 1 && !this.painting)
 			{
 				if (event.isButtonstate())
 				{

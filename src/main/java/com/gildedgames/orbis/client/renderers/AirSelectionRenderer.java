@@ -1,16 +1,15 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
-import com.gildedgames.orbis_api.data.region.IMutableRegion;
-import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerCreative;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
-import net.minecraft.block.state.IBlockState;
+import com.gildedgames.orbis_api.data.region.IMutableRegion;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -59,7 +59,7 @@ public class AirSelectionRenderer
 		startedFrom = renderRegion.boxAlpha;
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onRenderWorldLast(final RenderWorldLastEvent event)
 	{
 		PARTIAL_TICKS = event.getPartialTicks();

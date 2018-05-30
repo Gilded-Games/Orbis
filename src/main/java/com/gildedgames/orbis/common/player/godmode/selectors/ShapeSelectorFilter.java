@@ -1,11 +1,12 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilterMultiple;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBucket;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class ShapeSelectorFilter implements IShapeSelector
@@ -53,5 +55,19 @@ public class ShapeSelectorFilter implements IShapeSelector
 		final BlockFilter filter = this.filterSupplier.apply(playerOrbis.getEntity());
 
 		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
+	}
+
+	@Override
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	{
+		if (world.isRemote)
+		{
+			return;
+		}
+
+		final BlockFilter filter = this.filterSupplier.apply(playerOrbis.getEntity());
+
+		playerOrbis.getWorldActionLog()
+				.track(world, new WorldActionFilterMultiple(selectedShape, filter, playerOrbis.powers().isScheduling(), multiplePositions));
 	}
 }

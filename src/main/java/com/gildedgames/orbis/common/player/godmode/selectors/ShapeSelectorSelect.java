@@ -1,13 +1,6 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetSelectedRegion;
@@ -17,10 +10,18 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddSchedule;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class ShapeSelectorSelect implements IShapeSelector
 {
@@ -136,5 +137,11 @@ public class ShapeSelectorSelect implements IShapeSelector
 
 			OrbisCore.network().sendPacketToPlayer(new PacketSetSelectedRegion(regionId), (EntityPlayerMP) playerOrbis.getEntity());
 		}
+	}
+
+	@Override
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	{
+
 	}
 }

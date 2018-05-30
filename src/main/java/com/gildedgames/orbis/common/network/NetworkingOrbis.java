@@ -33,6 +33,7 @@ public class NetworkingOrbis
 		network.reg(PacketWorldObjectAdd.HandlerServer.class, PacketWorldObjectAdd.class, Side.SERVER);
 		network.reg(PacketWorldObjectRemove.HandlerServer.class, PacketWorldObjectRemove.class, Side.SERVER);
 		network.reg(PacketActiveSelection.HandlerServer.class, PacketActiveSelection.class, Side.SERVER);
+		network.reg(PacketActiveSelectionMultiple.HandlerServer.class, PacketActiveSelectionMultiple.class, Side.SERVER);
 		network.reg(PacketChangePower.HandlerServer.class, PacketChangePower.class, Side.SERVER);
 		network.reg(PacketOpenPowerGui.HandlerServer.class, PacketOpenPowerGui.class, Side.SERVER);
 		network.reg(PacketSetItemStack.HandlerServer.class, PacketSetItemStack.class, Side.SERVER);

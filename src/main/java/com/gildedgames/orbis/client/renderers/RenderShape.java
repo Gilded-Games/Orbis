@@ -5,7 +5,9 @@ import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.data.shapes.AbstractShape;
+import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -33,8 +35,6 @@ public class RenderShape implements IWorldRenderer
 
 	private final Minecraft mc = Minecraft.getMinecraft();
 
-	private final int worldObjectID = -1;
-
 	/**
 	 * renderGrid: Set to false to unlisten rendering the grid for the region
 	 * renderBorder: Set to false to unlisten rendering the border around the region
@@ -47,6 +47,8 @@ public class RenderShape implements IWorldRenderer
 	public boolean useCustomColors = false, xyz_box = false, box = true;
 
 	public int colorBorder = -1, colorGrid = -1;
+
+	private int worldObjectID = -1;
 
 	private int glIndex = -1;
 
@@ -452,25 +454,32 @@ public class RenderShape implements IWorldRenderer
 
 		GlStateManager.popMatrix();
 
-		/*if (this.renderDimensionsAbove)
+		if (this.renderDimensionsAbove)
 		{
+			GlStateManager.disableBlend();
+			GlStateManager.disableTexture2D();
+
 			RenderUtil.renderDimensionsAbove(this.shape.getBoundingBox(), partialTicks);
 
 			if (this.worldObjectID == -1 && this.getRenderedObject() instanceof IWorldObject)
 			{
 				final IWorldObject obj = (IWorldObject) this.getRenderedObject();
 
-				final WorldObjectManager manager = WorldObjectManager.get(this.world);
-				final IWorldObjectGroup group = manager;
+				final WorldObjectManager manager = WorldObjectManager.get(this.mc.world);
 
-				if (group.hasObject(obj))
+				if (manager.hasObject(obj))
 				{
-					this.worldObjectID = group.getID(obj);
+					this.worldObjectID = manager.getID(obj);
 				}
 			}
 
-			RenderUtil.renderTextAbove(this.shape.getBoundingBox(), "World ID: " + String.valueOf(this.worldObjectID), 2.0D, partialTicks);
-		}*/
+			if (this.worldObjectID != -1)
+			{
+				RenderUtil.renderTextAbove(this.shape.getBoundingBox(), "World ID: " + String.valueOf(this.worldObjectID), 2.0D, partialTicks);
+			}
+
+			GlStateManager.enableTexture2D();
+		}
 	}
 
 	@Override

@@ -1,15 +1,13 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
 import com.gildedgames.orbis_api.util.mc.BlockUtil;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.OrbisKeyBindings;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -144,7 +142,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 					int yDif = y + chunkY;
 					int zDif = z + chunkZ;
 
-					if (xDif <= maxX - minX && yDif <= maxY - minY && zDif <= maxZ - minZ)
+					if (xDif <= maxX - minX && yDif <= maxY - minY && zDif <= maxZ - minZ && xDif >= 0 && yDif >= 0 && zDif >= 0)
 					{
 						BlockFilter filter = this.positionRecord.get(xDif, yDif, zDif);
 
@@ -152,10 +150,10 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 						{
 							pos.setPos(xDif + minX, yDif + minY, zDif + minZ);
 
-							if (pos.getX() == 0 && pos.getY() == 0 && pos.getZ() == 0)
+							/*if (pos.getX() == 0 && pos.getY() == 0 && pos.getZ() == 0)
 							{
 								OrbisCore.LOGGER.info("hmmm");
-							}
+							}*/
 
 							this.renderPos(filter, pos, buffer);
 						}
@@ -225,10 +223,11 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
-		if (!this.focused && !OrbisKeyBindings.keyBindControl.isKeyDown())
+		/*if (!this.focused && !OrbisKeyBindings.keyBindControl.isKeyDown())
 		{
 			return;
-		}
+		}*/
+		GlStateManager.resetColor();
 
 		if (this.lastPos == null)
 		{

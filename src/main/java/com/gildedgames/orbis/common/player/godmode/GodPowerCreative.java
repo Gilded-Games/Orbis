@@ -7,6 +7,7 @@ import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorInvalid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,8 @@ public class GodPowerCreative implements IGodPower
 	private final IShapeSelector shapeSelector;
 
 	private GodPowerCreativeClient clientHandler;
+
+	private RayTraceResult blockRaytrace;
 
 	public GodPowerCreative(final World world)
 	{

@@ -1,20 +1,22 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
-import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayUtil;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerEntranceClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerEntrance;
 import com.gildedgames.orbis.common.util.ColoredRegion;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddEntrance;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayUtil;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class ShapeSelectorEntrance implements IShapeSelector
 {
@@ -107,5 +109,11 @@ public class ShapeSelectorEntrance implements IShapeSelector
 
 			playerOrbis.getWorldActionLog().track(world, new WorldActionAddEntrance(b, new Entrance(entrance, null, facings)));
 		}
+	}
+
+	@Override
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	{
+
 	}
 }

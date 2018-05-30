@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class ShapeSelectorBlueprint implements IShapeSelector
 {
 	private final GodPowerBlueprint power;
@@ -42,5 +44,11 @@ public class ShapeSelectorBlueprint implements IShapeSelector
 
 			playerOrbis.getWorldActionLog().track(world, new WorldActionAddWorldObject(blueprint));
 		}
+	}
+
+	@Override
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	{
+
 	}
 }

@@ -1,5 +1,13 @@
 package com.gildedgames.orbis.common.items;
 
+import com.gildedgames.orbis.client.ModelRegisterCallback;
+import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockPaletteRenderer;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilterMultiple;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.block.BlockDataWithConditions;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
@@ -7,13 +15,6 @@ import com.gildedgames.orbis_api.block.BlockFilterType;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
-import com.gildedgames.orbis.client.ModelRegisterCallback;
-import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockPaletteRenderer;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -29,6 +30,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ItemBlockPalette extends Item implements ModelRegisterCallback, IShapeSelector
@@ -125,5 +128,32 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 		final BlockFilter filter = new BlockFilter(layer);
 
 		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
+	}
+
+	@Override
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	{
+		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+
+		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
+
+		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getReplacePower())
+		{
+			layer.setFilterType(BlockFilterType.ALL_EXCEPT);
+
+			layer.setRequiredBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
+		}
+		else if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getDeletePower())
+		{
+			layer.setFilterType(BlockFilterType.ONLY);
+
+			layer.setRequiredBlocks(layer.getReplacementBlocks());
+			layer.setReplacementBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
+		}
+
+		final BlockFilter filter = new BlockFilter(layer);
+
+		playerOrbis.getWorldActionLog()
+				.track(world, new WorldActionFilterMultiple(selectedShape, filter, playerOrbis.powers().isScheduling(), multiplePositions));
 	}
 }

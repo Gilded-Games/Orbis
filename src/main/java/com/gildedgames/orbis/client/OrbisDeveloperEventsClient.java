@@ -43,6 +43,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -157,11 +158,11 @@ public class OrbisDeveloperEventsClient
 
 				final double reach = playerOrbis.getReach();
 
-				if (OrbisKeyBindings.keyBindAlt.isPressed())
+				/*if (OrbisKeyBindings.keyBindAlt.isPressed())
 				{
 					OrbisCore.network().sendPacketToServer(new PacketSetScheduling(!playerOrbis.powers().isScheduling()));
 					playerOrbis.powers().setScheduling(!playerOrbis.powers().isScheduling());
-				}
+				}*/
 
 				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
 				{
@@ -400,7 +401,7 @@ public class OrbisDeveloperEventsClient
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onRenderWorldLast(final RenderWorldLastEvent event)
 	{
 		final World world = Minecraft.getMinecraft().world;

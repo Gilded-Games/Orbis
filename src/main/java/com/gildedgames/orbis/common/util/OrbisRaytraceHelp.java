@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IShape;
@@ -27,9 +28,9 @@ import java.util.List;
 public class OrbisRaytraceHelp
 {
 
-	public static final LocateWithPos<IShape> WORLD_OBJECT_LOCATOR = (world, pos) -> WorldObjectUtils.getIntersectingShape(world, pos);
+	public static final LocateWithPos<IShape> WORLD_OBJECT_LOCATOR = (world, pos, prevPos) -> WorldObjectUtils.getIntersectingShape(world, pos);
 
-	public static final LocateWithPos<IFrameworkNode> FRAMEWORK_NODE_LOCATOR = (world, pos) ->
+	public static final LocateWithPos<IFrameworkNode> FRAMEWORK_NODE_LOCATOR = (world, pos, prevPos) ->
 	{
 		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
@@ -43,7 +44,7 @@ public class OrbisRaytraceHelp
 		return null;
 	};
 
-	public static final LocateWithPos<ISchedule> SCHEDULE_LOCATOR = (world, pos) ->
+	public static final LocateWithPos<ISchedule> SCHEDULE_LOCATOR = (world, pos, prevPos) ->
 	{
 		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
@@ -57,7 +58,7 @@ public class OrbisRaytraceHelp
 		return null;
 	};
 
-	public static final LocateWithPos<Entrance> ENTRANCE_LOCATOR = (world, pos) ->
+	public static final LocateWithPos<Entrance> ENTRANCE_LOCATOR = (world, pos, prevPos) ->
 	{
 		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
@@ -80,9 +81,9 @@ public class OrbisRaytraceHelp
 	}
 
 	private static <T> T locate(World world, final BlockPos pos,
-			final Vec3d endPosition, final RaytraceAction<T> action, LocateWithPos<T> shapeLocator)
+			final Vec3d endPosition, BlockPos prevPos, final RaytraceAction<T> action, LocateWithPos<T> shapeLocator)
 	{
-		final T foundRegion = shapeLocator.locate(world, pos);
+		final T foundRegion = shapeLocator.locate(world, pos, prevPos);
 
 		final T result;
 
@@ -177,7 +178,43 @@ public class OrbisRaytraceHelp
 		final Vec3d endPos = startPos.addVector(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
 
 		RayTraceResult blockRaytrace = raytraceLocateObject(player, startPos, endPos,
-				(world, pos) -> world.getBlockState(pos) != Blocks.AIR.getDefaultState() ? new RayTraceResult(player, new Vec3d(pos)) : null);
+				(world, pos, prevPos) ->
+				{
+					IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
+					IShape prevShape = WorldObjectUtils.getIntersectingShape(world, prevPos);
+
+					if (shape instanceof Blueprint)
+					{
+						Blueprint blueprint = (Blueprint) shape;
+
+						if (blueprint.contains(pos))
+						{
+							BlockFilter filter = blueprint.getCurrentScheduleLayer().getFilterRecord()
+									.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
+											pos.getZ() - blueprint.getMin().getZ());
+
+							if (filter != null)
+							{
+								return new RayTraceResult(player, new Vec3d(pos));
+							}
+						}
+					}
+
+					if (prevShape instanceof Blueprint)
+					{
+						Blueprint blueprint = (Blueprint) prevShape;
+
+						if (blueprint.contains(prevPos))
+						{
+							if (shape != blueprint)
+							{
+								return new RayTraceResult(player, new Vec3d(prevPos));
+							}
+						}
+					}
+
+					return world.getBlockState(pos) != Blocks.AIR.getDefaultState() ? new RayTraceResult(player, new Vec3d(pos)) : null;
+				});
 
 		RayTraceResult result = Keyboard.isKeyDown(OrbisKeyBindings.keyBindControl.getKeyCode()) ?
 				new RayTraceResult(player, endPos) :
@@ -217,7 +254,7 @@ public class OrbisRaytraceHelp
 				int curZ = MathHelper.floor(startPos.z);
 
 				final BlockPos curPos = new BlockPos(curX, curY, curZ);
-				T locatedObject = locate(player.world, curPos, endPos, action, shapeLocator);
+				T locatedObject = locate(player.world, curPos, endPos, curPos, action, shapeLocator);
 				final T result = action.onLocate(locatedObject, curPos);
 
 				if (result != null)
@@ -348,6 +385,8 @@ public class OrbisRaytraceHelp
 						startPos = new Vec3d(startPos.x + disX * distanceFactorZ, startPos.y + disY * distanceFactorZ, newZ);
 					}
 
+					BlockPos prevPos = new BlockPos(curX, curY, curZ);
+
 					curX = MathHelper.floor(startPos.x);
 					curY = MathHelper.floor(startPos.y);
 					curZ = MathHelper.floor(startPos.z);
@@ -367,7 +406,7 @@ public class OrbisRaytraceHelp
 						--curZ;
 					}
 
-					locatedObject = locate(player.world, new BlockPos(curX, curY, curZ), endPos, action, shapeLocator);
+					locatedObject = locate(player.world, new BlockPos(curX, curY, curZ), endPos, prevPos, action, shapeLocator);
 
 					if (locatedObject != null)
 					{
@@ -381,7 +420,7 @@ public class OrbisRaytraceHelp
 
 	public interface LocateWithPos<T>
 	{
-		T locate(World world, BlockPos pos);
+		T locate(World world, BlockPos pos, BlockPos prevPos);
 	}
 
 	public static class RaytraceAction<T>

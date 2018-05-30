@@ -1,18 +1,5 @@
 package com.gildedgames.orbis.common;
 
-import com.gildedgames.orbis_api.IOrbisServicesListener;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis_api.data.management.IDataCachePool;
-import com.gildedgames.orbis_api.data.management.IProjectManager;
-import com.gildedgames.orbis_api.data.management.impl.DataCache;
-import com.gildedgames.orbis_api.data.management.impl.DataCachePool;
-import com.gildedgames.orbis_api.network.INetworkMultipleParts;
-import com.gildedgames.orbis_api.util.io.IClassSerializer;
-import com.gildedgames.orbis_api.util.io.Instantiator;
-import com.gildedgames.orbis_api.util.io.SimpleSerializer;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -35,6 +22,19 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.IOrbisServicesListener;
+import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.client.gui.data.Text;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.management.IDataCachePool;
+import com.gildedgames.orbis_api.data.management.IProjectManager;
+import com.gildedgames.orbis_api.data.management.impl.DataCache;
+import com.gildedgames.orbis_api.data.management.impl.DataCachePool;
+import com.gildedgames.orbis_api.network.INetworkMultipleParts;
+import com.gildedgames.orbis_api.util.io.IClassSerializer;
+import com.gildedgames.orbis_api.util.io.Instantiator;
+import com.gildedgames.orbis_api.util.io.SimpleSerializer;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -269,6 +269,7 @@ public class OrbisCore implements IOrbisServicesListener
 		s.register(20, WorldActionBlueprintPalette.class, new Instantiator<>(WorldActionBlueprintPalette.class));
 		s.register(21, WorldActionAddBlueprint.class, new Instantiator<>(WorldActionAddBlueprint.class));
 		s.register(22, WorldActionBlueprintStacker.class, new Instantiator<>(WorldActionBlueprintStacker.class));
+		s.register(23, WorldActionFilterMultiple.class, new Instantiator<>(WorldActionFilterMultiple.class));
 
 		OrbisAPI.services().io().register(s);
 	}

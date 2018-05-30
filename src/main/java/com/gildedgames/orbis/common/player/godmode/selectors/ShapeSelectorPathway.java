@@ -9,6 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class ShapeSelectorPathway implements IShapeSelector
 {
 	private final GodPowerPathway power;
@@ -41,5 +43,11 @@ public class ShapeSelectorPathway implements IShapeSelector
 		}
 
 		playerOrbis.getWorldActionLog().track(world, new WorldActionPathway(start, end));
+	}
+
+	@Override
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	{
+
 	}
 }
