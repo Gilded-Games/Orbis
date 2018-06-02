@@ -187,7 +187,7 @@ public class OrbisRaytraceHelp
 					{
 						Blueprint blueprint = (Blueprint) shape;
 
-						if (blueprint.contains(pos))
+						if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayer() != null)
 						{
 							BlockFilter filter = blueprint.getCurrentScheduleLayer().getFilterRecord()
 									.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
