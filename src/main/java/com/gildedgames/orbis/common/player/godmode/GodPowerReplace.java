@@ -6,7 +6,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFilter;
 import com.gildedgames.orbis_api.block.BlockFilter;
-import com.gildedgames.orbis.common.util.BlockFilterHelper;
+import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

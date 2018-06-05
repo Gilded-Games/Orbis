@@ -4,6 +4,7 @@ import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
+import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataCachePool;
@@ -24,6 +25,8 @@ import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import com.gildedgames.orbis_api.IOrbisServicesListener;
 import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockFilterHelper;
+import com.gildedgames.orbis_api.block.BlockFilterLayer;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.management.IDataCachePool;
@@ -35,6 +38,7 @@ import com.gildedgames.orbis_api.util.io.IClassSerializer;
 import com.gildedgames.orbis_api.util.io.Instantiator;
 import com.gildedgames.orbis_api.util.io.SimpleSerializer;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -277,6 +281,31 @@ public class OrbisCore implements IOrbisServicesListener
 	@Mod.EventHandler
 	public void onFMLConstruction(final FMLConstructionEvent event)
 	{
+		// Registration so BlockFilterHelper recognizes ItemBlockPalette when trying to fetch blocks
+		BlockFilterHelper.registerBlockRecognition((s) ->
+		{
+			IBlockState[] blocks = null;
+
+			if (s.getItem() instanceof ItemBlockPalette)
+			{
+				BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(s);
+
+				if (layer != null)
+				{
+					blocks = new IBlockState[layer.getReplacementBlocks().size()];
+
+					for (int i = 0; i < blocks.length; i++)
+					{
+						final IBlockState state = layer.getReplacementBlocks().get(i).getBlockState();
+
+						blocks[i] = state;
+					}
+				}
+			}
+
+			return blocks;
+		});
+
 		registerSerializations();
 	}
 

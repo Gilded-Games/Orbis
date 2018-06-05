@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.common.world_objects;
 
+import com.gildedgames.orbis.client.renderers.RenderShape;
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.region.IColored;
 import com.gildedgames.orbis_api.data.region.IRegion;
@@ -7,8 +9,6 @@ import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.renderers.RenderShape;
-import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +48,12 @@ public class WorldShape implements IShape, IWorldObject, IColored
 		builder.append(this.getPos().hashCode());
 
 		return builder.toHashCode();
+	}
+
+	@Override
+	public void markDirty()
+	{
+		this.isDirty = true;
 	}
 
 	@Override
@@ -130,7 +136,7 @@ public class WorldShape implements IShape, IWorldObject, IColored
 	@Override
 	public void onUpdate()
 	{
-		
+
 	}
 
 	@Override

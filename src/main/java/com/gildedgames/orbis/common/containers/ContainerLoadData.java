@@ -1,24 +1,36 @@
 package com.gildedgames.orbis.common.containers;
 
-import com.gildedgames.orbis_api.client.gui.data.list.IListNavigator;
-import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.common.capabilities.player.IPlayerOrbis;
 import com.gildedgames.orbis.common.containers.inventory.InventoryBasicExpandable;
-import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
+import com.gildedgames.orbis.common.items.ItemBlueprint;
+import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
+import com.gildedgames.orbis.common.network.NetworkingOrbis;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerInterface;
+import com.gildedgames.orbis_api.client.gui.data.list.IListNavigator;
+import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
+import com.gildedgames.orbis_api.util.mc.SlotHashed;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.*;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
-public class ContainerLoadData extends ContainerPlayer
+public class ContainerLoadData extends Container
 {
 
-	private static final InventoryBasic dumbInventory = new InventoryBasic("tmp", true, 52);
-
-	public final InventoryBasicExpandable stackerInventory = new InventoryBasicExpandable("tmp", true, 3);
+	public final InventoryBasicExpandable stackerInventory = new InventoryBasicExpandable("tmp", true, 40)
+	{
+		@Override
+		public boolean isItemValidForSlot(int index, ItemStack stack)
+		{
+			return stack.getItem() instanceof ItemBlueprint || stack.getItem() instanceof ItemBlueprintPalette;
+		}
+	};
 
 	private final IPlayerOrbis playerOrbis;
 
@@ -30,20 +42,41 @@ public class ContainerLoadData extends ContainerPlayer
 
 	private boolean displayedStacker;
 
-	private IListNavigator<SlotBlueprintStacker> navigator = new ListNavigator<>();
+	private IListNavigator<SlotHashed> navigator = new ListNavigator<>();
 
 	public ContainerLoadData(final IPlayerOrbis playerOrbis, final IInventory forgeInventory)
 	{
-		super(playerOrbis.getEntity().inventory, false, playerOrbis.getEntity());
-
 		this.playerOrbis = playerOrbis;
 
-		this.createSlots(forgeInventory);
+		this.slots = new SlotForge[4 * 4];
 
-		this.startStackerInterface();
+		for (int i = 0; i < 3; ++i)
+		{
+			for (int j = 0; j < 9; ++j)
+			{
+				this.addSlotToContainer(new Slot(playerOrbis.getEntity().inventory, j + i * 9 + 9, 213 + 7 + j * 18, 24 + 60 + 14 + i * 18));
+			}
+		}
+
+		for (int k = 0; k < 9; ++k)
+		{
+			this.addSlotToContainer(new Slot(playerOrbis.getEntity().inventory, k, 32 + 181 + 7 + k * 18, 24 + 118 + 14));
+		}
+
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				final SlotForge slot = new SlotForge(forgeInventory, 0, (i * 4 + j), 32 + 187 + 15 + j * 18, 24 + -20 + i * 18);
+
+				this.addSlotToContainer(slot);
+
+				this.slots[i * 4 + j] = slot;
+			}
+		}
 	}
 
-	public IListNavigator<SlotBlueprintStacker> getNavigator()
+	public IListNavigator<SlotHashed> getNavigator()
 	{
 		return this.navigator;
 	}
@@ -74,8 +107,13 @@ public class ContainerLoadData extends ContainerPlayer
 	{
 		if (!this.displayedStacker)
 		{
-			this.topStackerSlot = this.addSlotToContainer(new SlotBlueprintStacker(this.stackerInventory, 40, 41, 6, -24));
-			this.bottomStackerSlot = this.addSlotToContainer(new SlotBlueprintStacker(this.stackerInventory, 40, 42, 6, 132));
+			if (this.playerOrbis.getWorld().isRemote)
+			{
+				NetworkingOrbis.network().sendPacketToServer(new PacketBlueprintStackerInterface(true));
+			}
+
+			this.topStackerSlot = this.addSlotToContainer(new SlotHashed(this.stackerInventory, 38, 38, 0));
+			this.bottomStackerSlot = this.addSlotToContainer(new SlotHashed(this.stackerInventory, 39, 38, 132 + 24));
 
 			this.displayedStacker = true;
 		}
@@ -91,7 +129,7 @@ public class ContainerLoadData extends ContainerPlayer
 		return this.bottomStackerSlot;
 	}
 
-	public void addStackerSlot(SlotBlueprintStacker slot)
+	public void addStackerSlot(SlotHashed slot)
 	{
 		this.stackerSlots.add(this.addSlotToContainer(slot));
 	}
@@ -111,7 +149,7 @@ public class ContainerLoadData extends ContainerPlayer
 		return -1;
 	}
 
-	public void removeStackerSlot(SlotBlueprintStacker slot)
+	public void removeStackerSlot(SlotHashed slot)
 	{
 		if (this.stackerSlots.remove(slot))
 		{
@@ -124,9 +162,9 @@ public class ContainerLoadData extends ContainerPlayer
 			{
 				Slot s = this.inventorySlots.get(i);
 
-				if (s instanceof SlotBlueprintStacker)
+				if (s instanceof SlotHashed)
 				{
-					SlotBlueprintStacker bp = (SlotBlueprintStacker) s;
+					SlotHashed bp = (SlotHashed) s;
 
 					bp.oldY -= 24;
 
@@ -136,16 +174,16 @@ public class ContainerLoadData extends ContainerPlayer
 		}
 	}
 
-	public void display(List<SlotBlueprintStacker> visible)
+	public void display(List<SlotHashed> visible)
 	{
 		this.stopStackerInterface();
 		this.startStackerInterface();
 
 		for (int i = 0; i < visible.size(); i++)
 		{
-			SlotBlueprintStacker slot = visible.get(i);
+			SlotHashed slot = visible.get(i);
 
-			slot.yPos = 6 + (i * 24);
+			slot.yPos = 30 + (i * 24);
 
 			this.addStackerSlot(slot);
 		}
@@ -155,6 +193,11 @@ public class ContainerLoadData extends ContainerPlayer
 	{
 		if (this.displayedStacker)
 		{
+			if (this.playerOrbis.getWorld().isRemote)
+			{
+				NetworkingOrbis.network().sendPacketToServer(new PacketBlueprintStackerInterface(false));
+			}
+
 			this.inventorySlots.remove(this.topStackerSlot);
 			this.inventorySlots.remove(this.bottomStackerSlot);
 
@@ -172,9 +215,9 @@ public class ContainerLoadData extends ContainerPlayer
 					this.inventorySlots.remove(slot);
 					this.inventoryItemStacks.remove(slotPos);
 
-					if (slot instanceof SlotBlueprintStacker)
+					if (slot instanceof SlotHashed)
 					{
-						SlotBlueprintStacker bp = (SlotBlueprintStacker) slot;
+						SlotHashed bp = (SlotHashed) slot;
 
 						bp.resetPos();
 					}
@@ -187,60 +230,6 @@ public class ContainerLoadData extends ContainerPlayer
 		}
 	}
 
-	private void createSlots(final IInventory forgeInventory)
-	{
-		final int widthOffset = 180;
-		final int heightOffset = -10;
-
-		for (final Slot slot : this.inventorySlots)
-		{
-			slot.xPos += widthOffset;
-			slot.yPos += heightOffset;
-		}
-
-		final Slot helmet = this.inventorySlots.get(5);
-		final Slot chestplate = this.inventorySlots.get(6);
-		final Slot leggings = this.inventorySlots.get(7);
-		final Slot boots = this.inventorySlots.get(8);
-		final Slot shield = this.inventorySlots.get(45);
-
-		helmet.xPos = helmet.yPos = -2000;
-		chestplate.xPos = chestplate.yPos = -2000;
-		leggings.xPos = leggings.yPos = -2000;
-		boots.xPos = boots.yPos = -2000;
-		shield.xPos = shield.yPos = -2000;
-
-		final Slot craftResult = this.inventorySlots.get(0);
-
-		final Slot craft1 = this.inventorySlots.get(1);
-		final Slot craft2 = this.inventorySlots.get(2);
-		final Slot craft3 = this.inventorySlots.get(3);
-		final Slot craft4 = this.inventorySlots.get(4);
-
-		craft1.xPos = craft1.yPos = -2000;
-		craft2.xPos = craft2.yPos = -2000;
-		craft3.xPos = craft3.yPos = -2000;
-		craft4.xPos = craft4.yPos = -2000;
-
-		craftResult.xPos = craftResult.yPos = -2000;
-
-		this.slots = new SlotForge[4 * 4];
-
-		final int indexOffset = this.inventorySlots.size();
-
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				final SlotForge slot = new SlotForge(forgeInventory, indexOffset, indexOffset + (i * 4 + j), 187 + 15 + j * 18, -20 + i * 18);
-
-				this.addSlotToContainer(slot);
-
-				this.slots[i * 4 + j] = slot;
-			}
-		}
-	}
-
 	@Override
 	public ItemStack slotClick(final int slotId, final int dragType, final ClickType clickTypeIn, final EntityPlayer player)
 	{
@@ -248,9 +237,47 @@ public class ContainerLoadData extends ContainerPlayer
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(final EntityPlayer player, final int slotNumber)
+	public ItemStack transferStackInSlot(final EntityPlayer playerIn, final int index)
 	{
-		return super.transferStackInSlot(player, slotNumber);
+		ItemStack itemstack = ItemStack.EMPTY;
+		final Slot slot = this.inventorySlots.get(index);
+
+		if (slot != null && slot.getHasStack())
+		{
+			final ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
+
+			if (index >= 27 && index < 36 && !this.mergeItemStack(itemstack1, 0, 27, false))
+			{
+				return ItemStack.EMPTY;
+			}
+			else if (index >= 36 && !this.mergeItemStack(itemstack1, 0, 36, false))
+			{
+				return ItemStack.EMPTY;
+			}
+			else if (!this.mergeItemStack(itemstack1, 27, 36, false))
+			{
+				return ItemStack.EMPTY;
+			}
+
+			if (itemstack1.isEmpty())
+			{
+				slot.putStack(ItemStack.EMPTY);
+			}
+			else
+			{
+				slot.onSlotChanged();
+			}
+
+			if (itemstack1.getCount() == itemstack.getCount())
+			{
+				return ItemStack.EMPTY;
+			}
+
+			slot.onTake(playerIn, itemstack1);
+		}
+
+		return itemstack;
 	}
 
 	@Override

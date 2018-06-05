@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets.gui;
 
-import com.gildedgames.orbis.common.containers.ContainerLoadData;
+import com.gildedgames.orbis.common.containers.ContainerEditBlueprintPostGen;
+import com.gildedgames.orbis.common.containers.SlotGroup;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
-import com.gildedgames.orbis_api.util.mc.SlotHashed;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,17 +10,17 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.util.List;
 
-public class PacketBlueprintStackerGuiDisplaySlots implements IMessage
+public class PacketPostGenDisplayLayers implements IMessage
 {
 
 	private int[] slots;
 
-	public PacketBlueprintStackerGuiDisplaySlots()
+	public PacketPostGenDisplayLayers()
 	{
 
 	}
 
-	public PacketBlueprintStackerGuiDisplaySlots(int[] slots)
+	public PacketPostGenDisplayLayers(int[] slots)
 	{
 		this.slots = slots;
 	}
@@ -47,21 +47,21 @@ public class PacketBlueprintStackerGuiDisplaySlots implements IMessage
 		}
 	}
 
-	public static class HandlerServer extends MessageHandlerServer<PacketBlueprintStackerGuiDisplaySlots, IMessage>
+	public static class HandlerServer extends MessageHandlerServer<PacketPostGenDisplayLayers, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketBlueprintStackerGuiDisplaySlots message, final EntityPlayer player)
+		public IMessage onMessage(final PacketPostGenDisplayLayers message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
 				return null;
 			}
 
-			if (player.openContainer instanceof ContainerLoadData)
+			if (player.openContainer instanceof ContainerEditBlueprintPostGen)
 			{
-				ContainerLoadData container = (ContainerLoadData) player.openContainer;
+				ContainerEditBlueprintPostGen container = (ContainerEditBlueprintPostGen) player.openContainer;
 
-				List<SlotHashed> visible = Lists.newArrayList();
+				List<SlotGroup> visible = Lists.newArrayList();
 
 				for (int i = 0; i < message.slots.length; i++)
 				{

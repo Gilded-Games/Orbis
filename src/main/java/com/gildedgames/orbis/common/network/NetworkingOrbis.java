@@ -5,9 +5,7 @@ import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
-import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiAddSlot;
-import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiDisplaySlots;
-import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiRemoveSlot;
+import com.gildedgames.orbis.common.network.packets.gui.*;
 import com.gildedgames.orbis.common.network.packets.projects.*;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWorldActions;
 import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
@@ -96,12 +94,23 @@ public class NetworkingOrbis
 
 		network.reg(PacketBlueprintStackerGuiAddSlot.HandlerServer.class, PacketBlueprintStackerGuiAddSlot.class,
 				Side.SERVER);
-
 		network.reg(PacketBlueprintStackerGuiRemoveSlot.HandlerServer.class, PacketBlueprintStackerGuiRemoveSlot.class,
 				Side.SERVER);
-
 		network.reg(PacketBlueprintStackerGuiDisplaySlots.HandlerServer.class, PacketBlueprintStackerGuiDisplaySlots.class,
 				Side.SERVER);
+
+		network.reg(PacketPostGenAddLayer.HandlerServer.class, PacketPostGenAddLayer.class,
+				Side.SERVER);
+		network.reg(PacketPostGenRemoveLayer.HandlerServer.class, PacketPostGenRemoveLayer.class,
+				Side.SERVER);
+		network.reg(PacketPostGenDisplayLayers.HandlerServer.class, PacketPostGenDisplayLayers.class,
+				Side.SERVER);
+
+		network.reg(PacketBlueprintAddPostGenReplaceLayer.HandlerServer.class, PacketBlueprintAddPostGenReplaceLayer.class, Side.SERVER);
+		network.reg(PacketBlueprintRemovePostGenReplaceLayer.HandlerServer.class, PacketBlueprintRemovePostGenReplaceLayer.class, Side.SERVER);
+		network.reg(PacketBlueprintPostgenReplaceLayerChanges.HandlerServer.class, PacketBlueprintPostgenReplaceLayerChanges.class, Side.SERVER);
+
+		network.reg(PacketBlueprintStackerInterface.HandlerServer.class, PacketBlueprintStackerInterface.class, Side.SERVER);
 
 		// C L I E N T
 		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);
@@ -141,6 +150,10 @@ public class NetworkingOrbis
 
 		network.reg(PacketRemoveNode.HandlerClient.class, PacketRemoveNode.class,
 				Side.CLIENT);
+
+		network.reg(PacketBlueprintAddPostGenReplaceLayer.HandlerClient.class, PacketBlueprintAddPostGenReplaceLayer.class, Side.CLIENT);
+		network.reg(PacketBlueprintRemovePostGenReplaceLayer.HandlerClient.class, PacketBlueprintRemovePostGenReplaceLayer.class, Side.CLIENT);
+		network.reg(PacketBlueprintPostgenReplaceLayerChanges.HandlerClient.class, PacketBlueprintPostgenReplaceLayerChanges.class, Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());
 	}

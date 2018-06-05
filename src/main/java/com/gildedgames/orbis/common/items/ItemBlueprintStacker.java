@@ -61,6 +61,18 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 		funnel.set("stacker_id", stacker.getMetadata().getIdentifier());
 	}
 
+	public static IDataIdentifier getBlueprintStackerId(final ItemStack stack)
+	{
+		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("stacker_id"))
+		{
+			return null;
+		}
+
+		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
+
+		return funnel.get("stacker_id");
+	}
+
 	public static BlueprintStackerData getBlueprintStacker(final ItemStack stack)
 	{
 		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("stacker_id"))

@@ -1,7 +1,9 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
+import com.gildedgames.orbis_api.core.BakedBlueprint;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
@@ -11,7 +13,6 @@ import com.gildedgames.orbis_api.processing.DataPrimer;
 import com.gildedgames.orbis_api.util.BlueprintHelper;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -58,7 +59,11 @@ public class WorldActionBlueprint extends WorldActionBase
 		ICreationData creationData = new CreationData(world, player.getEntity()).pos(this.bb.getMin()).rotation(rotation).placesAir(false)
 				.seed(this.getSeed());
 
-		primer.create(this.bb, this.data, creationData);
+		BakedBlueprint baked = new BakedBlueprint(this.data, creationData);
+
+		baked.bake();
+
+		primer.create(this.bb, baked);
 	}
 
 	@Override

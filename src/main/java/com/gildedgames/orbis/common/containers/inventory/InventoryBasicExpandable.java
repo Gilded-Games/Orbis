@@ -44,7 +44,9 @@ public class InventoryBasicExpandable implements IInventory
 
 	public void remove(int slot)
 	{
-		this.slotsCount = this.slotsCount - 1;
+		this.inventoryContents.set(slot, ItemStack.EMPTY);
+
+		/*this.slotsCount = this.slotsCount - 1;
 
 		NonNullList<ItemStack> newContents = NonNullList.withSize(this.slotsCount, ItemStack.EMPTY);
 
@@ -68,7 +70,7 @@ public class InventoryBasicExpandable implements IInventory
 			}
 		}
 
-		this.inventoryContents = newContents;
+		this.inventoryContents = newContents;*/
 	}
 
 	public void expand(int index)

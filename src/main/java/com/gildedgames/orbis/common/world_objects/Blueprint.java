@@ -288,6 +288,12 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
+	public void markDirty()
+	{
+		this.isDirty = true;
+	}
+
+	@Override
 	public void markClean()
 	{
 		this.isDirty = false;

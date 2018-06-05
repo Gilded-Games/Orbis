@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.common.network.packets;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis_api.core.BakedBlueprint;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
@@ -9,7 +11,6 @@ import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis_api.processing.DataPrimer;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -77,8 +78,11 @@ public class PacketCreatePlacingBlueprint implements IMessage
 				final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(player.world));
 
 				ICreationData creationData = new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false);
+				BakedBlueprint baked = new BakedBlueprint(data, creationData);
 
-				primer.create(region, data, creationData);
+				baked.bake();
+
+				primer.create(region, baked);
 			}
 
 			return null;

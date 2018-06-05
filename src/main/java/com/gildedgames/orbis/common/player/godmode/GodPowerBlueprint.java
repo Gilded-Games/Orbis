@@ -203,9 +203,12 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 	@Override
 	public void onOpenGui(final EntityPlayer player)
 	{
-		final BlockPos pos = player.getPosition();
+		if (!player.world.isRemote)
+		{
+			final BlockPos pos = player.getPosition();
 
-		player.openGui(OrbisCore.INSTANCE, OrbisGuiHandler.LOAD_DATA, player.world, pos.getX(), pos.getY(), pos.getZ());
+			player.openGui(OrbisCore.INSTANCE, OrbisGuiHandler.LOAD_DATA, player.world, pos.getX(), pos.getY(), pos.getZ());
+		}
 	}
 
 	@Override

@@ -1,25 +1,28 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
-import com.gildedgames.orbis_api.client.gui.util.list.GuiListViewer;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis_api.data.schedules.ScheduleLayer;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
-import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.schedules.GuiScheduleLayerPanel;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Pos2D;
+import com.gildedgames.orbis.client.gui.util.GuiTab;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.network.OrbisGuiHandler;
+import com.gildedgames.orbis.common.network.packets.PacketOpenGui;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintAddScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintRemoveScheduleLayer;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
-import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.list.GuiListViewer;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.data.schedules.ScheduleLayer;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
@@ -33,6 +36,10 @@ public class GuiEditBlueprint extends GuiFrame
 {
 	private static final ResourceLocation VIEWER_BACKDROP = OrbisCore.getResource("list/list_viewer.png");
 
+	private static final ResourceLocation LAYERS_ICON = OrbisCore.getResource("blueprint_gui/layers_icon.png");
+
+	private static final ResourceLocation POST_GEN_ICON = OrbisCore.getResource("blueprint_gui/post_gen_icon.png");
+
 	private final Blueprint blueprint;
 
 	private GuiButtonVanilla saveButton, closeButton;
@@ -42,6 +49,8 @@ public class GuiEditBlueprint extends GuiFrame
 	private GuiScheduleLayerPanel currentPanel;
 
 	private Map<Integer, GuiScheduleLayerPanel> cachedPanels = Maps.newHashMap();
+
+	private GuiTab layerTab, postGenTab;
 
 	public GuiEditBlueprint(GuiFrame prevFrame, final Blueprint blueprint)
 	{
@@ -63,6 +72,19 @@ public class GuiEditBlueprint extends GuiFrame
 	public void init()
 	{
 		this.dim().mod().width(this.width).height(this.height).flush();
+
+		Pos2D center = InputHelper.getCenter();
+
+		this.layerTab = new GuiTab(Dim2D.build().x(center.x()).addX(-11).centerX(true).flush(),
+				new GuiTexture(Dim2D.build().width(16).height(16).flush(), LAYERS_ICON), () -> {
+		});
+		this.postGenTab = new GuiTab(Dim2D.build().x(center.x()).addX(11).centerX(true).flush(),
+				new GuiTexture(Dim2D.build().width(16).height(16).flush(), POST_GEN_ICON),
+				() -> OrbisCore.network().sendPacketToServer(
+						new PacketOpenGui(OrbisGuiHandler.POST_GEN, this.blueprint.getMax().getX(), this.blueprint.getMax().getY(),
+								this.blueprint.getMax().getZ())));
+
+		this.layerTab.setPressed(true);
 
 		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(75).flush());
 
@@ -230,6 +252,8 @@ public class GuiEditBlueprint extends GuiFrame
 				GuiEditBlueprint.this.addChildren(GuiEditBlueprint.this.currentPanel);
 			}
 		}
+
+		this.addChildren(this.layerTab, this.postGenTab);
 	}
 
 	@Override

@@ -1,28 +1,28 @@
 package com.gildedgames.orbis.client.gui.blueprint;
 
-import com.gildedgames.orbis_api.data.IDataHolder;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataHolder;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
+import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.containers.ContainerLoadData;
+import com.gildedgames.orbis.common.items.ItemBlueprint;
+import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiAddSlot;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiDisplaySlots;
+import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiRemoveSlot;
 import com.gildedgames.orbis_api.client.gui.data.list.IListNavigatorListener;
 import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
-import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis_api.client.gui.util.list.IListViewerListener;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.containers.ContainerLoadData;
-import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;
-import com.gildedgames.orbis.common.items.ItemBlueprint;
-import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
-import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiAddSlot;
-import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiDisplaySlots;
-import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiRemoveSlot;
+import com.gildedgames.orbis_api.data.IDataHolder;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataHolder;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.util.InputHelper;
+import com.gildedgames.orbis_api.util.mc.SlotHashed;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerListener, IListNavigatorListener<SlotBlueprintStacker>
+public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerListener, IListNavigatorListener<SlotHashed>
 {
 	private static final ResourceLocation MENU = OrbisCore.getResource("blueprint_gui/height_variable_menu.png");
 
@@ -41,7 +41,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 
 	private ContainerLoadData container;
 
-	private GuiListViewer<SlotBlueprintStacker, GuiTexture> stackViewer;
+	private GuiListViewer<SlotHashed, GuiTexture> stackViewer;
 
 	private GuiAbstractButton createButton;
 
@@ -64,7 +64,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 								.orElse(-1) + 1,
 						this.container.getNavigator(),
 						(p, n, i) -> new GuiTexture(Dim2D.build().pos(p).width(136).height(24).flush(), SLOT),
-						i -> new SlotBlueprintStacker(this.container.stackerInventory, 40, i + 43, 6, 6 + ((i * 24) % 120)),
+						i -> new SlotHashed(this.container.stackerInventory, i + 40, 38, 6 + ((i * 24) % 120)),
 						24
 				);
 
@@ -105,7 +105,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 
 				List<IDataHolder<BlueprintData>> segments = Lists.newLinkedList();
 
-				for (Map.Entry<Integer, SlotBlueprintStacker> entry : this.container.getNavigator().getNodes().entrySet())
+				for (Map.Entry<Integer, SlotHashed> entry : this.container.getNavigator().getNodes().entrySet())
 				{
 					ItemStack stack = entry.getValue().getStack();
 
@@ -141,7 +141,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 
 		for (int i = 0; i < this.stackViewer.getVisibleNodes().size(); i++)
 		{
-			SlotBlueprintStacker slot = this.stackViewer.getVisibleNodes().get(i);
+			SlotHashed slot = this.stackViewer.getVisibleNodes().get(i);
 			int id = this.stackViewer.findPosition(slot);
 
 			slots[i] = id;
@@ -159,9 +159,9 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 	}
 
 	@Override
-	public void onRemoveNode(SlotBlueprintStacker node, int index)
+	public void onRemoveNode(SlotHashed node, int index)
 	{
-		this.container.stackerInventory.remove(index + 43);
+		this.container.stackerInventory.remove(index + 40);
 
 		OrbisCore.network()
 				.sendPacketToServer(new PacketBlueprintStackerGuiRemoveSlot(index));
@@ -173,15 +173,19 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 	}
 
 	@Override
-	public void onAddNode(SlotBlueprintStacker node, int index, boolean newNode)
+	public void onAddNode(SlotHashed node, int index, boolean newNode)
 	{
-		this.container.stackerInventory.expand(index + 43);
+		this.container.stackerInventory.expand(index + 40 + 1);
 		this.container.addStackerSlot(node);
-		OrbisCore.network().sendPacketToServer(new PacketBlueprintStackerGuiAddSlot(index + 43, node.xPos, node.yPos));
+		OrbisCore.network().sendPacketToServer(new PacketBlueprintStackerGuiAddSlot(index, node.xPos, node.yPos));
+
+		this.container.display(this.stackViewer.getVisibleNodes());
+
+		this.displaySlotsToServer();
 	}
 
 	@Override
-	public void onNodeClicked(SlotBlueprintStacker node, int index)
+	public void onNodeClicked(SlotHashed node, int index)
 	{
 
 	}

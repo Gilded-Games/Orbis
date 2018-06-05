@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets.gui;
 
-import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
-import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;
+import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.util.mc.SlotHashed;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -48,9 +48,9 @@ public class PacketBlueprintStackerGuiRemoveSlot implements IMessage
 			{
 				ContainerLoadData container = (ContainerLoadData) player.openContainer;
 
-				container.stackerInventory.remove(message.nodeId + 43);
+				container.stackerInventory.remove(message.nodeId + 40);
 
-				SlotBlueprintStacker slot = container.getNavigator().getNodes().get(message.nodeId);
+				SlotHashed slot = container.getNavigator().getNodes().get(message.nodeId);
 
 				container.getNavigator().remove(message.nodeId);
 				container.removeStackerSlot(slot);

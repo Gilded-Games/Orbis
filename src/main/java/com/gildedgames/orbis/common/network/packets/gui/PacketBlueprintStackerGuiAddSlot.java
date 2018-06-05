@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets.gui;
 
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
-import com.gildedgames.orbis.common.containers.slots.SlotBlueprintStacker;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis_api.util.mc.SlotHashed;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -54,11 +54,11 @@ public class PacketBlueprintStackerGuiAddSlot implements IMessage
 			{
 				ContainerLoadData container = (ContainerLoadData) player.openContainer;
 
-				container.stackerInventory.expand(message.slotId);
+				container.stackerInventory.expand(message.slotId + 40 + 1);
 
-				SlotBlueprintStacker slot = new SlotBlueprintStacker(container.stackerInventory, 40, message.slotId, message.posX, message.posY);
+				SlotHashed slot = new SlotHashed(container.stackerInventory, message.slotId + 40, message.posX, message.posY);
 
-				container.getNavigator().put(slot, message.slotId - 43, true);
+				container.getNavigator().put(slot, message.slotId, true);
 				container.addStackerSlot(slot);
 			}
 

@@ -1,35 +1,36 @@
 package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.client.gui.blueprint.GuiCreateBlueprintStacker;
-import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
-import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
-import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis.client.gui.util.*;
+import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.*;
-import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
-import com.gildedgames.orbis_api.client.gui.util.GuiText;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.items.*;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
-import com.gildedgames.orbis_api.util.InputHelper;
+import com.gildedgames.orbis_api.client.gui.data.Text;
+import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
+import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
+import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.DataCondition;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis_api.util.mc.InventoryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.ClickType;
@@ -37,6 +38,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -52,7 +54,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private static final ResourceLocation TAB = OrbisCore.getResource("blueprint_gui/tab.png");
 
-	private static final ResourceLocation TAB_PRESSED = OrbisCore.getResource("blueprint_gui/ltab_pressed.png");
+	private static final ResourceLocation TAB_PRESSED = OrbisCore.getResource("blueprint_gui/tab_pressed.png");
 
 	private static final ResourceLocation SEARCH = OrbisCore.getResource("blueprint_gui/search.png");
 
@@ -97,6 +99,16 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		this.requestListing = false;
 		this.directoryViewer.getNavigator().refresh();
 		this.requestListing = true;
+	}
+
+	@Override
+	public void initContainerSize()
+	{
+		this.guiLeft = this.width / 2 - 122 - (176 / 2);
+		this.guiTop = this.height / 2 - (147 / 2) - 12;
+
+		this.xSize = 179 * 2;
+		this.ySize = 169;
 	}
 
 	@Override
@@ -301,11 +313,26 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			try
 			{
 				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+				ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				ItemBlueprint.setBlueprint(stack, data.getMetadata().getIdentifier());
+				if (onMouse.getItem() instanceof ItemBlueprint && data.getMetadata().getIdentifier().equals(ItemBlueprint.getBlueprintId(onMouse)))
+				{
+					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
 
-				OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+				}
+				else
+				{
+					ItemBlueprint.setBlueprint(stack, data.getMetadata().getIdentifier());
+
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+					{
+						stack.setCount(64);
+					}
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{
@@ -320,10 +347,26 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			{
 				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
 
-				ItemFramework.setDataId(stack, data.getMetadata().getIdentifier());
+				ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+				if (onMouse.getItem() instanceof ItemFramework && data.getMetadata().getIdentifier().equals(ItemFramework.getDataId(onMouse)))
+				{
+					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+				}
+				else
+				{
+					ItemFramework.setDataId(stack, data.getMetadata().getIdentifier());
+
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+					{
+						stack.setCount(64);
+					}
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{
@@ -336,10 +379,28 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 			try
 			{
-				ItemBlueprintStacker.setBlueprintStacker(stack, OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile()));
+				IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+				ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-				Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+				if (onMouse.getItem() instanceof ItemBlueprintStacker && data.getMetadata().getIdentifier()
+						.equals(ItemBlueprintStacker.getBlueprintStackerId(onMouse)))
+				{
+					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+				}
+				else
+				{
+					ItemBlueprintStacker.setBlueprintStacker(stack, (BlueprintStackerData) data);
+
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+					{
+						stack.setCount(64);
+					}
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{
