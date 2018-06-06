@@ -84,6 +84,12 @@ public class OrbisInstance implements IInstance
 	}
 
 	@Override
+	public void onRespawn(EntityPlayer player)
+	{
+
+	}
+
+	@Override
 	public List<EntityPlayer> getPlayers()
 	{
 		return this.players;
