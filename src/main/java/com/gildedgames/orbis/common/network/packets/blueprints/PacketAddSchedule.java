@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.network.packets.blueprints;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
@@ -12,8 +13,6 @@ import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -127,11 +126,11 @@ public class PacketAddSchedule implements IMessage
 
 					if (message.scheduleId == -1)
 					{
-						bData.getScheduleLayer(message.layerId).getScheduleRecord().addSchedule(message.schedule);
+						bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule);
 					}
 					else
 					{
-						bData.getScheduleLayer(message.layerId).getScheduleRecord().setSchedule(message.scheduleId, message.schedule);
+						bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().setSchedule(message.scheduleId, message.schedule);
 					}
 				}
 			}
@@ -173,7 +172,7 @@ public class PacketAddSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					int scheduleId = bData.getScheduleLayer(message.layerId).getScheduleRecord().addSchedule(message.schedule);
+					int scheduleId = bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have

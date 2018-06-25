@@ -112,6 +112,8 @@ public class NetworkingOrbis
 
 		network.reg(PacketBlueprintStackerInterface.HandlerServer.class, PacketBlueprintStackerInterface.class, Side.SERVER);
 
+		network.reg(PacketBlueprintScheduleLayerGuiPos.HandlerServer.class, PacketBlueprintScheduleLayerGuiPos.class, Side.SERVER);
+
 		// C L I E N T
 		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);
 		network.reg(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, Side.CLIENT);
@@ -154,6 +156,8 @@ public class NetworkingOrbis
 		network.reg(PacketBlueprintAddPostGenReplaceLayer.HandlerClient.class, PacketBlueprintAddPostGenReplaceLayer.class, Side.CLIENT);
 		network.reg(PacketBlueprintRemovePostGenReplaceLayer.HandlerClient.class, PacketBlueprintRemovePostGenReplaceLayer.class, Side.CLIENT);
 		network.reg(PacketBlueprintPostgenReplaceLayerChanges.HandlerClient.class, PacketBlueprintPostgenReplaceLayerChanges.class, Side.CLIENT);
+
+		network.reg(PacketBlueprintScheduleLayerGuiPos.HandlerClient.class, PacketBlueprintScheduleLayerGuiPos.class, Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());
 	}

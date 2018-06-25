@@ -1,7 +1,6 @@
 package com.gildedgames.orbis.client.gui.fill;
 
 import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
-import com.gildedgames.orbis.client.gui.util.GuiTickBox;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
@@ -18,7 +17,7 @@ import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiContainerCreativePub
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiFrameCreative;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.data.schedules.FilterOptions;
+import com.gildedgames.orbis_api.core.variables.displays.GuiTickBox;
 import com.gildedgames.orbis_api.util.InputHelper;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -88,11 +87,11 @@ public class GuiFillMenu extends GuiFrameCreative
 	{
 		super.onGuiClosed();
 
-		this.playerOrbis.powers().getFillPower().getFilterOptions().setChoosesPerBlock(this.choosesPerBlock.isTicked())
-				.setEdgeNoise(this.noise.getSliderValue());
+		this.playerOrbis.powers().getFillPower().getFilterOptions().getChoosesPerBlockVar().setData(this.choosesPerBlock.isTicked());
+		this.playerOrbis.powers().getFillPower().getFilterOptions().getEdgeNoiseVar().setData(this.noise.getSliderValue());
 
 		OrbisCore.network().sendPacketToServer(
-				new PacketSetFilterOptions(new FilterOptions().setChoosesPerBlock(this.choosesPerBlock.isTicked()).setEdgeNoise(this.noise.getSliderValue())));
+				new PacketSetFilterOptions(this.playerOrbis.powers().getFillPower().getFilterOptions()));
 	}
 
 	@Override
@@ -125,13 +124,13 @@ public class GuiFillMenu extends GuiFrameCreative
 
 		this.noise.dim().mod().width(80).pos(center).addX(-200).addY(-30).flush();
 
-		this.noise.setSliderValue(this.playerOrbis.powers().getFillPower().getFilterOptions().getEdgeNoise());
+		this.noise.setSliderValue(this.playerOrbis.powers().getFillPower().getFilterOptions().getEdgeNoiseVar().getData());
 
 		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(0).addX(-200).flush(),
 				new Text(new TextComponentString("Chooses Per Block:"), 1.0F));
 
 		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-200).addY(11).flush(),
-				this.playerOrbis.powers().getFillPower().getFilterOptions().choosesPerBlock());
+				this.playerOrbis.powers().getFillPower().getFilterOptions().getChoosesPerBlockVar().getData());
 
 		this.addChildren(this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
 	}

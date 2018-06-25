@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis_api.block.BlockFilter;
@@ -68,6 +69,11 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		this.chunkPos = chunkPos;
 		this.stateAccess = new FilterRecordAccess(mc.world, positionRecord, BlockPos.ORIGIN);
 		this.rotateData = rotateData;
+	}
+
+	public boolean isFocused()
+	{
+		return this.focused;
 	}
 
 	public void setFocused(boolean focused)
@@ -150,7 +156,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 						{
 							pos.setPos(xDif + minX, yDif + minY, zDif + minZ);
 
-							/*if (pos.getX() == 0 && pos.getY() == 0 && pos.getZ() == 0)
+							/*if (min.getX() == 0 && min.getY() == 0 && min.getZ() == 0)
 							{
 								OrbisCore.LOGGER.info("hmmm");
 							}*/
@@ -223,10 +229,11 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
-		/*if (!this.focused && !OrbisKeyBindings.keyBindControl.isKeyDown())
+		if (!this.focused && OrbisKeyBindings.keyBindControl.isKeyDown())
 		{
 			return;
-		}*/
+		}
+
 		GlStateManager.resetColor();
 
 		if (this.lastPos == null)

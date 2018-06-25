@@ -1,16 +1,17 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.data.schedules.ISchedule;
-import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSchedule;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
+import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.WorldObjectManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -46,10 +47,12 @@ public class WorldActionAddSchedule implements IWorldAction
 			this.blueprint = WorldObjectManager.get(world).getObject(this.blueprintId);
 		}
 
-		IScheduleLayer layer = this.blueprint.getData().getScheduleLayer(this.layer);
+		INode<IScheduleLayer, LayerLink> node = this.blueprint.getData().getScheduleLayerTree().get(this.layer);
 
-		if (layer != null)
+		if (node != null)
 		{
+			IScheduleLayer layer = node.getData();
+
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
 				layer.getScheduleRecord().addSchedule(this.schedule);
@@ -68,10 +71,12 @@ public class WorldActionAddSchedule implements IWorldAction
 			this.blueprint = WorldObjectManager.get(world).getObject(this.blueprintId);
 		}
 
-		IScheduleLayer layer = this.blueprint.getData().getScheduleLayer(this.layer);
+		INode<IScheduleLayer, LayerLink> node = this.blueprint.getData().getScheduleLayerTree().get(this.layer);
 
-		if (layer != null)
+		if (node != null)
 		{
+			IScheduleLayer layer = node.getData();
+
 			int scheduleId = layer.getScheduleRecord().getScheduleId(this.schedule);
 
 			if (scheduleId != -1)

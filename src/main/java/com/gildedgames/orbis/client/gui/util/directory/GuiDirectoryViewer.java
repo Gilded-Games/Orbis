@@ -94,7 +94,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 		{
 			this.maxScroll = (nodes.size() / possibleNumberOfColumns) - possibleNumberOfRows;
 
-			// Add last row if lingering nodes
+			// Add last row if lingering tree
 			if (nodes.size() % possibleNumberOfColumns > 0)
 			{
 				this.maxScroll++;

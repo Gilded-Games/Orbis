@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.network.packets.blueprints;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
@@ -12,8 +13,6 @@ import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -47,7 +46,7 @@ public class PacketRemoveSchedule implements IMessage
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.scheduleId = schedule.getParent().getScheduleId(schedule);
-		this.layerId = schedule.getParent().getParent().getLayerId();
+		this.layerId = schedule.getParent().getParent().getNodeParent().getNodeId();
 	}
 
 	public PacketRemoveSchedule(int worldObjectId, int layerId, int scheduleId)
@@ -112,7 +111,7 @@ public class PacketRemoveSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.getScheduleLayer(message.layerId).getScheduleRecord().removeSchedule(message.scheduleId);
+					bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().removeSchedule(message.scheduleId);
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -153,7 +152,7 @@ public class PacketRemoveSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					bData.getScheduleLayer(message.layerId).getScheduleRecord().removeSchedule(message.scheduleId);
+					bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().removeSchedule(message.scheduleId);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have

@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.*;
 import com.gildedgames.orbis_api.world.IWorldObject;
@@ -63,6 +65,13 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 				}
 			}
 		}
+
+		for (BlockPos pos : this.pendingChunksToUpdate)
+		{
+			this.updateChunk(pos.getX(), pos.getY(), pos.getZ());
+		}
+
+		this.pendingChunksToUpdate.clear();
 	}
 
 	public void setFocused(boolean focused)
@@ -186,10 +195,16 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	private void updateChunk(int chunkX, int chunkY, int chunkZ)
 	{
 		BlockPos chunkPos = new BlockPos(chunkX, chunkY, chunkZ);
+		boolean isFocused = false;
 
 		if (this.chunkToRenderer.containsKey(chunkPos))
 		{
 			IWorldRenderer toRemove = this.chunkToRenderer.get(chunkPos);
+
+			if (toRemove instanceof RenderFilterRecordChunk)
+			{
+				isFocused = ((RenderFilterRecordChunk) toRemove).isFocused();
+			}
 
 			final Lock w = this.lock.writeLock();
 			w.lock();
@@ -211,7 +226,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 
 		try
 		{
-			chunk.setFocused(true);
+			chunk.setFocused(isFocused);
 			this.subRenderers.add(chunk);
 		}
 		finally
@@ -265,7 +280,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	}
 
 	@Override
-	public void onChangeScheduleLayer(IScheduleLayer prevLayer, int prevIndex, IScheduleLayer newLayer, int newIndex)
+	public void onChangeScheduleLayerNode(INode<IScheduleLayer, LayerLink> prevLayer, int prevIndex, INode<IScheduleLayer, LayerLink> newLayer, int newIndex)
 	{
 
 	}

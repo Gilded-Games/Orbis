@@ -187,7 +187,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 					if (b != null)
 					{
-						if (b.getCurrentScheduleLayer() != null)
+						if (b.getCurrentScheduleLayerNode() != null)
 						{
 							r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
 							r.subtract(r.getWidth() / 2, 0, r.getLength() / 2);
@@ -202,7 +202,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 							}
 							else
 							{
-								b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleBlueprint);
+								b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint);
 							}
 						}
 					}

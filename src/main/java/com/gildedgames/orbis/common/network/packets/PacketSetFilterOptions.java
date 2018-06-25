@@ -71,8 +71,7 @@ public class PacketSetFilterOptions extends PacketMultipleParts
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				playerOrbis.powers().getFillPower().getFilterOptions().setChoosesPerBlock(message.filterOptions.choosesPerBlock())
-						.setEdgeNoise(message.filterOptions.getEdgeNoise());
+				playerOrbis.powers().getFillPower().getFilterOptions().copyFrom(message.filterOptions);
 			}
 
 			return null;

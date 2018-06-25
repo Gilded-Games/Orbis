@@ -29,10 +29,12 @@ public class GodPowerFill implements IGodPower
 
 	private GodPowerFillClient clientHandler = null;
 
-	private IFilterOptions filterOptions = new FilterOptions().setChoosesPerBlock(true);
+	private IFilterOptions filterOptions = new FilterOptions();
 
 	public GodPowerFill(final PlayerOrbis playerOrbis, final World world)
 	{
+		this.filterOptions.getChoosesPerBlockVar().setData(true);
+
 		if (world.isRemote)
 		{
 			this.clientHandler = new GodPowerFillClient(this);

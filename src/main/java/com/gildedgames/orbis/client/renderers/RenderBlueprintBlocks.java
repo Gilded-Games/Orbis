@@ -1,14 +1,16 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.client.renderers.blueprint.BlueprintRenderCache;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.util.mc.BlockUtil;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.renderers.blueprint.BlueprintRenderCache;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -76,13 +78,13 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		try
 		{
-			for (Integer id : this.blueprint.getData().getScheduleLayers().keySet())
+			for (Integer id : this.blueprint.getData().getScheduleLayerTree().getInternalMap().keySet())
 			{
-				IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(id);
+				INode<IScheduleLayer, LayerLink> node = this.blueprint.getData().getScheduleLayerTree().get(id);
 
-				if (layer != null)
+				if (node != null)
 				{
-					RenderScheduleLayer render = new RenderScheduleLayer(layer, this.blueprint, this.blueprint, true);
+					RenderScheduleLayer render = new RenderScheduleLayer(node, this.blueprint, this.blueprint, true);
 
 					render.setFocused(true);
 
@@ -205,9 +207,9 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 		*//** Render tile entities separately since they're done on their own
 	 * draw call with the tesselator **//*
-		for (final BlockPos pos : this.shapeData)
+		for (final BlockPos min : this.shapeData)
 		{
-			this.renderTileEntityIfPossible(pos, partialTicks, pass);
+			this.renderTileEntityIfPossible(min, partialTicks, pass);
 		}
 
 		TileEntityRendererDispatcher.instance.drawBatch(pass);*/
@@ -346,26 +348,13 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	@Override
 	public void preRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
 	{
-		if (!(sub.getRenderedObject() instanceof IScheduleLayer))
-		{
-			GlStateManager.pushMatrix();
 
-			if (useCamera)
-			{
-				GlStateManager.translate(this.blueprint.getMin().getX(),
-						this.blueprint.getMin().getY(),
-						this.blueprint.getMin().getZ());
-			}
-		}
 	}
 
 	@Override
 	public void postRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
 	{
-		if (!(sub.getRenderedObject() instanceof IScheduleLayer))
-		{
-			GlStateManager.popMatrix();
-		}
+		
 	}
 
 	@Override

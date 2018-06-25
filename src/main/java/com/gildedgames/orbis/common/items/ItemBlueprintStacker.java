@@ -156,7 +156,7 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 						}
 						else
 						{
-							b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleBlueprint);
+							b.getCurrentScheduleLayerNode().getScheduleRecord().addSchedule(scheduleBlueprint);
 						}
 					}*/
 				}

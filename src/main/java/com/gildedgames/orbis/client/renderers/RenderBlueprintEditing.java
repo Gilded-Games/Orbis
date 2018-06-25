@@ -2,6 +2,9 @@ package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.INodeTreeListener;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IRegion;
@@ -20,7 +23,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHolderListener, IBlueprintDataListener
+public class RenderBlueprintEditing
+		implements IWorldRenderer, IScheduleLayerHolderListener, IBlueprintDataListener, INodeTreeListener<IScheduleLayer, LayerLink>
 {
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -30,7 +34,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 	private boolean disabled = false;
 
-	private IScheduleLayer focusedLayer;
+	private INode<IScheduleLayer, LayerLink> focusedLayer;
 
 	private RenderScheduleLayer focusedRender;
 
@@ -44,6 +48,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 
 		this.blueprint.listen(this);
 		this.blueprint.getData().listen(this);
+		this.blueprint.getData().getScheduleLayerTree().listen(this);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -64,9 +69,9 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 				this.subRenderers.add(this.renderOutskirts);
 			}
 
-			for (Integer id : this.blueprint.getData().getScheduleLayers().keySet())
+			for (Integer id : this.blueprint.getData().getScheduleLayerTree().getInternalMap().keySet())
 			{
-				IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(id);
+				INode<IScheduleLayer, LayerLink> layer = this.blueprint.getData().getScheduleLayerTree().get(id);
 
 				if (layer != null)
 				{
@@ -90,7 +95,7 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 			w.unlock();
 		}
 
-		this.onChangeScheduleLayer(null, -1, this.blueprint.getCurrentScheduleLayer(), this.blueprint.getCurrentScheduleLayerIndex());
+		this.onChangeScheduleLayerNode(null, -1, this.blueprint.getCurrentScheduleLayerNode(), this.blueprint.getCurrentScheduleLayerIndex());
 	}
 
 	@Override
@@ -204,14 +209,14 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	}
 
 	@Override
-	public void onChangeScheduleLayer(IScheduleLayer prevLayer, int prevIndex, IScheduleLayer newLayer, int newIndex)
+	public void onChangeScheduleLayerNode(INode<IScheduleLayer, LayerLink> prevLayer, int prevIndex, INode<IScheduleLayer, LayerLink> newLayer, int newIndex)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
 
 		try
 		{
-			final IScheduleLayer layer = this.blueprint.getData().getScheduleLayers().get(newIndex);
+			final INode<IScheduleLayer, LayerLink> layer = this.blueprint.getData().getScheduleLayerTree().get(newIndex);
 
 			if (layer != null)
 			{
@@ -259,7 +264,13 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 	}
 
 	@Override
-	public void onRemoveScheduleLayer(IScheduleLayer layer, int index)
+	public void onPut(INode<IScheduleLayer, LayerLink> node, int id)
+	{
+
+	}
+
+	@Override
+	public void onRemove(INode<IScheduleLayer, LayerLink> layer, int index)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -283,12 +294,6 @@ public class RenderBlueprintEditing implements IWorldRenderer, IScheduleLayerHol
 		{
 			w.unlock();
 		}
-	}
-
-	@Override
-	public void onAddScheduleLayer(IScheduleLayer layer, int index)
-	{
-
 	}
 
 	@Override

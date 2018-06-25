@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -28,7 +28,7 @@ public class GuiChoiceMenu extends GuiFrame
 
 	private static boolean LAST_MOUSE_SET = false;
 
-	private static float LAST_MOUSE_X, LAST_MOUSE_Y;
+	private static int LAST_MOUSE_X, LAST_MOUSE_Y;
 
 	private final float choiceRadius = 35;
 
@@ -73,8 +73,8 @@ public class GuiChoiceMenu extends GuiFrame
 
 		if (!GuiChoiceMenu.LAST_MOUSE_SET)
 		{
-			GuiChoiceMenu.LAST_MOUSE_X = center.x();
-			GuiChoiceMenu.LAST_MOUSE_Y = center.y();
+			GuiChoiceMenu.LAST_MOUSE_X = (int) center.x();
+			GuiChoiceMenu.LAST_MOUSE_Y = (int) center.y();
 
 			GuiChoiceMenu.LAST_MOUSE_SET = true;
 		}

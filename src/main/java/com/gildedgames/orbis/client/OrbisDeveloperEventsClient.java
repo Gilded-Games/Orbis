@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client;
 
-import com.gildedgames.orbis.client.gui.blueprint.GuiEditBlueprint;
+import com.gildedgames.orbis.client.gui.GuiLayerEditor;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionInputs;
@@ -124,7 +124,7 @@ public class OrbisDeveloperEventsClient
 
 			if (blueprint != null && OrbisKeyBindings.keyBindControl.isKeyDown())
 			{
-				Minecraft.getMinecraft().displayGuiScreen(new GuiEditBlueprint(null, blueprint));
+				Minecraft.getMinecraft().displayGuiScreen(new GuiLayerEditor(blueprint));
 
 				event.setCanceled(true);
 			}

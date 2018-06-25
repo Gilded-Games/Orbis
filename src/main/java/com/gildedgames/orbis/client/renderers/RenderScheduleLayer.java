@@ -1,5 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.*;
 import com.gildedgames.orbis_api.world.IWorldObject;
@@ -20,23 +22,23 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-	private final IScheduleLayer layer;
+	private final INode<IScheduleLayer, LayerLink> layer;
 
 	private final IWorldObject parentObject;
 
 	private boolean disabled;
 
-	public RenderScheduleLayer(final IScheduleLayer layer, IScheduleLayerHolder holder, final IWorldObject parentObject, boolean rotateData)
+	public RenderScheduleLayer(final INode<IScheduleLayer, LayerLink> layer, IScheduleLayerHolder holder, final IWorldObject parentObject, boolean rotateData)
 	{
 		this.layer = layer;
 		this.parentObject = parentObject;
 
-		if (layer.getScheduleRecord() != null)
+		if (layer.getData().getScheduleRecord() != null)
 		{
-			layer.getScheduleRecord().listen(this);
+			layer.getData().getScheduleRecord().listen(this);
 		}
 
-		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getFilterRecord(), holder, this.parentObject, rotateData);
+		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getData().getFilterRecord(), holder, this.parentObject, rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -50,8 +52,8 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			w.unlock();
 		}
 
-		layer.getScheduleRecord().getSchedules(ScheduleRegion.class).forEach(this::cacheScheduleRegion);
-		layer.getScheduleRecord().getSchedules(ScheduleBlueprint.class).forEach(this::cacheScheduleBlueprint);
+		layer.getData().getScheduleRecord().getSchedules(ScheduleRegion.class).forEach(this::cacheScheduleRegion);
+		layer.getData().getScheduleRecord().getSchedules(ScheduleBlueprint.class).forEach(this::cacheScheduleBlueprint);
 	}
 
 	private void cacheScheduleBlueprint(ScheduleBlueprint schedule)

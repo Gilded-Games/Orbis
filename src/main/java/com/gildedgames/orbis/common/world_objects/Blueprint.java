@@ -2,6 +2,9 @@ package com.gildedgames.orbis.common.world_objects;
 
 import com.gildedgames.orbis.client.renderers.RenderBlueprintEditing;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.INodeTreeListener;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
@@ -25,7 +28,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Blueprint extends BlueprintRegion implements IWorldObject, IColored, IBlueprintDataListener,
-		IScheduleLayerHolder, IScheduleRecordListener
+		IScheduleLayerHolder, IScheduleRecordListener, INodeTreeListener<IScheduleLayer, LayerLink>
 {
 	private final List<IScheduleLayerHolderListener> listeners = Lists.newArrayList();
 
@@ -56,6 +59,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.world = world;
 		this.setBounds(region);
 		this.data.setWorldObjectParent(this);
+		this.data.getScheduleLayerTree().listen(this);
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final BlueprintData data)
@@ -64,6 +68,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.world = world;
 		this.data.listen(this);
 		this.data.setWorldObjectParent(this);
+		this.data.getScheduleLayerTree().listen(this);
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
@@ -72,6 +77,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.world = world;
 		this.data.listen(this);
 		this.data.setWorldObjectParent(this);
+		this.data.getScheduleLayerTree().listen(this);
 	}
 
 	@Override
@@ -156,12 +162,12 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	public ISchedule findIntersectingSchedule(BlockPos pos)
 	{
-		if (this.getCurrentScheduleLayer() == null)
+		if (this.getCurrentScheduleLayerNode() == null)
 		{
 			return null;
 		}
 
-		for (ISchedule r : this.getCurrentScheduleLayer().getScheduleRecord().getSchedules(ISchedule.class))
+		for (ISchedule r : this.getCurrentScheduleLayerNode().getData().getScheduleRecord().getSchedules(ISchedule.class))
 		{
 			int minX = r.getBounds().getMin().getX() + this.getPos().getX();
 			int minY = r.getBounds().getMin().getY() + this.getPos().getY();
@@ -182,11 +188,11 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	private void checkScheduleLayerExists()
 	{
-		boolean exists = this.getData().getScheduleLayers().containsKey(this.currentScheduleLayer);
+		boolean exists = this.getData().getScheduleLayerTree().containsId(this.currentScheduleLayer);
 
-		if (!exists && !this.getData().getScheduleLayers().isEmpty())
+		if (!exists && !this.getData().getScheduleLayerTree().isEmpty())
 		{
-			this.currentScheduleLayer = Collections.min(this.getData().getScheduleLayers().keySet());
+			this.currentScheduleLayer = Collections.min(this.getData().getScheduleLayerTree().getInternalMap().keySet());
 		}
 	}
 
@@ -206,7 +212,8 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	public void setCurrentScheduleLayerIndex(final int index)
 	{
 		int oldIndex = this.currentScheduleLayer;
-		IScheduleLayer oldLayer = this.getData().getScheduleLayers().get(oldIndex);
+		INode<IScheduleLayer, LayerLink> oldNode = this.getData().getScheduleLayerTree().get(oldIndex);
+		IScheduleLayer oldLayer = oldNode.getData();
 
 		if (oldLayer != null)
 		{
@@ -215,14 +222,14 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 		this.currentScheduleLayer = index;
 
-		this.getCurrentScheduleLayer().getScheduleRecord().listen(this);
+		this.getCurrentScheduleLayerNode().getData().getScheduleRecord().listen(this);
 
 		Lock w = this.lock.readLock();
 		w.lock();
 
 		try
 		{
-			this.listeners.forEach(l -> l.onChangeScheduleLayer(oldLayer, oldIndex, this.getCurrentScheduleLayer(), this.currentScheduleLayer));
+			this.listeners.forEach(l -> l.onChangeScheduleLayerNode(oldNode, oldIndex, this.getCurrentScheduleLayerNode(), this.currentScheduleLayer));
 		}
 		finally
 		{
@@ -231,11 +238,11 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
-	public IScheduleLayer getCurrentScheduleLayer()
+	public INode<IScheduleLayer, LayerLink> getCurrentScheduleLayerNode()
 	{
 		this.checkScheduleLayerExists();
 
-		return this.getData().getScheduleLayers().get(this.currentScheduleLayer);
+		return this.getData().getScheduleLayerTree().get(this.currentScheduleLayer);
 	}
 
 	@Override
@@ -349,30 +356,15 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 		this.currentScheduleLayer = tag.getInteger("currentScheduleLayer");
 		this.data.setWorldObjectParent(this);
+		this.data.getScheduleLayerTree().listen(this);
 
-		this.data.getScheduleLayers().values().forEach(l -> l.getScheduleRecord().listen(this));
+		this.data.getScheduleLayerTree().getNodes().forEach(l -> l.getData().getScheduleRecord().listen(this));
 	}
 
 	@Override
 	public int getColor()
 	{
 		return 0x99B6FF;
-	}
-
-	@Override
-	public void onRemoveScheduleLayer(final IScheduleLayer layer, final int index)
-	{
-		layer.getScheduleRecord().unlisten(this);
-
-		this.isDirty = true;
-	}
-
-	@Override
-	public void onAddScheduleLayer(final IScheduleLayer layer, final int index)
-	{
-		layer.getScheduleRecord().listen(this);
-
-		this.isDirty = true;
 	}
 
 	@Override
@@ -402,6 +394,22 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Override
 	public void onRemoveEntrance(Entrance entrance)
 	{
+		this.isDirty = true;
+	}
+
+	@Override
+	public void onPut(INode<IScheduleLayer, LayerLink> node, int id)
+	{
+		node.getData().getScheduleRecord().listen(this);
+
+		this.isDirty = true;
+	}
+
+	@Override
+	public void onRemove(INode<IScheduleLayer, LayerLink> node, int id)
+	{
+		node.getData().getScheduleRecord().unlisten(this);
+
 		this.isDirty = true;
 	}
 }

@@ -2,9 +2,10 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
+import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
@@ -44,7 +45,8 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 		super(data);
 	}
 
-	public PacketSetScheduleLayerInfo(final Blueprint blueprint, IScheduleLayer layer, String displayName, float edgeNoise, boolean choosesPerBlock)
+	public PacketSetScheduleLayerInfo(final Blueprint blueprint, INode<IScheduleLayer, LayerLink> layer, String displayName, float edgeNoise,
+			boolean choosesPerBlock)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 
@@ -52,7 +54,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 		this.edgeNoise = edgeNoise;
 		this.choosesPerBlock = choosesPerBlock;
 
-		this.layerIndex = blueprint.getData().getScheduleLayerId(layer);
+		this.layerIndex = blueprint.getData().getScheduleLayerTree().get(layer);
 	}
 
 	public PacketSetScheduleLayerInfo(int worldObjectId, final int layerIndex, final String displayName, float edgeNoise, boolean choosesPerBlock)
@@ -144,13 +146,15 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					IScheduleLayer layer = bData.getScheduleLayer(message.layerIndex);
+					INode<IScheduleLayer, LayerLink> node = bData.getScheduleLayerTree().get(message.layerIndex);
 
-					if (layer != null)
+					if (node != null)
 					{
-						layer.setDisplayName(message.displayName);
-						layer.getOptions().setEdgeNoise(message.edgeNoise);
-						layer.getOptions().setChoosesPerBlock(message.choosesPerBlock);
+						IScheduleLayer layer = node.getData();
+
+						layer.getOptions().getDisplayNameVar().setData(message.displayName);
+						layer.getOptions().getEdgeNoiseVar().setData(message.edgeNoise);
+						layer.getOptions().getChoosesPerBlockVar().setData(message.choosesPerBlock);
 					}
 				}
 			}
@@ -192,13 +196,15 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					IScheduleLayer layer = bData.getScheduleLayer(message.layerIndex);
+					INode<IScheduleLayer, LayerLink> node = bData.getScheduleLayerTree().get(message.layerIndex);
 
-					if (layer != null)
+					if (node != null)
 					{
-						layer.setDisplayName(message.displayName);
-						layer.getOptions().setEdgeNoise(message.edgeNoise);
-						layer.getOptions().setChoosesPerBlock(message.choosesPerBlock);
+						IScheduleLayer layer = node.getData();
+
+						layer.getOptions().getDisplayNameVar().setData(message.displayName);
+						layer.getOptions().getEdgeNoiseVar().setData(message.edgeNoise);
+						layer.getOptions().getChoosesPerBlockVar().setData(message.choosesPerBlock);
 					}
 
 					// TODO: Send just to people who have downloaded this project

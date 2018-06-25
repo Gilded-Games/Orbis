@@ -1,12 +1,5 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.data.schedules.ScheduleBlueprint;
-import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlueprintPaletteRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -14,8 +7,15 @@ import com.gildedgames.orbis.common.OrbisServerCaches;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintPalette;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.data.schedules.ScheduleBlueprint;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -156,7 +156,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 						}
 						else
 						{
-							b.getCurrentScheduleLayer().getScheduleRecord().addSchedule(scheduleBlueprint);
+							b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint);
 						}
 					}
 				}
