@@ -12,6 +12,7 @@ import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 import java.io.IOException;
 
@@ -60,8 +61,8 @@ public class GuiChoiceMenu extends GuiFrame
 	@Override
 	public void onGuiClosed()
 	{
-		GuiChoiceMenu.LAST_MOUSE_X = InputHelper.getMouseX();
-		GuiChoiceMenu.LAST_MOUSE_Y = InputHelper.getMouseY();
+		GuiChoiceMenu.LAST_MOUSE_X = Mouse.getEventX();
+		GuiChoiceMenu.LAST_MOUSE_Y = Mouse.getEventY();
 
 		super.onGuiClosed();
 	}
@@ -73,14 +74,13 @@ public class GuiChoiceMenu extends GuiFrame
 
 		if (!GuiChoiceMenu.LAST_MOUSE_SET)
 		{
-			GuiChoiceMenu.LAST_MOUSE_X = (int) center.x();
-			GuiChoiceMenu.LAST_MOUSE_Y = (int) center.y();
+			GuiChoiceMenu.LAST_MOUSE_X = Display.getWidth() / 2;
+			GuiChoiceMenu.LAST_MOUSE_Y = Display.getHeight() / 2;
 
 			GuiChoiceMenu.LAST_MOUSE_SET = true;
 		}
 
-		InputHelper.setMouseX(GuiChoiceMenu.LAST_MOUSE_X);
-		InputHelper.setMouseY(GuiChoiceMenu.LAST_MOUSE_Y);
+		Mouse.setCursorPosition(GuiChoiceMenu.LAST_MOUSE_X, GuiChoiceMenu.LAST_MOUSE_Y);
 
 		final GuiTexture gradient = new GuiTexture(Dim2D.build().pos(center).center(true).width(125).height(125).flush(), GRADIENT_TEXTURE);
 		final GuiTexture backdrop = new GuiTexture(Dim2D.build().pos(center).addX(-1).center(true).width(44).height(44).flush(), BACKDROP_TEXTURE);
