@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.gui.framework;
 
-import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
+import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class GuiRightClickFrameworkNode extends GuiFrame
 	{
 		this.dim().mod().width(this.width).height(this.height).flush();
 
-		this.addChildren(new GuiDropdownList(Pos2D.flush(this.width / 2, this.height / 2),
+		this.addChildren(new GuiDropdownList<IDropdownElement>(Dim2D.build().pos(this.width / 2, this.height / 2).width(60).flush(),
 				GuiRightClickElements.remove(this.framework, this.node),
 				GuiRightClickElements.close()));
 	}

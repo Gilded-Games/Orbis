@@ -11,6 +11,7 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSc
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSetCurrentScheduleLayer;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
+import com.gildedgames.orbis_api.client.gui.data.DropdownElementWithData;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.*;
 import com.gildedgames.orbis_api.client.gui.util.decorators.GuiScrollable;
@@ -22,6 +23,7 @@ import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.core.tree.NodeMultiParented;
 import com.gildedgames.orbis_api.core.variables.IGuiVar;
+import com.gildedgames.orbis_api.core.variables.conditions.GuiConditionPercentage;
 import com.gildedgames.orbis_api.core.variables.conditions.GuiConditionRatio;
 import com.gildedgames.orbis_api.core.variables.conditions.IGuiCondition;
 import com.gildedgames.orbis_api.core.variables.displays.GuiVarDisplay;
@@ -42,10 +44,13 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 {
 	private static final ResourceLocation CONDITION_WINDOW = OrbisCore.getResource("layer_gui/condition_window.png");
+
+	private static final ResourceLocation CONDITION_WINDOW_EXTENDED = OrbisCore.getResource("layer_gui/condition_window_extended.png");
 
 	private static final ResourceLocation LAYERS_ICON = OrbisCore.getResource("blueprint_gui/layers_icon.png");
 
@@ -75,7 +80,13 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 	private INode<IScheduleLayer, LayerLink> currentSelectedLayerNode;
 
+	private INode<IGuiCondition, ConditionLink> currentSelectedConditionNode;
+
 	private GuiDropdownList dropdown;
+
+	private GuiDropdown<DropdownElementWithData<Supplier<IGuiCondition>>> variablesDropdown;
+
+	private GuiText conditionType;
 
 	public GuiLayerEditor(Blueprint blueprint)
 	{
@@ -89,7 +100,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 	{
 		this.dim().mod().width(this.width).height(this.height).flush();
 
-		this.dropdown = new GuiDropdownList(Pos2D.flush());
+		this.dropdown = new GuiDropdownList<DropdownElementWithData<Supplier<IGuiCondition>>>(Dim2D.build().width(60).flush());
 
 		Pos2D center = InputHelper.getCenter();
 
@@ -244,7 +255,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				GuiLayerEditor.this.varDisplay.updateVariableData();
 
 				GuiLayerEditor.this.varDisplayScrollDecorator.resetScroll();
-				GuiLayerEditor.this.varDisplay.display(variables, null);
+				GuiLayerEditor.this.varDisplay.display(variables);
 
 				final Blueprint b = GuiLayerEditor.this.blueprint;
 
@@ -268,6 +279,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 				GuiLayerEditor.this.currentSelectedNode = node;
 				GuiLayerEditor.this.currentSelectedLayerNode = node;
+				GuiLayerEditor.this.currentSelectedConditionNode = null;
 
 				GuiLayerEditor.this.selectedConditionTitle
 						.setText(new Text(
@@ -426,7 +438,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				GuiLayerEditor.this.varDisplay.updateVariableData();
 
 				GuiLayerEditor.this.varDisplayScrollDecorator.resetScroll();
-				GuiLayerEditor.this.varDisplay.display(node.getData().getVariables(), node.getData().getName());
+				GuiLayerEditor.this.varDisplay.display(node.getData().getVariables());
 
 				GuiLayerEditor.this.selectedConditionTitle
 						.setText(new Text(
@@ -434,8 +446,14 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 										TextFormatting.BOLD + "Variables: " + TextFormatting.RESET + "Condition " + String.valueOf(node.getNodeId())),
 								1.0F));
 
+				DropdownElementWithData<Supplier<IGuiCondition>> element = new DropdownElementWithData<>(new TextComponentTranslation(node.getData().getName()),
+						null);
+
+				GuiLayerEditor.this.variablesDropdown.setChosenElement(element);
+
 				GuiLayerEditor.this.currentSelectedNode = node;
 				GuiLayerEditor.this.currentSelectedLayerNode = null;
+				GuiLayerEditor.this.currentSelectedConditionNode = node;
 			}
 
 			@Override
@@ -496,7 +514,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 		};
 
-		this.varDisplayScrollDecorator = new GuiScrollable(this.varDisplay, Dim2D.build().width(192).height(this.height - 160).flush());
+		this.varDisplayScrollDecorator = new GuiScrollable(this.varDisplay, Dim2D.build().width(192).height(this.height - 170).flush());
 
 		this.selectedLayerTitle = new GuiText(Dim2D.build().x(12).y(10).flush(),
 				new Text(new TextComponentTranslation(TextFormatting.BOLD + "Conditions: "), 1.0F));
@@ -515,9 +533,31 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		GuiText layersTitle = new GuiText(Dim2D.build().centerX(true).x(200 + ((this.width - 200) / 2) - 20).y(20).flush(),
 				new Text(new TextComponentTranslation(TextFormatting.BOLD + "Layers:"), 1.0F));
 
+		this.conditionType = new GuiText(Dim2D.build().x(8).y(151).flush(),
+				new Text(new TextComponentTranslation("Condition Type:"), 1.0F));
+
+		this.conditionType.setVisible(false);
+
+		this.variablesDropdown = new GuiDropdown<>(Dim2D.build().pos(89, 150).width(100).flush(), (e) ->
+		{
+			IGuiCondition condition = e.getData().get();
+
+			GuiLayerEditor.this.currentSelectedConditionNode.setData(condition);
+
+			GuiLayerEditor.this.varDisplay.updateVariableData();
+
+			GuiLayerEditor.this.varDisplayScrollDecorator.resetScroll();
+			GuiLayerEditor.this.varDisplay.display(condition.getVariables());
+		},
+				new DropdownElementWithData<>(new TextComponentString("Percentage"), GuiConditionPercentage::new),
+				new DropdownElementWithData<>(new TextComponentString("Ratio"), GuiConditionRatio::new));
+
+		this.variablesDropdown.setEnabled(false);
+		this.variablesDropdown.setVisible(false);
+
 		this.addChildren(this.layerTree, this.conditionTree, this.conditionWindow,
 				this.varDisplayScrollDecorator, this.saveButton, this.closeButton, this.selectedLayerTitle, this.selectedConditionTitle, layersTitle,
-				this.layerTab, this.postGenTab, this.dropdown);
+				this.layerTab, this.postGenTab, this.dropdown, this.variablesDropdown, this.conditionType);
 
 		this.layerTree.reset(this.blueprint.getData().getTreeGuiPos() == null ?
 				Pos2D.flush((this.layerTree.dim().width() / 2) - this.fontRenderer
@@ -544,6 +584,32 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 	{
 		this.conditionTree.setVisible(this.currentSelectedLayer != null);
 		this.conditionTree.setEnabled(this.currentSelectedLayer != null);
+
+		this.variablesDropdown.setVisible(this.currentSelectedConditionNode != null);
+		this.variablesDropdown.setEnabled(this.currentSelectedConditionNode != null);
+
+		this.conditionType.setVisible(this.currentSelectedConditionNode != null);
+
+		if (this.currentSelectedConditionNode != null)
+		{
+			if (this.conditionWindow.getResourceLocation() == CONDITION_WINDOW)
+			{
+				this.conditionWindow.dim().mod().height(170).flush();
+				this.conditionWindow.setResourceLocation(CONDITION_WINDOW_EXTENDED);
+
+				this.varDisplayScrollDecorator.dim().mod().height(this.height - 190).y(175).flush();
+			}
+		}
+		else
+		{
+			if (this.conditionWindow.getResourceLocation() != CONDITION_WINDOW)
+			{
+				this.conditionWindow.dim().mod().height(150).flush();
+				this.conditionWindow.setResourceLocation(CONDITION_WINDOW);
+
+				this.varDisplayScrollDecorator.dim().mod().height(this.height - 170).y(155).flush();
+			}
+		}
 	}
 
 	@Override

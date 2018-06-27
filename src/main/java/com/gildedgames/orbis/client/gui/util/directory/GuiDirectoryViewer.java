@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client.gui.util.directory;
 
 import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
@@ -36,7 +37,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 	private GuiAbstractButton refreshButton, backButton, forwardButton;
 
-	private GuiDropdownList dropdownList;
+	private GuiDropdownList<IDropdownElement> dropdownList;
 
 	private boolean displayBackdrop = true;
 
@@ -245,7 +246,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 		this.addChildren(this.backButton);
 		this.addChildren(this.forwardButton);
 
-		this.dropdownList = new GuiDropdownList(Pos2D.flush());
+		this.dropdownList = new GuiDropdownList<>(Dim2D.build().flush());
 
 		this.dropdownList.setVisible(false);
 
