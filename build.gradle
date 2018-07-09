@@ -81,3 +81,15 @@ static def loadConfig(File config) {
 artifacts {
 	archives jar
 }
+
+task signJar(type: SignJar, dependsOn: reobfJar) {
+    keyStore = System.getenv('GG_SIGN_KEYSTORE')
+    alias = System.getenv('GG_SIGN_ALIAS')
+    storePass = System.getenv('GG_SIGN_STORE_PASS')
+    keyPass = System.getenv('GG_SIGN_KEY_PASS')
+
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+}
+
+build.dependsOn signJar

@@ -60,10 +60,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 @Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION,
-		dependencies = OrbisCore.MOD_DEPENDENCIES)
+		dependencies = OrbisCore.MOD_DEPENDENCIES, certificateFingerprint = OrbisCore.MOD_FINGERPRINT)
 @Mod.EventBusSubscriber
 public class OrbisCore implements IOrbisServicesListener
 {
+
+	public static final String MOD_FINGERPRINT = "db341c083b1b8ce9160a769b569ef6737b3f4cdf";
 
 	public static final String MOD_NAME = "Orbis";
 
