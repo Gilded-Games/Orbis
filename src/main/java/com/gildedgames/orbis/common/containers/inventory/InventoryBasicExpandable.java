@@ -54,19 +54,19 @@ public class InventoryBasicExpandable implements IInventory
 		{
 			for (int i = 0; i < this.slotsCount; i++)
 			{
-				newContents.set(i, this.inventoryContents.get(i));
+				newContents.setUsedData(i, this.inventoryContents.get(i));
 			}
 		}
 		else
 		{
 			for (int i = 0; i < slot; i++)
 			{
-				newContents.set(i, this.inventoryContents.get(i));
+				newContents.setUsedData(i, this.inventoryContents.get(i));
 			}
 
 			for (int i = slot + 1; i < this.slotsCount; i++)
 			{
-				newContents.set(i, this.inventoryContents.get(i));
+				newContents.setUsedData(i, this.inventoryContents.get(i));
 			}
 		}
 

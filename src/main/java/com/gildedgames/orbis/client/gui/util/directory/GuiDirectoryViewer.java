@@ -155,7 +155,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 	@Override
 	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
 	{
-		if (!InputHelper.isHovered(this.dropdownList))
+		if (!InputHelper.isHoveredAndTopElement(this.dropdownList))
 		{
 			this.dropdownList.setVisible(false);
 		}
@@ -172,7 +172,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 			return;
 		}
 
-		if (this.isEnabled() && InputHelper.isHovered(this))
+		if (this.isEnabled() && InputHelper.isHoveredAndTopElement(this))
 		{
 			if (mouseButton == 1)
 			{

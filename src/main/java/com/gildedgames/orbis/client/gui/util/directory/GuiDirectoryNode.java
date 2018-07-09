@@ -109,7 +109,7 @@ public class GuiDirectoryNode extends GuiFrame
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (this.isEnabled() && InputHelper.isHovered(this))
+		if (this.isEnabled() && InputHelper.isHoveredAndTopElement(this))
 		{
 			if (mouseButton == 0)
 			{
@@ -135,7 +135,7 @@ public class GuiDirectoryNode extends GuiFrame
 	{
 		super.mouseReleased(mouseX, mouseY, state);
 
-		if (this.isEnabled() && InputHelper.isHovered(this))
+		if (this.isEnabled() && InputHelper.isHoveredAndTopElement(this))
 		{
 			this.icon.dim().mod().scale(1.025F).flush();
 		}

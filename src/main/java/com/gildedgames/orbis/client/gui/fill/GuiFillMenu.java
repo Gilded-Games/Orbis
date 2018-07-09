@@ -151,7 +151,7 @@ public class GuiFillMenu extends GuiFrameCreative
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.forgeButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.forgeButton) && mouseButton == 0)
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.block_palette);
 

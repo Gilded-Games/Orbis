@@ -193,6 +193,16 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	@Override
 	public void draw()
 	{
+		ScaledResolution res = new ScaledResolution(this.mc);
+
+		double scaleW = this.mc.displayWidth / res.getScaledWidth_double();
+		double scaleH = this.mc.displayHeight / res.getScaledHeight_double();
+
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor((int) ((this.dim().x()) * scaleW),
+				(int) (this.mc.displayHeight - ((this.dim().y() + this.dim().height()) * scaleH)),
+				(int) (this.dim().width() * scaleW), (int) (this.dim().height() * scaleH));
+
 		float mouseX = InputHelper.getMouseX() - this.draggableCanvas.dim().x();
 		float mouseY = InputHelper.getMouseY() - this.draggableCanvas.dim().y();
 
@@ -353,7 +363,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 			INode<DATA, LINK> node = entry.getKey();
 			BUTTON button = entry.getValue();
 
-			if (InputHelper.isHovered(button))
+			if (InputHelper.isHoveredAndTopElement(button))
 			{
 				if (mouseButton == 1)
 				{
@@ -459,23 +469,30 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	public void preDrawChild(IGuiFrame child)
 	{
 		ScaledResolution res = new ScaledResolution(this.mc);
 
 		double scaleW = this.mc.displayWidth / res.getScaledWidth_double();
 		double scaleH = this.mc.displayHeight / res.getScaledHeight_double();
 
-		if (this.isVisible())
-		{
-			GL11.glEnable(GL11.GL_SCISSOR_TEST);
-			GL11.glScissor((int) ((this.dim().x()) * scaleW),
-					(int) (this.mc.displayHeight - ((this.dim().y() + this.dim().height()) * scaleH)),
-					(int) (this.dim().width() * scaleW), (int) (this.dim().height() * scaleH));
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor((int) ((this.dim().x()) * scaleW),
+				(int) (this.mc.displayHeight - ((this.dim().y() + this.dim().height()) * scaleH)),
+				(int) (this.dim().width() * scaleW), (int) (this.dim().height() * scaleH));
 
-			//this.drawGradientRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), -1072689136, -804253680);
-		}
+		//this.drawGradientRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), -1072689136, -804253680);
+	}
 
+	@Override
+	public void postDrawChild(IGuiFrame child)
+	{
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
 		if (this.isVisible())
@@ -498,8 +515,6 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 					GlStateManager.popMatrix();
 				}
 			}
-
-			GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		}
 	}
 }

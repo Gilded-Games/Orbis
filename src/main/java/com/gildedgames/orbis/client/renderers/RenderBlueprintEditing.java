@@ -264,6 +264,12 @@ public class RenderBlueprintEditing
 	}
 
 	@Override
+	public void onSetData(INode<IScheduleLayer, LayerLink> node, IScheduleLayer iScheduleLayer, int id)
+	{
+
+	}
+
+	@Override
 	public void onPut(INode<IScheduleLayer, LayerLink> node, int id)
 	{
 

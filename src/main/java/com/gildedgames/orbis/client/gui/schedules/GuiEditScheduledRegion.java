@@ -1,22 +1,22 @@
 package com.gildedgames.orbis.client.gui.schedules;
 
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetTriggerId;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiInput;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
-import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
-import com.gildedgames.orbis_api.inventory.InventorySpawnEggs;
-import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetTriggerId;
+import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis_api.inventory.InventorySpawnEggs;
 import com.gildedgames.orbis_api.util.InputHelper;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -119,13 +119,13 @@ public class GuiEditScheduledRegion extends GuiFrame
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.closeButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.closeButton) && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
 		{
 			Blueprint b = (Blueprint) this.scheduleRegion.getWorldObjectParent();
 			OrbisCore.network().sendPacketToServer(

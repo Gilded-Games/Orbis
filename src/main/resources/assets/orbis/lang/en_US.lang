@@ -6,7 +6,7 @@ item.orbis.blueprint_palette.name=Blueprint Palette
 item.orbis.framework.name=Framework
 item.orbis.blueprint_stacker.name=Blueprint Stacker
 
-#Blocks
+# Blocks
 block.orbis.orbis_floor.name=Orbis Floor
 
 # Commands
@@ -15,3 +15,73 @@ gameMode.developer=Developer Mode
 # Key Bindings
 keybindings.control=Control
 keybindings.findPower=Switch Power
+
+# Gui
+orbis.gui.type=Type:
+orbis.gui.percentage=Percentage
+orbis.gui.ratio=Ratio
+orbis.gui.conditions=Conditions
+orbis.gui.post_resolve_actions=Post-Resolve Actions
+orbis.gui.variables=§lVariables: §r%s
+orbis.gui.layers=Layers:
+orbis.gui.layer=Layer
+orbis.gui.condition=Condition
+orbis.gui.save_as=Save As
+orbis.gui.close=Close
+orbis.gui.blueprint_variables=Blueprint Variables
+orbis.gui.blueprint_variables_title=§lBlueprint Variables:
+orbis.gui.link_child=Link Child
+orbis.gui.and_link=And...
+orbis.gui.or_lin=Or...
+orbis.gui.and=And
+orbis.gui.or=Or
+orbis.gui.apply=Apply
+orbis.gui.reset=Reset
+orbis.gui.denominator=Denominator
+orbis.gui.numerator=Numerator
+orbis.gui.edge_noise=Edge Noise
+orbis.gui.chooses_per_block=Chooses Per Block
+orbis.gui.display_name=Display Name
+orbis.gui.value=Value
+orbis.gui.variable=Variable %s
+orbis.gui.variable_type=Variable Type:
+
+orbis.gui.selected_variable=Selected Variable
+orbis.gui.check_blueprint_variable=Check Blueprint Variable
+orbis.gui.none_chosen=None Chosen
+
+orbis.gui.mutate_blueprint_variable=Mutate Blueprint Variable
+orbis.gui.mutate=Mutate
+
+orbis.gui.compare=Compare
+orbis.gui.post_resolve_action=Post-Resolve Action
+orbis.gui.selected=§lSelected: §r%s
+
+orbis.gui.integer=Integer
+orbis.gui.boolean=Boolean
+orbis.gui.double=Double
+orbis.gui.float=Float
+orbis.gui.float_range=Float Range
+orbis.gui.string=String
+orbis.gui.blueprint_variable=Blueprint Variable
+
+orbis.gui.overwrite=You're about to overwrite an existing file. Are you sure?
+
+orbis.gui.equals=Equals
+orbis.gui.doesnt_equal=Doesn't Equal
+orbis.gui.set=Set
+orbis.gui.greater_than=Greater Than
+orbis.gui.less_than=Less Than
+orbis.gui.greater_than_or_equal=Greater Than Or Equal
+orbis.gui.less_than_or_equal=Less Than Or Equal
+orbis.gui.increase=Increase
+orbis.gui.decrease=Decrease
+orbis.gui.multiply=Multiply
+orbis.gui.divide=Divide
+orbis.gui.contains=Contains
+orbis.gui.concatenate=Concatenate
+orbis.gui.replace=Replace
+orbis.gui.with=With
+orbis.gui.clear=Clear
+orbis.gui.equals_true=Equals True
+orbis.gui.equals_false=Equals False

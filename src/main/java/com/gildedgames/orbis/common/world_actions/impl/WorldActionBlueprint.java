@@ -56,7 +56,8 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		ICreationData creationData = new CreationData(world, player.getEntity()).pos(this.bb.getMin()).rotation(rotation).placesAir(false)
+		ICreationData creationData = new CreationData(world, player.getEntity()).pos(this.pos.add(-this.data.getWidth() / 2, 0, -this.data.getLength() / 2))
+				.rotation(rotation).placesAir(false)
 				.seed(this.getSeed());
 
 		BakedBlueprint baked = new BakedBlueprint(this.data, creationData);

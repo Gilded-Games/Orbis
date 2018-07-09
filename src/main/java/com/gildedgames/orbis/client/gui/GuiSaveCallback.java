@@ -53,7 +53,7 @@ public class GuiSaveCallback extends GuiFrame
 		this.no.getInner().displayString = "No";
 
 		this.warning = new GuiText(Dim2D.build().center(true).pos(center).addY(-15).flush(),
-				new Text(new TextComponentTranslation("You're about to overwrite an existing file. Are you sure?"), 1.0F));
+				new Text(new TextComponentTranslation("orbis.gui.overwrite"), 1.0F));
 
 		this.addChildren(this.yes, this.no, this.warning);
 	}
@@ -63,7 +63,7 @@ public class GuiSaveCallback extends GuiFrame
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.yes) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.yes) && mouseButton == 0)
 		{
 			if (this.getPrevFrame() instanceof GuiSaveData)
 			{
@@ -75,9 +75,9 @@ public class GuiSaveCallback extends GuiFrame
 			}
 		}
 
-		if (InputHelper.isHovered(this.no) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.no) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
 		}
 	}
 }

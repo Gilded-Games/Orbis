@@ -7,12 +7,14 @@ import com.gildedgames.orbis_api.core.tree.INodeTreeListener;
 import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintVariable;
 import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IColored;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.*;
+import com.gildedgames.orbis_api.util.mc.NBT;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
@@ -60,6 +62,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.setBounds(region);
 		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
+		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final BlueprintData data)
@@ -69,6 +72,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.data.listen(this);
 		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
+		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
@@ -78,6 +82,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.data.listen(this);
 		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
+		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 	}
 
 	@Override
@@ -357,6 +362,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.currentScheduleLayer = tag.getInteger("currentScheduleLayer");
 		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
+		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 
 		this.data.getScheduleLayerTree().getNodes().forEach(l -> l.getData().getScheduleRecord().listen(this));
 	}
@@ -370,31 +376,39 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Override
 	public void onDataChanged()
 	{
-		this.isDirty = true;
+		this.markDirty();
 	}
 
 	@Override
 	public void onAddSchedule(ISchedule schedule)
 	{
-		this.isDirty = true;
+		this.markDirty();
 	}
 
 	@Override
 	public void onRemoveSchedule(ISchedule schedule)
 	{
-		this.isDirty = true;
+		this.markDirty();
 	}
 
 	@Override
 	public void onAddEntrance(Entrance entrance)
 	{
-		this.isDirty = true;
+		this.markDirty();
 	}
 
 	@Override
 	public void onRemoveEntrance(Entrance entrance)
 	{
-		this.isDirty = true;
+		this.markDirty();
+	}
+
+	@Override
+	public void onSetData(INode<IScheduleLayer, LayerLink> node, IScheduleLayer iScheduleLayer, int id)
+	{
+		node.getData().getScheduleRecord().listen(this);
+
+		this.markDirty();
 	}
 
 	@Override
@@ -402,7 +416,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	{
 		node.getData().getScheduleRecord().listen(this);
 
-		this.isDirty = true;
+		this.markDirty();
 	}
 
 	@Override
@@ -410,6 +424,34 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	{
 		node.getData().getScheduleRecord().unlisten(this);
 
-		this.isDirty = true;
+		this.markDirty();
+	}
+
+	private static class BlueprintVariableTreeListener implements INodeTreeListener<BlueprintVariable, NBT>
+	{
+		private Blueprint blueprint;
+
+		public BlueprintVariableTreeListener(Blueprint blueprint)
+		{
+			this.blueprint = blueprint;
+		}
+
+		@Override
+		public void onSetData(INode<BlueprintVariable, NBT> node, BlueprintVariable variable, int id)
+		{
+			this.blueprint.markDirty();
+		}
+
+		@Override
+		public void onPut(INode<BlueprintVariable, NBT> node, int id)
+		{
+			this.blueprint.markDirty();
+		}
+
+		@Override
+		public void onRemove(INode<BlueprintVariable, NBT> node, int id)
+		{
+			this.blueprint.markDirty();
+		}
 	}
 }

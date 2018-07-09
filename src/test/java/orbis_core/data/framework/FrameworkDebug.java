@@ -1,5 +1,6 @@
 package orbis_core.data.framework;
 
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis_api.data.framework.FrameworkAlgorithm;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -13,7 +14,6 @@ import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.util.RegionHelp;
 import com.gildedgames.orbis_api.util.RotationHelp;
-import com.gildedgames.orbis.common.OrbisCore;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.BufferUtils;
@@ -85,7 +85,7 @@ public class FrameworkDebug
 	{
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-		// set the color of the quad (R,G,B,A)
+		// setUsedData the color of the quad (R,G,B,A)
 		GL11.glColor3f(0.5f, 0.5f, 1.0f);
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))

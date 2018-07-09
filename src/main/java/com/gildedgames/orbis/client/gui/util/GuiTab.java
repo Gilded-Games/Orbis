@@ -52,7 +52,7 @@ public class GuiTab extends GuiFrame
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.tab_bg))
+		if (InputHelper.isHoveredAndTopElement(this.tab_bg))
 		{
 			this.onPressed.run();
 		}

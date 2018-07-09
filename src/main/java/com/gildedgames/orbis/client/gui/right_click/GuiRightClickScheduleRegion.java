@@ -36,7 +36,7 @@ public class GuiRightClickScheduleRegion extends GuiFrame
 	{
 		this.dim().mod().width(this.width).height(this.height).flush();
 
-		this.addChildren(new GuiDropdownList<IDropdownElement>(Dim2D.build().pos(this.width / 2, this.height / 2).width(60).flush(),
+		this.addChildren(new GuiDropdownList<IDropdownElement>(Dim2D.build().pos(this.width / 2, this.height / 2).width(70).flush(),
 				new DropdownElement(new TextComponentString("Edit"))
 				{
 					@Override

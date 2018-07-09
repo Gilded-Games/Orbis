@@ -256,13 +256,13 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		{
 			GuiTexture tab = this.tabs[i];
 
-			if (InputHelper.isHovered(tab))
+			if (InputHelper.isHoveredAndTopElement(tab))
 			{
 				this.setTabIndex(i);
 			}
 		}
 
-		if (InputHelper.isHovered(this.forgeButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.forgeButton) && mouseButton == 0)
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.blueprint_palette);
 

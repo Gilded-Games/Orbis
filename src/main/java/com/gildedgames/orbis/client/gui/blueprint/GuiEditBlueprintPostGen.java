@@ -112,7 +112,7 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 
 		this.layerTab = new GuiTab(Dim2D.build().x(center.x()).addX(-11).centerX(true).flush(),
 				new GuiTexture(Dim2D.build().width(16).height(16).flush(), LAYERS_ICON),
-				() -> this.mc.displayGuiScreen(this.getPrevFrame()));
+				() -> this.mc.displayGuiScreen(this.getPrevFrame().getActualScreen()));
 		this.postGenTab = new GuiTab(Dim2D.build().x(center.x()).addX(11).centerX(true).flush(),
 				new GuiTexture(Dim2D.build().width(16).height(16).flush(), POST_GEN_ICON),
 				() -> {
@@ -214,13 +214,13 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.closeButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.closeButton) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.blueprint, BlueprintData.EXTENSION));
 		}

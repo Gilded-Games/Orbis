@@ -1,33 +1,34 @@
 package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis.client.OrbisClientCaches;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
+import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
+import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProject;
+import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.network.packets.projects.PacketRequestCreateProject;
+import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
+import com.gildedgames.orbis.common.network.packets.projects.PacketSaveWorldObjectToProject;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProject;
-import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiInput;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.IGuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.packets.projects.PacketRequestCreateProject;
-import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
-import com.gildedgames.orbis.common.network.packets.projects.PacketSaveWorldObjectToProject;
-import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis_api.data.management.impl.ProjectIdentifier;
+import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentString;
@@ -57,7 +58,7 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private String viewOnlyDataType;
 
-	public GuiSaveData(GuiFrame prevFrame, final IData data, String viewOnlyDataType)
+	public GuiSaveData(IGuiFrame prevFrame, final IData data, String viewOnlyDataType)
 	{
 		super(prevFrame, Dim2D.flush());
 
@@ -67,7 +68,7 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 		this.data = data;
 	}
 
-	public GuiSaveData(GuiFrame prevFrame, final IWorldObject worldObject, String viewOnlyDataType)
+	public GuiSaveData(IGuiFrame prevFrame, final IWorldObject worldObject, String viewOnlyDataType)
 	{
 		super(prevFrame, Dim2D.flush());
 
@@ -171,13 +172,13 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.backButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.backButton) && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHovered(this.saveButton) && mouseButton == 0)
+		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
 		{
 			if (this.inProjectDirectory)
 			{
@@ -239,10 +240,15 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 					 * a clone. Many issues are caused if two files use
 					 * the same identifier.
 					 */
-					if (data.getMetadata().getIdentifier() != null && this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
-							&& !canOverwrite)
+					boolean notSameProjectOrNoProject =
+							data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
+									.equals(this.project.getProjectIdentifier());
+
+					if (data.getMetadata().getIdentifier() != null && (this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
+							&& !canOverwrite) || notSameProjectOrNoProject)
 					{
 						data = data.clone();
+
 						data.getMetadata().setIdentifier(this.project.getCache().createNextIdentifier());
 					}
 

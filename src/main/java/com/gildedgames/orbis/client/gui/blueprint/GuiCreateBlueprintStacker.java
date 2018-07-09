@@ -83,7 +83,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHovered(this.createButton))
+		if (InputHelper.isHoveredAndTopElement(this.createButton))
 		{
 			ItemStack topStack = this.container.getTopStackerSlot().getStack();
 			ItemStack bottomStack = this.container.getBottomStackerSlot().getStack();

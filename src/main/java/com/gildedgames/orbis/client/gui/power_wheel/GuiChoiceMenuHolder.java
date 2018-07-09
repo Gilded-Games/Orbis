@@ -1,18 +1,17 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.network.packets.PacketSetScheduling;
+import com.gildedgames.orbis.common.network.packets.PacketTeleportOrbis;
+import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.network.packets.PacketSetScheduling;
-import com.gildedgames.orbis.common.network.packets.PacketTeleportOrbis;
 import com.gildedgames.orbis_api.util.InputHelper;
-import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -136,7 +135,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 	@Override
 	public void draw()
 	{
-		if (InputHelper.isHovered(this.portal))
+		if (InputHelper.isHoveredAndTopElement(this.portal))
 		{
 			this.portal.dim().mod().scale(1.1F).flush();
 
@@ -239,7 +238,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 			for (final GuiTexture tab : this.tabs)
 			{
-				if (InputHelper.isHovered(tab))
+				if (InputHelper.isHoveredAndTopElement(tab))
 				{
 					this.setCurrentPage(i);
 
@@ -249,7 +248,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				i++;
 			}
 
-			if (InputHelper.isHovered(this.left))
+			if (InputHelper.isHoveredAndTopElement(this.left))
 			{
 				this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
 				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE_UNPRESSED);
@@ -258,7 +257,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(false);
 			}
 
-			if (InputHelper.isHovered(this.right))
+			if (InputHelper.isHoveredAndTopElement(this.right))
 			{
 				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
 				this.left.setResourceLocation(LEFT_PLACEMENT_MODE_UNPRESSED);
@@ -267,7 +266,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(true);
 			}
 
-			if (InputHelper.isHovered(this.portal))
+			if (InputHelper.isHoveredAndTopElement(this.portal))
 			{
 				OrbisCore.network().sendPacketToServer(new PacketTeleportOrbis());
 			}
