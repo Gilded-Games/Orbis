@@ -240,12 +240,12 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 					 * a clone. Many issues are caused if two files use
 					 * the same identifier.
 					 */
-					boolean notSameProjectOrNoProject =
+					boolean notSameProjectOrNoProject = data.getMetadata().getIdentifier() != null &&
 							data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
-									.equals(this.project.getProjectIdentifier());
+							.equals(this.project.getProjectIdentifier());
 
-					if (data.getMetadata().getIdentifier() != null && (this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
-							&& !canOverwrite) || notSameProjectOrNoProject)
+					if (data.getMetadata().getIdentifier() != null && ((this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
+							&& !canOverwrite) || notSameProjectOrNoProject))
 					{
 						data = data.clone();
 
