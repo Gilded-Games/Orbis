@@ -82,7 +82,7 @@ public class PacketCreatePlacingBlueprint implements IMessage
 
 				baked.bake();
 
-				primer.create(region, baked);
+				primer.create(baked);
 			}
 
 			return null;

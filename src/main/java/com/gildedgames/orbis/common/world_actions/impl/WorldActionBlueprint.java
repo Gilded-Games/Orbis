@@ -64,7 +64,7 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		baked.bake();
 
-		primer.create(this.bb, baked);
+		primer.create(baked);
 	}
 
 	@Override

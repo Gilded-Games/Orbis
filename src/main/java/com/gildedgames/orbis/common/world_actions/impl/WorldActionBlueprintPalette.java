@@ -28,6 +28,8 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 
 	private IRegion region;
 
+	private BakedBlueprint baked;
+
 	private WorldActionBlueprintPalette()
 	{
 
@@ -56,11 +58,14 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 
 		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		BakedBlueprint baked = new BakedBlueprint(this.chosenBlueprint, data.pos(this.region.getMin()));
+		if (this.baked == null)
+		{
+			this.baked = new BakedBlueprint(this.chosenBlueprint, data.pos(this.region.getMin()));
 
-		baked.bake();
+			this.baked.bake();
+		}
 
-		primer.create(this.region, baked);
+		primer.create(this.baked);
 	}
 
 	@Override
