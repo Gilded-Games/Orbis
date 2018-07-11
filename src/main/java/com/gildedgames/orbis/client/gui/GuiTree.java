@@ -69,10 +69,13 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private Function<INode<DATA, LINK>, BUTTON> buttonFactory;
 
+	private Supplier<Integer> nodeIdFactory;
+
 	private float movingButtonOffsetX, movingButtonOffsetY;
 
 	public GuiTree(Rect rect, Function<Integer, INode<DATA, LINK>> nodeFactory, Supplier<Collection<IDropdownElement>> nodeDropdownElementFactory,
-			Function<LINK, String> linkStringInterpreter, Function<INode<DATA, LINK>, Boolean> nodeValidator, Function<INode<DATA, LINK>, BUTTON> buttonFactory)
+			Function<LINK, String> linkStringInterpreter, Function<INode<DATA, LINK>, Boolean> nodeValidator, Function<INode<DATA, LINK>, BUTTON> buttonFactory,
+			Supplier<Integer> nodeIdFactory)
 	{
 		super(rect);
 
@@ -81,6 +84,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		this.linkStringInterpreter = linkStringInterpreter;
 		this.nodeValidator = nodeValidator;
 		this.buttonFactory = buttonFactory;
+		this.nodeIdFactory = nodeIdFactory;
 
 		this.draggableCanvas = new GuiFrameDummy(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush());
 	}
@@ -159,7 +163,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 															 @Override
 															 public void onClick(final GuiDropdownList list, final EntityPlayer player)
 															 {
-																 INode<DATA, LINK> node = GuiTree.this.nodeFactory.apply(GuiTree.this.nodes.size());
+																 INode<DATA, LINK> node = GuiTree.this.nodeFactory.apply(GuiTree.this.nodeIdFactory.get());
 
 																 GuiTree.this.addNode(node, GuiTree.this.rightClickLocation, false);
 															 }

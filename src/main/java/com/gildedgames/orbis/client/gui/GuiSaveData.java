@@ -241,8 +241,8 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 					 * the same identifier.
 					 */
 					boolean notSameProjectOrNoProject = data.getMetadata().getIdentifier() != null &&
-							data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
-							.equals(this.project.getProjectIdentifier());
+							(data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
+									.equals(this.project.getProjectIdentifier()));
 
 					if (data.getMetadata().getIdentifier() != null && ((this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
 							&& !canOverwrite) || notSameProjectOrNoProject))

@@ -191,7 +191,8 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					button.getInner().displayString = n.getData().getOptions().getDisplayNameVar().getData();
 
 					return button;
-				});
+				},
+				() -> this.blueprint.getData().getScheduleLayerTree().findNextAvailableId());
 
 		final List<INode<IGuiCondition, ConditionLink>> roots = Lists.newArrayList();
 		final List<INode<IGuiCondition, ConditionLink>> visitedNodes = Lists.newArrayList();
@@ -252,7 +253,8 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					button.getInner().displayString = "C" + String.valueOf(n.getNodeId());
 
 					return button;
-				});
+				},
+				() -> this.currentSelectedLayer.getConditionNodeTree().findNextAvailableId());
 
 		this.postResolveActionTree = new GuiTree<>(Dim2D.build().width(184).height(86).x(8).y(27).flush(), (nodeId) ->
 		{
@@ -280,7 +282,8 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					button.getInner().displayString = name;
 
 					return button;
-				});
+				},
+				() -> this.currentSelectedLayer.getPostResolveActionNodeTree().findNextAvailableId());
 
 		this.blueprintVariablesTree = new GuiTree<>(Dim2D.build().width(184).height(86).x(8).y(27).flush(), (nodeId) ->
 		{
@@ -304,7 +307,8 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					button.getInner().displayString = name;
 
 					return button;
-				});
+				},
+				() -> this.blueprint.getData().getVariableTree().findNextAvailableId());
 
 		this.conditionTree.setZOrder(1);
 		this.postResolveActionTree.setZOrder(1);
