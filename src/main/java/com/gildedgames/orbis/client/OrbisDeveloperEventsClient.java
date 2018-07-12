@@ -143,6 +143,11 @@ public class OrbisDeveloperEventsClient
 	@SubscribeEvent
 	public static void onClienTick(final TickEvent.ClientTickEvent event)
 	{
+		final Minecraft mc = FMLClientHandler.instance().getClient();
+
+		final World world = FMLClientHandler.instance().getWorldClient();
+		final EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
+
 		if (mc.world != null && mc.player != null)
 		{
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
@@ -152,8 +157,6 @@ public class OrbisDeveloperEventsClient
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				final Minecraft mc = Minecraft.getMinecraft();
-
 				final GuiScreen current = Minecraft.getMinecraft().currentScreen;
 
 				final double reach = playerOrbis.getReach();
@@ -248,7 +251,7 @@ public class OrbisDeveloperEventsClient
 				playerOrbis.setDeveloperReach(prevReach);
 			}
 		}
-		else
+		else if (player == null && world == null && (!mc.isIntegratedServerRunning() || mc.getIntegratedServer() == null))
 		{
 			OrbisAPI.services().stopProjectManager();
 			OrbisCore.stopDataCache();
@@ -381,7 +384,7 @@ public class OrbisDeveloperEventsClient
 				manager.addObserver(CHUNK_RENDERER_MANAGER);
 			}
 		}
-		else
+		else if (player == null && world == null && (!mc.isIntegratedServerRunning() || mc.getIntegratedServer() == null))
 		{
 			OrbisAPI.services().stopProjectManager();
 			CHUNK_RENDERER_MANAGER.unload();
