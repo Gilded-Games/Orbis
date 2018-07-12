@@ -182,30 +182,36 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 		{
 			if (this.inProjectDirectory)
 			{
-				final IProjectIdentifier id = new ProjectIdentifier(this.nameInput.getInner().getText(), Minecraft.getMinecraft().player.getName());
-
-				if (!OrbisCore.getProjectManager().projectNameExists(this.nameInput.getInner().getText()) && !OrbisCore.getProjectManager()
-						.projectExists(id))
+				if (!this.nameInput.getInner().getText().isEmpty())
 				{
-					OrbisCore.network().sendPacketToServer(new PacketRequestCreateProject(this.nameInput.getInner().getText(), id));
+					final IProjectIdentifier id = new ProjectIdentifier(this.nameInput.getInner().getText(), Minecraft.getMinecraft().player.getName());
+
+					if (!OrbisCore.getProjectManager().projectNameExists(this.nameInput.getInner().getText()) && !OrbisCore.getProjectManager()
+							.projectExists(id))
+					{
+						OrbisCore.network().sendPacketToServer(new PacketRequestCreateProject(this.nameInput.getInner().getText(), id));
+					}
 				}
 			}
 			else
 			{
-				IData data = this.worldObject != null ? this.worldObject.getData() : this.data;
-
-				final File file = new File(this.directoryViewer.getNavigator().currentDirectory(),
-						this.nameInput.getInner().getText() + "." + data.getFileExtension());
-
-				final String location = file.getCanonicalPath().replace(this.project.getLocationAsFile().getCanonicalPath() + File.separator, "");
-
-				if (this.isOverwriting(file, location))
+				if (!this.nameInput.getInner().getText().isEmpty())
 				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiSaveCallback(this, file, location));
-				}
-				else
-				{
-					this.save(file, location, false);
+					IData data = this.worldObject != null ? this.worldObject.getData() : this.data;
+
+					final File file = new File(this.directoryViewer.getNavigator().currentDirectory(),
+							this.nameInput.getInner().getText() + "." + data.getFileExtension());
+
+					final String location = file.getCanonicalPath().replace(this.project.getLocationAsFile().getCanonicalPath() + File.separator, "");
+
+					if (this.isOverwriting(file, location))
+					{
+						Minecraft.getMinecraft().displayGuiScreen(new GuiSaveCallback(this, file, location));
+					}
+					else
+					{
+						this.save(file, location, false);
+					}
 				}
 			}
 		}
