@@ -29,7 +29,10 @@ public class PacketSendProjectListing extends PacketMultipleParts
 	{
 		OrbisCore.getProjectManager().refreshCache();
 
-		this.projects = new ArrayList<>(OrbisCore.getProjectManager().getCachedProjects());
+		this.projects = new ArrayList<>(OrbisAPI.services().getProjectManager().getCachedProjects());
+
+		this.projects.removeIf(IProject::isModProject);
+
 		this.projectNames = Lists.newArrayList();
 
 		this.projects.forEach(p -> this.projectNames.add(p.getLocationAsFile().getName()));
