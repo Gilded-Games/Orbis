@@ -3,7 +3,6 @@ package com.gildedgames.orbis.client.renderers;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
-import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
 import com.gildedgames.orbis_api.util.mc.BlockUtil;
@@ -33,13 +32,13 @@ import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderFilterRecordChunk implements IWorldRenderer
+public class RenderStateRecordChunk implements IWorldRenderer
 {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
 	private static final BlockRendererDispatcher blockRenderer = mc.getBlockRendererDispatcher();
 
-	private final IPositionRecord<BlockFilter> positionRecord;
+	private final IPositionRecord<IBlockState> stateRecord;
 
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -49,7 +48,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 	private final IWorldObject parentObject;
 
-	private final FilterRecordAccess stateAccess;
+	private final StateRecordAccess stateAccess;
 
 	private boolean disabled;
 
@@ -61,13 +60,13 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 	private boolean shouldRedraw, focused, rotateData;
 
-	public RenderFilterRecordChunk(final IPositionRecord<BlockFilter> positionRecord, final IWorldObject parentObject, BlockPos chunkPos, boolean rotateData)
+	public RenderStateRecordChunk(final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject, BlockPos chunkPos, boolean rotateData)
 	{
-		this.positionRecord = positionRecord;
+		this.stateRecord = stateRecord;
 		this.parentObject = parentObject;
 
 		this.chunkPos = chunkPos;
-		this.stateAccess = new FilterRecordAccess(mc.world, positionRecord, BlockPos.ORIGIN);
+		this.stateAccess = new StateRecordAccess(mc.world, stateRecord, BlockPos.ORIGIN);
 		this.rotateData = rotateData;
 	}
 
@@ -132,9 +131,9 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		int minY = 0;//this.parentObject.getPos().getY();
 		int minZ = 0;//this.parentObject.getPos().getZ();
 
-		int maxX = minX + this.positionRecord.getBoundingBox().getMax().getX();
-		int maxY = minY + this.positionRecord.getBoundingBox().getMax().getY();
-		int maxZ = minZ + this.positionRecord.getBoundingBox().getMax().getZ();
+		int maxX = minX + this.stateRecord.getBoundingBox().getMax().getX();
+		int maxY = minY + this.stateRecord.getBoundingBox().getMax().getY();
+		int maxZ = minZ + this.stateRecord.getBoundingBox().getMax().getZ();
 
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
@@ -150,9 +149,9 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 
 					if (xDif <= maxX - minX && yDif <= maxY - minY && zDif <= maxZ - minZ && xDif >= 0 && yDif >= 0 && zDif >= 0)
 					{
-						BlockFilter filter = this.positionRecord.get(xDif, yDif, zDif);
+						IBlockState state = this.stateRecord.get(xDif, yDif, zDif);
 
-						if (filter != null)
+						if (state != null)
 						{
 							pos.setPos(xDif + minX, yDif + minY, zDif + minZ);
 
@@ -161,7 +160,7 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 								OrbisCore.LOGGER.info("hmmm");
 							}*/
 
-							this.renderPos(filter, pos, buffer);
+							this.renderPos(state, pos, buffer);
 						}
 					}
 				}
@@ -179,12 +178,8 @@ public class RenderFilterRecordChunk implements IWorldRenderer
 		GlStateManager.popMatrix();
 	}
 
-	private void renderPos(final BlockFilter filter, final BlockPos renderPos, BufferBuilder buffer)
+	private void renderPos(final IBlockState state, final BlockPos renderPos, BufferBuilder buffer)
 	{
-		this.rand.setSeed((long) renderPos.getX() * 341873128712L + (long) renderPos.getY() * 23289687541L + (long) renderPos.getZ() * 132897987541L);
-
-		final IBlockState state = filter.getSample(mc.world, this.rand, this.stateAccess.getBlockState(renderPos));
-
 		if (state != null && !BlockUtil.isAir(state) && !BlockUtil.isVoid(state) && state.getRenderType() != EnumBlockRenderType.INVISIBLE)
 		{
 			GlStateManager.enableLighting();

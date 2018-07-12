@@ -69,9 +69,13 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private Function<INode<DATA, LINK>, BUTTON> buttonFactory;
 
+	private Function<INode<DATA, LINK>, Boolean> canDeleteNode;
+
 	private Supplier<Integer> nodeIdFactory;
 
 	private float movingButtonOffsetX, movingButtonOffsetY;
+
+	private INode<DATA, LINK> copiedNode;
 
 	public GuiTree(Rect rect, Function<Integer, INode<DATA, LINK>> nodeFactory, Supplier<Collection<IDropdownElement>> nodeDropdownElementFactory,
 			Function<LINK, String> linkStringInterpreter, Function<INode<DATA, LINK>, Boolean> nodeValidator, Function<INode<DATA, LINK>, BUTTON> buttonFactory,
@@ -87,6 +91,11 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		this.nodeIdFactory = nodeIdFactory;
 
 		this.draggableCanvas = new GuiFrameDummy(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush());
+	}
+
+	public void setCanDeleteNode(Function<INode<DATA, LINK>, Boolean> canDeleteNode)
+	{
+		this.canDeleteNode = canDeleteNode;
 	}
 
 	public BUTTON getButtonFromNode(INode<DATA, LINK> node)
@@ -158,40 +167,84 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	{
 		this.draggableCanvas = new GuiFrameDummy(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush());
 
-		this.canvasDropdownElements = Lists.newArrayList(new DropdownElement(new TextComponentString("New Node"))
-														 {
-															 @Override
-															 public void onClick(final GuiDropdownList list, final EntityPlayer player)
-															 {
-																 INode<DATA, LINK> node = GuiTree.this.nodeFactory.apply(GuiTree.this.nodeIdFactory.get());
+		this.refreshCanvasDropdownElements();
+		this.refreshRightClickNodeElements();
 
-																 GuiTree.this.addNode(node, GuiTree.this.rightClickLocation, false);
-															 }
-														 },
-				GuiRightClickElements.close());
+		this.addChildren(this.draggableCanvas);
+	}
 
+	private void refreshCanvasDropdownElements()
+	{
+		this.canvasDropdownElements = Lists.newArrayList();
+
+		this.canvasDropdownElements.add(new DropdownElement(new TextComponentString("New Node"))
+		{
+			@Override
+			public void onClick(final GuiDropdownList list, final EntityPlayer player)
+			{
+				INode<DATA, LINK> node = GuiTree.this.nodeFactory.apply(GuiTree.this.nodeIdFactory.get());
+
+				GuiTree.this.addNode(node, GuiTree.this.rightClickLocation, false);
+			}
+		});
+
+		if (this.copiedNode != null)
+		{
+			this.canvasDropdownElements.add(new DropdownElement(new TextComponentString("Paste"))
+			{
+				@Override
+				public void onClick(final GuiDropdownList list, final EntityPlayer player)
+				{
+					INode<DATA, LINK> node = GuiTree.this.copiedNode.deepClone();
+
+					node.clearLocalLinks();
+					node.setNodeId(GuiTree.this.nodeIdFactory.get());
+
+					GuiTree.this.addNode(node, GuiTree.this.rightClickLocation, false);
+				}
+			});
+		}
+
+		this.canvasDropdownElements.add(GuiRightClickElements.close());
+	}
+
+	private void refreshRightClickNodeElements()
+	{
 		Collection<IDropdownElement> extraNodeElements = this.nodeDropdownElementFactory.get();
 
 		this.nodeDropdownElements = Lists.newArrayList();
 
 		this.nodeDropdownElements.addAll(extraNodeElements);
 
-		this.nodeDropdownElements.add(new DropdownElement(new TextComponentString("Delete"))
+		if (GuiTree.this.canDeleteNode == null || this.interactedNode == null || GuiTree.this.canDeleteNode.apply(GuiTree.this.interactedNode))
+		{
+			this.nodeDropdownElements.add(new DropdownElement(new TextComponentString("Delete"))
+			{
+				@Override
+				public void onClick(final GuiDropdownList list, final EntityPlayer player)
+				{
+					if (GuiTree.this.interactedNode != null)
+					{
+						GuiTree.this.removeNode(GuiTree.this.interactedNode);
+						GuiTree.this.interactedNode = null;
+					}
+				}
+			});
+		}
+
+		this.nodeDropdownElements.add(new DropdownElement(new TextComponentString("Copy"))
 		{
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
 				if (GuiTree.this.interactedNode != null)
 				{
-					GuiTree.this.removeNode(GuiTree.this.interactedNode);
-					GuiTree.this.interactedNode = null;
+					GuiTree.this.copiedNode = GuiTree.this.interactedNode;
 				}
 			}
 		});
 
 		this.nodeDropdownElements.add(GuiRightClickElements.close());
-
-		this.addChildren(this.draggableCanvas);
 	}
 
 	@Override
@@ -378,6 +431,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 					if (holder != null)
 					{
+						this.refreshRightClickNodeElements();
+
 						holder.getDropdown().display(this.nodeDropdownElements, Pos2D.flush(mouseX, mouseY));
 					}
 				}
@@ -385,12 +440,14 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				{
 					if (this.isLinkingNodes)
 					{
-						if (node.hasChild(this.interactedNode.getNodeId()))
+						if (this.interactedNode.addChild(node.getNodeId(), this.currentLinkData))
 						{
-							node.removeChild(this.interactedNode.getNodeId());
+							if (node.hasChild(this.interactedNode.getNodeId()))
+							{
+								node.removeChild(this.interactedNode.getNodeId());
+							}
 						}
 
-						this.interactedNode.addChild(node.getNodeId(), this.currentLinkData);
 						this.isLinkingNodes = false;
 
 						this.listeners.forEach((l) -> l.onLinkNodes(this, node, this.interactedNode, this.currentLinkData));
@@ -420,6 +477,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 			if (holder != null)
 			{
+				this.refreshCanvasDropdownElements();
+
 				holder.getDropdown().display(this.canvasDropdownElements, Pos2D.flush(mouseX, mouseY));
 			}
 		}
@@ -491,14 +550,6 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	@Override
 	public void postDrawChild(IGuiFrame child)
 	{
-		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-	}
-
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks)
-	{
-		super.drawScreen(mouseX, mouseY, partialTicks);
-
 		if (this.isVisible())
 		{
 			for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
@@ -506,7 +557,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				INode<DATA, LINK> node = entry.getKey();
 				BUTTON button = entry.getValue();
 
-				if (this.nodeValidator.apply(node))
+				if (!this.nodeValidator.apply(node))
 				{
 					GlStateManager.pushMatrix();
 
@@ -520,5 +571,13 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				}
 			}
 		}
+
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	{
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 }

@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -12,19 +11,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 
-import java.util.Random;
-
-public class FilterRecordAccess implements IBlockAccess
+public class StateRecordAccess implements IBlockAccess
 {
 	protected final World world;
 
-	private IPositionRecord<BlockFilter> record;
+	private IPositionRecord<IBlockState> record;
 
 	private BlockPos min;
 
-	private Random rand = new Random();
-
-	public FilterRecordAccess(final World worldIn, IPositionRecord<BlockFilter> record, BlockPos min)
+	public StateRecordAccess(final World worldIn, IPositionRecord<IBlockState> record, BlockPos min)
 	{
 		this.world = worldIn;
 		this.record = record;
@@ -52,13 +47,11 @@ public class FilterRecordAccess implements IBlockAccess
 
 		if (x < this.record.getWidth() && y < this.record.getHeight() && z < this.record.getLength() && x >= 0 && y >= 0 && z >= 0)
 		{
-			this.rand.setSeed((long) x * 341873128712L + (long) y * 23289687541L + (long) z * 132897987541L);
+			IBlockState state = this.record.get(x, y, z);
 
-			BlockFilter filter = this.record.get(x, y, z);
-
-			if (filter != null)
+			if (state != null)
 			{
-				return filter.getSample(this.world, this.rand, Blocks.AIR.getDefaultState());
+				return state;
 			}
 		}
 

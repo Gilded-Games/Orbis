@@ -32,6 +32,7 @@ import com.gildedgames.orbis_api.core.variables.conditions.IGuiCondition;
 import com.gildedgames.orbis_api.core.variables.displays.GuiVarDisplay;
 import com.gildedgames.orbis_api.core.variables.post_resolve_actions.IPostResolveAction;
 import com.gildedgames.orbis_api.core.variables.post_resolve_actions.PostResolveActionMutateBlueprintVariable;
+import com.gildedgames.orbis_api.data.IDataUser;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintVariable;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
@@ -161,6 +162,9 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		this.blueprintVariablesButton.getInner().displayString = I18n.format("orbis.gui.blueprint_variables");
 
+		final List<INode<IScheduleLayer, LayerLink>> layerRoots = Lists.newArrayList();
+		final List<INode<IScheduleLayer, LayerLink>> layerVisitedNodes = Lists.newArrayList();
+
 		buttons.addChildren(this.saveButton, this.closeButton, this.blueprintVariablesButton);
 
 		this.layerTree = new GuiTree<>(Dim2D.build().width(this.width - 200).height(this.height - 40).x(200).y(40).flush(), (nodeId) ->
@@ -181,7 +185,15 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					}
 				}),
 				(l) -> "",
-				(n) -> false,
+				(n) ->
+				{
+					layerRoots.clear();
+					layerVisitedNodes.clear();
+
+					n.fetchRoots(layerRoots, layerVisitedNodes);
+
+					return layerRoots.contains(n.getTree().getRootNode()) || n.getNodeId() == n.getTree().getRootNodeId();
+				},
 				(n) ->
 				{
 					GuiButtonVanilla button = new GuiButtonVanilla(
@@ -193,6 +205,8 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					return button;
 				},
 				() -> this.blueprint.getData().getScheduleLayerTree().findNextAvailableId());
+
+		this.layerTree.setCanDeleteNode((node) -> node.getTree().getRootNodeId() != node.getNodeId());
 
 		final List<INode<IGuiCondition, ConditionLink>> roots = Lists.newArrayList();
 		final List<INode<IGuiCondition, ConditionLink>> visitedNodes = Lists.newArrayList();
@@ -241,10 +255,10 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 					n.fetchRoots(roots, visitedNodes);
 
-					return (n.getParentsIds().isEmpty() || (GuiLayerEditor.this.currentSelectedLayer != null && !roots
+					return !((n.getParentsIds().isEmpty() || (GuiLayerEditor.this.currentSelectedLayer != null && !roots
 							.contains(GuiLayerEditor.this.currentSelectedLayer
-									.getConditionNodeTree().getProminentRoot()))) && n != GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree()
-							.getProminentRoot();
+									.getConditionNodeTree().getRootNode()))) && n != GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree()
+							.getRootNode());
 				},
 				(n) ->
 				{
@@ -256,11 +270,13 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				},
 				() -> this.currentSelectedLayer.getConditionNodeTree().findNextAvailableId());
 
+		this.conditionTree.setCanDeleteNode((node) -> node.getTree().size() == 1 || node.getTree().getRootNodeId() != node.getNodeId());
+
 		this.postResolveActionTree = new GuiTree<>(Dim2D.build().width(184).height(86).x(8).y(27).flush(), (nodeId) ->
 		{
 			PostResolveActionMutateBlueprintVariable action = new PostResolveActionMutateBlueprintVariable();
 
-			action.setDataParent(GuiLayerEditor.this.blueprint.getData());
+			action.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
 
 			NodeMultiParented<IPostResolveAction, NBT> node = new NodeMultiParented<>(
 					action, true,
@@ -272,7 +288,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		},
 				Collections::emptyList,
 				(l) -> "",
-				(n) -> false,
+				(n) -> true,
 				(n) ->
 				{
 					String name = "A" + String.valueOf(n.getNodeId());
@@ -297,7 +313,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		},
 				Collections::emptyList,
 				(l) -> "",
-				(n) -> false,
+				(n) -> true,
 				(n) ->
 				{
 					String name = n.getData().getUniqueNameVar().getData();
@@ -492,7 +508,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					ConditionLink conditionLink)
 			{
 
-				INode<IGuiCondition, ConditionLink> root = GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree().getProminentRoot();
+				INode<IGuiCondition, ConditionLink> root = GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree().getRootNode();
 
 				if (root != null)
 				{
@@ -520,7 +536,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 						if (prominentRoot != root && prominentRoot != null)
 						{
-							GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree().setProminentRoot(prominentRoot.getNodeId());
+							GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree().setRootNode(prominentRoot.getNodeId());
 						}
 					}
 				}
@@ -554,6 +570,16 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			{
 				if (!oldNode)
 				{
+					if (node.getData() instanceof IDataUser)
+					{
+						IDataUser dataUser = (IDataUser) node.getData();
+
+						if (dataUser.getDataIdentifier().equals("blueprintVariables"))
+						{
+							dataUser.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
+						}
+					}
+
 					GuiLayerEditor.this.currentSelectedLayer.getConditionNodeTree().put(node.getNodeId(), node);
 				}
 			}
@@ -627,6 +653,16 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			{
 				if (!oldNode)
 				{
+					if (node.getData() instanceof IDataUser)
+					{
+						IDataUser dataUser = (IDataUser) node.getData();
+
+						if (dataUser.getDataIdentifier().equals("blueprintVariables"))
+						{
+							dataUser.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
+						}
+					}
+
 					GuiLayerEditor.this.currentSelectedLayer.getPostResolveActionNodeTree().put(node.getNodeId(), node);
 				}
 			}
@@ -802,7 +838,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 						{
 							GuiConditionCheckBlueprintVariable cond = new GuiConditionCheckBlueprintVariable();
 
-							cond.setDataParent(GuiLayerEditor.this.blueprint.getData());
+							cond.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
 
 							return cond;
 						}));
@@ -824,7 +860,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				{
 					PostResolveActionMutateBlueprintVariable action = new PostResolveActionMutateBlueprintVariable();
 
-					action.setDataParent(GuiLayerEditor.this.blueprint.getData());
+					action.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
 
 					return action;
 				}));
@@ -1057,6 +1093,24 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		public void setTrees(ITextComponent text, Pair<ITextComponent, GuiTree>... trees)
 		{
+			int selectedTreeIndex = 0;
+
+			for (int i = 0; i < this.managedTrees.size(); i++)
+			{
+				Pair<ITextComponent, GuiTree> pair = this.managedTrees.get(i);
+
+				if (pair.getRight() == this.currentTree)
+				{
+					selectedTreeIndex = i;
+					break;
+				}
+			}
+
+			if (trees.length <= selectedTreeIndex)
+			{
+				selectedTreeIndex = 0;
+			}
+
 			this.managedTrees.clear();
 
 			this.managedTrees.addAll(Arrays.asList(trees));
@@ -1080,7 +1134,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			if (this.dropdown.getList().getElements().size() >= 1)
 			{
-				this.dropdown.setChosenElement(this.dropdown.getList().getElements().get(0));
+				this.dropdown.setChosenElement(this.dropdown.getList().getElements().get(selectedTreeIndex));
 			}
 
 			this.managedTrees.forEach((p) ->
@@ -1095,7 +1149,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			if (!this.managedTrees.isEmpty())
 			{
-				this.currentTree = this.managedTrees.get(0).getRight();
+				this.currentTree = this.managedTrees.get(selectedTreeIndex).getRight();
 
 				this.currentTree.setEnabled(true);
 				this.currentTree.setVisible(true);

@@ -5,13 +5,13 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -189,11 +189,11 @@ public class OrbisRaytraceHelp
 
 						if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayerNode() != null)
 						{
-							BlockFilter filter = blueprint.getCurrentScheduleLayerNode().getData().getFilterRecord()
+							IBlockState state = blueprint.getCurrentScheduleLayerNode().getData().getStateRecord()
 									.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
 											pos.getZ() - blueprint.getMin().getZ());
 
-							if (filter != null)
+							if (state != null)
 							{
 								return new RayTraceResult(player, new Vec3d(pos));
 							}

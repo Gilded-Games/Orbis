@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.region.IRegion;
@@ -9,6 +8,7 @@ import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -20,9 +20,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListener<BlockFilter>, IScheduleLayerHolderListener
+public class RenderStateRecord implements IWorldRenderer, IPositionRecordListener<IBlockState>, IScheduleLayerHolderListener
 {
-	private final IPositionRecord<BlockFilter> positionRecord;
+	private final IPositionRecord<IBlockState> stateRecord;
 
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -42,22 +42,22 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 
 	private boolean rotateData;
 
-	public RenderFilterRecord(final IPositionRecord<BlockFilter> positionRecord, IScheduleLayerHolder holder, final IWorldObject parentObject,
+	public RenderStateRecord(final IPositionRecord<IBlockState> stateRecord, IScheduleLayerHolder holder, final IWorldObject parentObject,
 			boolean rotateData)
 	{
-		this.positionRecord = positionRecord;
+		this.stateRecord = stateRecord;
 		this.parentObject = parentObject;
 		this.rotateData = rotateData;
 
 		this.layerHolder = holder;
 
-		this.positionRecord.listen(this);
+		this.stateRecord.listen(this);
 
-		for (int chunkX = 0; chunkX <= positionRecord.getWidth() / 16; chunkX++)
+		for (int chunkX = 0; chunkX <= stateRecord.getWidth() / 16; chunkX++)
 		{
-			for (int chunkY = 0; chunkY <= positionRecord.getHeight() / 16; chunkY++)
+			for (int chunkY = 0; chunkY <= stateRecord.getHeight() / 16; chunkY++)
 			{
-				for (int chunkZ = 0; chunkZ <= positionRecord.getLength() / 16; chunkZ++)
+				for (int chunkZ = 0; chunkZ <= stateRecord.getLength() / 16; chunkZ++)
 				{
 					BlockPos pos = new BlockPos(chunkX, chunkY, chunkZ);
 
@@ -78,9 +78,9 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	{
 		for (IWorldRenderer r : this.subRenderers)
 		{
-			if (r instanceof RenderFilterRecordChunk)
+			if (r instanceof RenderStateRecordChunk)
 			{
-				RenderFilterRecordChunk c = (RenderFilterRecordChunk) r;
+				RenderStateRecordChunk c = (RenderStateRecordChunk) r;
 
 				c.setFocused(focused);
 			}
@@ -103,7 +103,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	@Override
 	public Object getRenderedObject()
 	{
-		return this.positionRecord;
+		return this.stateRecord;
 	}
 
 	@Override
@@ -201,9 +201,9 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 		{
 			IWorldRenderer toRemove = this.chunkToRenderer.get(chunkPos);
 
-			if (toRemove instanceof RenderFilterRecordChunk)
+			if (toRemove instanceof RenderStateRecordChunk)
 			{
-				isFocused = ((RenderFilterRecordChunk) toRemove).isFocused();
+				isFocused = ((RenderStateRecordChunk) toRemove).isFocused();
 			}
 
 			final Lock w = this.lock.writeLock();
@@ -219,7 +219,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 			}
 		}
 
-		final RenderFilterRecordChunk chunk = new RenderFilterRecordChunk(this.positionRecord, this.parentObject, chunkPos, this.rotateData);
+		final RenderStateRecordChunk chunk = new RenderStateRecordChunk(this.stateRecord, this.parentObject, chunkPos, this.rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -238,7 +238,7 @@ public class RenderFilterRecord implements IWorldRenderer, IPositionRecordListen
 	}
 
 	@Override
-	public void onMarkPos(final BlockFilter filter, final int x, final int y, final int z)
+	public void onMarkPos(final IBlockState state, final int x, final int y, final int z)
 	{
 		BlockPos pos = new BlockPos(x / 16, y / 16, z / 16);
 

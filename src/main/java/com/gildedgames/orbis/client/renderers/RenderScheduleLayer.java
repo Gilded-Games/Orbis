@@ -38,7 +38,7 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			layer.getData().getScheduleRecord().listen(this);
 		}
 
-		final RenderFilterRecord renderPositionRecord = new RenderFilterRecord(this.layer.getData().getFilterRecord(), holder, this.parentObject, rotateData);
+		final RenderStateRecord renderPositionRecord = new RenderStateRecord(this.layer.getData().getStateRecord(), holder, this.parentObject, rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -94,9 +94,9 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 	{
 		for (IWorldRenderer r : this.subRenderers)
 		{
-			if (r instanceof RenderFilterRecord)
+			if (r instanceof RenderStateRecord)
 			{
-				RenderFilterRecord f = (RenderFilterRecord) r;
+				RenderStateRecord f = (RenderStateRecord) r;
 
 				f.setFocused(focused);
 			}
