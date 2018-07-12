@@ -4,14 +4,14 @@ import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickSchedule;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickScheduleRegion;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickSelector;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
 import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
@@ -132,14 +132,16 @@ public class GodPowerSelectClient implements IGodPowerClient
 		}
 		else if (foundObject instanceof ScheduleRegion)
 		{
+			IShape worldObject = playerOrbis.getSelectedRegion();
 			ScheduleRegion scheduleRegion = (ScheduleRegion) foundObject;
 
-			if (entity.world.isRemote)
+			if (entity.world.isRemote && worldObject instanceof Blueprint)
 			{
 				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
 				{
 					Minecraft.getMinecraft()
-							.displayGuiScreen(new GuiRightClickScheduleRegion((Blueprint) scheduleRegion.getWorldObjectParent(), scheduleRegion));
+							.displayGuiScreen(new GuiRightClickScheduleRegion((Blueprint) worldObject,
+									scheduleRegion));
 
 					return false;
 				}
@@ -147,14 +149,15 @@ public class GodPowerSelectClient implements IGodPowerClient
 		}
 		else if (foundObject instanceof ISchedule)
 		{
+			IShape worldObject = playerOrbis.getSelectedRegion();
 			ISchedule schedule = (ISchedule) foundObject;
 
-			if (entity.world.isRemote)
+			if (entity.world.isRemote && worldObject instanceof Blueprint)
 			{
 				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
 				{
 					Minecraft.getMinecraft()
-							.displayGuiScreen(new GuiRightClickSchedule((Blueprint) schedule.getWorldObjectParent(), schedule));
+							.displayGuiScreen(new GuiRightClickSchedule((Blueprint) worldObject, schedule));
 
 					return false;
 				}

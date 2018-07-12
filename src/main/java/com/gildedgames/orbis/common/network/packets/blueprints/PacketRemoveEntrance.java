@@ -2,7 +2,6 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
@@ -40,6 +39,12 @@ public class PacketRemoveEntrance implements IMessage
 	{
 		this.id = id;
 		this.entranceId = entranceId;
+	}
+
+	public PacketRemoveEntrance(IDataIdentifier id, Entrance entrance)
+	{
+		this.id = id;
+		this.entranceId = entrance.getDataParent().getEntranceId(entrance);
 	}
 
 	public PacketRemoveEntrance(Blueprint blueprint, Entrance entrance)

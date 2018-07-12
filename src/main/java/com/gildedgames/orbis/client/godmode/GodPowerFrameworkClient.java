@@ -1,15 +1,16 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.framework.GuiRightClickFramework;
 import com.gildedgames.orbis.client.gui.framework.GuiRightClickFrameworkNode;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -128,13 +129,14 @@ public class GodPowerFrameworkClient implements IGodPowerClient
 		}
 		else if (foundObject instanceof IFrameworkNode)
 		{
+			IShape worldObject = playerOrbis.getSelectedRegion();
 			IFrameworkNode node = (IFrameworkNode) foundObject;
 
-			if (entity.world.isRemote)
+			if (entity.world.isRemote && worldObject instanceof Framework)
 			{
 				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
 				{
-					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickFrameworkNode((Framework) node.getWorldObjectParent(), node));
+					Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickFrameworkNode((Framework) worldObject, node));
 				}
 			}
 

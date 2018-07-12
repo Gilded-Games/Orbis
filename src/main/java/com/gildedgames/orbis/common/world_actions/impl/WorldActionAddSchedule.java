@@ -55,11 +55,13 @@ public class WorldActionAddSchedule implements IWorldAction
 
 			if (world.getMinecraftServer().isDedicatedServer())
 			{
-				layer.getScheduleRecord().addSchedule(this.schedule);
+				layer.getScheduleRecord().addSchedule(this.schedule, this.blueprint);
 			}
 
 			OrbisCore.network()
-					.sendPacketToDimension(new PacketAddSchedule(this.blueprint, this.schedule, this.layer), world.provider.getDimension());
+					.sendPacketToDimension(
+							new PacketAddSchedule(this.blueprint, this.schedule, this.layer),
+							world.provider.getDimension());
 		}
 	}
 

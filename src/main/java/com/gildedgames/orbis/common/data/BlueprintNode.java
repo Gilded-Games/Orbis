@@ -3,12 +3,12 @@ package com.gildedgames.orbis.common.data;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.PathwayData;
 import com.gildedgames.orbis_api.data.region.IMutableRegion;
 import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.IWorldObject;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -31,7 +31,7 @@ public class BlueprintNode implements IFrameworkNode
 
 	private IMutableRegion bounds;
 
-	private IWorldObject worldObjectParent;
+	private FrameworkData dataParent;
 
 	private BlueprintNode()
 	{
@@ -132,14 +132,20 @@ public class BlueprintNode implements IFrameworkNode
 	}
 
 	@Override
-	public IWorldObject getWorldObjectParent()
+	public Class<? extends FrameworkData> getDataClass()
 	{
-		return this.worldObjectParent;
+		return FrameworkData.class;
 	}
 
 	@Override
-	public void setWorldObjectParent(IWorldObject parent)
+	public FrameworkData getDataParent()
 	{
-		this.worldObjectParent = parent;
+		return this.dataParent;
+	}
+
+	@Override
+	public void setDataParent(FrameworkData frameworkData)
+	{
+		this.dataParent = frameworkData;
 	}
 }

@@ -1,14 +1,15 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis_api.data.pathway.Entrance;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickEntrance;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.world.IWorldRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -86,14 +87,15 @@ public class GodPowerEntranceClient implements IGodPowerClient
 
 		if (foundObject instanceof Entrance)
 		{
+			IShape worldObject = playerOrbis.getSelectedRegion();
 			Entrance entrance = (Entrance) foundObject;
 
-			if (entity.world.isRemote)
+			if (entity.world.isRemote && worldObject instanceof Blueprint)
 			{
 				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
 				{
 					Minecraft.getMinecraft()
-							.displayGuiScreen(new GuiRightClickEntrance((Blueprint) entrance.getWorldObjectParent(), entrance));
+							.displayGuiScreen(new GuiRightClickEntrance((Blueprint) worldObject, entrance));
 
 					return false;
 				}

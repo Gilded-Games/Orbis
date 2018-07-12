@@ -42,7 +42,7 @@ public class GuiRightClickElements
 		};
 	}
 
-	public static DropdownElement remove(final Framework framework, IFrameworkNode node)
+	public static DropdownElement remove(Framework framework, IFrameworkNode node)
 	{
 		return new DropdownElement(new TextComponentString("Remove"))
 		{
@@ -54,7 +54,7 @@ public class GuiRightClickElements
 		};
 	}
 
-	public static DropdownElement remove(final Blueprint blueprint, ISchedule schedule)
+	public static DropdownElement remove(Blueprint blueprint, ISchedule schedule)
 	{
 		return new DropdownElement(new TextComponentString("Remove"))
 		{
@@ -66,7 +66,7 @@ public class GuiRightClickElements
 		};
 	}
 
-	public static DropdownElement remove(final Blueprint blueprint, Entrance entrance)
+	public static DropdownElement remove(Blueprint blueprint, Entrance entrance)
 	{
 		return new DropdownElement(new TextComponentString("Remove"))
 		{

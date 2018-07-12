@@ -202,7 +202,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 							}
 							else
 							{
-								b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint);
+								b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint, b);
 							}
 						}
 					}

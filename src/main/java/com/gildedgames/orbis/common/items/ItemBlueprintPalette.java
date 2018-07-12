@@ -156,7 +156,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 						}
 						else
 						{
-							b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint);
+							b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint, b);
 						}
 					}
 				}

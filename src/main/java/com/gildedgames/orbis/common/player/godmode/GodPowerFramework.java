@@ -1,12 +1,5 @@
 package com.gildedgames.orbis.common.player.godmode;
 
-import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis_api.data.framework.FrameworkNode;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import com.gildedgames.orbis.client.godmode.GodPowerFrameworkClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -18,7 +11,14 @@ import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorFramework;
+import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis_api.data.framework.FrameworkNode;
+import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -93,6 +93,8 @@ public class GodPowerFramework implements IGodPower
 					node = new FrameworkNode(new BlueprintNode(data));
 				}
 
+				BlockPos nonRelative = node.getBounds().getMin().toImmutable();
+
 				int xDif = -framework.getPos().getX() - (data != null ? data.getWidth() / 2 : palette.getLargestDim().getWidth() / 2);
 				int yDif = -framework.getPos().getY();
 				int zDif = -framework.getPos().getZ() - (data != null ? data.getLength() / 2 : palette.getLargestDim().getLength() / 2);
@@ -103,7 +105,7 @@ public class GodPowerFramework implements IGodPower
 
 				RegionHelp.translate(node.getBounds(), relativePos);
 
-				OrbisCore.network().sendPacketToServer(new PacketAddNode(framework, node));
+				OrbisCore.network().sendPacketToServer(new PacketAddNode(framework, node, nonRelative));
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.network.packets.framework;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -13,8 +14,6 @@ import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.world_objects.Framework;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

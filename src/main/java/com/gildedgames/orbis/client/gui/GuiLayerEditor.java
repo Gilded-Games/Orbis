@@ -260,7 +260,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		{
 			PostResolveActionMutateBlueprintVariable action = new PostResolveActionMutateBlueprintVariable();
 
-			action.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
+			action.setDataParent(GuiLayerEditor.this.blueprint.getData());
 
 			NodeMultiParented<IPostResolveAction, NBT> node = new NodeMultiParented<>(
 					action, true,
@@ -802,7 +802,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 						{
 							GuiConditionCheckBlueprintVariable cond = new GuiConditionCheckBlueprintVariable();
 
-							cond.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
+							cond.setDataParent(GuiLayerEditor.this.blueprint.getData());
 
 							return cond;
 						}));
@@ -824,7 +824,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				{
 					PostResolveActionMutateBlueprintVariable action = new PostResolveActionMutateBlueprintVariable();
 
-					action.setUsedData(GuiLayerEditor.this.blueprint.getData().getVariableTree());
+					action.setDataParent(GuiLayerEditor.this.blueprint.getData());
 
 					return action;
 				}));
@@ -901,11 +901,18 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				this.layerTab, this.postGenTab, this.dropdown, this.variablesHeader,
 				this.subTreeViewer);
 
-		this.layerTree.reset(this.blueprint.getData().getScheduleTreeGuiPos() == null ?
-				Pos2D.flush((this.layerTree.dim().width() / 2) - this.fontRenderer
-								.getStringWidth(this.blueprint.getData().getScheduleLayerTree().get(0).getData().getOptions().getDisplayNameVar().getData()) / 2,
-						(this.layerTree.dim().height() / 2) - 10) :
-				this.blueprint.getData().getScheduleTreeGuiPos());
+		if (this.blueprint.getData().getScheduleLayerTree().isEmpty())
+		{
+			this.layerTree.reset(Pos2D.ORIGIN);
+		}
+		else
+		{
+			this.layerTree.reset(this.blueprint.getData().getScheduleTreeGuiPos() == null ?
+					Pos2D.flush((this.layerTree.dim().width() / 2) - this.fontRenderer
+									.getStringWidth(this.blueprint.getData().getScheduleLayerTree().get(0).getData().getOptions().getDisplayNameVar().getData()) / 2,
+							(this.layerTree.dim().height() / 2) - 10) :
+					this.blueprint.getData().getScheduleTreeGuiPos());
+		}
 
 		this.blueprintVariablesTree.reset(this.blueprint.getData().getVariableTreeGuiPos());
 

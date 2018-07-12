@@ -38,10 +38,13 @@ public class GuiEditScheduledRegion extends GuiFrame
 
 	private GuiButtonVanilla saveButton, closeButton;
 
-	public GuiEditScheduledRegion(GuiFrame prevFrame, PlayerOrbis playerOrbis, ScheduleRegion scheduleRegion)
-	{
-		super(prevFrame, Dim2D.flush(), new ContainerScheduleRegion(playerOrbis, new InventorySpawnEggs(null)));
+	private Blueprint blueprint;
 
+	public GuiEditScheduledRegion(GuiFrame prevFrame, PlayerOrbis playerOrbis, Blueprint blueprint, ScheduleRegion scheduleRegion)
+	{
+		super(prevFrame, Dim2D.flush(), new ContainerScheduleRegion(playerOrbis, new InventorySpawnEggs()));
+
+		this.blueprint = blueprint;
 		this.container = (ContainerScheduleRegion) this.inventorySlots;
 		playerOrbis.getEntity().openContainer = this.inventorySlots;
 
@@ -127,9 +130,9 @@ public class GuiEditScheduledRegion extends GuiFrame
 
 		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
 		{
-			Blueprint b = (Blueprint) this.scheduleRegion.getWorldObjectParent();
 			OrbisCore.network().sendPacketToServer(
-					new PacketSetTriggerId(b, this.scheduleRegion, this.nameInput.getInner().getText()));
+					new PacketSetTriggerId(this.blueprint, this.scheduleRegion,
+							this.nameInput.getInner().getText()));
 		}
 	}
 

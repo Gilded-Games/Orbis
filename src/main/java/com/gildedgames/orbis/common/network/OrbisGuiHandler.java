@@ -102,7 +102,7 @@ public class OrbisGuiHandler implements IGuiHandler
 					{
 						ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
 
-						return new GuiEditScheduledRegion(null, playerOrbis, scheduleRegion);
+						return new GuiEditScheduledRegion(null, playerOrbis, blueprint, scheduleRegion);
 					}
 				}
 				return null;

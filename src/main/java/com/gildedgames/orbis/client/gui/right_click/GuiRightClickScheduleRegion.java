@@ -19,9 +19,9 @@ import java.io.IOException;
 
 public class GuiRightClickScheduleRegion extends GuiFrame
 {
-	private final Blueprint blueprint;
-
 	private final ScheduleRegion schedule;
+
+	private Blueprint blueprint;
 
 	public GuiRightClickScheduleRegion(Blueprint blueprint, final ScheduleRegion schedule)
 	{

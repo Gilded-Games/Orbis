@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets.framework;
 
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -15,9 +15,11 @@ import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
@@ -30,6 +32,8 @@ public class PacketAddNode extends PacketMultipleParts
 
 	private FrameworkNode node;
 
+	private BlockPos pos;
+
 	public PacketAddNode()
 	{
 
@@ -40,22 +44,25 @@ public class PacketAddNode extends PacketMultipleParts
 		super(data);
 	}
 
-	public PacketAddNode(IDataIdentifier id, FrameworkNode node)
+	public PacketAddNode(IDataIdentifier id, FrameworkNode node, BlockPos pos)
 	{
 		this.id = id;
 		this.node = node;
+		this.pos = pos;
 	}
 
-	public PacketAddNode(Framework framework, FrameworkNode node)
+	public PacketAddNode(Framework framework, FrameworkNode node, BlockPos pos)
 	{
 		this.worldObjectId = WorldObjectManager.get(framework.getWorld()).getID(framework);
 		this.node = node;
+		this.pos = pos;
 	}
 
-	public PacketAddNode(int worldObjectId, FrameworkNode node)
+	public PacketAddNode(int worldObjectId, FrameworkNode node, BlockPos pos)
 	{
 		this.worldObjectId = worldObjectId;
 		this.node = node;
+		this.pos = pos;
 	}
 
 	@Override
@@ -73,6 +80,7 @@ public class PacketAddNode extends PacketMultipleParts
 		this.worldObjectId = tag.getInteger("w");
 		this.id = funnel.get("i");
 		this.node = funnel.get("n");
+		this.pos = funnel.getPos("p");
 	}
 
 	@Override
@@ -84,6 +92,7 @@ public class PacketAddNode extends PacketMultipleParts
 		tag.setInteger("w", this.worldObjectId);
 		funnel.set("i", this.id);
 		funnel.set("n", this.node);
+		funnel.setPos("p", this.pos);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -100,12 +109,21 @@ public class PacketAddNode extends PacketMultipleParts
 
 			try
 			{
+				final IWorldObject worldObject;
+
+				if (message.worldObjectId == -1)
+				{
+					worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
+				}
+				else
+				{
+					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				}
+
 				final IData data;
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
-
 					data = worldObject.getData();
 				}
 				else
@@ -117,7 +135,7 @@ public class PacketAddNode extends PacketMultipleParts
 				{
 					final FrameworkData fData = (FrameworkData) data;
 
-					fData.addNode(message.node);
+					fData.addNode(message.node, worldObject);
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -141,12 +159,21 @@ public class PacketAddNode extends PacketMultipleParts
 
 			try
 			{
+				final IWorldObject worldObject;
+
+				if (message.worldObjectId == -1)
+				{
+					worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
+				}
+				else
+				{
+					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				}
+
 				final IData data;
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
-
 					data = worldObject.getData();
 				}
 				else
@@ -158,7 +185,7 @@ public class PacketAddNode extends PacketMultipleParts
 				{
 					final FrameworkData fData = (FrameworkData) data;
 
-					fData.addNode(message.node);
+					fData.addNode(message.node, worldObject);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -169,11 +196,11 @@ public class PacketAddNode extends PacketMultipleParts
 					{
 						if (message.id == null)
 						{
-							OrbisCore.network().sendPacketToAllPlayers(new PacketAddNode(message.worldObjectId, message.node));
+							OrbisCore.network().sendPacketToAllPlayers(new PacketAddNode(message.worldObjectId, message.node, message.pos));
 						}
 						else
 						{
-							OrbisCore.network().sendPacketToAllPlayers(new PacketAddNode(message.id, message.node));
+							OrbisCore.network().sendPacketToAllPlayers(new PacketAddNode(message.id, message.node, message.pos));
 						}
 					}
 				}

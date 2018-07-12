@@ -13,9 +13,11 @@ import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
@@ -30,19 +32,20 @@ public class PacketAddSchedule implements IMessage
 
 	private int scheduleId = -1, layerId = -1;
 
-	private NBTFunnel funnel;
+	private BlockPos pos;
 
 	public PacketAddSchedule()
 	{
 
 	}
 
-	public PacketAddSchedule(IDataIdentifier id, ISchedule schedule, int layerId, int scheduleId)
+	public PacketAddSchedule(IDataIdentifier id, ISchedule schedule, int layerId, int scheduleId, BlockPos pos)
 	{
 		this.id = id;
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
 		this.layerId = layerId;
+		this.pos = pos;
 	}
 
 	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int layerId)
@@ -50,21 +53,25 @@ public class PacketAddSchedule implements IMessage
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 		this.schedule = schedule;
 		this.layerId = layerId;
+		this.pos = blueprint.getPos();
 	}
 
 	public PacketAddSchedule(Blueprint blueprint, ISchedule schedule, int layerId, int scheduleId)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
+		this.layerId = layerId;
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
+		this.pos = blueprint.getPos();
 	}
 
-	public PacketAddSchedule(int worldObjectId, ISchedule schedule, int layerId, int scheduleId)
+	public PacketAddSchedule(int worldObjectId, ISchedule schedule, int layerId, int scheduleId, BlockPos pos)
 	{
 		this.worldObjectId = worldObjectId;
 		this.schedule = schedule;
 		this.scheduleId = scheduleId;
 		this.layerId = layerId;
+		this.pos = pos;
 	}
 
 	@Override
@@ -78,6 +85,7 @@ public class PacketAddSchedule implements IMessage
 		this.schedule = funnel.get("schedule");
 		this.scheduleId = tag.getInteger("scheduleId");
 		this.layerId = tag.getInteger("layerId");
+		this.pos = funnel.getPos("pos");
 	}
 
 	@Override
@@ -91,6 +99,7 @@ public class PacketAddSchedule implements IMessage
 		funnel.set("schedule", this.schedule);
 		tag.setInteger("scheduleId", this.scheduleId);
 		tag.setInteger("layerId", this.layerId);
+		funnel.setPos("pos", this.pos);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -107,12 +116,21 @@ public class PacketAddSchedule implements IMessage
 
 			try
 			{
+				final IWorldObject worldObject;
+
+				if (message.worldObjectId == -1)
+				{
+					worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
+				}
+				else
+				{
+					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				}
+
 				final IData data;
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
-
 					data = worldObject.getData();
 				}
 				else
@@ -126,11 +144,12 @@ public class PacketAddSchedule implements IMessage
 
 					if (message.scheduleId == -1)
 					{
-						bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule);
+						bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule, worldObject);
 					}
 					else
 					{
-						bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().setSchedule(message.scheduleId, message.schedule);
+						bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord()
+								.setSchedule(message.scheduleId, message.schedule, worldObject);
 					}
 				}
 			}
@@ -155,12 +174,21 @@ public class PacketAddSchedule implements IMessage
 
 			try
 			{
+				final IWorldObject worldObject;
+
+				if (message.worldObjectId == -1)
+				{
+					worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
+				}
+				else
+				{
+					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				}
+
 				final IData data;
 
 				if (message.id == null)
 				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
-
 					data = worldObject.getData();
 				}
 				else
@@ -172,7 +200,7 @@ public class PacketAddSchedule implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data;
 
-					int scheduleId = bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule);
+					int scheduleId = bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule, worldObject);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -184,11 +212,13 @@ public class PacketAddSchedule implements IMessage
 						if (message.id == null)
 						{
 							OrbisCore.network()
-									.sendPacketToAllPlayers(new PacketAddSchedule(message.worldObjectId, message.schedule, message.layerId, scheduleId));
+									.sendPacketToAllPlayers(
+											new PacketAddSchedule(message.worldObjectId, message.schedule, message.layerId, scheduleId, message.pos));
 						}
 						else
 						{
-							OrbisCore.network().sendPacketToAllPlayers(new PacketAddSchedule(message.id, message.schedule, message.layerId, scheduleId));
+							OrbisCore.network()
+									.sendPacketToAllPlayers(new PacketAddSchedule(message.id, message.schedule, message.layerId, scheduleId, message.pos));
 						}
 					}
 				}

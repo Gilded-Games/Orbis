@@ -312,8 +312,14 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 			try
 			{
-				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+				final IData data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
 				ItemStack onMouse = this.mc.player.inventory.getItemStack();
+
+				if (data == null)
+				{
+					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
+					return;
+				}
 
 				if (onMouse.getItem() instanceof ItemBlueprint && data.getMetadata().getIdentifier().equals(ItemBlueprint.getBlueprintId(onMouse)))
 				{
@@ -346,8 +352,13 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			try
 			{
 				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
-
 				ItemStack onMouse = this.mc.player.inventory.getItemStack();
+
+				if (data == null)
+				{
+					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
+					return;
+				}
 
 				if (onMouse.getItem() instanceof ItemFramework && data.getMetadata().getIdentifier().equals(ItemFramework.getDataId(onMouse)))
 				{
@@ -381,6 +392,12 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			{
 				IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
 				ItemStack onMouse = this.mc.player.inventory.getItemStack();
+
+				if (data == null)
+				{
+					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
+					return;
+				}
 
 				if (onMouse.getItem() instanceof ItemBlueprintStacker && data.getMetadata().getIdentifier()
 						.equals(ItemBlueprintStacker.getBlueprintStackerId(onMouse)))

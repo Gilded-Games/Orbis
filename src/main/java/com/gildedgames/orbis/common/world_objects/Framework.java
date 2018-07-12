@@ -42,7 +42,6 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	private Framework()
 	{
 		this.data = new FrameworkData(0, 0, 0);
-		this.data.setWorldObjectParent(this);
 		this.data.listen(this);
 	}
 
@@ -58,7 +57,6 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 		this(world);
 
 		this.data = new FrameworkData(region.getWidth(), region.getHeight(), region.getLength());
-		this.data.setWorldObjectParent(this);
 		this.data.listen(this);
 
 		this.setBounds(region);
@@ -69,7 +67,6 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 		this(world);
 
 		this.data = data;
-		this.data.setWorldObjectParent(this);
 		this.data.listen(this);
 
 		this.setBounds(new Region(BlockPos.ORIGIN, new BlockPos(data.getWidth(), data.getHeight(), data.getLength())));
@@ -278,7 +275,6 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 
 		this.max = RegionHelp.getMax(this.min, this.getWidth(), this.getHeight(), this.getLength());
 
-		this.data.setWorldObjectParent(this);
 		this.data.listen(this);
 
 		this.notifyDataChange();

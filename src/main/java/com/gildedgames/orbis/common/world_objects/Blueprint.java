@@ -60,7 +60,6 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		super(region);
 		this.world = world;
 		this.setBounds(region);
-		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 	}
@@ -70,7 +69,6 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		super(pos, data);
 		this.world = world;
 		this.data.listen(this);
-		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 	}
@@ -80,7 +78,6 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		super(pos, rotation, data);
 		this.world = world;
 		this.data.listen(this);
-		this.data.setWorldObjectParent(this);
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 	}
@@ -357,10 +354,11 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	public void read(final NBTTagCompound tag)
 	{
 		super.read(tag);
+
 		this.data.listen(this);
 
 		this.currentScheduleLayer = tag.getInteger("currentScheduleLayer");
-		this.data.setWorldObjectParent(this);
+
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
 
