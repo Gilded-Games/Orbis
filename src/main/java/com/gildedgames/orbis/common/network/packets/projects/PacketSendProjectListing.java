@@ -35,7 +35,13 @@ public class PacketSendProjectListing extends PacketMultipleParts
 
 		this.projectNames = Lists.newArrayList();
 
-		this.projects.forEach(p -> this.projectNames.add(p.getLocationAsFile().getName()));
+		this.projects.forEach(p ->
+		{
+			if (p.getLocationAsFile() != null)
+			{
+				this.projectNames.add(p.getLocationAsFile().getName());
+			}
+		});
 	}
 
 	private PacketSendProjectListing(final byte[] data)

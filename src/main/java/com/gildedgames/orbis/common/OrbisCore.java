@@ -23,7 +23,6 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
-import com.gildedgames.orbis_api.IOrbisServicesListener;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
@@ -62,7 +61,7 @@ import java.io.File;
 @Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION,
 		dependencies = OrbisCore.MOD_DEPENDENCIES, certificateFingerprint = OrbisCore.MOD_FINGERPRINT)
 @Mod.EventBusSubscriber
-public class OrbisCore implements IOrbisServicesListener
+public class OrbisCore
 {
 
 	public static final String MOD_FINGERPRINT = "db341c083b1b8ce9160a769b569ef6737b3f4cdf";
@@ -314,6 +313,8 @@ public class OrbisCore implements IOrbisServicesListener
 	@Mod.EventHandler
 	public void onFMLPreInit(final FMLPreInitializationEvent event)
 	{
+		OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+
 		NetworkingOrbis.preInit();
 
 		OrbisTileEntities.preInit();
@@ -346,15 +347,7 @@ public class OrbisCore implements IOrbisServicesListener
 	@Mod.EventHandler
 	public void serverStarted(final FMLServerStartedEvent event)
 	{
-		// Checks if listener is already in, don't worry
-		OrbisAPI.services().listen(OrbisCore.INSTANCE);
 		OrbisAPI.services().startProjectManager();
 		startDataCache();
-	}
-
-	@Override
-	public void onStartProjectManager()
-	{
-		OrbisAPI.services().getProjectManager().scanAndCacheProjects();
 	}
 }

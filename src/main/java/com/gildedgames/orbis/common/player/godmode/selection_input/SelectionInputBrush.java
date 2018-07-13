@@ -144,7 +144,7 @@ public class SelectionInputBrush implements ISelectionInput
 
 					if (!this.painting)
 					{
-						if (this.playerOrbis.getWorld().isRemote)
+						if (this.playerOrbis.getWorld().isRemote && this.activeSelection != null)
 						{
 							OrbisCore.network()
 									.sendPacketToServer(new PacketActiveSelectionMultiple(this.activeSelection.getShape(), this.paintedPositions));
