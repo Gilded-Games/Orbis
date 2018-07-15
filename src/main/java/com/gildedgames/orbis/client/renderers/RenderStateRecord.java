@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis_api.core.tree.INode;
-import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.schedules.*;
+import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
+import com.gildedgames.orbis_api.data.schedules.IPositionRecordListener;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
@@ -20,7 +20,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderStateRecord implements IWorldRenderer, IPositionRecordListener<IBlockState>, IScheduleLayerHolderListener
+public class RenderStateRecord implements IWorldRenderer, IPositionRecordListener<IBlockState>
 {
 	private final IPositionRecord<IBlockState> stateRecord;
 
@@ -36,20 +36,17 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 
 	private boolean disabled;
 
-	private IScheduleLayerHolder layerHolder;
-
-	private BlockPos lastPos;
-
 	private boolean rotateData;
 
-	public RenderStateRecord(final IPositionRecord<IBlockState> stateRecord, IScheduleLayerHolder holder, final IWorldObject parentObject,
+	private IScheduleLayer layer;
+
+	public RenderStateRecord(IScheduleLayer layer, final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject,
 			boolean rotateData)
 	{
+		this.layer = layer;
 		this.stateRecord = stateRecord;
 		this.parentObject = parentObject;
 		this.rotateData = rotateData;
-
-		this.layerHolder = holder;
 
 		this.stateRecord.listen(this);
 
@@ -115,12 +112,6 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
-		if (this.layerHolder != null)
-		{
-			this.layerHolder.listen(this);
-			this.layerHolder = null;
-		}
-
 		Lock w = this.lock.writeLock();
 		w.lock();
 
@@ -219,7 +210,7 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 			}
 		}
 
-		final RenderStateRecordChunk chunk = new RenderStateRecordChunk(this.stateRecord, this.parentObject, chunkPos, this.rotateData);
+		final RenderStateRecordChunk chunk = new RenderStateRecordChunk(this.layer, this.stateRecord, this.parentObject, chunkPos, this.rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -277,11 +268,5 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 		{
 			w.unlock();
 		}
-	}
-
-	@Override
-	public void onChangeScheduleLayerNode(INode<IScheduleLayer, LayerLink> prevLayer, int prevIndex, INode<IScheduleLayer, LayerLink> newLayer, int newIndex)
-	{
-
 	}
 }

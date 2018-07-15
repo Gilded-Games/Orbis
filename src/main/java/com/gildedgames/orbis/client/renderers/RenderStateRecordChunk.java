@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.util.mc.BlockUtil;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
@@ -28,7 +29,6 @@ import org.lwjgl.opengl.GL14;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -44,8 +44,6 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-	private final Random rand = new Random();
-
 	private final IWorldObject parentObject;
 
 	private final StateRecordAccess stateAccess;
@@ -60,8 +58,12 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 	private boolean shouldRedraw, focused, rotateData;
 
-	public RenderStateRecordChunk(final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject, BlockPos chunkPos, boolean rotateData)
+	private IScheduleLayer layer;
+
+	public RenderStateRecordChunk(IScheduleLayer layer, final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject, BlockPos chunkPos,
+			boolean rotateData)
 	{
+		this.layer = layer;
 		this.stateRecord = stateRecord;
 		this.parentObject = parentObject;
 
@@ -224,7 +226,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
-		if (!this.focused && OrbisKeyBindings.keyBindControl.isKeyDown())
+		if (!this.focused && OrbisKeyBindings.keyBindControl.isKeyDown() || !this.layer.isVisible())
 		{
 			return;
 		}

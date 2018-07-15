@@ -213,6 +213,13 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Override
 	public void setCurrentScheduleLayerIndex(final int index)
 	{
+		INode<IScheduleLayer, LayerLink> newNode = this.getData().getScheduleLayerTree().get(index);
+
+		if (newNode == null || !newNode.getData().isVisible())
+		{
+			return;
+		}
+
 		int oldIndex = this.currentScheduleLayer;
 		INode<IScheduleLayer, LayerLink> oldNode = this.getData().getScheduleLayerTree().get(oldIndex);
 		IScheduleLayer oldLayer = oldNode.getData();

@@ -544,6 +544,19 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				(int) (this.mc.displayHeight - ((this.dim().y() + this.dim().height()) * scaleH)),
 				(int) (this.dim().width() * scaleW), (int) (this.dim().height() * scaleH));
 
+		if (this.draggableCanvas.getChildren().contains(child))
+		{
+			if (child.dim().maxY() < this.dim().min().y() || child.dim().maxX() < this.dim().min().x() || child.dim().min().x() > this.dim().maxX()
+					|| child.dim().min().y() > this.dim().maxY())
+			{
+				child.setVisible(false);
+			}
+			else
+			{
+				child.setVisible(true);
+			}
+		}
+
 		//this.drawGradientRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), -1072689136, -804253680);
 	}
 

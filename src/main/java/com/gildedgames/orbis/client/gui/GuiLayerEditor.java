@@ -66,7 +66,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 	private static final ResourceLocation POST_GEN_ICON = OrbisCore.getResource("blueprint_gui/post_gen_icon.png");
 
-	private GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> layerTree;
+	private GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> layerTree;
 
 	private GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> conditionTree;
 
@@ -196,11 +196,11 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				},
 				(n) ->
 				{
-					GuiButtonVanilla button = new GuiButtonVanilla(
-							Dim2D.build().width(10 + this.fontRenderer.getStringWidth(n.getData().getOptions().getDisplayNameVar().getData())).height(20)
-									.flush());
+					GuiLayerButton button = new GuiLayerButton(
+							Dim2D.build().width(25 + this.fontRenderer.getStringWidth(n.getData().getOptions().getDisplayNameVar().getData())).height(20)
+									.flush(), n);
 
-					button.getInner().displayString = n.getData().getOptions().getDisplayNameVar().getData();
+					button.getInner().displayString = "    " + n.getData().getOptions().getDisplayNameVar().getData();
 
 					return button;
 				},
@@ -341,10 +341,10 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		this.blueprintVariablesTree.setVisible(false);
 		this.blueprintVariablesTree.setEnabled(false);
 
-		this.layerTree.listen(new IGuiTreeListener<IScheduleLayer, LayerLink, GuiButtonVanilla>()
+		this.layerTree.listen(new IGuiTreeListener<IScheduleLayer, LayerLink, GuiLayerButton>()
 		{
 			@Override
-			public void onLinkNodes(GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> tree, INode<IScheduleLayer, LayerLink> n1,
+			public void onLinkNodes(GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> tree, INode<IScheduleLayer, LayerLink> n1,
 					INode<IScheduleLayer, LayerLink> n2,
 					LayerLink layerLink)
 			{
@@ -352,7 +352,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 
 			@Override
-			public void onClickNode(GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> tree, INode<IScheduleLayer, LayerLink> node)
+			public void onClickNode(GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> tree, INode<IScheduleLayer, LayerLink> node)
 			{
 				GuiLayerEditor.this.currentSelectedLayer = node.getData();
 
@@ -384,11 +384,11 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 				final int layerIndex = b.getData().getScheduleLayerTree().get(node);
 
-				if (layerIndex != -1)
+				if (layerIndex != -1 && node.getData().isVisible())
 				{
 					OrbisCore.network().sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
 				}
-				else
+				else if (node.getData().isVisible())
 				{
 					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveData.");
 				}
@@ -404,7 +404,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 
 			@Override
-			public void onAddNode(GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> tree, INode<IScheduleLayer, LayerLink> node, boolean oldNode)
+			public void onAddNode(GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> tree, INode<IScheduleLayer, LayerLink> node, boolean oldNode)
 			{
 				if (oldNode)
 				{
@@ -434,7 +434,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 
 			@Override
-			public void onMoveNode(GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> tree, INode<IScheduleLayer, LayerLink> node, Pos2D pos)
+			public void onMoveNode(GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> tree, INode<IScheduleLayer, LayerLink> node, Pos2D pos)
 			{
 				final Blueprint b = GuiLayerEditor.this.blueprint;
 
@@ -460,7 +460,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 
 			@Override
-			public void onRemoveNode(GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> tree, INode<IScheduleLayer, LayerLink> node)
+			public void onRemoveNode(GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> tree, INode<IScheduleLayer, LayerLink> node)
 			{
 				final Blueprint b = GuiLayerEditor.this.blueprint;
 
@@ -493,7 +493,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 
 			@Override
-			public void onMovePane(GuiTree<IScheduleLayer, LayerLink, GuiButtonVanilla> tree, Pos2D pos)
+			public void onMovePane(GuiTree<IScheduleLayer, LayerLink, GuiLayerButton> tree, Pos2D pos)
 			{
 				GuiLayerEditor.this.blueprint.getData().setScheduleTreeGuiPos(pos);
 			}
@@ -779,13 +779,15 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 				if (GuiLayerEditor.this.currentSelectedLayerNode != null)
 				{
-					GuiButtonVanilla button = GuiLayerEditor.this.layerTree.getButtonFromNode(GuiLayerEditor.this.currentSelectedLayerNode);
+					GuiLayerButton button = GuiLayerEditor.this.layerTree.getButtonFromNode(GuiLayerEditor.this.currentSelectedLayerNode);
 
 					if (button != null)
 					{
-						button.getInner().displayString = GuiLayerEditor.this.currentSelectedLayerNode.getData().getOptions().getDisplayNameVar().getData();
+						button.getInner().displayString =
+								"    " + GuiLayerEditor.this.currentSelectedLayerNode.getData().getOptions().getDisplayNameVar().getData();
 
-						button.dim().mod().width(10 + this.fontRenderer.getStringWidth(button.getInner().displayString)).flush();
+						button.dim().mod().width(25 + this.fontRenderer
+								.getStringWidth(GuiLayerEditor.this.currentSelectedLayerNode.getData().getOptions().getDisplayNameVar().getData())).flush();
 					}
 				}
 

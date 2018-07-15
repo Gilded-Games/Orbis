@@ -38,7 +38,8 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			layer.getData().getScheduleRecord().listen(this);
 		}
 
-		final RenderStateRecord renderPositionRecord = new RenderStateRecord(this.layer.getData().getStateRecord(), holder, this.parentObject, rotateData);
+		final RenderStateRecord renderPositionRecord = new RenderStateRecord(this.layer.getData(), this.layer.getData().getStateRecord(), this.parentObject,
+				rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
