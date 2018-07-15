@@ -215,7 +215,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	{
 		INode<IScheduleLayer, LayerLink> newNode = this.getData().getScheduleLayerTree().get(index);
 
-		if (newNode == null || !newNode.getData().isVisible())
+		if (newNode == null)
 		{
 			return;
 		}

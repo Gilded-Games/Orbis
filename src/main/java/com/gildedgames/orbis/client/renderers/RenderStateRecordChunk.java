@@ -226,7 +226,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
-		if (!this.focused && OrbisKeyBindings.keyBindControl.isKeyDown() || !this.layer.isVisible())
+		if (!this.focused && OrbisKeyBindings.keyBindControl.isKeyDown() || (!this.layer.isVisible() && !this.focused))
 		{
 			return;
 		}

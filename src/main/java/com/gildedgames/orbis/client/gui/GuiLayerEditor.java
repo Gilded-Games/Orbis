@@ -384,11 +384,11 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 				final int layerIndex = b.getData().getScheduleLayerTree().get(node);
 
-				if (layerIndex != -1 && node.getData().isVisible())
+				if (layerIndex != -1)
 				{
 					OrbisCore.network().sendPacketToServer(new PacketBlueprintSetCurrentScheduleLayer(b, layerIndex));
 				}
-				else if (node.getData().isVisible())
+				else
 				{
 					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveData.");
 				}
