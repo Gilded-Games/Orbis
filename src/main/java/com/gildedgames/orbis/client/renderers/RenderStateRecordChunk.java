@@ -19,11 +19,14 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -139,6 +142,8 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
+		BlockRenderLayer origLayer = MinecraftForgeClient.getRenderLayer();
+
 		for (int x = 0; x < 16; x++)
 		{
 			for (int z = 0; z < 16; z++)
@@ -157,17 +162,14 @@ public class RenderStateRecordChunk implements IWorldRenderer
 						{
 							pos.setPos(xDif + minX, yDif + minY, zDif + minZ);
 
-							/*if (min.getX() == 0 && min.getY() == 0 && min.getZ() == 0)
-							{
-								OrbisCore.LOGGER.info("hmmm");
-							}*/
-
 							this.renderPos(state, pos, buffer);
 						}
 					}
 				}
 			}
 		}
+
+		ForgeHooksClient.setRenderLayer(origLayer);
 
 		buffer.setTranslation(0, 0, 0);
 
@@ -257,6 +259,8 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 		if (useCamera)
 		{
+			GlStateManager.translate(-0.005F, -0.005F, -0.005F);
+			GlStateManager.scale(1.01F, 1.01F, 1.01F);
 			GodPowerBlueprint bp = PlayerOrbis.get(mc.player).powers().getBlueprintPower();
 
 			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
@@ -278,6 +282,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 		GlStateManager.enableDepth();
 
 		GlStateManager.enableNormalize();
+
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -288,6 +293,8 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 			GL14.glBlendColor(1F, 1F, 1F, 0.5F);
 		}
+
+		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
 		GlStateManager.callList(this.glIndex);
 
@@ -304,6 +311,9 @@ public class RenderStateRecordChunk implements IWorldRenderer
 		{
 			GlStateManager.translate(0, 0, 0);
 		}
+
+		GlStateManager.disableBlend();
+		RenderHelper.enableStandardItemLighting();
 
 		GlStateManager.resetColor();
 

@@ -405,20 +405,27 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, final int mouseButton) throws IOException
 	{
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+
 		if (!this.isInputEnabled())
 		{
 			return;
 		}
 
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-
 		int mx = (int) (mouseX - this.draggableCanvas.dim().x());
 		int my = (int) (mouseY - this.draggableCanvas.dim().y());
+
+		boolean aNodeIsHovered = false;
 
 		for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
 		{
 			INode<DATA, LINK> node = entry.getKey();
 			BUTTON button = entry.getValue();
+
+			if (InputHelper.isHovered(button))
+			{
+				aNodeIsHovered = true;
+			}
 
 			if (InputHelper.isHoveredAndTopElement(button))
 			{
@@ -484,7 +491,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		}
 		else
 		{
-			if (!this.nodes.isEmpty())
+			if (!this.nodes.isEmpty() && !aNodeIsHovered)
 			{
 				this.lastScreenPos = Pos2D.flush(this.draggableCanvas.dim().originalState().x(), this.draggableCanvas.dim().originalState().y());
 				this.leftClickLocation = Pos2D.flush(mx + this.draggableCanvas.dim().x(), my + this.draggableCanvas.dim().y());
