@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 
@@ -96,6 +97,8 @@ public class RenderUtil
 		final double offsetPlayerZ = mc.player.lastTickPosZ + (mc.player.posZ - mc.player.lastTickPosZ) * partialTicks;
 
 		final BlockPos center = RegionHelp.getBottomCenter(region);
+
+		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		RenderUtil.renderLabel(string, -offsetPlayerX + center.getX(), -offsetPlayerY + region.getMax().getY() + yOffset, -offsetPlayerZ + center.getZ());
 	}
 
