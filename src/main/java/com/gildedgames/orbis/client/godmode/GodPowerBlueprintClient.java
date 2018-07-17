@@ -155,18 +155,21 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 					this.paletteRenderers.add(r);
 				}
 
-				blueprint = this.paletteBlueprints.get((int) ((System.currentTimeMillis() / 1000) % this.paletteBlueprints.size()));
+				if (!this.paletteBlueprints.isEmpty())
+				{
+					blueprint = this.paletteBlueprints.get((int) ((System.currentTimeMillis() / 1000) % this.paletteBlueprints.size()));
 
-				final IRegion r = RotationHelp.regionFromCenter(pos, blueprint, this.server.getPlacingRotation());
+					final IRegion r = RotationHelp.regionFromCenter(pos, blueprint, this.server.getPlacingRotation());
 
-				this.renderShape = new RenderShape(r);
+					this.renderShape = new RenderShape(r);
 
-				this.renderShape.useCustomColors = true;
+					this.renderShape.useCustomColors = true;
 
-				this.renderShape.colorBorder = SHAPE_COLOR;
-				this.renderShape.colorGrid = SHAPE_COLOR;
+					this.renderShape.colorBorder = SHAPE_COLOR;
+					this.renderShape.colorGrid = SHAPE_COLOR;
 
-				this.renderShape.boxAlpha = 0.1F;
+					this.renderShape.boxAlpha = 0.1F;
+				}
 			}
 			else
 			{

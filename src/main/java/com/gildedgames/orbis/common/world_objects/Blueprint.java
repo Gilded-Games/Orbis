@@ -5,6 +5,9 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.core.tree.INodeTreeListener;
 import com.gildedgames.orbis_api.core.tree.LayerLink;
+import com.gildedgames.orbis_api.core.variables.GuiVarBoolean;
+import com.gildedgames.orbis_api.core.variables.IGuiVar;
+import com.gildedgames.orbis_api.core.variables.displays.GuiVarDisplay;
 import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintVariable;
@@ -14,6 +17,7 @@ import com.gildedgames.orbis_api.data.region.IColored;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.*;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.util.mc.NBT;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
@@ -30,7 +34,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Blueprint extends BlueprintRegion implements IWorldObject, IColored, IBlueprintDataListener,
-		IScheduleLayerHolder, IScheduleRecordListener, INodeTreeListener<IScheduleLayer, LayerLink>
+		IBlueprint, IScheduleRecordListener, INodeTreeListener<IScheduleLayer, LayerLink>
 {
 	private final List<IScheduleLayerHolderListener> listeners = Lists.newArrayList();
 
@@ -44,15 +48,23 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 	private boolean isDirty;
 
+	private GuiVarBoolean layerTransparency;
+
+	private List<IGuiVar> variables = Lists.newArrayList();
+
 	private Blueprint()
 	{
 		super();
+
+		this.startVariables();
 	}
 
 	private Blueprint(final World world)
 	{
 		super(world);
 		this.world = world;
+
+		this.startVariables();
 	}
 
 	public Blueprint(final World world, final IRegion region)
@@ -62,6 +74,8 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.setBounds(region);
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
+
+		this.startVariables();
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final BlueprintData data)
@@ -71,6 +85,8 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.data.listen(this);
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
+
+		this.startVariables();
 	}
 
 	public Blueprint(final World world, final BlockPos pos, final Rotation rotation, final BlueprintData data)
@@ -80,6 +96,18 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		this.data.listen(this);
 		this.data.getScheduleLayerTree().listen(this);
 		this.data.getVariableTree().listen(new BlueprintVariableTreeListener(this));
+
+		this.startVariables();
+	}
+
+	private void startVariables()
+	{
+		this.layerTransparency = new GuiVarBoolean("orbis.gui.layer_transparency");
+		this.layerTransparency.setData(true);
+
+		this.variables.clear();
+
+		this.variables.add(this.layerTransparency);
 	}
 
 	@Override
@@ -247,6 +275,12 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
+	public GuiVarBoolean getLayerTransparencyVar()
+	{
+		return this.layerTransparency;
+	}
+
+	@Override
 	public INode<IScheduleLayer, LayerLink> getCurrentScheduleLayerNode()
 	{
 		this.checkScheduleLayerExists();
@@ -354,6 +388,10 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	public void write(final NBTTagCompound tag)
 	{
 		super.write(tag);
+
+		NBTFunnel funnel = new NBTFunnel(tag);
+
+		funnel.set("layerTransparency", this.layerTransparency);
 		tag.setInteger("currentScheduleLayer", this.currentScheduleLayer);
 	}
 
@@ -361,6 +399,14 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	public void read(final NBTTagCompound tag)
 	{
 		super.read(tag);
+
+		NBTFunnel funnel = new NBTFunnel(tag);
+
+		this.layerTransparency = funnel.getWithDefault("layerTransparency", () -> this.layerTransparency);
+
+		this.variables.clear();
+
+		this.variables.add(this.layerTransparency);
 
 		this.data.listen(this);
 
@@ -430,6 +476,18 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		node.getData().getScheduleRecord().unlisten(this);
 
 		this.markDirty();
+	}
+
+	@Override
+	public List<IGuiVar> getVariables()
+	{
+		return this.variables;
+	}
+
+	@Override
+	public void setParentDisplay(GuiVarDisplay parentDisplay)
+	{
+
 	}
 
 	private static class BlueprintVariableTreeListener implements INodeTreeListener<BlueprintVariable, NBT>

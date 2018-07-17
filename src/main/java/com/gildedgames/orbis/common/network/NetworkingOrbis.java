@@ -69,7 +69,7 @@ public class NetworkingOrbis
 				Side.SERVER);
 		network.reg(PacketSetTriggerId.HandlerServer.class, PacketSetTriggerId.class,
 				Side.SERVER);
-		network.reg(PacketSetScheduleLayerInfo.HandlerServer.class, PacketSetScheduleLayerInfo.class,
+		network.reg(PacketSetScheduleLayerOptions.HandlerServer.class, PacketSetScheduleLayerOptions.class,
 				Side.SERVER);
 		network.reg(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class,
 				Side.SERVER);
@@ -144,7 +144,7 @@ public class NetworkingOrbis
 				Side.CLIENT);
 		network.reg(PacketSetTriggerId.HandlerClient.class, PacketSetTriggerId.class,
 				Side.CLIENT);
-		network.reg(PacketSetScheduleLayerInfo.HandlerClient.class, PacketSetScheduleLayerInfo.class,
+		network.reg(PacketSetScheduleLayerOptions.HandlerClient.class, PacketSetScheduleLayerOptions.class,
 				Side.CLIENT);
 
 		network.reg(PacketRemoveEntrance.HandlerClient.class, PacketRemoveEntrance.class,

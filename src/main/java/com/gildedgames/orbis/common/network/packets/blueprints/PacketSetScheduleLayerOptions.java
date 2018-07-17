@@ -22,7 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketSetScheduleLayerInfo extends PacketMultipleParts
+public class PacketSetScheduleLayerOptions extends PacketMultipleParts
 {
 
 	private IDataIdentifier id;
@@ -31,50 +31,45 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 
 	private String displayName;
 
-	private float edgeNoise;
+	private boolean replacesSolidBlocks;
 
-	private boolean choosesPerBlock;
-
-	public PacketSetScheduleLayerInfo()
+	public PacketSetScheduleLayerOptions()
 	{
 
 	}
 
-	private PacketSetScheduleLayerInfo(final byte[] data)
+	private PacketSetScheduleLayerOptions(final byte[] data)
 	{
 		super(data);
 	}
 
-	public PacketSetScheduleLayerInfo(final Blueprint blueprint, INode<IScheduleLayer, LayerLink> layer, String displayName, float edgeNoise,
-			boolean choosesPerBlock)
+	public PacketSetScheduleLayerOptions(final Blueprint blueprint, INode<IScheduleLayer, LayerLink> layer, String displayName,
+			boolean replacesSolidBlocks)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 
 		this.displayName = displayName;
-		this.edgeNoise = edgeNoise;
-		this.choosesPerBlock = choosesPerBlock;
+		this.replacesSolidBlocks = replacesSolidBlocks;
 
 		this.layerIndex = blueprint.getData().getScheduleLayerTree().get(layer);
 	}
 
-	public PacketSetScheduleLayerInfo(int worldObjectId, final int layerIndex, final String displayName, float edgeNoise, boolean choosesPerBlock)
+	public PacketSetScheduleLayerOptions(int worldObjectId, final int layerIndex, final String displayName, boolean replacesSolidBlocks)
 	{
 		this.worldObjectId = worldObjectId;
 
 		this.displayName = displayName;
-		this.edgeNoise = edgeNoise;
-		this.choosesPerBlock = choosesPerBlock;
+		this.replacesSolidBlocks = replacesSolidBlocks;
 
 		this.layerIndex = layerIndex;
 	}
 
-	public PacketSetScheduleLayerInfo(final IDataIdentifier id, final int layerIndex, final String displayName, float edgeNoise, boolean choosesPerBlock)
+	public PacketSetScheduleLayerOptions(final IDataIdentifier id, final int layerIndex, final String displayName, boolean replacesSolidBlocks)
 	{
 		this.id = id;
 
 		this.displayName = displayName;
-		this.edgeNoise = edgeNoise;
-		this.choosesPerBlock = choosesPerBlock;
+		this.replacesSolidBlocks = replacesSolidBlocks;
 
 		this.layerIndex = layerIndex;
 	}
@@ -90,8 +85,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 		this.layerIndex = tag.getInteger("layerIndex");
 
 		this.displayName = tag.getString("displayName");
-		this.edgeNoise = tag.getFloat("edgeNoise");
-		this.choosesPerBlock = tag.getBoolean("choosesPerBlock");
+		this.replacesSolidBlocks = tag.getBoolean("replacesSolidBlocks");
 	}
 
 	@Override
@@ -105,8 +99,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 		tag.setInteger("layerIndex", this.layerIndex);
 
 		tag.setString("displayName", this.displayName);
-		tag.setFloat("edgeNoise", this.edgeNoise);
-		tag.setBoolean("choosesPerBlock", this.choosesPerBlock);
+		tag.setBoolean("replacesSolidBlocks", this.replacesSolidBlocks);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -114,13 +107,13 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 	@Override
 	public PacketMultipleParts createPart(final byte[] data)
 	{
-		return new PacketSetScheduleLayerInfo(data);
+		return new PacketSetScheduleLayerOptions(data);
 	}
 
-	public static class HandlerClient extends MessageHandlerClient<PacketSetScheduleLayerInfo, IMessage>
+	public static class HandlerClient extends MessageHandlerClient<PacketSetScheduleLayerOptions, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetScheduleLayerInfo message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSetScheduleLayerOptions message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -153,8 +146,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 						IScheduleLayer layer = node.getData();
 
 						layer.getOptions().getDisplayNameVar().setData(message.displayName);
-						layer.getOptions().getEdgeNoiseVar().setData(message.edgeNoise);
-						layer.getOptions().getChoosesPerBlockVar().setData(message.choosesPerBlock);
+						layer.getOptions().getReplacesSolidBlocksVar().setData(message.replacesSolidBlocks);
 					}
 				}
 			}
@@ -167,10 +159,10 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 		}
 	}
 
-	public static class HandlerServer extends MessageHandlerServer<PacketSetScheduleLayerInfo, IMessage>
+	public static class HandlerServer extends MessageHandlerServer<PacketSetScheduleLayerOptions, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetScheduleLayerInfo message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSetScheduleLayerOptions message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -203,8 +195,7 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 						IScheduleLayer layer = node.getData();
 
 						layer.getOptions().getDisplayNameVar().setData(message.displayName);
-						layer.getOptions().getEdgeNoiseVar().setData(message.edgeNoise);
-						layer.getOptions().getChoosesPerBlockVar().setData(message.choosesPerBlock);
+						layer.getOptions().getReplacesSolidBlocksVar().setData(message.replacesSolidBlocks);
 					}
 
 					// TODO: Send just to people who have downloaded this project
@@ -217,14 +208,14 @@ public class PacketSetScheduleLayerInfo extends PacketMultipleParts
 						if (message.id == null)
 						{
 							OrbisCore.network().sendPacketToAllPlayers(
-									new PacketSetScheduleLayerInfo(message.worldObjectId, message.layerIndex, message.displayName, message.edgeNoise,
-											message.choosesPerBlock));
+									new PacketSetScheduleLayerOptions(message.worldObjectId, message.layerIndex, message.displayName,
+											message.replacesSolidBlocks));
 						}
 						else
 						{
 							OrbisCore.network().sendPacketToAllPlayers(
-									new PacketSetScheduleLayerInfo(message.id, message.layerIndex, message.displayName, message.edgeNoise,
-											message.choosesPerBlock));
+									new PacketSetScheduleLayerOptions(message.id, message.layerIndex, message.displayName,
+											message.replacesSolidBlocks));
 						}
 					}
 				}

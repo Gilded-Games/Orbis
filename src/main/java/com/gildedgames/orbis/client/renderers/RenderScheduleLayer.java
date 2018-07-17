@@ -28,7 +28,7 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 	private boolean disabled;
 
-	public RenderScheduleLayer(final INode<IScheduleLayer, LayerLink> layer, IScheduleLayerHolder holder, final IWorldObject parentObject, boolean rotateData)
+	public RenderScheduleLayer(final INode<IScheduleLayer, LayerLink> layer, IBlueprint blueprint, final IWorldObject parentObject, boolean rotateData)
 	{
 		this.layer = layer;
 		this.parentObject = parentObject;
@@ -38,7 +38,8 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			layer.getData().getScheduleRecord().listen(this);
 		}
 
-		final RenderStateRecord renderPositionRecord = new RenderStateRecord(this.layer.getData(), this.layer.getData().getStateRecord(), this.parentObject,
+		final RenderStateRecord renderPositionRecord = new RenderStateRecord(blueprint, this.layer.getData(), this.layer.getData().getStateRecord(),
+				this.parentObject,
 				rotateData);
 
 		final Lock w = this.lock.writeLock();

@@ -4,6 +4,7 @@ import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.IBlueprint;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.util.mc.BlockUtil;
@@ -63,9 +64,13 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 	private IScheduleLayer layer;
 
-	public RenderStateRecordChunk(IScheduleLayer layer, final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject, BlockPos chunkPos,
+	private IBlueprint blueprint;
+
+	public RenderStateRecordChunk(IBlueprint blueprint, IScheduleLayer layer, final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject,
+			BlockPos chunkPos,
 			boolean rotateData)
 	{
+		this.blueprint = blueprint;
 		this.layer = layer;
 		this.stateRecord = stateRecord;
 		this.parentObject = parentObject;
@@ -286,7 +291,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-		if (!this.focused)
+		if (!this.focused && this.blueprint.getLayerTransparencyVar().getData())
 		{
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GL11.GL_CONSTANT_ALPHA, GL11.GL_ONE_MINUS_CONSTANT_ALPHA);
@@ -298,7 +303,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 		GlStateManager.callList(this.glIndex);
 
-		if (!this.focused)
+		if (!this.focused && this.blueprint.getLayerTransparencyVar().getData())
 		{
 			GL14.glBlendColor(1F, 1F, 1F, 1F);
 

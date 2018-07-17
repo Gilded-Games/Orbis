@@ -86,7 +86,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 	private Blueprint blueprint;
 
-	private GuiButtonVanilla saveButton, closeButton, blueprintVariablesButton;
+	private GuiButtonVanilla saveButton, closeButton, blueprintVariablesButton, metadataButton;
 
 	private GuiTab layerTab, postGenTab;
 
@@ -147,7 +147,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		this.layerTab.setPressed(true);
 
-		GuiFrameDummy buttons = new GuiFrameDummy(Dim2D.build().width(220).height(20).centerX(true).x(200 + ((this.width - 200) / 2)).y(20).flush());
+		GuiFrameDummy buttons = new GuiFrameDummy(Dim2D.build().width(255).height(20).centerX(true).x(200 + ((this.width - 200) / 2)).y(20).flush());
 
 		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).flush());
 
@@ -158,14 +158,19 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		this.closeButton.getInner().displayString = I18n.format("orbis.gui.close");
 
 		this.blueprintVariablesButton = new GuiButtonVanilla(
-				Dim2D.build().width(110).height(20).x(110).flush());
+				Dim2D.build().width(70).height(20).x(110).flush());
 
-		this.blueprintVariablesButton.getInner().displayString = I18n.format("orbis.gui.blueprint_variables");
+		this.blueprintVariablesButton.getInner().displayString = I18n.format("orbis.gui.variables_title");
+
+		this.metadataButton = new GuiButtonVanilla(
+				Dim2D.build().width(70).height(20).x(185).flush());
+
+		this.metadataButton.getInner().displayString = I18n.format("orbis.gui.metadata");
 
 		final List<INode<IScheduleLayer, LayerLink>> layerRoots = Lists.newArrayList();
 		final List<INode<IScheduleLayer, LayerLink>> layerVisitedNodes = Lists.newArrayList();
 
-		buttons.addChildren(this.saveButton, this.closeButton, this.blueprintVariablesButton);
+		buttons.addChildren(this.saveButton, this.closeButton, this.blueprintVariablesButton, this.metadataButton);
 
 		this.layerTree = new GuiTree<>(Dim2D.build().width(this.width - 200).height(this.height - 40).x(200).y(40).flush(), (nodeId) ->
 		{
@@ -1003,6 +1008,14 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			}
 
 			this.currentSelectedLayer = null;
+		}
+
+		if (InputHelper.isHoveredAndTopElement(this.metadataButton) && mouseButton == 0)
+		{
+			GuiLayerEditor.this.varDisplay.updateVariableData();
+
+			GuiLayerEditor.this.varDisplayScrollDecorator.resetScroll();
+			GuiLayerEditor.this.varDisplay.display(this.blueprint);
 		}
 	}
 

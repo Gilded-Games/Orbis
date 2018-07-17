@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.schedules.IBlueprint;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
 import com.gildedgames.orbis_api.data.schedules.IPositionRecordListener;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
@@ -40,13 +41,16 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 
 	private IScheduleLayer layer;
 
-	public RenderStateRecord(IScheduleLayer layer, final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject,
+	private IBlueprint blueprint;
+
+	public RenderStateRecord(IBlueprint blueprint, IScheduleLayer layer, final IPositionRecord<IBlockState> stateRecord, final IWorldObject parentObject,
 			boolean rotateData)
 	{
 		this.layer = layer;
 		this.stateRecord = stateRecord;
 		this.parentObject = parentObject;
 		this.rotateData = rotateData;
+		this.blueprint = blueprint;
 
 		this.stateRecord.listen(this);
 
@@ -210,7 +214,8 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 			}
 		}
 
-		final RenderStateRecordChunk chunk = new RenderStateRecordChunk(this.layer, this.stateRecord, this.parentObject, chunkPos, this.rotateData);
+		final RenderStateRecordChunk chunk = new RenderStateRecordChunk(this.blueprint, this.layer, this.stateRecord, this.parentObject, chunkPos,
+				this.rotateData);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();

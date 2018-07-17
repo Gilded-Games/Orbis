@@ -28,7 +28,8 @@ orbis.gui.layer=Layer
 orbis.gui.condition=Condition
 orbis.gui.save_as=Save As
 orbis.gui.close=Close
-orbis.gui.blueprint_variables=Blueprint Variables
+orbis.gui.variables_title=Variables
+orbis.gui.metadata=Metadata
 orbis.gui.blueprint_variables_title=§lBlueprint Variables:
 orbis.gui.link_child=Link Child
 orbis.gui.and_link=And...
@@ -45,6 +46,8 @@ orbis.gui.display_name=Display Name
 orbis.gui.value=Value
 orbis.gui.variable=Variable %s
 orbis.gui.variable_type=Variable Type:
+
+orbis.gui.replaces_solid_blocks=Replaces Solid Blocks
 
 orbis.gui.selected_variable=Selected Variable
 orbis.gui.check_blueprint_variable=Check Blueprint Variable
@@ -85,3 +88,5 @@ orbis.gui.with=With
 orbis.gui.clear=Clear
 orbis.gui.equals_true=Equals True
 orbis.gui.equals_false=Equals False
+
+orbis.gui.layer_transparency=Layer Transparency
