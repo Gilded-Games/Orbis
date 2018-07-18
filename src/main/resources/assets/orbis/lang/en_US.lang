@@ -90,3 +90,5 @@ orbis.gui.equals_true=Equals True
 orbis.gui.equals_false=Equals False
 
 orbis.gui.layer_transparency=Layer Transparency
+
+orbis.gui.choose_per_block_on_post_gen=Choose Per Block On Post Gen

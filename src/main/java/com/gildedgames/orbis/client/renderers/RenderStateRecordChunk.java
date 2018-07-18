@@ -291,7 +291,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-		if (!this.focused && this.blueprint.getLayerTransparencyVar().getData())
+		if (!this.focused && this.blueprint.getData().getBlueprintMetadata().getLayerTransparencyVar().getData())
 		{
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GL11.GL_CONSTANT_ALPHA, GL11.GL_ONE_MINUS_CONSTANT_ALPHA);
@@ -303,7 +303,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 
 		GlStateManager.callList(this.glIndex);
 
-		if (!this.focused && this.blueprint.getLayerTransparencyVar().getData())
+		if (!this.focused && this.blueprint.getData().getBlueprintMetadata().getLayerTransparencyVar().getData())
 		{
 			GL14.glBlendColor(1F, 1F, 1F, 1F);
 

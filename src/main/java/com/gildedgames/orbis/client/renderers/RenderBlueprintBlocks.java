@@ -73,7 +73,7 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		this.blueprint = blueprint;
 		this.cache = new BlueprintRenderCache(blueprint, world);
 
-		this.blueprint.getLayerTransparencyVar().setData(false);
+		this.blueprint.getData().getBlueprintMetadata().getLayerTransparencyVar().setData(false);
 
 		final Lock w = this.lock.writeLock();
 		w.lock();

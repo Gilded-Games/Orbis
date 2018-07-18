@@ -1015,7 +1015,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			GuiLayerEditor.this.varDisplay.updateVariableData();
 
 			GuiLayerEditor.this.varDisplayScrollDecorator.resetScroll();
-			GuiLayerEditor.this.varDisplay.display(this.blueprint);
+			GuiLayerEditor.this.varDisplay.display(this.blueprint.getData().getBlueprintMetadata());
 		}
 	}
 

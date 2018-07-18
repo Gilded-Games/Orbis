@@ -182,14 +182,17 @@ public class GodPowerBlueprintClient implements IGodPowerClient
 				this.renderShape.setShape(r);
 			}
 
-			this.paletteRenderers.forEach(r -> r.setDisabled(true));
+			if (!this.paletteBlueprints.isEmpty())
+			{
+				this.paletteRenderers.forEach(r -> r.setDisabled(true));
 
-			final IWorldRenderer rendered = this.paletteRenderers.get((int) ((System.currentTimeMillis() / 1000) % this.paletteBlueprints.size()));
+				final IWorldRenderer rendered = this.paletteRenderers.get((int) ((System.currentTimeMillis() / 1000) % this.paletteBlueprints.size()));
 
-			rendered.setDisabled(false);
+				rendered.setDisabled(false);
 
-			renderers.addAll(this.paletteRenderers);
-			renderers.add(this.renderShape);
+				renderers.addAll(this.paletteRenderers);
+				renderers.add(this.renderShape);
+			}
 		}
 
 		if (this.server.getPlacingBlueprint() != null)
