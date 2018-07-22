@@ -8,6 +8,7 @@ import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
@@ -64,7 +65,7 @@ public class PacketRemoveNode extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.worldObjectId = tag.getInteger("w");

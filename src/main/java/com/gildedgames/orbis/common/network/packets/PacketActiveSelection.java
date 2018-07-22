@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInp
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import io.netty.buffer.ByteBuf;
@@ -40,7 +41,7 @@ public class PacketActiveSelection implements IMessage
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 
 		this.funnel = new NBTFunnel(tag);
 	}

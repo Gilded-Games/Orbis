@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -40,7 +40,7 @@ public class PacketRequestCreateProject extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.name = tag.getString("name");

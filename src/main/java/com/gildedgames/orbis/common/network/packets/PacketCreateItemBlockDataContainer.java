@@ -1,15 +1,16 @@
 package com.gildedgames.orbis.common.network.packets;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis_api.processing.DataPrimer;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -42,7 +43,7 @@ public class PacketCreateItemBlockDataContainer implements IMessage
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-		this.funnel = new NBTFunnel(ByteBufUtils.readTag(buf));
+		this.funnel = new NBTFunnel(NetworkUtils.readTagLimitless(buf));
 		this.stack = ByteBufUtils.readItemStack(buf);
 	}
 

@@ -42,6 +42,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -283,28 +285,38 @@ public class OrbisCore
 	public void onFMLConstruction(final FMLConstructionEvent event)
 	{
 		// Registration so BlockFilterHelper recognizes ItemBlockPalette when trying to fetch blocks
-		BlockFilterHelper.registerBlockRecognition((s) ->
+		BlockFilterHelper.registerBlockRecognition(new BlockFilterHelper.IBlockRecognition()
 		{
-			IBlockState[] blocks = null;
-
-			if (s.getItem() instanceof ItemBlockPalette)
+			@Override
+			public IBlockState[] recognize(ItemStack stack)
 			{
-				BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(s);
+				IBlockState[] blocks = null;
 
-				if (layer != null)
+				if (stack.getItem() instanceof ItemBlockPalette)
 				{
-					blocks = new IBlockState[layer.getReplacementBlocks().size()];
+					BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(stack);
 
-					for (int i = 0; i < blocks.length; i++)
+					if (layer != null)
 					{
-						final IBlockState state = layer.getReplacementBlocks().get(i).getBlockState();
+						blocks = new IBlockState[layer.getReplacementBlocks().size()];
 
-						blocks[i] = state;
+						for (int i = 0; i < blocks.length; i++)
+						{
+							final IBlockState state = layer.getReplacementBlocks().get(i).getBlockState();
+
+							blocks[i] = state;
+						}
 					}
 				}
+
+				return blocks;
 			}
 
-			return blocks;
+			@Override
+			public boolean isCompatible(Class<? extends Item> clazz)
+			{
+				return ItemBlockPalette.class.isAssignableFrom(clazz);
+			}
 		});
 
 		registerSerializations();

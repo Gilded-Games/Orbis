@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.data.schedules.IFilterOptions;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -34,7 +35,7 @@ public class PacketSetFilterOptions extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.filterOptions = funnel.get("f");

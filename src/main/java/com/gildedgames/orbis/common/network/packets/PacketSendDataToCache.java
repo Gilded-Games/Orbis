@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.network.packets;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataCache;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -38,7 +39,7 @@ public class PacketSendDataToCache extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.cacheId = tag.getString("cacheId");

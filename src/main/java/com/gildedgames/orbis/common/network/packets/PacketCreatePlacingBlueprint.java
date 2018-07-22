@@ -6,6 +6,7 @@ import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis_api.processing.DataPrimer;
@@ -39,7 +40,7 @@ public class PacketCreatePlacingBlueprint implements IMessage
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-		this.funnel = new NBTFunnel(ByteBufUtils.readTag(buf));
+		this.funnel = new NBTFunnel(NetworkUtils.readTagLimitless(buf));
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -59,7 +60,7 @@ public class PacketRemoveSchedule implements IMessage
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.worldObjectId = tag.getInteger("worldObjectId");

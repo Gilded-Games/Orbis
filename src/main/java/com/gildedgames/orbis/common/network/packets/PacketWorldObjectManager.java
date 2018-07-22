@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.network.packets;
 
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
@@ -40,7 +41,7 @@ public class PacketWorldObjectManager extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		this.tag = ByteBufUtils.readTag(buf);
+		this.tag = NetworkUtils.readTagLimitless(buf);
 	}
 
 	@Override

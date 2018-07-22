@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.schedules.PostGenReplaceLayer;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
@@ -56,7 +57,7 @@ public class PacketBlueprintPostgenReplaceLayerChanges extends PacketMultiplePar
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 		NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.worldObjectId = tag.getInteger("worldObjectId");

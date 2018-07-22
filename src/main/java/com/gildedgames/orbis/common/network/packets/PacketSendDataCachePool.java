@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.data.management.IDataCachePool;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import io.netty.buffer.ByteBuf;
@@ -35,7 +36,7 @@ public class PacketSendDataCachePool extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		this.cacheData = ByteBufUtils.readTag(buf);
+		this.cacheData = NetworkUtils.readTagLimitless(buf);
 	}
 
 	@Override

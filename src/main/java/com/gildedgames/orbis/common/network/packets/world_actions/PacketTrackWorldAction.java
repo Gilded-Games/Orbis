@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.network.packets.world_actions;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -41,7 +42,7 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 	@Override
 	public void read(final ByteBuf buf)
 	{
-		this.funnel = new NBTFunnel(ByteBufUtils.readTag(buf));
+		this.funnel = new NBTFunnel(NetworkUtils.readTagLimitless(buf));
 	}
 
 	@Override

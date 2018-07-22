@@ -4,6 +4,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import io.netty.buffer.ByteBuf;
@@ -34,7 +35,7 @@ public class PacketFilterShape implements IMessage
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-		final NBTTagCompound tag = ByteBufUtils.readTag(buf);
+		final NBTTagCompound tag = NetworkUtils.readTagLimitless(buf);
 
 		this.funnel = new NBTFunnel(tag);
 	}
