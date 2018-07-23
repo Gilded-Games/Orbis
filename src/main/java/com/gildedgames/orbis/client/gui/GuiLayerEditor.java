@@ -194,10 +194,10 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 							GuiLayerEditor.this.layerTree.startLinking(LayerLink.DEFAULT);
 						}
 					});
-					
-					if (!node.getChildrenIds().isEmpty())
+
+					if (!node.getChildrenIds().isEmpty() || !node.getParentsIds().isEmpty())
 					{
-						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.remove_link_to"), () -> {
+						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.remove_link"), () -> {
 							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
 
 							for (INode<IScheduleLayer, LayerLink> child : node.getTree().get(node.getChildrenIds()))
@@ -212,15 +212,6 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 											}
 										});
 							}
-
-							return list;
-						}));
-					}
-
-					if (!node.getParentsIds().isEmpty())
-					{
-						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.remove_link_from"), () -> {
-							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
 
 							for (INode<IScheduleLayer, LayerLink> parent : node.getTree().get(node.getParentsIds()))
 							{
