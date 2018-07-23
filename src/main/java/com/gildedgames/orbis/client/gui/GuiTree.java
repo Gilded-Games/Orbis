@@ -26,6 +26,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -59,7 +60,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private boolean isDraggingScreen;
 
-	private Supplier<Collection<IDropdownElement>> nodeDropdownElementFactory;
+	private Function<INode<DATA, LINK>, Collection<IDropdownElement>> nodeDropdownElementFactory;
 
 	private Function<LINK, String> linkStringInterpreter;
 
@@ -77,7 +78,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private INode<DATA, LINK> copiedNode;
 
-	public GuiTree(Rect rect, Function<Integer, INode<DATA, LINK>> nodeFactory, Supplier<Collection<IDropdownElement>> nodeDropdownElementFactory,
+	public GuiTree(Rect rect, Function<Integer, INode<DATA, LINK>> nodeFactory,
+			Function<INode<DATA, LINK>, Collection<IDropdownElement>> nodeDropdownElementFactory,
 			Function<LINK, String> linkStringInterpreter, Function<INode<DATA, LINK>, Boolean> nodeValidator, Function<INode<DATA, LINK>, BUTTON> buttonFactory,
 			Supplier<Integer> nodeIdFactory)
 	{
@@ -168,7 +170,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		this.draggableCanvas = new GuiFrameDummy(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush());
 
 		this.refreshCanvasDropdownElements();
-		this.refreshRightClickNodeElements();
+		this.refreshRightClickNodeElements(null);
 
 		this.addChildren(this.draggableCanvas);
 	}
@@ -208,9 +210,9 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		this.canvasDropdownElements.add(GuiRightClickElements.close());
 	}
 
-	private void refreshRightClickNodeElements()
+	private void refreshRightClickNodeElements(INode<DATA, LINK> node)
 	{
-		Collection<IDropdownElement> extraNodeElements = this.nodeDropdownElementFactory.get();
+		Collection<IDropdownElement> extraNodeElements = node == null ? Collections.emptyList() : this.nodeDropdownElementFactory.apply(node);
 
 		this.nodeDropdownElements = Lists.newArrayList();
 
@@ -438,7 +440,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 					if (holder != null)
 					{
-						this.refreshRightClickNodeElements();
+						this.refreshRightClickNodeElements(this.interactedNode);
 
 						holder.getDropdown().display(this.nodeDropdownElements, Pos2D.flush(mouseX, mouseY));
 					}

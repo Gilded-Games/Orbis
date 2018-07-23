@@ -12,6 +12,7 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketBlueprintSe
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElementWithData;
+import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.*;
 import com.gildedgames.orbis_api.client.gui.util.decorators.GuiScrollable;
@@ -181,14 +182,65 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			return node;
 		},
-				() -> Collections.singleton(new DropdownElement(new TextComponentTranslation("orbis.gui.link_child"))
+				(node) ->
 				{
-					@Override
-					public void onClick(final GuiDropdownList list, final EntityPlayer player)
+					List<IDropdownElement> elements = Lists.newArrayList();
+
+					elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.link_child"))
 					{
-						GuiLayerEditor.this.layerTree.startLinking(LayerLink.DEFAULT);
+						@Override
+						public void onClick(final GuiDropdownList list, final EntityPlayer player)
+						{
+							GuiLayerEditor.this.layerTree.startLinking(LayerLink.DEFAULT);
+						}
+					});
+					
+					if (!node.getChildrenIds().isEmpty())
+					{
+						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.remove_link_to"), () -> {
+							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
+
+							for (INode<IScheduleLayer, LayerLink> child : node.getTree().get(node.getChildrenIds()))
+							{
+								list.addDropdownElements(
+										new DropdownElement(new TextComponentString(child.getData().getOptions().getDisplayNameVar().getData()))
+										{
+											@Override
+											public void onClick(final GuiDropdownList list, final EntityPlayer player)
+											{
+												node.removeChild(child.getNodeId());
+											}
+										});
+							}
+
+							return list;
+						}));
 					}
-				}),
+
+					if (!node.getParentsIds().isEmpty())
+					{
+						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.remove_link_from"), () -> {
+							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
+
+							for (INode<IScheduleLayer, LayerLink> parent : node.getTree().get(node.getParentsIds()))
+							{
+								list.addDropdownElements(
+										new DropdownElement(new TextComponentString(parent.getData().getOptions().getDisplayNameVar().getData()))
+										{
+											@Override
+											public void onClick(final GuiDropdownList list, final EntityPlayer player)
+											{
+												parent.removeChild(node.getNodeId());
+											}
+										});
+							}
+
+							return list;
+						}));
+					}
+
+					return elements;
+				},
 				(l) -> "",
 				(n) ->
 				{
@@ -225,14 +277,14 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			return node;
 		},
-				() -> Lists.newArrayList(new DropdownElement(new TextComponentString("And..."))
-										 {
-											 @Override
-											 public void onClick(final GuiDropdownList list, final EntityPlayer player)
+				(node) -> Lists.newArrayList(new DropdownElement(new TextComponentString("And..."))
 											 {
-												 GuiLayerEditor.this.conditionTree.startLinking(ConditionLink.AND);
-											 }
-										 },
+												 @Override
+												 public void onClick(final GuiDropdownList list, final EntityPlayer player)
+												 {
+													 GuiLayerEditor.this.conditionTree.startLinking(ConditionLink.AND);
+												 }
+											 },
 						new DropdownElement(new TextComponentString("Or..."))
 						{
 							@Override
@@ -291,7 +343,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			return node;
 		},
-				Collections::emptyList,
+				(node) -> Collections.emptyList(),
 				(l) -> "",
 				(n) -> true,
 				(n) ->
@@ -316,7 +368,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			return node;
 		},
-				Collections::emptyList,
+				(node) -> Collections.emptyList(),
 				(l) -> "",
 				(n) -> true,
 				(n) ->

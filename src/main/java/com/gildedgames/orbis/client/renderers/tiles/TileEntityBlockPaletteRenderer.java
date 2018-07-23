@@ -55,9 +55,11 @@ public class TileEntityBlockPaletteRenderer extends TileEntitySpecialRenderer<Ti
 						@Override
 						public Optional<RenderBlueprintBlocks> load(final BlockFilterLayer layer)
 						{
-							int sizeX = Math.max(2, layer.getReplacementBlocks().size() / 2);
+							int trueSize = layer.getReplacementBlocks().stream().mapToInt(b -> (int) b.getReplaceCondition().getWeight()).sum();
 
-							while (layer.getReplacementBlocks().size() <= (sizeX - 1) * (sizeX - 1))
+							int sizeX = Math.max(2, trueSize / 2);
+
+							while (trueSize <= (sizeX - 1) * (sizeX - 1))
 							{
 								sizeX--;
 							}
@@ -65,7 +67,7 @@ public class TileEntityBlockPaletteRenderer extends TileEntitySpecialRenderer<Ti
 							final int sizeDoubled = (sizeX * 2);
 
 							final int remainder =
-									layer.getReplacementBlocks().size() > sizeDoubled && (layer.getReplacementBlocks().size() % sizeDoubled) > 0 ? 1 : 0;
+									trueSize > sizeDoubled && (trueSize % sizeDoubled) > 0 ? 1 : 0;
 
 							final int sizeY = sizeX + remainder;
 
@@ -77,12 +79,15 @@ public class TileEntityBlockPaletteRenderer extends TileEntitySpecialRenderer<Ti
 
 							for (final BlockDataWithConditions block : layer.getReplacementBlocks())
 							{
-								final int x = i % minSize;
-								final int y = i / minSize;
+								for (int count = 0; count < block.getReplaceCondition().getWeight(); count++)
+								{
+									final int x = i % minSize;
+									final int y = i / minSize;
 
-								container.setBlockState(block.getBlockState(), x, y, 0);
+									container.setBlockState(block.getBlockState(), x, y, 0);
 
-								i++;
+									i++;
+								}
 							}
 
 							final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
@@ -131,7 +136,7 @@ public class TileEntityBlockPaletteRenderer extends TileEntitySpecialRenderer<Ti
 
 			if (!inGuiContext)
 			{
-				RenderUtil.transformForWorld(blueprint.getBoundingBox());
+				RenderUtil.transformForWorld(blueprint.getBoundingBox(), 1.0F, 90F);
 				this.setLightmapDisabled(true);
 			}
 			else

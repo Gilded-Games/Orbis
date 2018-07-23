@@ -18,10 +18,10 @@ public class RenderUtil
 
 	public static void transformForWorld(IDimensions dim)
 	{
-		transformForWorld(dim, 1.0F);
+		transformForWorld(dim, 1.0F, 45F);
 	}
 
-	public static void transformForWorld(IDimensions dim, float scale)
+	public static void transformForWorld(IDimensions dim, float scale, float yRotation)
 	{
 		int maxval = Math.max(dim.getWidth(), dim.getHeight());
 		maxval = Math.max(dim.getLength(), maxval);
@@ -33,7 +33,7 @@ public class RenderUtil
 		GlStateManager.scale(0.6F, 0.6F, 0.6F);
 		GlStateManager.scale(scalefactor, scalefactor, scalefactor);
 
-		GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(yRotation, 0.0F, 1.0F, 0.0F);
 
 		GlStateManager.translate(-dim.getWidth() / 2.f, -dim.getHeight() / 2.f, -dim.getLength() / 2.f);
 	}
