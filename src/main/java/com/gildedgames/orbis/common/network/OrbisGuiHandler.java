@@ -8,7 +8,7 @@ import com.gildedgames.orbis.common.containers.ContainerEditBlueprintPostGen;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
 import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
@@ -114,7 +114,7 @@ public class OrbisGuiHandler implements IGuiHandler
 					Blueprint blueprint = (Blueprint) shape;
 					GuiScreen screen = FMLClientHandler.instance().getClient().currentScreen;
 
-					return new GuiEditBlueprintPostGen(screen instanceof GuiFrame ? (GuiFrame) screen : null, blueprint);
+					return new GuiEditBlueprintPostGen(screen instanceof GuiViewer ? (GuiViewer) screen : null, blueprint);
 				}
 
 				return null;

@@ -6,7 +6,9 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,23 +16,21 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
 
-public class GuiRightClickBlueprint extends GuiFrame
+public class GuiRightClickBlueprint extends GuiViewer
 {
 	private final Blueprint blueprint;
 
 	public GuiRightClickBlueprint(final Blueprint blueprint)
 	{
-		super(null, Dim2D.flush());
+		super(new GuiElement(Dim2D.flush(), false), null);
 
 		this.blueprint = blueprint;
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
-		this.dim().mod().width(this.width).height(this.height).flush();
-
-		this.addChildren(new GuiDropdownList<IDropdownElement>(Dim2D.build().pos(this.width / 2, this.height / 2).width(70).flush(),
+		context.addChildren(new GuiDropdownList<IDropdownElement>(Dim2D.build().pos(this.width / 2, this.height / 2).width(70).flush(),
 				new DropdownElement(new TextComponentString("Edit"))
 				{
 					@Override

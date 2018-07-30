@@ -1,8 +1,11 @@
 package com.gildedgames.orbis.client.gui;
 
 import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiViewer;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
@@ -13,7 +16,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import java.io.File;
 import java.io.IOException;
 
-public class GuiSaveCallback extends GuiFrame
+public class GuiSaveCallback extends GuiViewer
 {
 	private GuiButtonVanilla yes, no;
 
@@ -23,9 +26,9 @@ public class GuiSaveCallback extends GuiFrame
 
 	private String location;
 
-	public GuiSaveCallback(GuiFrame prevFrame, File file, String location)
+	public GuiSaveCallback(IGuiViewer prevViewer, File file, String location)
 	{
-		super(prevFrame, Dim2D.flush());
+		super(new GuiElement(Dim2D.flush(), false), prevViewer);
 
 		this.file = file;
 		this.location = location;
@@ -34,16 +37,8 @@ public class GuiSaveCallback extends GuiFrame
 	}
 
 	@Override
-	public void initGui()
+	public void build(IGuiContext context)
 	{
-		super.initGui();
-	}
-
-	@Override
-	public void init()
-	{
-		this.dim().mod().width(this.width).height(this.height).flush();
-
 		Pos2D center = InputHelper.getCenter();
 
 		this.yes = new GuiButtonVanilla(Dim2D.build().width(80).height(20).pos(center).addX(-85).addY(5).flush());
@@ -55,19 +50,17 @@ public class GuiSaveCallback extends GuiFrame
 		this.warning = new GuiText(Dim2D.build().center(true).pos(center).addY(-15).flush(),
 				new Text(new TextComponentTranslation("orbis.gui.overwrite"), 1.0F));
 
-		this.addChildren(this.yes, this.no, this.warning);
+		context.addChildren(this.yes, this.no, this.warning);
 	}
 
 	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
+	public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
 	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-
-		if (InputHelper.isHoveredAndTopElement(this.yes) && mouseButton == 0)
+		if (this.yes.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			if (this.getPrevFrame() instanceof GuiSaveData)
+			if (this.getPreviousViewer() instanceof GuiSaveData)
 			{
-				GuiSaveData save = (GuiSaveData) this.getPrevFrame();
+				GuiSaveData save = (GuiSaveData) this.getPreviousViewer();
 
 				save.save(this.file, this.location, true);
 
@@ -75,9 +68,9 @@ public class GuiSaveCallback extends GuiFrame
 			}
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.no) && mouseButton == 0)
+		if (this.no.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPreviousViewer().getActualScreen());
 		}
 	}
 }

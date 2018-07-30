@@ -8,23 +8,21 @@ import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorLi
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
 import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.ModDim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.client.rect.Rect;
-import com.gildedgames.orbis_api.util.InputHelper;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorListener
+public class GuiDirectoryViewer extends GuiElement implements IDirectoryNavigatorListener
 {
 
 	private static final ResourceLocation VIEWER_BACKDROP = OrbisCore.getResource("navigator/directory_viewer.png");
@@ -43,7 +41,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 	public GuiDirectoryViewer(final Pos2D pos, final IDirectoryNavigator navigator)
 	{
-		super(null, Dim2D.build().width(176).height(190).pos(pos).flush());
+		super(Dim2D.build().width(176).height(190).pos(pos).flush(), true);
 
 		this.navigator = navigator;
 		this.navigator.addListener(this);
@@ -133,38 +131,37 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 		final List<GuiDirectoryNode> guiNodes = this
 				.listVisibleFiles(this.navigator.getNodes(), this.currentScroll, 8, 22, (int) this.dim().width() - 8, (int) this.dim().height() - 22, 0);
 
-		this.visibleFiles.forEach(this::removeChild);
+		this.visibleFiles.forEach(this.context()::removeChild);
 		this.visibleFiles.clear();
 
 		this.visibleFiles.addAll(guiNodes);
-		this.visibleFiles.forEach(this::addChildren);
+		this.visibleFiles.forEach(this.context()::addChildren);
 
 		if (this.dropdownList != null)
 		{
-			this.removeChild(this.dropdownList);
-			this.addChildNoMods(this.dropdownList);
+			this.context().removeChild(this.dropdownList);
+			this.context().addChildNoMods(this.dropdownList);
 		}
 	}
 
 	public void displayDropdownList(final int x, final int y)
 	{
 		this.dropdownList.dim().mod().pos(x, y).flush();
-		this.dropdownList.setVisible(true);
+		this.dropdownList.state().setVisible(true);
 	}
 
 	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
+	public void onMouseClicked(GuiElement element, final int mouseX, final int mouseY, final int mouseButton)
 	{
-		if (!InputHelper.isHoveredAndTopElement(this.dropdownList))
+		if (!this.dropdownList.state().isHoveredAndTopElement())
 		{
-			this.dropdownList.setVisible(false);
+			this.dropdownList.state().setVisible(false);
 		}
 		else
 		{
 			if (mouseButton == 0)
 			{
-				this.dropdownList.publicMouseClicked(mouseX, mouseY, mouseButton);
-				this.dropdownList.setVisible(false);
+				this.dropdownList.state().setVisible(false);
 
 				this.dropdownList.setDropdownElements(Collections.emptyList());
 			}
@@ -172,7 +169,7 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 			return;
 		}
 
-		if (this.isEnabled() && InputHelper.isHoveredAndTopElement(this))
+		if (this.state().isEnabled() && this.state().isHoveredAndTopElement())
 		{
 			if (mouseButton == 1)
 			{
@@ -181,21 +178,11 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 				return;
 			}
 		}
-
-		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
-	public void handleMouseInput() throws IOException
+	public void onMouseWheel(GuiElement element, final int state)
 	{
-		super.handleMouseInput();
-	}
-
-	@Override
-	public void onMouseWheel(final int state)
-	{
-		super.onMouseWheel(state);
-
 		this.currentScroll -= (state / 120);
 
 		this.currentScroll = Math.max(0, Math.min(this.maxScroll, this.currentScroll));
@@ -204,18 +191,16 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 	}
 
 	@Override
-	public void draw()
+	public void onDraw(GuiElement element)
 	{
-		this.backButton.setEnabled(this.navigator.canGoBack());
-		this.forwardButton.setEnabled(this.navigator.canGoForward());
-
-		super.draw();
+		this.backButton.state().setEnabled(this.navigator.canGoBack());
+		this.forwardButton.state().setEnabled(this.navigator.canGoForward());
 
 		Gui.drawRect((int) this.dim().x() + 8, (int) this.dim().y() + 22, (int) this.dim().maxX() - 8, (int) this.dim().maxY() - 8, Integer.MIN_VALUE);
 	}
 
 	@Override
-	public void init()
+	public void build()
 	{
 		this.refreshButton = GuiFactoryOrbis.createRefreshButton();
 		this.backButton = GuiFactoryOrbis.createLeftArrowButton();
@@ -239,18 +224,20 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 
 		if (this.displayBackdrop)
 		{
-			this.addChildren(backdrop);
+			this.context().addChildren(backdrop);
 		}
 
-		this.addChildren(this.refreshButton);
-		this.addChildren(this.backButton);
-		this.addChildren(this.forwardButton);
+		this.context().addChildren(this.refreshButton);
+		this.context().addChildren(this.backButton);
+		this.context().addChildren(this.forwardButton);
 
 		this.dropdownList = new GuiDropdownList<>(Dim2D.build().flush());
 
-		this.dropdownList.setVisible(false);
+		this.dropdownList.state().setVisible(false);
 
-		this.addChildNoMods(this.dropdownList);
+		this.context().addChildNoMods(this.dropdownList);
+
+		this.refreshFiles();
 	}
 
 	@Override
@@ -286,7 +273,10 @@ public class GuiDirectoryViewer extends GuiFrame implements IDirectoryNavigatorL
 	@Override
 	public void onRefresh(final IDirectoryNavigator navigator)
 	{
-		this.currentScroll = 0;
-		this.refreshFiles();
+		if (this.state().hasBuilt())
+		{
+			this.currentScroll = 0;
+			this.refreshFiles();
+		}
 	}
 }

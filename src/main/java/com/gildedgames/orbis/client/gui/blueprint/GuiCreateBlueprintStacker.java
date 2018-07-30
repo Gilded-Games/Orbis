@@ -11,8 +11,10 @@ import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGu
 import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerGuiRemoveSlot;
 import com.gildedgames.orbis_api.client.gui.data.list.IListNavigatorListener;
 import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis_api.client.gui.util.list.IListViewerListener;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
@@ -21,7 +23,6 @@ import com.gildedgames.orbis_api.data.IDataHolder;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataHolder;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
-import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis_api.util.mc.SlotHashed;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -33,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerListener, IListNavigatorListener<SlotHashed>
+public class GuiCreateBlueprintStacker extends GuiViewer implements IListViewerListener, IListNavigatorListener<SlotHashed>
 {
 	private static final ResourceLocation MENU = OrbisCore.getResource("blueprint_gui/height_variable_menu.png");
 
@@ -45,15 +46,15 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 
 	private GuiAbstractButton createButton;
 
-	public GuiCreateBlueprintStacker(GuiFrame parent, ContainerLoadData container)
+	public GuiCreateBlueprintStacker(GuiViewer parent, ContainerLoadData container)
 	{
-		super(parent, Dim2D.build().width(176).height(190).flush());
+		super(new GuiElement(Dim2D.build().width(176).height(190).flush(), false), parent);
 
 		this.container = container;
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
 		GuiTexture menu = new GuiTexture(Dim2D.build().width(176).height(192).flush(), MENU);
 
@@ -75,7 +76,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 
 		this.createButton.dim().mod().x(147).y(163).flush();
 
-		this.addChildren(menu, this.stackViewer, this.createButton);
+		context.addChildren(menu, this.stackViewer, this.createButton);
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.createButton))
+		if (this.createButton.state().isHoveredAndTopElement())
 		{
 			ItemStack topStack = this.container.getTopStackerSlot().getStack();
 			ItemStack bottomStack = this.container.getBottomStackerSlot().getStack();
@@ -130,7 +131,7 @@ public class GuiCreateBlueprintStacker extends GuiFrame implements IListViewerLi
 
 				BlueprintStackerData stacker = new BlueprintStackerData(top, bottom, segments.toArray(new IDataHolder[segments.size()]));
 
-				Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this.getPrevFrame(), stacker, BlueprintStackerData.EXTENSION));
+				Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this.getPreviousViewer(), stacker, BlueprintStackerData.EXTENSION));
 			}
 		}
 	}

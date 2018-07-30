@@ -16,6 +16,10 @@ import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.*;
 import com.gildedgames.orbis_api.client.gui.util.decorators.GuiScrollable;
+import com.gildedgames.orbis_api.client.gui.util.events.MouseInputDisabledWhenNotHovered;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
@@ -60,7 +64,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
+public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 {
 
 	private static final ResourceLocation LAYERS_ICON = OrbisCore.getResource("blueprint_gui/layers_icon.png");
@@ -111,16 +115,16 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 	public GuiLayerEditor(Blueprint blueprint)
 	{
+		super(new GuiElement(Dim2D.flush(), false), null);
+
 		this.setDrawDefaultBackground(true);
 
 		this.blueprint = blueprint;
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
-		this.dim().mod().width(this.width).height(this.height).flush();
-
 		this.subTreeViewer = new GuiSelectableTree(Dim2D.build().flush());
 		this.variablesHeader = new GuiVariablesHeader(Dim2D.build().flush());
 
@@ -129,11 +133,15 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		this.variablesHeader.dim().add(new RectModifier("yOffsetFromTreeViewer", this.subTreeViewer, RectModifier.ModifierType.HEIGHT.getModification(),
 				RectModifier.ModifierType.Y));
 
+		this.variablesHeader.build(this);
+
 		this.variablesHeader.setTitle(new TextComponentTranslation("orbis.gui.variables", ""));
 
 		this.dropdown = new GuiDropdownList<DropdownElementWithData<Supplier<IGuiCondition>>>(Dim2D.build().width(60).flush());
 
-		this.dropdown.setZOrder(Integer.MAX_VALUE);
+		this.dropdown.build(this);
+
+		this.dropdown.state().setZOrder(Integer.MAX_VALUE);
 
 		Pos2D center = InputHelper.getCenter();
 
@@ -148,7 +156,9 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		this.layerTab.setPressed(true);
 
-		GuiFrameDummy buttons = new GuiFrameDummy(Dim2D.build().width(255).height(20).centerX(true).x(200 + ((this.width - 200) / 2)).y(20).flush());
+		GuiElement buttons = new GuiElement(Dim2D.build().width(255).height(20).centerX(true).x(200 + ((this.width - 200) / 2)).y(20).flush(), false);
+
+		buttons.build(this);
 
 		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).flush());
 
@@ -171,7 +181,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		final List<INode<IScheduleLayer, LayerLink>> layerRoots = Lists.newArrayList();
 		final List<INode<IScheduleLayer, LayerLink>> layerVisitedNodes = Lists.newArrayList();
 
-		buttons.addChildren(this.saveButton, this.closeButton, this.blueprintVariablesButton, this.metadataButton);
+		buttons.context().addChildren(this.saveButton, this.closeButton, this.blueprintVariablesButton, this.metadataButton);
 
 		this.layerTree = new GuiTree<>(Dim2D.build().width(this.width - 200).height(this.height - 40).x(200).y(40).flush(), (nodeId) ->
 		{
@@ -383,20 +393,24 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				},
 				() -> this.blueprint.getData().getVariableTree().findNextAvailableId());
 
-		this.conditionTree.setZOrder(1);
-		this.postResolveActionTree.setZOrder(1);
-		this.blueprintVariablesTree.setZOrder(1);
+		this.conditionTree.build(this);
+		this.postResolveActionTree.build(this);
+		this.blueprintVariablesTree.build(this);
 
-		this.layerTree.setInputDisabledWhenNotHovered(true);
-		this.conditionTree.setInputDisabledWhenNotHovered(true);
-		this.postResolveActionTree.setInputDisabledWhenNotHovered(true);
-		this.blueprintVariablesTree.setInputDisabledWhenNotHovered(true);
+		this.conditionTree.state().setZOrder(1);
+		this.postResolveActionTree.state().setZOrder(1);
+		this.blueprintVariablesTree.state().setZOrder(1);
 
-		this.conditionTree.setVisible(false);
-		this.conditionTree.setEnabled(false);
+		this.layerTree.state().addEvent(new MouseInputDisabledWhenNotHovered());
+		this.conditionTree.state().addEvent(new MouseInputDisabledWhenNotHovered());
+		this.postResolveActionTree.state().addEvent(new MouseInputDisabledWhenNotHovered());
+		this.blueprintVariablesTree.state().addEvent(new MouseInputDisabledWhenNotHovered());
 
-		this.blueprintVariablesTree.setVisible(false);
-		this.blueprintVariablesTree.setEnabled(false);
+		this.conditionTree.state().setVisible(false);
+		this.conditionTree.state().setEnabled(false);
+
+		this.blueprintVariablesTree.state().setVisible(false);
+		this.blueprintVariablesTree.state().setEnabled(false);
 
 		this.layerTree.listen(new IGuiTreeListener<IScheduleLayer, LayerLink, GuiLayerButton>()
 		{
@@ -843,7 +857,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 						button.getInner().displayString =
 								"    " + GuiLayerEditor.this.currentSelectedLayerNode.getData().getOptions().getDisplayNameVar().getData();
 
-						button.dim().mod().width(25 + this.fontRenderer
+						button.dim().mod().width(25 + this.viewer().fontRenderer()
 								.getStringWidth(GuiLayerEditor.this.currentSelectedLayerNode.getData().getOptions().getDisplayNameVar().getData())).flush();
 					}
 				}
@@ -856,7 +870,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 					{
 						button.getInner().displayString = GuiLayerEditor.this.currentSelectedVariableNode.getData().getUniqueNameVar().getData();
 
-						button.dim().mod().width(10 + this.fontRenderer.getStringWidth(button.getInner().displayString)).flush();
+						button.dim().mod().width(10 + this.viewer().fontRenderer().getStringWidth(button.getInner().displayString)).flush();
 					}
 				}
 
@@ -984,13 +998,13 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				.add(new RectModifier("heightBelowVarHeader", this.variablesHeader, (source, modifying) -> this.height - source.dim().maxY() - 10,
 						RectModifier.ModifierType.HEIGHT));
 
-		this.conditionsDropdown.setEnabled(false);
-		this.conditionsDropdown.setVisible(false);
+		this.conditionsDropdown.state().setEnabled(false);
+		this.conditionsDropdown.state().setVisible(false);
 
-		this.blueprintVariableDropdown.setEnabled(false);
-		this.blueprintVariableDropdown.setVisible(false);
+		this.blueprintVariableDropdown.state().setEnabled(false);
+		this.blueprintVariableDropdown.state().setVisible(false);
 
-		this.addChildren(this.layerTree,
+		context.addChildren(this.layerTree,
 				this.varDisplayScrollDecorator, buttons,
 				layersTitle,
 				this.layerTab, this.postGenTab, this.dropdown, this.variablesHeader,
@@ -1026,28 +1040,22 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 	}
 
 	@Override
-	public void draw()
-	{
-
-	}
-
-	@Override
 	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.closeButton) && mouseButton == 0)
+		if (this.closeButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame() == null ? null : this.getPrevFrame().getActualScreen());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPreviousViewer() == null ? null : this.getPreviousViewer().getActualScreen());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
+		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.blueprint, BlueprintData.EXTENSION));
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.blueprintVariablesButton) && mouseButton == 0)
+		if (this.blueprintVariablesButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			GuiLayerEditor.this.subTreeViewer
 					.setTreeNoDropdown(this.blueprintVariablesTree, new TextComponentTranslation("orbis.gui.blueprint_variables_title"));
@@ -1062,7 +1070,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			this.currentSelectedLayer = null;
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.metadataButton) && mouseButton == 0)
+		if (this.metadataButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			GuiLayerEditor.this.varDisplay.updateVariableData();
 
@@ -1106,7 +1114,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		return this.dropdown;
 	}
 
-	private static class GuiSelectableTree extends GuiFrame
+	private static class GuiSelectableTree extends GuiElement
 	{
 		private static final ResourceLocation TREE_WINDOW = OrbisCore.getResource("layer_gui/tree_window.png");
 
@@ -1124,7 +1132,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		public GuiSelectableTree(Rect rect)
 		{
-			super(rect);
+			super(rect, false);
 		}
 
 		public void setTitle(ITextComponent text)
@@ -1143,19 +1151,18 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 		public void setTreeNoDropdown(GuiTree tree, ITextComponent text)
 		{
 			this.managedTrees.clear();
-			this.clearChildren();
 
-			this.init();
+			this.tryRebuild();
 
 			this.window.setResourceLocation(TREE_WINDOW, 200, 121);
 			this.title.setText(new Text(text, 1.0F));
 
 			tree.dim().mod().width(184).height(86).x(8).y(27).flush();
 
-			tree.setEnabled(true);
-			tree.setVisible(true);
+			tree.state().setEnabled(true);
+			tree.state().setVisible(true);
 
-			this.addChildren(tree);
+			this.context().addChildren(tree);
 		}
 
 		public void setTrees(ITextComponent text, Pair<ITextComponent, GuiTree>... trees)
@@ -1182,12 +1189,10 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 			this.managedTrees.addAll(Arrays.asList(trees));
 
-			this.clearChildren();
-
-			this.init();
-
 			this.window.setResourceLocation(TREE_WINDOW_EXTENDED, 200, 141);
 			this.title.setText(new Text(text, 1.0F));
+
+			this.tryRebuild();
 
 			this.dropdown.getList().getElements().clear();
 
@@ -1208,23 +1213,23 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 			{
 				p.getRight().dim().mod().width(184).height(86).x(8).y(27 + 19).flush();
 
-				p.getRight().setEnabled(false);
-				p.getRight().setVisible(false);
+				p.getRight().state().setEnabled(false);
+				p.getRight().state().setVisible(false);
 
-				this.addChildren(p.getRight());
+				this.context().addChildren(p.getRight());
 			});
 
 			if (!this.managedTrees.isEmpty())
 			{
 				this.currentTree = this.managedTrees.get(selectedTreeIndex).getRight();
 
-				this.currentTree.setEnabled(true);
-				this.currentTree.setVisible(true);
+				this.currentTree.state().setEnabled(true);
+				this.currentTree.state().setVisible(true);
 			}
 		}
 
 		@Override
-		public void init()
+		public void build()
 		{
 			if (this.window == null)
 			{
@@ -1242,32 +1247,34 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				this.dim().add(new RectModifier("windowArea", this.window, RectModifier.ModifierType.AREA.getModification(), RectModifier.ModifierType.AREA));
 			}
 
-			this.addChildren(this.window, this.title);
+			this.context().addChildren(this.window, this.title);
 
 			if (this.dropdown == null)
 			{
 				this.dropdown = new GuiDropdown<>(Dim2D.build().x(7).y(25).width(186).flush(), (e) -> {
 					if (this.currentTree != null)
 					{
-						this.currentTree.setEnabled(false);
-						this.currentTree.setVisible(false);
+						this.currentTree.state().setEnabled(false);
+						this.currentTree.state().setVisible(false);
 					}
 
 					this.currentTree = e.getData();
 
-					this.currentTree.setEnabled(true);
-					this.currentTree.setVisible(true);
+					this.currentTree.state().setEnabled(true);
+					this.currentTree.state().setVisible(true);
 				});
 			}
 
 			if (this.managedTrees.size() >= 2)
 			{
-				this.addChildren(this.dropdown);
+				this.context().addChildren(this.dropdown);
+
+				this.dropdown.state().setZOrder(Integer.MAX_VALUE);
 			}
 		}
 	}
 
-	private static class GuiVariablesHeader extends GuiFrame
+	private static class GuiVariablesHeader extends GuiElement
 	{
 		private static final ResourceLocation VARIABLE_HEADER = OrbisCore.getResource("layer_gui/variable_header.png");
 
@@ -1281,7 +1288,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		public GuiVariablesHeader(Rect rect)
 		{
-			super(rect);
+			super(rect, false);
 		}
 
 		public void setTitle(ITextComponent text)
@@ -1291,29 +1298,27 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 
 		public void setTitleAndDropdown(ITextComponent text, @Nullable GuiDropdown dropdown)
 		{
-			this.clearChildren();
-
-			this.init();
+			this.tryRebuild();
 
 			this.window.setResourceLocation(dropdown == null ? VARIABLE_HEADER : VARIABLE_HEADER_EXTENDED, 200, dropdown == null ? 29 : 49);
 			this.title.setText(new Text(text, 1.0F));
-			this.type.setVisible(dropdown != null);
+			this.type.state().setVisible(dropdown != null);
 
 			if (dropdown != null)
 			{
 				this.dropdown = dropdown;
 
-				this.dropdown.setEnabled(true);
-				this.dropdown.setVisible(true);
+				this.dropdown.state().setEnabled(true);
+				this.dropdown.state().setVisible(true);
 
 				this.dropdown.dim().mod().x(40).y(25).flush();
 
-				this.addChildren(this.dropdown);
+				this.context().addChildren(this.dropdown);
 			}
 		}
 
 		@Override
-		public void init()
+		public void build()
 		{
 			if (this.window == null)
 			{
@@ -1331,7 +1336,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				this.type = new GuiText(Dim2D.build().x(8).y(30).flush(),
 						new Text(new TextComponentTranslation("orbis.gui.type"), 1.0F));
 
-				this.type.setVisible(false);
+				this.type.state().setVisible(false);
 			}
 
 			if (!this.dim().containsModifier("windowArea", this.window))
@@ -1339,7 +1344,7 @@ public class GuiLayerEditor extends GuiFrame implements IDropdownHolder
 				this.dim().add(new RectModifier("windowArea", this.window, RectModifier.ModifierType.AREA.getModification(), RectModifier.ModifierType.AREA));
 			}
 
-			this.addChildren(this.window, this.title, this.type);
+			this.context().addChildren(this.window, this.title, this.type);
 		}
 	}
 }

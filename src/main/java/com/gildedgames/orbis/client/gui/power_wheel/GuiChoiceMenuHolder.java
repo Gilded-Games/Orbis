@@ -6,9 +6,11 @@ import com.gildedgames.orbis.common.network.packets.PacketSetScheduling;
 import com.gildedgames.orbis.common.network.packets.PacketTeleportOrbis;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.util.InputHelper;
@@ -19,7 +21,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
-public class GuiChoiceMenuHolder extends GuiFrame
+public class GuiChoiceMenuHolder extends GuiViewer
 {
 	private final static ResourceLocation CHOICE_BAR = OrbisCore.getResource("godmode/overlay/choice_tab_bar.png");
 
@@ -65,6 +67,8 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 	public GuiChoiceMenuHolder(final GuiChoiceMenu... menus)
 	{
+		super(new GuiElement(Dim2D.flush(), false), null);
+
 		this.menus = menus;
 		this.tabs = new GuiTexture[this.menus.length];
 	}
@@ -100,8 +104,8 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 		for (final GuiChoiceMenu menu : this.menus)
 		{
-			menu.setVisible(false);
-			menu.setEnabled(false);
+			menu.state().setVisible(false);
+			menu.state().setEnabled(false);
 		}
 
 		int i = 0;
@@ -113,8 +117,8 @@ public class GuiChoiceMenuHolder extends GuiFrame
 			i++;
 		}
 
-		this.getCurrentMenu().setEnabled(true);
-		this.getCurrentMenu().setVisible(true);
+		this.getCurrentMenu().state().setEnabled(true);
+		this.getCurrentMenu().state().setVisible(true);
 
 		this.getCurrentTab().setResourceLocation(choicePageIndex == 0 ? CHOICE_TAB_LEFT : choicePageIndex == 2 ? CHOICE_TAB_RIGHT : CHOICE_TAB);
 	}
@@ -122,6 +126,8 @@ public class GuiChoiceMenuHolder extends GuiFrame
 	@Override
 	public void onMouseWheel(final int state)
 	{
+		super.onMouseWheel(state);
+
 		if (state > 0)
 		{
 			this.setCurrentPage(choicePageIndex + 1);
@@ -133,27 +139,27 @@ public class GuiChoiceMenuHolder extends GuiFrame
 	}
 
 	@Override
-	public void draw()
+	public void drawElements()
 	{
-		if (InputHelper.isHoveredAndTopElement(this.portal))
+		super.drawElements();
+
+		if (this.portal.state().isHoveredAndTopElement())
 		{
 			this.portal.dim().mod().scale(1.1F).flush();
 
-			this.portalTitle.setVisible(true);
+			this.portalTitle.state().setVisible(true);
 		}
 		else
 		{
 			this.portal.dim().mod().scale(1.0F).flush();
 
-			this.portalTitle.setVisible(false);
+			this.portalTitle.state().setVisible(false);
 		}
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
-		this.dim().mod().width(this.width).height(this.height).flush();
-
 		final Pos2D center = InputHelper.getCenter();
 
 		int i = 0;
@@ -166,11 +172,14 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 			final GuiText number = new GuiText(Dim2D.build().pos(8, 7).flush(), new Text(new TextComponentString(String.valueOf(i + 1)), 1.0F));
 
-			choiceTab.addChildren(number);
+			choiceTab.build(this);
+
+			choiceTab.context().addChildren(number);
+			choiceTab.state().setCanBeTopHoverElement(true);
 
 			this.tabs[i] = choiceTab;
 
-			this.addChildren(choiceTab);
+			context.addChildren(choiceTab);
 
 			i++;
 		}
@@ -180,7 +189,9 @@ public class GuiChoiceMenuHolder extends GuiFrame
 		this.portal = new GuiTexture(Dim2D.build().pos(center).addX(-75).width(24).height(24).center(true).flush(),
 				this.mc.player.world.provider.getDimensionType() != WorldProviderOrbis.ORBIS ? PORTAL_TEXTURE : PORTAL_BACK_TEXTURE);
 
-		this.addChildren(this.portal);
+		context.addChildren(this.portal);
+
+		this.portal.state().setCanBeTopHoverElement(true);
 
 		this.left = new GuiTexture(
 				Dim2D.build().pos(center).addY(54).addX(-23).width(22).height(16).flush(),
@@ -213,20 +224,23 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				new TextComponentString(this.mc.player.world.provider.getDimensionType() != WorldProviderOrbis.ORBIS ? "Teleport to Orbis" : "Teleport Back"),
 				1.0F));
 
-		this.addChildren(this.left, this.right, genIcon, scheduleIcon);
+		context.addChildren(this.left, this.right, genIcon, scheduleIcon);
 
 		for (final GuiChoiceMenu menu : this.menus)
 		{
-			menu.setVisible(false);
-			menu.setEnabled(false);
+			menu.state().setVisible(false);
+			menu.state().setEnabled(false);
 
-			this.addChildren(menu);
+			context.addChildren(menu);
 		}
 
-		this.getCurrentMenu().setEnabled(true);
-		this.getCurrentMenu().setVisible(true);
+		this.getCurrentMenu().state().setEnabled(true);
+		this.getCurrentMenu().state().setVisible(true);
 
-		this.addChildren(this.portalTitle);
+		context.addChildren(this.portalTitle);
+
+		this.left.state().setCanBeTopHoverElement(true);
+		this.right.state().setCanBeTopHoverElement(true);
 	}
 
 	@Override
@@ -238,7 +252,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 
 			for (final GuiTexture tab : this.tabs)
 			{
-				if (InputHelper.isHoveredAndTopElement(tab))
+				if (tab.state().isHoveredAndTopElement())
 				{
 					this.setCurrentPage(i);
 
@@ -248,7 +262,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				i++;
 			}
 
-			if (InputHelper.isHoveredAndTopElement(this.left))
+			if (this.left.state().isHoveredAndTopElement())
 			{
 				this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
 				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE_UNPRESSED);
@@ -257,7 +271,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(false);
 			}
 
-			if (InputHelper.isHoveredAndTopElement(this.right))
+			if (this.right.state().isHoveredAndTopElement())
 			{
 				this.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
 				this.left.setResourceLocation(LEFT_PLACEMENT_MODE_UNPRESSED);
@@ -266,7 +280,7 @@ public class GuiChoiceMenuHolder extends GuiFrame
 				PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(true);
 			}
 
-			if (InputHelper.isHoveredAndTopElement(this.portal))
+			if (this.portal.state().isHoveredAndTopElement())
 			{
 				OrbisCore.network().sendPacketToServer(new PacketTeleportOrbis());
 			}

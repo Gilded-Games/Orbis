@@ -7,23 +7,24 @@ import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetTriggerId;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiInput;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis_api.inventory.InventorySpawnEggs;
-import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
 
-public class GuiEditScheduledRegion extends GuiFrame
+public class GuiEditScheduledRegion extends GuiViewer
 {
 
 	private static final ResourceLocation MATRIX_ICON = OrbisCore.getResource("filter_gui/filter_matrix.png");
@@ -40,9 +41,9 @@ public class GuiEditScheduledRegion extends GuiFrame
 
 	private Blueprint blueprint;
 
-	public GuiEditScheduledRegion(GuiFrame prevFrame, PlayerOrbis playerOrbis, Blueprint blueprint, ScheduleRegion scheduleRegion)
+	public GuiEditScheduledRegion(GuiViewer prevFrame, PlayerOrbis playerOrbis, Blueprint blueprint, ScheduleRegion scheduleRegion)
 	{
-		super(prevFrame, Dim2D.flush(), new ContainerScheduleRegion(playerOrbis, new InventorySpawnEggs()));
+		super(new GuiElement(Dim2D.flush(), false), prevFrame, new ContainerScheduleRegion(playerOrbis, new InventorySpawnEggs()));
 
 		this.blueprint = blueprint;
 		this.container = (ContainerScheduleRegion) this.inventorySlots;
@@ -66,7 +67,7 @@ public class GuiEditScheduledRegion extends GuiFrame
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
 		final Pos2D center = Pos2D.flush((this.width / 2), this.height / 2);
 
@@ -97,7 +98,7 @@ public class GuiEditScheduledRegion extends GuiFrame
 		GuiText spawnEggTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(-29).addX(-88).addY(yOffset).flush(),
 				new Text(new TextComponentString("Spawn Eggs"), 1.0F));
 
-		this.addChildren(title, this.nameInput, this.saveButton, this.closeButton, matrix, inventory, spawnEggTitle);
+		context.addChildren(title, this.nameInput, this.saveButton, this.closeButton, matrix, inventory, spawnEggTitle);
 	}
 
 	@Override
@@ -122,13 +123,13 @@ public class GuiEditScheduledRegion extends GuiFrame
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.closeButton) && mouseButton == 0)
+		if (this.closeButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
+		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			OrbisCore.network().sendPacketToServer(
 					new PacketSetTriggerId(this.blueprint, this.scheduleRegion,

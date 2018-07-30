@@ -14,10 +14,12 @@ import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiInput;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
-import com.gildedgames.orbis_api.client.gui.util.IGuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiViewer;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
@@ -28,7 +30,6 @@ import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis_api.data.management.impl.ProjectIdentifier;
-import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentString;
@@ -36,7 +37,7 @@ import net.minecraft.util.text.TextComponentString;
 import java.io.File;
 import java.io.IOException;
 
-public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
+public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListener
 {
 	private final IWorldObject worldObject;
 
@@ -58,9 +59,9 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private String viewOnlyDataType;
 
-	public GuiSaveData(IGuiFrame prevFrame, final IData data, String viewOnlyDataType)
+	public GuiSaveData(IGuiViewer prevViewer, final IData data, String viewOnlyDataType)
 	{
-		super(prevFrame, Dim2D.flush());
+		super(new GuiElement(Dim2D.flush(), false), prevViewer);
 
 		this.setDrawDefaultBackground(true);
 		this.worldObject = null;
@@ -68,9 +69,9 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 		this.data = data;
 	}
 
-	public GuiSaveData(IGuiFrame prevFrame, final IWorldObject worldObject, String viewOnlyDataType)
+	public GuiSaveData(IGuiViewer prevViewer, final IWorldObject worldObject, String viewOnlyDataType)
 	{
-		super(prevFrame, Dim2D.flush());
+		super(new GuiElement(Dim2D.flush(), false), prevViewer);
 
 		this.setDrawDefaultBackground(true);
 		this.worldObject = worldObject;
@@ -94,16 +95,14 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
-		this.dim().mod().width(this.width).height(this.height).flush();
-
 		this.title = new GuiText(Dim2D.build().width(140).height(20).addY(3).addX(132).flush(),
 				new Text(new TextComponentString("Project Name:"), 1.0F));
 
 		this.nameInput = new GuiInput(Dim2D.build().height(20).addY(15).addX(132).flush());
 
-		this.nameInput.dim().mod().width(this.width - this.nameInput.dim().x() - 20).flush();
+		this.nameInput.dim().mod().width(this.getScreenWidth() - this.nameInput.dim().x() - 20).flush();
 
 		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(75).flush());
 
@@ -113,16 +112,16 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 
 		this.backButton.getInner().displayString = "Back";
 
-		this.addChildren(this.title);
-		this.addChildren(this.nameInput);
-		this.addChildren(this.saveButton);
-		this.addChildren(this.backButton);
+		context.addChildren(this.title);
+		context.addChildren(this.nameInput);
+		context.addChildren(this.saveButton);
+		context.addChildren(this.backButton);
 
 		this.directoryViewer = new GuiDirectoryViewer(Pos2D.build().addY(45).addX(20).flush(),
 				new DirectoryNavigator(new OrbisNavigatorNodeFactory()));
 
-		this.directoryViewer.dim().mod().width(this.width - this.directoryViewer.dim().x() - 20).flush();
-		this.directoryViewer.dim().mod().height(this.height - this.directoryViewer.dim().y() - 20).flush();
+		this.directoryViewer.dim().mod().width(this.getScreenWidth() - this.directoryViewer.dim().x() - 20).flush();
+		this.directoryViewer.dim().mod().height(this.getScreenHeight() - this.directoryViewer.dim().y() - 20).flush();
 
 		if (!OrbisCore.getProjectManager().getLocation().exists())
 		{
@@ -138,14 +137,12 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
-		this.addChildren(this.directoryViewer);
+		context.addChildren(this.directoryViewer);
 	}
 
 	@Override
-	public void draw()
+	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
-		super.draw();
-
 		this.inProjectDirectory = OrbisCore.getProjectManager().getLocation().equals(this.directoryViewer.getNavigator().currentDirectory());
 
 		if (this.inProjectDirectory)
@@ -156,6 +153,8 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 		{
 			this.title.setText(new Text(new TextComponentString("Data Name:"), 1.0F));
 		}
+
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -172,13 +171,13 @@ public class GuiSaveData extends GuiFrame implements IDirectoryNavigatorListener
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.backButton) && mouseButton == 0)
+		if (this.backButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPreviousViewer().getActualScreen());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
+		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			if (this.inProjectDirectory)
 			{

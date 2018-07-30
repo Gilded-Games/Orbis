@@ -1,11 +1,10 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 
 public class GuiChoiceMenuPowers extends GuiChoiceMenu
 {
@@ -23,12 +22,6 @@ public class GuiChoiceMenuPowers extends GuiChoiceMenu
 
 			this.choices[i] = choice;
 		}
-	}
-
-	@Override
-	public void init()
-	{
-		super.init();
 	}
 
 	public class PowerChoice implements Choice

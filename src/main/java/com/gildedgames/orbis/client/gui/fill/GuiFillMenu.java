@@ -13,6 +13,7 @@ import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
 import com.gildedgames.orbis_api.client.gui.util.GuiInputSlider;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiContainerCreativePublic;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiFrameCreative;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
@@ -95,7 +96,7 @@ public class GuiFillMenu extends GuiFrameCreative
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
 		Pos2D center = Pos2D.flush((this.width / 2) + 100, this.height / 2);
 
@@ -109,11 +110,11 @@ public class GuiFillMenu extends GuiFrameCreative
 		this.combineTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addX(60).addY(-49 - 9).flush(),
 				new Text(new TextComponentString("Combine"), 1.0F));
 
-		this.addChildren(this.matrix);
-		this.addChildren(this.flow);
-		this.addChildren(this.combineTitle);
+		context.addChildren(this.matrix);
+		context.addChildren(this.flow);
+		context.addChildren(this.combineTitle);
 
-		this.addChildren(this.forgeButton);
+		context.addChildren(this.forgeButton);
 
 		center = InputHelper.getCenter();
 
@@ -132,18 +133,20 @@ public class GuiFillMenu extends GuiFrameCreative
 		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-200).addY(11).flush(),
 				this.playerOrbis.powers().getFillPower().getFilterOptions().getChoosesPerBlockVar().getData());
 
-		this.addChildren(this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
+		context.addChildren(this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
 	}
 
 	@Override
-	public void draw()
+	public void drawElements()
 	{
-		this.forgeButton.setEnabled(this.getItemStacksInForge().size() >= 2);
+		super.drawElements();
 
-		this.forgeButton.setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
-		this.matrix.setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
-		this.flow.setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
-		this.combineTitle.setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
+		this.forgeButton.state().setEnabled(this.getItemStacksInForge().size() >= 2);
+
+		this.forgeButton.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
+		this.matrix.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
+		this.flow.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
+		this.combineTitle.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
 	}
 
 	@Override
@@ -151,7 +154,7 @@ public class GuiFillMenu extends GuiFrameCreative
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.forgeButton) && mouseButton == 0)
+		if (this.forgeButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.block_palette);
 

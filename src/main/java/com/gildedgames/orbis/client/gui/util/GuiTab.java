@@ -1,16 +1,13 @@
 package com.gildedgames.orbis.client.gui.util;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Rect;
-import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.IOException;
-
-public class GuiTab extends GuiFrame
+public class GuiTab extends GuiElement
 {
 	private static ResourceLocation TEXTURE = OrbisCore.getResource("generic/tab.png");
 
@@ -26,7 +23,7 @@ public class GuiTab extends GuiFrame
 
 	public GuiTab(Rect rect, GuiTexture icon, Runnable onPressed)
 	{
-		super(null, rect);
+		super(rect, true);
 
 		this.dim().mod().width(22).height(19).flush();
 		this.icon = icon;
@@ -39,20 +36,18 @@ public class GuiTab extends GuiFrame
 	}
 
 	@Override
-	public void init()
+	public void build()
 	{
 		this.tab_bg = new GuiTexture(Dim2D.build().width(22).height(19).flush(), this.isPressed ? TEXTURE_PRESSED : TEXTURE);
 		this.icon.dim().mod().x(this.dim().width() / 2).y(this.dim().height() / 2).addY(-2).center(true).flush();
 
-		this.addChildren(this.tab_bg, this.icon);
+		this.context().addChildren(this.tab_bg, this.icon);
 	}
 
 	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
+	public void onMouseClicked(GuiElement element, final int mouseX, final int mouseY, final int mouseButton)
 	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-
-		if (InputHelper.isHoveredAndTopElement(this.tab_bg))
+		if (this.tab_bg.state().isHovered())
 		{
 			this.onPressed.run();
 		}

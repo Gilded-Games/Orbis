@@ -101,7 +101,7 @@ public class GuiFactoryOrbis
 				}
 
 				list.setDropdownElements(Collections.emptyList());
-				list.setVisible(false);
+				list.state().setVisible(false);
 
 				navigator.refresh();
 			}

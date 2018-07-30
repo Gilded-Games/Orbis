@@ -4,7 +4,14 @@ import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
-import com.gildedgames.orbis_api.client.gui.util.*;
+import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis_api.client.gui.util.GuiFrameUtils;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.IDropdownHolder;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiLibHelper;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiEvent;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.client.rect.Rect;
@@ -19,12 +26,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +40,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
+public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 {
 	private final static ResourceLocation CROSS = OrbisCore.getResource("navigator/cross.png");
 
@@ -42,7 +50,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private Pos2D rightClickLocation, leftClickLocation, lastScreenPos;
 
-	private GuiFrame draggableCanvas;
+	private GuiElement draggableCanvas;
 
 	private Map<INode<DATA, LINK>, BUTTON> nodes = Maps.newHashMap();
 
@@ -78,12 +86,72 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private INode<DATA, LINK> copiedNode;
 
+	private IGuiEvent<IGuiElement> scissorEvent = new IGuiEvent<IGuiElement>()
+	{
+		@Override
+		public void onPreDraw(IGuiElement element)
+		{
+			ScaledResolution res = new ScaledResolution(GuiTree.this.viewer().mc());
+
+			double scaleW = GuiTree.this.viewer().mc().displayWidth / res.getScaledWidth_double();
+			double scaleH = GuiTree.this.viewer().mc().displayHeight / res.getScaledHeight_double();
+
+			GL11.glEnable(GL11.GL_SCISSOR_TEST);
+			GL11.glScissor((int) ((GuiTree.this.dim().x()) * scaleW),
+					(int) (GuiTree.this.viewer().mc().displayHeight - ((GuiTree.this.dim().y() + GuiTree.this.dim().height()) * scaleH)),
+					(int) (GuiTree.this.dim().width() * scaleW), (int) (GuiTree.this.dim().height() * scaleH));
+		}
+
+		@Override
+		public void onPostDraw(IGuiElement element)
+		{
+			GL11.glDisable(GL11.GL_SCISSOR_TEST);
+		}
+
+		@Override
+		public boolean isMouseClickedEnabled(IGuiElement element, int mouseX, int mouseY, int mouseButton)
+		{
+			return element == GuiTree.this || GuiTree.this.state().isHovered();
+		}
+
+		@Override
+		public boolean isMouseClickMoveEnabled(IGuiElement element, final int mouseX, final int mouseY, final int clickedMouseButton,
+				final long timeSinceLastClick)
+		{
+			return element == GuiTree.this || GuiTree.this.state().isHovered();
+		}
+
+		@Override
+		public boolean isMouseReleasedEnabled(IGuiElement element, final int mouseX, final int mouseY, final int state)
+		{
+			return element == GuiTree.this || GuiTree.this.state().isHovered();
+		}
+
+		@Override
+		public boolean isMouseWheelEnabled(IGuiElement element, final int state)
+		{
+			return element == GuiTree.this || GuiTree.this.state().isHovered();
+		}
+
+		@Override
+		public boolean isHandleMouseClickEnabled(IGuiElement element, final Slot slotIn, final int slotId, final int mouseButton, final ClickType type)
+		{
+			return element == GuiTree.this || GuiTree.this.state().isHovered();
+		}
+
+		@Override
+		public boolean canBeHovered(IGuiElement element)
+		{
+			return element == GuiTree.this || GuiTree.this.state().isHovered();
+		}
+	};
+
 	public GuiTree(Rect rect, Function<Integer, INode<DATA, LINK>> nodeFactory,
 			Function<INode<DATA, LINK>, Collection<IDropdownElement>> nodeDropdownElementFactory,
 			Function<LINK, String> linkStringInterpreter, Function<INode<DATA, LINK>, Boolean> nodeValidator, Function<INode<DATA, LINK>, BUTTON> buttonFactory,
 			Supplier<Integer> nodeIdFactory)
 	{
-		super(rect);
+		super(rect, true);
 
 		this.nodeFactory = nodeFactory;
 		this.nodeDropdownElementFactory = nodeDropdownElementFactory;
@@ -92,7 +160,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		this.buttonFactory = buttonFactory;
 		this.nodeIdFactory = nodeIdFactory;
 
-		this.draggableCanvas = new GuiFrameDummy(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush());
+		this.draggableCanvas = new GuiElement(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush(), false);
 	}
 
 	public void setCanDeleteNode(Function<INode<DATA, LINK>, Boolean> canDeleteNode)
@@ -108,7 +176,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	public void reset(Pos2D pos)
 	{
 		this.draggableCanvas.dim().mod().x(0).y(0).flush();
-		this.draggableCanvas.clearChildren();
+		this.draggableCanvas.context().clearChildren();
 		this.nodes.clear();
 
 		this.draggableCanvas.dim().mod().pos(pos).flush();
@@ -133,7 +201,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 		this.nodes.put(node, button);
 
-		this.draggableCanvas.addChildren(button);
+		this.draggableCanvas.context().addChildren(button);
 
 		this.listeners.forEach((l) -> l.onAddNode(this, node, oldNode));
 		this.listeners.forEach((l) -> l.onMoveNode(this, node, pos));
@@ -141,7 +209,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 	private void removeNode(INode<DATA, LINK> node)
 	{
-		this.draggableCanvas.removeChild(this.nodes.get(node));
+		this.draggableCanvas.context().removeChild(this.nodes.get(node));
 
 		this.nodes.remove(node);
 
@@ -165,14 +233,18 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	}
 
 	@Override
-	public void init()
+	public void build()
 	{
-		this.draggableCanvas = new GuiFrameDummy(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush());
+		this.draggableCanvas = new GuiElement(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush(), false);
 
 		this.refreshCanvasDropdownElements();
 		this.refreshRightClickNodeElements(null);
 
-		this.addChildren(this.draggableCanvas);
+		this.context().addChildren(this.draggableCanvas);
+
+		this.state().setCanBeTopHoverElement(true);
+
+		this.state().addEvent(this.scissorEvent);
 	}
 
 	private void refreshCanvasDropdownElements()
@@ -250,18 +322,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	}
 
 	@Override
-	public void draw()
+	public void onDraw(GuiElement element)
 	{
-		ScaledResolution res = new ScaledResolution(this.mc);
-
-		double scaleW = this.mc.displayWidth / res.getScaledWidth_double();
-		double scaleH = this.mc.displayHeight / res.getScaledHeight_double();
-
-		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor((int) ((this.dim().x()) * scaleW),
-				(int) (this.mc.displayHeight - ((this.dim().y() + this.dim().height()) * scaleH)),
-				(int) (this.dim().width() * scaleW), (int) (this.dim().height() * scaleH));
-
 		float mouseX = InputHelper.getMouseX() - this.draggableCanvas.dim().x();
 		float mouseY = InputHelper.getMouseY() - this.draggableCanvas.dim().y();
 
@@ -269,8 +331,6 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 		{
 			this.movingButton.dim().mod().x(mouseX - this.movingButtonOffsetX).y(mouseY - this.movingButtonOffsetY).flush();
 		}
-
-		super.draw();
 
 		for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
 		{
@@ -334,7 +394,9 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 						if (linkString != null && !linkString.isEmpty())
 						{
-							this.drawCenteredString(this.fontRenderer, TextFormatting.BOLD + linkString, tipX - (dx / 2), tipY - (dy / 2) - 5, 0xFFFFFFFF);
+							this.viewer().getActualScreen()
+									.drawCenteredString(this.viewer().fontRenderer(), TextFormatting.BOLD + linkString, tipX - (dx / 2), tipY - (dy / 2) - 5,
+											0xFFFFFFFF);
 						}
 					}
 				}
@@ -390,7 +452,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 
 				if (linkString != null && !linkString.isEmpty())
 				{
-					this.drawCenteredString(this.fontRenderer, TextFormatting.BOLD + linkString, tipX, tipY, 14737632);
+					this.viewer().getActualScreen().drawCenteredString(this.viewer().fontRenderer(), TextFormatting.BOLD + linkString, tipX, tipY, 14737632);
 				}
 			}
 		}
@@ -405,15 +467,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, final int mouseButton) throws IOException
+	public void onMouseClicked(GuiElement element, int mouseX, int mouseY, final int mouseButton)
 	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-
-		if (!this.isInputEnabled())
-		{
-			return;
-		}
-
 		int mx = (int) (mouseX - this.draggableCanvas.dim().x());
 		int my = (int) (mouseY - this.draggableCanvas.dim().y());
 
@@ -429,7 +484,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				aNodeIsHovered = true;
 			}
 
-			if (InputHelper.isHoveredAndTopElement(button))
+			if (button.state().isHoveredAndTopElement())
 			{
 				if (mouseButton == 1)
 				{
@@ -504,10 +559,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	}
 
 	@Override
-	protected void mouseReleased(final int mouseX, final int mouseY, final int state)
+	public void onMouseReleased(GuiElement element, final int mouseX, final int mouseY, final int state)
 	{
-		super.mouseReleased(mouseX, mouseY, state);
-
 		if (this.movingNode != null && this.movingButton != null)
 		{
 			this.listeners.forEach((l) -> l.onMoveNode(this, this.movingNode, this.movingButton.dim().originalState().min()));
@@ -535,44 +588,35 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 	}
 
 	@Override
-	protected void keyTyped(final char typedChar, final int keyCode) throws IOException
+	public void onGlobalContextChanged(GuiElement element)
 	{
-		super.keyTyped(typedChar, keyCode);
+		for (IGuiElement child : GuiLibHelper.getAllChildrenRecursivelyFor(this))
+		{
+			child.state().addEvent(this.scissorEvent);
+		}
 	}
 
 	@Override
-	public void preDrawChild(IGuiFrame child)
+	public void onPreDraw(GuiElement element)
 	{
-		ScaledResolution res = new ScaledResolution(this.mc);
-
-		double scaleW = this.mc.displayWidth / res.getScaledWidth_double();
-		double scaleH = this.mc.displayHeight / res.getScaledHeight_double();
-
-		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor((int) ((this.dim().x()) * scaleW),
-				(int) (this.mc.displayHeight - ((this.dim().y() + this.dim().height()) * scaleH)),
-				(int) (this.dim().width() * scaleW), (int) (this.dim().height() * scaleH));
-
-		if (this.draggableCanvas.getChildren().contains(child))
+		for (IGuiElement child : this.draggableCanvas.context().getChildren())
 		{
 			if (child.dim().maxY() < this.dim().min().y() || child.dim().maxX() < this.dim().min().x() || child.dim().min().x() > this.dim().maxX()
 					|| child.dim().min().y() > this.dim().maxY())
 			{
-				child.setVisible(false);
+				child.state().setVisible(false);
 			}
 			else
 			{
-				child.setVisible(true);
+				child.state().setVisible(true);
 			}
 		}
-
-		//this.drawGradientRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), -1072689136, -804253680);
 	}
 
 	@Override
-	public void postDrawChild(IGuiFrame child)
+	public void onPostDraw(GuiElement element)
 	{
-		if (this.isVisible())
+		if (this.state().isVisible())
 		{
 			for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
 			{
@@ -583,9 +627,9 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				{
 					GlStateManager.pushMatrix();
 
-					GuiFrameUtils.applyAlpha(this);
+					GuiFrameUtils.applyAlpha(this.state());
 
-					this.mc.getTextureManager().bindTexture(CROSS);
+					this.viewer().mc().getTextureManager().bindTexture(CROSS);
 
 					GuiTexture.drawModalRectWithCustomSizedTexture(button.dim().x(), button.dim().y(), 0, 0, 9, 9, 9, 9);
 
@@ -593,13 +637,5 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiFrame> extends GuiFrame
 				}
 			}
 		}
-
-		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-	}
-
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks)
-	{
-		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 }

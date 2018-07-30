@@ -3,9 +3,10 @@ package com.gildedgames.orbis.client.gui.power_wheel;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiElement;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.util.InputHelper;
@@ -14,9 +15,7 @@ import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import java.io.IOException;
-
-public class GuiChoiceMenu extends GuiFrame
+public class GuiChoiceMenu extends GuiElement
 {
 
 	private final static ResourceLocation GRADIENT_TEXTURE = OrbisCore.getResource("godmode/overlay/choose_power_gradient.png");
@@ -43,7 +42,7 @@ public class GuiChoiceMenu extends GuiFrame
 
 	public GuiChoiceMenu(final Choice... choices)
 	{
-		super(null, Dim2D.flush());
+		super(Dim2D.flush(), true);
 
 		this.choices = choices;
 	}
@@ -59,16 +58,14 @@ public class GuiChoiceMenu extends GuiFrame
 	}
 
 	@Override
-	public void onGuiClosed()
+	public void onGuiClosed(GuiElement element)
 	{
 		GuiChoiceMenu.LAST_MOUSE_X = Mouse.getEventX();
 		GuiChoiceMenu.LAST_MOUSE_Y = Mouse.getEventY();
-
-		super.onGuiClosed();
 	}
 
 	@Override
-	public void init()
+	public void build()
 	{
 		final Pos2D center = InputHelper.getCenter();
 
@@ -90,9 +87,9 @@ public class GuiChoiceMenu extends GuiFrame
 
 		this.choiceName = new GuiText(Dim2D.build().center(true).pos(center).addY(-86).flush(), null);
 
-		this.addChildren(gradient);
-		this.addChildren(backdrop);
-		this.addChildren(this.arrow);
+		this.context().addChildren(gradient);
+		this.context().addChildren(backdrop);
+		this.context().addChildren(this.arrow);
 
 		final float powerAngleStep = (float) Math.toDegrees((2 * Math.PI) / this.choices.length);
 
@@ -107,18 +104,18 @@ public class GuiChoiceMenu extends GuiFrame
 
 			icon.dim().mod().center(true).x(x).y(y).flush();
 
-			this.addChildren(icon);
+			this.context().addChildren(icon);
 
 			angle += powerAngleStep;
 		}
 
-		this.addChildren(this.choiceName);
+		this.context().addChildren(this.choiceName);
 	}
 
 	@Override
-	public void draw()
+	public void onDraw(GuiElement element)
 	{
-		final Pos2D center = Pos2D.flush(this.width / 2, this.height / 2);
+		final Pos2D center = Pos2D.flush(this.viewer().getScreenWidth() / 2, this.viewer().getScreenHeight() / 2);
 
 		final float dx = center.x() - InputHelper.getMouseX();
 		final float dy = center.y() - InputHelper.getMouseY();
@@ -170,7 +167,7 @@ public class GuiChoiceMenu extends GuiFrame
 
 			if (Mouse.isButtonDown(0))
 			{
-				closestChoice.onSelect(PlayerOrbis.get(this.mc.player));
+				closestChoice.onSelect(PlayerOrbis.get(this.viewer().mc().player));
 			}
 
 			for (final Choice choice : this.choices)
@@ -189,20 +186,14 @@ public class GuiChoiceMenu extends GuiFrame
 		}
 	}
 
-	private float getChoiceX(final GuiFrame gui, final float degreesAngle, final float radius)
+	private float getChoiceX(final IGuiElement gui, final float degreesAngle, final float radius)
 	{
 		return Math.round(radius * Math.cos(Math.toRadians(degreesAngle)));
 	}
 
-	private float getChoiceY(final GuiFrame gui, final float degreesAngle, final float radius)
+	private float getChoiceY(final IGuiElement gui, final float degreesAngle, final float radius)
 	{
 		return Math.round(radius * Math.sin(Math.toRadians(degreesAngle)));
-	}
-
-	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
-	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	public interface Choice

@@ -14,7 +14,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
-import java.io.IOException;
 import java.util.List;
 
 public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerListener
@@ -35,13 +34,13 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 	}
 
 	@Override
-	public void init()
+	public void build()
 	{
-		super.init();
-
 		this.hidden = new GuiTickBox(Pos2D.flush(3, 2), this.scheduleNode.getData().isVisible(), TICK_BOX_EYE);
 
-		this.hidden.setZOrder(1);
+		this.hidden.build(this.viewer());
+
+		this.hidden.state().setZOrder(1);
 
 		this.hidden.listenOnPress((ticked) ->
 		{
@@ -60,18 +59,14 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 			}
 		});
 
-		this.addChildren(this.hidden);
+		this.context().addChildren(this.hidden);
+
+		this.state().setCanBeTopHoverElement(true);
 	}
 
 	@Override
 	public void onSetVisible(boolean visible)
 	{
 		this.hidden.setTicked(visible);
-	}
-
-	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
-	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 }

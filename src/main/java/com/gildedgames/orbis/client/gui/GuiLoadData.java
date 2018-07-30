@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.client.gui;
 
-import com.gildedgames.orbis.client.gui.blueprint.GuiCreateBlueprintStacker;
 import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis.client.gui.util.directory.GuiDirectoryViewer;
 import com.gildedgames.orbis.client.gui.util.directory.nodes.*;
@@ -16,9 +15,11 @@ import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
@@ -30,7 +31,6 @@ import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.management.IProject;
-import com.gildedgames.orbis_api.util.InputHelper;
 import com.gildedgames.orbis_api.util.mc.InventoryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.ClickType;
@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
-public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
+public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListener
 {
 	private static final ResourceLocation MATRIX_ICON = OrbisCore.getResource("filter_gui/filter_matrix.png");
 
@@ -68,7 +68,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private GuiTexture[] tabs = new GuiTexture[this.tabCount];
 
-	private GuiFrame[] tabFrames = new GuiFrame[this.tabCount];
+	private GuiElement[] tabFrames = new GuiElement[this.tabCount];
 
 	private GuiAbstractButton forgeButton;
 
@@ -82,9 +82,9 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 
 	private IProject project;
 
-	public GuiLoadData(GuiFrame prevFrame, final PlayerOrbis playerOrbis)
+	public GuiLoadData(GuiViewer prevFrame, final PlayerOrbis playerOrbis)
 	{
-		super(prevFrame, Dim2D.flush(), null);
+		super(new GuiElement(Dim2D.flush(), false), prevFrame, null);
 
 		this.container = new ContainerLoadData(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
 
@@ -112,9 +112,10 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
-		this.dim().mod().width(179 * 2).height(169).x(this.width / 2 - 90 - (176 / 2)).y(this.height / 2 - (147 / 2) + 12).flush();
+		//TODO:
+		this.getViewing().dim().mod().width(179 * 2).height(169).x(this.width / 2 - 90 - (176 / 2)).y(this.height / 2 - (147 / 2) + 12).flush();
 
 		this.directoryViewer = new GuiDirectoryViewer(Pos2D.build().addX(80).addY(61).flush(),
 				new DirectoryNavigator(new OrbisNavigatorNodeFactory()));
@@ -134,12 +135,14 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
 		this.tabFrames[0] = this.directoryViewer;
+		this.tabFrames[1] = new GuiElement(Dim2D.flush(), false);
 
-		GuiCreateBlueprintStacker bp = new GuiCreateBlueprintStacker(this, this.container);
+		//TODO:
+		/*GuiCreateBlueprintStacker bp = new GuiCreateBlueprintStacker(this, this.container);
 
 		bp.dim().mod().addX(-8).addY(-34).flush();
 
-		this.tabFrames[1] = bp;
+		this.tabFrames[1] = bp;*/
 
 		final int xOffset = 15;
 		final int yOffset = 7;
@@ -156,7 +159,9 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		this.combineTitle = new GuiText(Dim2D.build().centerX(true).addX(223 + xOffset).addY(yOffset - 44).flush(),
 				new Text(new TextComponentString("Group"), 1.0F));
 
-		this.addChildren(this.matrix, this.flow, this.combineTitle, this.forgeButton, inventory);
+		context.addChildren(this.matrix, this.flow, this.combineTitle, this.forgeButton, inventory);
+
+		this.forgeButton.state().setCanBeTopHoverElement(true);
 
 		for (int i = 0; i < this.tabCount; i++)
 		{
@@ -165,10 +170,12 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			tab.dim().mod().addY(-53).addX(i * 23).flush();
 
 			this.tabs[i] = tab;
-			this.tabFrames[i].setVisible(false);
+			this.tabFrames[i].state().setVisible(false);
 
-			this.addChildren(tab);
-			this.addChildren(this.tabFrames[i]);
+			context.addChildren(tab);
+			context.addChildren(this.tabFrames[i]);
+
+			tab.state().setCanBeTopHoverElement(true);
 		}
 
 		this.setTabIndex(0);
@@ -176,7 +183,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		GuiTexture search = new GuiTexture(Dim2D.build().pos(Pos2D.build().x(5).y(-48).flush()).width(13).height(13).flush(), SEARCH);
 		GuiTexture stacker = new GuiTexture(Dim2D.build().pos(Pos2D.build().x(27).y(-48).flush()).width(13).height(13).flush(), STACKER);
 
-		this.addChildren(search, stacker);
+		context.addChildren(search, stacker);
 	}
 
 	public void setTabIndex(int index)
@@ -190,14 +197,14 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 			if (i == this.tabIndex)
 			{
 				tab.setResourceLocation(TAB_PRESSED);
-				this.tabFrames[i].setVisible(true);
-				this.tabFrames[i].setEnabled(true);
+				this.tabFrames[i].state().setVisible(true);
+				this.tabFrames[i].state().setEnabled(true);
 			}
 			else
 			{
 				tab.setResourceLocation(TAB);
-				this.tabFrames[i].setVisible(false);
-				this.tabFrames[i].setEnabled(false);
+				this.tabFrames[i].state().setVisible(false);
+				this.tabFrames[i].state().setEnabled(false);
 			}
 		}
 
@@ -228,7 +235,7 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 	{
 		//Gui.drawRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), Integer.MIN_VALUE);
 
-		this.forgeButton.setEnabled(InventoryHelper.getItemStacks(this.container.slots).size() >= 2);
+		this.forgeButton.state().setEnabled(InventoryHelper.getItemStacks(this.container.slots).size() >= 2);
 
 		this.drawWorldBackground(0);
 
@@ -256,13 +263,13 @@ public class GuiLoadData extends GuiFrame implements IDirectoryNavigatorListener
 		{
 			GuiTexture tab = this.tabs[i];
 
-			if (InputHelper.isHoveredAndTopElement(tab))
+			if (tab.state().isHoveredAndTopElement())
 			{
 				this.setTabIndex(i);
 			}
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.forgeButton) && mouseButton == 0)
+		if (this.forgeButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.blueprint_palette);
 

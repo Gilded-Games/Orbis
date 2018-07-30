@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.gui;
 
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.core.tree.INode;
 
-public interface IGuiTreeListener<DATA, LINK, BUTTON extends GuiFrame>
+public interface IGuiTreeListener<DATA, LINK, BUTTON extends GuiElement>
 {
 
 	void onLinkNodes(GuiTree<DATA, LINK, BUTTON> tree, INode<DATA, LINK> n1, INode<DATA, LINK> n2, LINK link);

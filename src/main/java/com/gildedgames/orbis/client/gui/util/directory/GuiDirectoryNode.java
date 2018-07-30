@@ -4,22 +4,21 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiTextBox;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.io.IOException;
 
-public class GuiDirectoryNode extends GuiFrame
+public class GuiDirectoryNode extends GuiElement
 {
 	private static final ResourceLocation TICK_TEXTURE = OrbisCore.getResource("navigator/tick.png");
 
@@ -49,7 +48,7 @@ public class GuiDirectoryNode extends GuiFrame
 
 	public GuiDirectoryNode(final Pos2D pos, final INavigatorNode navigatorNode, final GuiDirectoryViewer viewer)
 	{
-		super(Dim2D.build().width(WIDTH).height(HEIGHT).pos(pos).flush());
+		super(Dim2D.build().width(WIDTH).height(HEIGHT).pos(pos).flush(), true);
 
 		this.directoryNode = navigatorNode;
 
@@ -58,7 +57,7 @@ public class GuiDirectoryNode extends GuiFrame
 	}
 
 	@Override
-	public void init()
+	public void build()
 	{
 		this.icon = this.directoryNode.getIcon().clone();
 
@@ -75,41 +74,41 @@ public class GuiDirectoryNode extends GuiFrame
 		this.tick_icon.dim().mod().x(WIDTH / 2).addX(3).y(HEIGHT / 2).addY(-11).centerX(true).flush();
 		this.downloading_icon.dim().mod().x(WIDTH / 2).addX(3).y(HEIGHT / 2).addY(-11).centerX(true).flush();
 
-		this.cross_icon.setVisible(false);
-		this.tick_icon.setVisible(false);
-		this.downloading_icon.setVisible(false);
+		this.cross_icon.state().setVisible(false);
+		this.tick_icon.state().setVisible(false);
+		this.downloading_icon.state().setVisible(false);
 
-		this.addChildren(this.icon);
-		this.addChildren(this.nameplate);
+		this.context().addChildren(this.icon);
+		this.context().addChildren(this.nameplate);
 
-		this.addChildren(this.cross_icon);
-		this.addChildren(this.tick_icon);
-		this.addChildren(this.downloading_icon);
+		this.context().addChildren(this.cross_icon);
+		this.context().addChildren(this.tick_icon);
+		this.context().addChildren(this.downloading_icon);
+
+		this.state().setCanBeTopHoverElement(true);
 	}
 
 	@Override
-	public void preDraw()
+	public void onPreDraw(GuiElement element)
 	{
 		if (Minecraft.getMinecraft().isIntegratedServerRunning())
 		{
-			this.tick_icon.setVisible(false);
-			this.cross_icon.setVisible(false);
-			this.downloading_icon.setVisible(false);
+			this.tick_icon.state().setVisible(false);
+			this.cross_icon.state().setVisible(false);
+			this.downloading_icon.state().setVisible(false);
 		}
 		else
 		{
-			this.tick_icon.setVisible(this.directoryNode.isOnClient());
-			this.cross_icon.setVisible(!this.directoryNode.isOnClient() && !this.directoryNode.isDownloading());
-			this.downloading_icon.setVisible(this.directoryNode.isDownloading() && !this.directoryNode.isOnClient());
+			this.tick_icon.state().setVisible(this.directoryNode.isOnClient());
+			this.cross_icon.state().setVisible(!this.directoryNode.isOnClient() && !this.directoryNode.isDownloading());
+			this.downloading_icon.state().setVisible(this.directoryNode.isDownloading() && !this.directoryNode.isOnClient());
 		}
 	}
 
 	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
+	public void onMouseClicked(GuiElement element, final int mouseX, final int mouseY, final int mouseButton)
 	{
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-
-		if (this.isEnabled() && InputHelper.isHoveredAndTopElement(this))
+		if (this.state().isEnabled() && this.state().isHoveredAndTopElement())
 		{
 			if (mouseButton == 0)
 			{
@@ -131,24 +130,22 @@ public class GuiDirectoryNode extends GuiFrame
 	}
 
 	@Override
-	protected void mouseReleased(final int mouseX, final int mouseY, final int state)
+	public void onMouseReleased(GuiElement element, final int mouseX, final int mouseY, final int state)
 	{
-		super.mouseReleased(mouseX, mouseY, state);
-
-		if (this.isEnabled() && InputHelper.isHoveredAndTopElement(this))
+		if (this.state().isEnabled() && this.state().isHoveredAndTopElement())
 		{
 			this.icon.dim().mod().scale(1.025F).flush();
 		}
 	}
 
 	@Override
-	public void onHovered()
+	public void onHovered(GuiElement element)
 	{
-		drawRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), Integer.MAX_VALUE);
+		Gui.drawRect((int) this.dim().x(), (int) this.dim().y(), (int) this.dim().maxX(), (int) this.dim().maxY(), Integer.MAX_VALUE);
 	}
 
 	@Override
-	public void onHoverEnter()
+	public void onHoverEnter(GuiElement element)
 	{
 		this.icon.dim().mod().scale(1.025F).flush();
 
@@ -156,7 +153,7 @@ public class GuiDirectoryNode extends GuiFrame
 	}
 
 	@Override
-	public void onHoverExit()
+	public void onHoverExit(GuiElement element)
 	{
 		this.icon.dim().mod().scale(1.0F).flush();
 	}

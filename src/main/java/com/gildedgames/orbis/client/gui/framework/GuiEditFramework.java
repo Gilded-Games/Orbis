@@ -4,25 +4,26 @@ import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
-import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 
-public class GuiEditFramework extends GuiFrame
+public class GuiEditFramework extends GuiViewer
 {
 	private final Framework framework;
 
 	private GuiButtonVanilla saveButton, closeButton;
 
-	public GuiEditFramework(GuiFrame prevFrame, final Framework framework)
+	public GuiEditFramework(GuiViewer prevFrame, final Framework framework)
 	{
-		super(prevFrame, Dim2D.flush());
+		super(new GuiElement(Dim2D.flush(), false), prevFrame);
 
 		this.setDrawDefaultBackground(true);
 		this.framework = framework;
@@ -37,10 +38,8 @@ public class GuiEditFramework extends GuiFrame
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
-		this.dim().mod().width(this.width).height(this.height).flush();
-
 		this.saveButton = new GuiButtonVanilla(Dim2D.build().width(50).height(20).addY(15).addX(75).flush());
 
 		this.saveButton.getInner().displayString = "Save As";
@@ -49,8 +48,8 @@ public class GuiEditFramework extends GuiFrame
 
 		this.closeButton.getInner().displayString = "Close";
 
-		this.addChildren(this.saveButton);
-		this.addChildren(this.closeButton);
+		context.addChildren(this.saveButton);
+		context.addChildren(this.closeButton);
 
 		if (!OrbisCore.getProjectManager().getLocation().exists())
 		{
@@ -62,23 +61,17 @@ public class GuiEditFramework extends GuiFrame
 	}
 
 	@Override
-	public void draw()
-	{
-		super.draw();
-	}
-
-	@Override
 	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.closeButton) && mouseButton == 0)
+		if (this.closeButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPreviousViewer().getActualScreen());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
+		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.framework, FrameworkData.EXTENSION));
 		}

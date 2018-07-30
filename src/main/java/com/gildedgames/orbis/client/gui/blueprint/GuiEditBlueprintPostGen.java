@@ -17,9 +17,11 @@ import com.gildedgames.orbis.common.network.packets.gui.PacketPostGenRemoveLayer
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.data.list.IListNavigatorListener;
-import com.gildedgames.orbis_api.client.gui.util.GuiFrame;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.list.GuiListViewer;
 import com.gildedgames.orbis_api.client.gui.util.list.IListViewerListener;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
@@ -42,7 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerListener, IListNavigatorListener<SlotGroup>
+public class GuiEditBlueprintPostGen extends GuiViewer implements IListViewerListener, IListNavigatorListener<SlotGroup>
 {
 	private static final ResourceLocation VIEWER_BACKDROP = OrbisCore.getResource("list/list_viewer.png");
 
@@ -64,9 +66,9 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 
 	private PlayerOrbis playerOrbis;
 
-	public GuiEditBlueprintPostGen(GuiFrame prevFrame, final Blueprint blueprint)
+	public GuiEditBlueprintPostGen(GuiViewer prevFrame, final Blueprint blueprint)
 	{
-		super(prevFrame, Dim2D.flush());
+		super(new GuiElement(Dim2D.flush(), false), prevFrame);
 
 		this.setDrawDefaultBackground(true);
 		this.blueprint = blueprint;
@@ -106,13 +108,13 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 	}
 
 	@Override
-	public void init()
+	public void build(IGuiContext context)
 	{
 		Pos2D center = InputHelper.getCenter();
 
 		this.layerTab = new GuiTab(Dim2D.build().x(center.x()).addX(-11).centerX(true).flush(),
 				new GuiTexture(Dim2D.build().width(16).height(16).flush(), LAYERS_ICON),
-				() -> this.mc.displayGuiScreen(this.getPrevFrame().getActualScreen()));
+				() -> this.mc.displayGuiScreen(this.getPreviousViewer().getActualScreen()));
 		this.postGenTab = new GuiTab(Dim2D.build().x(center.x()).addX(11).centerX(true).flush(),
 				new GuiTexture(Dim2D.build().width(16).height(16).flush(), POST_GEN_ICON),
 				() -> {
@@ -128,16 +130,16 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 
 		this.closeButton.getInner().displayString = "Close";
 
-		this.addChildren(this.saveButton);
-		this.addChildren(this.closeButton);
+		context.addChildren(this.saveButton);
+		context.addChildren(this.closeButton);
 
 		final GuiTexture backdrop = new GuiTexture(Dim2D.build().pos(Pos2D.build().add(20, 45).flush()).width(176).flush(), VIEWER_BACKDROP);
 
 		backdrop.dim().mod().height(this.height - 65).flush();
 
-		this.addChildren(backdrop);
+		context.addChildren(backdrop);
 
-		this.addChildren(this.layerTab, this.postGenTab);
+		context.addChildren(this.layerTab, this.postGenTab);
 
 		this.layerViewer = new GuiListViewer<>
 				(
@@ -200,13 +202,7 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 			calls.clear();
 		}
 
-		this.addChildren(this.layerViewer, inventory);
-	}
-
-	@Override
-	public void draw()
-	{
-		super.draw();
+		context.addChildren(this.layerViewer, inventory);
 	}
 
 	@Override
@@ -214,13 +210,13 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 	{
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (InputHelper.isHoveredAndTopElement(this.closeButton) && mouseButton == 0)
+		if (this.closeButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			Minecraft.getMinecraft().displayGuiScreen(this.getPrevFrame().getActualScreen());
+			Minecraft.getMinecraft().displayGuiScreen(this.getPreviousViewer().getActualScreen());
 			GuiRightClickElements.lastCloseTime = System.currentTimeMillis();
 		}
 
-		if (InputHelper.isHoveredAndTopElement(this.saveButton) && mouseButton == 0)
+		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(new GuiSaveData(this, this.blueprint, BlueprintData.EXTENSION));
 		}
@@ -323,7 +319,7 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 
 	}
 
-	public static class ReplaceLayerSlot extends GuiFrame
+	public static class ReplaceLayerSlot extends GuiElement
 	{
 		private static ResourceLocation TEXTURE = OrbisCore.getResource("blueprint_gui/replace_layer_slot.png");
 
@@ -335,7 +331,7 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 
 		public ReplaceLayerSlot(Rect rect, int layerId)
 		{
-			super(null, rect);
+			super(rect, false);
 
 			this.layerId = layerId;
 
@@ -343,12 +339,12 @@ public class GuiEditBlueprintPostGen extends GuiFrame implements IListViewerList
 		}
 
 		@Override
-		public void init()
+		public void build()
 		{
 			this.bg = new GuiTexture(Dim2D.build().width(136).height(24).flush(), TEXTURE);
 			this.text = new GuiText(Dim2D.build().x(60).y(6).flush(), new Text(new TextComponentString(String.valueOf(this.layerId)), 1.0F));
 
-			this.addChildren(this.bg, this.text);
+			this.context().addChildren(this.bg, this.text);
 		}
 	}
 
