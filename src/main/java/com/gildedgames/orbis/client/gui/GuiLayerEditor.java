@@ -23,7 +23,6 @@ import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.client.rect.Rect;
 import com.gildedgames.orbis_api.client.rect.RectModifier;
 import com.gildedgames.orbis_api.core.tree.ConditionLink;
 import com.gildedgames.orbis_api.core.tree.INode;
@@ -49,15 +48,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -287,22 +283,74 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 
 			return node;
 		},
-				(node) -> Lists.newArrayList(new DropdownElement(new TextComponentString("And..."))
-											 {
-												 @Override
-												 public void onClick(final GuiDropdownList list, final EntityPlayer player)
-												 {
-													 GuiLayerEditor.this.conditionTree.startLinking(ConditionLink.AND);
-												 }
-											 },
-						new DropdownElement(new TextComponentString("Or..."))
+				(node) ->
+				{
+					List<IDropdownElement> elements = Lists.newArrayList();
+
+					elements.add(new DropdownElement(new TextComponentString("And..."))
+					{
+						@Override
+						public void onClick(final GuiDropdownList list, final EntityPlayer player)
 						{
-							@Override
-							public void onClick(final GuiDropdownList list, final EntityPlayer player)
+							GuiLayerEditor.this.conditionTree.startLinking(ConditionLink.AND);
+						}
+					});
+
+					elements.add(new DropdownElement(new TextComponentString("Or..."))
+					{
+						@Override
+						public void onClick(final GuiDropdownList list, final EntityPlayer player)
+						{
+							GuiLayerEditor.this.conditionTree.startLinking(ConditionLink.OR);
+						}
+					});
+
+					if (!node.getChildrenIds().isEmpty())
+					{
+						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.unlink_child"), () -> {
+							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
+
+							for (INode<IGuiCondition, ConditionLink> child : node.getTree().get(node.getChildrenIds()))
 							{
-								GuiLayerEditor.this.conditionTree.startLinking(ConditionLink.OR);
+								list.addDropdownElements(
+										new DropdownElement(new TextComponentString("C" + String.valueOf(child.getNodeId())))
+										{
+											@Override
+											public void onClick(final GuiDropdownList list, final EntityPlayer player)
+											{
+												node.removeChild(child.getNodeId());
+											}
+										});
 							}
-						}),
+
+							return list;
+						}));
+					}
+
+					if (!node.getParentsIds().isEmpty())
+					{
+						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.unlink_parent"), () -> {
+							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
+
+							for (INode<IGuiCondition, ConditionLink> parent : node.getTree().get(node.getParentsIds()))
+							{
+								list.addDropdownElements(
+										new DropdownElement(new TextComponentString("C" + String.valueOf(parent.getNodeId())))
+										{
+											@Override
+											public void onClick(final GuiDropdownList list, final EntityPlayer player)
+											{
+												parent.removeChild(node.getNodeId());
+											}
+										});
+							}
+
+							return list;
+						}));
+					}
+
+					return elements;
+				},
 				(l) ->
 				{
 					switch (l.getProperty())
@@ -1004,6 +1052,8 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 		this.blueprintVariableDropdown.state().setEnabled(false);
 		this.blueprintVariableDropdown.state().setVisible(false);
 
+		this.subTreeViewer.dim().mod().width(200).height(141).flush();
+
 		context.addChildren(this.layerTree,
 				this.varDisplayScrollDecorator, buttons,
 				layersTitle,
@@ -1112,239 +1162,5 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 	public GuiDropdownList getDropdown()
 	{
 		return this.dropdown;
-	}
-
-	private static class GuiSelectableTree extends GuiElement
-	{
-		private static final ResourceLocation TREE_WINDOW = OrbisCore.getResource("layer_gui/tree_window.png");
-
-		private static final ResourceLocation TREE_WINDOW_EXTENDED = OrbisCore.getResource("layer_gui/tree_window_extended.png");
-
-		private GuiTexture window;
-
-		private GuiText title;
-
-		private List<Pair<ITextComponent, GuiTree>> managedTrees = Lists.newArrayList();
-
-		private GuiDropdown<DropdownElementWithData<GuiTree>> dropdown;
-
-		private GuiTree currentTree;
-
-		public GuiSelectableTree(Rect rect)
-		{
-			super(rect, false);
-		}
-
-		public void setTitle(ITextComponent text)
-		{
-			if (this.title == null)
-			{
-				this.title = new GuiText(Dim2D.build().x(12).y(10).flush(),
-						new Text(text, 1.0F));
-			}
-			else
-			{
-				this.title.setText(new Text(text, 1.0F));
-			}
-		}
-
-		public void setTreeNoDropdown(GuiTree tree, ITextComponent text)
-		{
-			this.managedTrees.clear();
-
-			this.tryRebuild();
-
-			this.window.setResourceLocation(TREE_WINDOW, 200, 121);
-			this.title.setText(new Text(text, 1.0F));
-
-			tree.dim().mod().width(184).height(86).x(8).y(27).flush();
-
-			tree.state().setEnabled(true);
-			tree.state().setVisible(true);
-
-			this.context().addChildren(tree);
-		}
-
-		public void setTrees(ITextComponent text, Pair<ITextComponent, GuiTree>... trees)
-		{
-			int selectedTreeIndex = 0;
-
-			for (int i = 0; i < this.managedTrees.size(); i++)
-			{
-				Pair<ITextComponent, GuiTree> pair = this.managedTrees.get(i);
-
-				if (pair.getRight() == this.currentTree)
-				{
-					selectedTreeIndex = i;
-					break;
-				}
-			}
-
-			if (trees.length <= selectedTreeIndex)
-			{
-				selectedTreeIndex = 0;
-			}
-
-			this.managedTrees.clear();
-
-			this.managedTrees.addAll(Arrays.asList(trees));
-
-			this.window.setResourceLocation(TREE_WINDOW_EXTENDED, 200, 141);
-			this.title.setText(new Text(text, 1.0F));
-
-			this.tryRebuild();
-
-			this.dropdown.getList().getElements().clear();
-
-			for (Pair<ITextComponent, GuiTree> pair : this.managedTrees)
-			{
-				ITextComponent t = pair.getLeft();
-				GuiTree tree = pair.getRight();
-
-				this.dropdown.getList().addDropdownElements(new DropdownElementWithData<>(t, tree));
-			}
-
-			if (this.dropdown.getList().getElements().size() >= 1)
-			{
-				this.dropdown.setChosenElement(this.dropdown.getList().getElements().get(selectedTreeIndex));
-			}
-
-			this.managedTrees.forEach((p) ->
-			{
-				p.getRight().dim().mod().width(184).height(86).x(8).y(27 + 19).flush();
-
-				p.getRight().state().setEnabled(false);
-				p.getRight().state().setVisible(false);
-
-				this.context().addChildren(p.getRight());
-			});
-
-			if (!this.managedTrees.isEmpty())
-			{
-				this.currentTree = this.managedTrees.get(selectedTreeIndex).getRight();
-
-				this.currentTree.state().setEnabled(true);
-				this.currentTree.state().setVisible(true);
-			}
-		}
-
-		@Override
-		public void build()
-		{
-			if (this.window == null)
-			{
-				this.window = new GuiTexture(Dim2D.build().width(200).height(121).flush(), TREE_WINDOW);
-			}
-
-			if (this.title == null)
-			{
-				this.title = new GuiText(Dim2D.build().x(12).y(10).flush(),
-						new Text(new TextComponentTranslation("orbis.gui.conditions", ""), 1.0F));
-			}
-
-			if (!this.dim().containsModifier("windowArea", this.window))
-			{
-				this.dim().add(new RectModifier("windowArea", this.window, RectModifier.ModifierType.AREA.getModification(), RectModifier.ModifierType.AREA));
-			}
-
-			this.context().addChildren(this.window, this.title);
-
-			if (this.dropdown == null)
-			{
-				this.dropdown = new GuiDropdown<>(Dim2D.build().x(7).y(25).width(186).flush(), (e) -> {
-					if (this.currentTree != null)
-					{
-						this.currentTree.state().setEnabled(false);
-						this.currentTree.state().setVisible(false);
-					}
-
-					this.currentTree = e.getData();
-
-					this.currentTree.state().setEnabled(true);
-					this.currentTree.state().setVisible(true);
-				});
-			}
-
-			if (this.managedTrees.size() >= 2)
-			{
-				this.context().addChildren(this.dropdown);
-
-				this.dropdown.state().setZOrder(Integer.MAX_VALUE);
-			}
-		}
-	}
-
-	private static class GuiVariablesHeader extends GuiElement
-	{
-		private static final ResourceLocation VARIABLE_HEADER = OrbisCore.getResource("layer_gui/variable_header.png");
-
-		private static final ResourceLocation VARIABLE_HEADER_EXTENDED = OrbisCore.getResource("layer_gui/variable_header_extended.png");
-
-		private GuiTexture window;
-
-		private GuiText title, type;
-
-		private GuiDropdown dropdown;
-
-		public GuiVariablesHeader(Rect rect)
-		{
-			super(rect, false);
-		}
-
-		public void setTitle(ITextComponent text)
-		{
-			this.setTitleAndDropdown(text, null);
-		}
-
-		public void setTitleAndDropdown(ITextComponent text, @Nullable GuiDropdown dropdown)
-		{
-			this.tryRebuild();
-
-			this.window.setResourceLocation(dropdown == null ? VARIABLE_HEADER : VARIABLE_HEADER_EXTENDED, 200, dropdown == null ? 29 : 49);
-			this.title.setText(new Text(text, 1.0F));
-			this.type.state().setVisible(dropdown != null);
-
-			if (dropdown != null)
-			{
-				this.dropdown = dropdown;
-
-				this.dropdown.state().setEnabled(true);
-				this.dropdown.state().setVisible(true);
-
-				this.dropdown.dim().mod().x(40).y(25).flush();
-
-				this.context().addChildren(this.dropdown);
-			}
-		}
-
-		@Override
-		public void build()
-		{
-			if (this.window == null)
-			{
-				this.window = new GuiTexture(Dim2D.build().width(200).height(29).flush(), VARIABLE_HEADER);
-			}
-
-			if (this.title == null)
-			{
-				this.title = new GuiText(Dim2D.build().x(12).y(10).flush(),
-						new Text(new TextComponentString(""), 1.0F));
-			}
-
-			if (this.type == null)
-			{
-				this.type = new GuiText(Dim2D.build().x(8).y(30).flush(),
-						new Text(new TextComponentTranslation("orbis.gui.type"), 1.0F));
-
-				this.type.state().setVisible(false);
-			}
-
-			if (!this.dim().containsModifier("windowArea", this.window))
-			{
-				this.dim().add(new RectModifier("windowArea", this.window, RectModifier.ModifierType.AREA.getModification(), RectModifier.ModifierType.AREA));
-			}
-
-			this.context().addChildren(this.window, this.title, this.type);
-		}
 	}
 }

@@ -1,11 +1,12 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,7 +19,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderScheduleRegion implements IWorldRenderer
+public class RenderScheduleRegion implements IWorldRenderer, IFocusedRender
 {
 	private final List<IWorldRenderer> subRenderers = Lists.newArrayList();
 
@@ -30,12 +31,17 @@ public class RenderScheduleRegion implements IWorldRenderer
 
 	private RenderShape renderShape;
 
-	private Region bb;
+	private Region bb, bbRelative;
 
 	private IWorldObject parentObject;
 
-	public RenderScheduleRegion(IWorldObject parentObject, final ScheduleRegion scheduleRegion)
+	private IScheduleLayer parentLayer;
+
+	private boolean isFocused;
+
+	public RenderScheduleRegion(IScheduleLayer parentLayer, IWorldObject parentObject, final ScheduleRegion scheduleRegion)
 	{
+		this.parentLayer = parentLayer;
 		this.parentObject = parentObject;
 		this.scheduleRegion = scheduleRegion;
 
@@ -44,7 +50,9 @@ public class RenderScheduleRegion implements IWorldRenderer
 
 		try
 		{
-			this.bb = new Region(this.scheduleRegion.getBounds());
+			this.bbRelative = new Region(this.scheduleRegion.getBounds());
+			this.bb = new Region(this.scheduleRegion.getBounds().getMin().add(this.parentObject.getPos()),
+					this.scheduleRegion.getBounds().getMax().add(this.parentObject.getPos()));
 
 			this.renderShape = new RenderShape(this.bb);
 
@@ -64,7 +72,7 @@ public class RenderScheduleRegion implements IWorldRenderer
 	@Override
 	public boolean isDisabled()
 	{
-		return this.disabled;
+		return this.disabled || !this.isFocused;
 	}
 
 	@Override
@@ -132,7 +140,9 @@ public class RenderScheduleRegion implements IWorldRenderer
 	{
 		GlStateManager.pushMatrix();
 
-		GlStateManager.translate(this.parentObject.getPos().getX(), this.parentObject.getPos().getY(), this.parentObject.getPos().getZ());
+		GlStateManager.translate(-(this.bb.getMin().getX() - this.parentObject.getPos().getX()) + this.bbRelative.getMin().getX(),
+				-(this.bb.getMin().getY() - this.parentObject.getPos().getY()) + this.bbRelative.getMin().getY(),
+				-(this.bb.getMin().getZ() - this.parentObject.getPos().getZ()) + this.bbRelative.getMin().getZ());
 	}
 
 	@Override
@@ -169,5 +179,21 @@ public class RenderScheduleRegion implements IWorldRenderer
 	public void read(final NBTTagCompound tag)
 	{
 
+	}
+
+	@Override
+	public void setFocused(boolean focused)
+	{
+		this.isFocused = focused;
+
+		for (IWorldRenderer r : this.subRenderers)
+		{
+			if (r instanceof IFocusedRender)
+			{
+				IFocusedRender c = (IFocusedRender) r;
+
+				c.setFocused(focused);
+			}
+		}
 	}
 }

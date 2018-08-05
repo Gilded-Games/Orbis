@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderStateRecordChunk implements IWorldRenderer
+public class RenderStateRecordChunk implements IWorldRenderer, IFocusedRender
 {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -85,6 +85,7 @@ public class RenderStateRecordChunk implements IWorldRenderer
 		return this.focused;
 	}
 
+	@Override
 	public void setFocused(boolean focused)
 	{
 		boolean willRedraw = this.focused != focused;
@@ -94,6 +95,16 @@ public class RenderStateRecordChunk implements IWorldRenderer
 		if (willRedraw)
 		{
 			this.redraw();
+		}
+
+		for (IWorldRenderer r : this.subRenderers)
+		{
+			if (r instanceof IFocusedRender)
+			{
+				IFocusedRender c = (IFocusedRender) r;
+
+				c.setFocused(focused);
+			}
 		}
 	}
 

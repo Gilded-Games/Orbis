@@ -28,6 +28,8 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 	private boolean disabled;
 
+	private boolean isFocused;
+
 	public RenderScheduleLayer(final INode<IScheduleLayer, LayerLink> layer, IBlueprint blueprint, final IWorldObject parentObject, boolean rotateData)
 	{
 		this.layer = layer;
@@ -82,7 +84,7 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 		try
 		{
-			RenderScheduleRegion r = new RenderScheduleRegion(this.parentObject, schedule);
+			RenderScheduleRegion r = new RenderScheduleRegion(this.layer.getData(), this.parentObject, schedule);
 
 			this.subRenderers.add(r);
 		}
@@ -94,17 +96,15 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 	public void setFocused(boolean focused)
 	{
+		this.isFocused = focused;
+
 		for (IWorldRenderer r : this.subRenderers)
 		{
-			if (r instanceof RenderStateRecord)
+			if (r instanceof IFocusedRender)
 			{
-				RenderStateRecord f = (RenderStateRecord) r;
+				IFocusedRender c = (IFocusedRender) r;
 
-				f.setFocused(focused);
-			}
-			else
-			{
-				r.setDisabled(!focused);
+				c.setFocused(focused);
 			}
 		}
 	}
@@ -208,13 +208,20 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			{
 				ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
 
-				r = new RenderScheduleRegion(this.parentObject, scheduleRegion);
+				r = new RenderScheduleRegion(this.layer.getData(), this.parentObject, scheduleRegion);
 			}
 			else if (schedule instanceof ScheduleBlueprint)
 			{
 				ScheduleBlueprint scheduleBlueprint = (ScheduleBlueprint) schedule;
 
 				r = new RenderScheduleBlueprint(this.parentObject, scheduleBlueprint);
+			}
+
+			if (r instanceof IFocusedRender)
+			{
+				IFocusedRender focused = (IFocusedRender) r;
+
+				focused.setFocused(this.isFocused);
 			}
 
 			this.subRenderers.add(r);

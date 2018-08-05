@@ -237,8 +237,6 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 
 		this.forgeButton.state().setEnabled(InventoryHelper.getItemStacks(this.container.slots).size() >= 2);
 
-		this.drawWorldBackground(0);
-
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
 		this.renderHoveredToolTip(mouseX, mouseY);

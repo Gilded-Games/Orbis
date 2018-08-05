@@ -6,12 +6,11 @@ import com.gildedgames.orbis.client.gui.schedules.GuiEditScheduledRegion;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerEditBlueprintPostGen;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
-import com.gildedgames.orbis.common.containers.ContainerScheduleRegion;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
-import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
+import com.gildedgames.orbis_api.util.mc.ContainerGeneric;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -45,24 +44,9 @@ public class OrbisGuiHandler implements IGuiHandler
 			case LOAD_DATA:
 				return new ContainerLoadData(playerOrbis, playerOrbis.powers().getBlueprintPower().getForgeInventory());
 			case EDIT_SCHEDULE_REGION:
-				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-				if (shape instanceof Blueprint)
-				{
-					Blueprint blueprint = (Blueprint) shape;
-
-					ISchedule schedule = blueprint.findIntersectingSchedule(pos);
-
-					if (schedule instanceof ScheduleRegion)
-					{
-						ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-						return new ContainerScheduleRegion(playerOrbis, scheduleRegion.getSpawnEggsInventory());
-					}
-				}
-				return null;
+				return new ContainerGeneric();
 			case POST_GEN:
-				shape = WorldObjectUtils.getIntersectingShape(world, pos);
+				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
 
 				if (shape instanceof Blueprint)
 				{
@@ -98,12 +82,7 @@ public class OrbisGuiHandler implements IGuiHandler
 
 					ISchedule schedule = blueprint.findIntersectingSchedule(pos);
 
-					if (schedule instanceof ScheduleRegion)
-					{
-						ScheduleRegion scheduleRegion = (ScheduleRegion) schedule;
-
-						return new GuiEditScheduledRegion(null, playerOrbis, blueprint, scheduleRegion);
-					}
+					return new GuiEditScheduledRegion(null, blueprint, schedule);
 				}
 				return null;
 			case POST_GEN:

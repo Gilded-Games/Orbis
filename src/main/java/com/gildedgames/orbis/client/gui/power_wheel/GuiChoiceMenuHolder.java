@@ -69,6 +69,8 @@ public class GuiChoiceMenuHolder extends GuiViewer
 	{
 		super(new GuiElement(Dim2D.flush(), false), null);
 
+		this.setDrawDefaultBackground(false);
+
 		this.menus = menus;
 		this.tabs = new GuiTexture[this.menus.length];
 	}

@@ -15,6 +15,7 @@ import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiEvent;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.client.rect.Rect;
+import com.gildedgames.orbis_api.client.rect.RectModifier;
 import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.util.InputHelper;
 import com.google.common.collect.Lists;
@@ -52,7 +53,9 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 
 	private GuiElement draggableCanvas;
 
-	private Map<INode<DATA, LINK>, BUTTON> nodes = Maps.newHashMap();
+	private Map<INode<DATA, LINK>, BUTTON> nodeToButton = Maps.newHashMap();
+
+	private Map<BUTTON, INode<DATA, LINK>> buttonToNode = Maps.newHashMap();
 
 	private Function<Integer, INode<DATA, LINK>> nodeFactory;
 
@@ -85,6 +88,32 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 	private float movingButtonOffsetX, movingButtonOffsetY;
 
 	private INode<DATA, LINK> copiedNode;
+
+	private GuiElement invalidRenderer = new GuiElement(Dim2D.flush(), true)
+	{
+		@Override
+		public void onDraw(GuiElement element)
+		{
+			for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : GuiTree.this.nodeToButton.entrySet())
+			{
+				INode<DATA, LINK> node = entry.getKey();
+				BUTTON button = entry.getValue();
+
+				if (!GuiTree.this.nodeValidator.apply(node))
+				{
+					GlStateManager.pushMatrix();
+
+					GuiFrameUtils.applyAlpha(this.state());
+
+					this.viewer().mc().getTextureManager().bindTexture(CROSS);
+
+					GuiTexture.drawModalRectWithCustomSizedTexture(button.dim().x(), button.dim().y(), 0, 0, 9, 9, 9, 9);
+
+					GlStateManager.popMatrix();
+				}
+			}
+		}
+	};
 
 	private IGuiEvent<IGuiElement> scissorEvent = new IGuiEvent<IGuiElement>()
 	{
@@ -170,14 +199,20 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 
 	public BUTTON getButtonFromNode(INode<DATA, LINK> node)
 	{
-		return this.nodes.get(node);
+		return this.nodeToButton.get(node);
+	}
+
+	public INode<DATA, LINK> getNodeFromButton(BUTTON button)
+	{
+		return this.buttonToNode.get(button);
 	}
 
 	public void reset(Pos2D pos)
 	{
 		this.draggableCanvas.dim().mod().x(0).y(0).flush();
 		this.draggableCanvas.context().clearChildren();
-		this.nodes.clear();
+		this.nodeToButton.clear();
+		this.buttonToNode.clear();
 
 		this.draggableCanvas.dim().mod().pos(pos).flush();
 	}
@@ -199,7 +234,8 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 
 		button.dim().mod().pos(pos).flush();
 
-		this.nodes.put(node, button);
+		this.nodeToButton.put(node, button);
+		this.buttonToNode.put(button, node);
 
 		this.draggableCanvas.context().addChildren(button);
 
@@ -209,9 +245,10 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 
 	private void removeNode(INode<DATA, LINK> node)
 	{
-		this.draggableCanvas.context().removeChild(this.nodes.get(node));
+		this.draggableCanvas.context().removeChild(this.nodeToButton.get(node));
 
-		this.nodes.remove(node);
+		BUTTON button = this.nodeToButton.remove(node);
+		this.buttonToNode.remove(button);
 
 		this.listeners.forEach((l) -> l.onRemoveNode(this, node));
 	}
@@ -235,12 +272,24 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 	@Override
 	public void build()
 	{
-		this.draggableCanvas = new GuiElement(Dim2D.build().width(this.dim().width()).height(this.dim().height()).flush(), false);
+		this.draggableCanvas = new GuiElement(Dim2D.flush(), false);
+
+		if (!this.draggableCanvas.dim().containsModifier("area"))
+		{
+			this.draggableCanvas.dim().add(new RectModifier("area", this, RectModifier.ModifierType.AREA.getModification(), RectModifier.ModifierType.AREA));
+		}
+
+		this.invalidRenderer.state().setZOrder(5);
+
+		if (!this.invalidRenderer.dim().containsModifier("area"))
+		{
+			this.invalidRenderer.dim().add(new RectModifier("area", this, RectModifier.ModifierType.AREA.getModification(), RectModifier.ModifierType.AREA));
+		}
 
 		this.refreshCanvasDropdownElements();
 		this.refreshRightClickNodeElements(null);
 
-		this.context().addChildren(this.draggableCanvas);
+		this.context().addChildren(this.draggableCanvas, this.invalidRenderer);
 
 		this.state().setCanBeTopHoverElement(true);
 
@@ -332,7 +381,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 			this.movingButton.dim().mod().x(mouseX - this.movingButtonOffsetX).y(mouseY - this.movingButtonOffsetY).flush();
 		}
 
-		for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
+		for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodeToButton.entrySet())
 		{
 			INode<DATA, LINK> node = entry.getKey();
 			BUTTON button = entry.getValue();
@@ -341,7 +390,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 			{
 				for (INode<DATA, LINK> child : node.getTree().get(node.getChildrenIds()))
 				{
-					BUTTON childB = this.nodes.get(child);
+					BUTTON childB = this.nodeToButton.get(child);
 
 					if (childB != null)
 					{
@@ -405,7 +454,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 
 		if (this.isLinkingNodes)
 		{
-			BUTTON button = this.nodes.get(this.interactedNode);
+			BUTTON button = this.nodeToButton.get(this.interactedNode);
 
 			if (button != null)
 			{
@@ -474,7 +523,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 
 		boolean aNodeIsHovered = false;
 
-		for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
+		for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodeToButton.entrySet())
 		{
 			INode<DATA, LINK> node = entry.getKey();
 			BUTTON button = entry.getValue();
@@ -548,7 +597,7 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 		}
 		else
 		{
-			if (!this.nodes.isEmpty() && !aNodeIsHovered)
+			if (!this.nodeToButton.isEmpty() && !aNodeIsHovered)
 			{
 				this.lastScreenPos = Pos2D.flush(this.draggableCanvas.dim().originalState().x(), this.draggableCanvas.dim().originalState().y());
 				this.leftClickLocation = Pos2D.flush(mx + this.draggableCanvas.dim().x(), my + this.draggableCanvas.dim().y());
@@ -616,26 +665,6 @@ public class GuiTree<DATA, LINK, BUTTON extends GuiElement> extends GuiElement
 	@Override
 	public void onPostDraw(GuiElement element)
 	{
-		if (this.state().isVisible())
-		{
-			for (Map.Entry<INode<DATA, LINK>, BUTTON> entry : this.nodes.entrySet())
-			{
-				INode<DATA, LINK> node = entry.getKey();
-				BUTTON button = entry.getValue();
 
-				if (!this.nodeValidator.apply(node))
-				{
-					GlStateManager.pushMatrix();
-
-					GuiFrameUtils.applyAlpha(this.state());
-
-					this.viewer().mc().getTextureManager().bindTexture(CROSS);
-
-					GuiTexture.drawModalRectWithCustomSizedTexture(button.dim().x(), button.dim().y(), 0, 0, 9, 9, 9, 9);
-
-					GlStateManager.popMatrix();
-				}
-			}
-		}
 	}
 }

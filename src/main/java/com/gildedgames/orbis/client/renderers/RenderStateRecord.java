@@ -21,7 +21,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class RenderStateRecord implements IWorldRenderer, IPositionRecordListener<IBlockState>
+public class RenderStateRecord implements IWorldRenderer, IPositionRecordListener<IBlockState>, IFocusedRender
 {
 	private final IPositionRecord<IBlockState> stateRecord;
 
@@ -75,13 +75,14 @@ public class RenderStateRecord implements IWorldRenderer, IPositionRecordListene
 		this.pendingChunksToUpdate.clear();
 	}
 
+	@Override
 	public void setFocused(boolean focused)
 	{
 		for (IWorldRenderer r : this.subRenderers)
 		{
-			if (r instanceof RenderStateRecordChunk)
+			if (r instanceof IFocusedRender)
 			{
-				RenderStateRecordChunk c = (RenderStateRecordChunk) r;
+				IFocusedRender c = (IFocusedRender) r;
 
 				c.setFocused(focused);
 			}

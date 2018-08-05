@@ -16,6 +16,8 @@ import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionType
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeSphere;
 import com.gildedgames.orbis.common.tiles.OrbisTileEntities;
 import com.gildedgames.orbis.common.util.ColoredRegion;
+import com.gildedgames.orbis.common.variables.GuiVarProjectFile;
+import com.gildedgames.orbis.common.variables.post_resolve_actions.PostResolveActionApplyLootTable;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
 import com.gildedgames.orbis.common.world_actions.impl.*;
@@ -23,6 +25,7 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis_api.IOHelper;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
@@ -34,7 +37,6 @@ import com.gildedgames.orbis_api.data.management.impl.DataCache;
 import com.gildedgames.orbis_api.data.management.impl.DataCachePool;
 import com.gildedgames.orbis_api.network.INetworkMultipleParts;
 import com.gildedgames.orbis_api.util.io.IClassSerializer;
-import com.gildedgames.orbis_api.util.io.Instantiator;
 import com.gildedgames.orbis_api.util.io.SimpleSerializer;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
 import net.minecraft.block.state.IBlockState;
@@ -252,31 +254,34 @@ public class OrbisCore
 	{
 		final IClassSerializer s = new SimpleSerializer("orbis");
 
-		s.register(0, RenderShape.class, new Instantiator<>(RenderShape.class));
-		s.register(1, WorldRegion.class, new Instantiator<>(WorldRegion.class));
-		s.register(2, Blueprint.class, new Instantiator<>(Blueprint.class));
-		s.register(3, SelectionTypeCuboid.class, new Instantiator<>(SelectionTypeCuboid.class));
-		s.register(4, SelectionTypeSphere.class, new Instantiator<>(SelectionTypeSphere.class));
-		s.register(5, SelectionTypeLine.class, new Instantiator<>(SelectionTypeLine.class));
-		s.register(6, Text.class, new Instantiator<>(Text.class));
-		s.register(7, WorldShape.class, new Instantiator<>(WorldShape.class));
-		s.register(8, BlueprintDataPalette.class, new Instantiator<>(BlueprintDataPalette.class));
-		s.register(9, ColoredRegion.class, new Instantiator<>(ColoredRegion.class));
-		s.register(10, Framework.class, new Instantiator<>(Framework.class));
-		s.register(11, BlueprintNode.class, new Instantiator<>(BlueprintNode.class));
-		s.register(12, OrbisInstance.class, new Instantiator<>(OrbisInstance.class));
+		IOHelper.register(s, 0, RenderShape.class);
+		IOHelper.register(s, 1, WorldRegion.class);
+		IOHelper.register(s, 2, Blueprint.class);
+		IOHelper.register(s, 3, SelectionTypeCuboid.class);
+		IOHelper.register(s, 4, SelectionTypeSphere.class);
+		IOHelper.register(s, 5, SelectionTypeLine.class);
+		IOHelper.register(s, 6, Text.class);
+		IOHelper.register(s, 7, WorldShape.class);
+		IOHelper.register(s, 8, BlueprintDataPalette.class);
+		IOHelper.register(s, 9, ColoredRegion.class);
+		IOHelper.register(s, 10, Framework.class);
+		IOHelper.register(s, 11, BlueprintNode.class);
+		IOHelper.register(s, 12, OrbisInstance.class);
 
-		s.register(13, WorldActionPathway.class, new Instantiator<>(WorldActionPathway.class));
-		s.register(14, WorldActionAddWorldObject.class, new Instantiator<>(WorldActionAddWorldObject.class));
-		s.register(15, WorldActionAddEntrance.class, new Instantiator<>(WorldActionAddEntrance.class));
-		s.register(16, WorldActionAddSchedule.class, new Instantiator<>(WorldActionAddSchedule.class));
-		s.register(17, WorldActionFilter.class, new Instantiator<>(WorldActionFilter.class));
-		s.register(18, WorldActionBlueprint.class, new Instantiator<>(WorldActionBlueprint.class));
-		s.register(19, WorldActionBlockDataContainer.class, new Instantiator<>(WorldActionBlockDataContainer.class));
-		s.register(20, WorldActionBlueprintPalette.class, new Instantiator<>(WorldActionBlueprintPalette.class));
-		s.register(21, WorldActionAddBlueprint.class, new Instantiator<>(WorldActionAddBlueprint.class));
-		s.register(22, WorldActionBlueprintStacker.class, new Instantiator<>(WorldActionBlueprintStacker.class));
-		s.register(23, WorldActionFilterMultiple.class, new Instantiator<>(WorldActionFilterMultiple.class));
+		IOHelper.register(s, 13, WorldActionPathway.class);
+		IOHelper.register(s, 14, WorldActionAddWorldObject.class);
+		IOHelper.register(s, 15, WorldActionAddEntrance.class);
+		IOHelper.register(s, 16, WorldActionAddSchedule.class);
+		IOHelper.register(s, 17, WorldActionFilter.class);
+		IOHelper.register(s, 18, WorldActionBlueprint.class);
+		IOHelper.register(s, 19, WorldActionBlockDataContainer.class);
+		IOHelper.register(s, 20, WorldActionBlueprintPalette.class);
+		IOHelper.register(s, 21, WorldActionAddBlueprint.class);
+		IOHelper.register(s, 22, WorldActionBlueprintStacker.class);
+		IOHelper.register(s, 23, WorldActionFilterMultiple.class);
+
+		IOHelper.register(s, 24, PostResolveActionApplyLootTable.class);
+		IOHelper.register(s, 25, GuiVarProjectFile.class);
 
 		OrbisAPI.services().io().register(s);
 	}

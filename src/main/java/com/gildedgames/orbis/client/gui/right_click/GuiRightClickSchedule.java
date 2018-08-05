@@ -22,6 +22,8 @@ public class GuiRightClickSchedule extends GuiViewer
 	{
 		super(new GuiElement(Dim2D.flush(), false), null);
 
+		this.setDrawDefaultBackground(false);
+
 		this.blueprint = blueprint;
 		this.schedule = schedule;
 	}
