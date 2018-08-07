@@ -58,6 +58,8 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 {
 	private static final ResourceLocation CONTAINER = OrbisCore.getResource("generic/container.png");
 
+	private static int CHOSEN_TREE_INDEX = 0;
+
 	private final ISchedule schedule;
 
 	private GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> conditionTree;
@@ -641,8 +643,10 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 		this.subTreeViewer.setTrees(
 				new TextComponentTranslation("orbis.gui.selected", ""),
-				Pair.of(new TextComponentTranslation("orbis.gui.conditions"), this.conditionTree),
-				Pair.of(new TextComponentTranslation("orbis.gui.post_resolve_actions"), this.postResolveActionTree));
+				Pair.of(new TextComponentTranslation("orbis.gui.post_resolve_actions"), this.postResolveActionTree),
+				Pair.of(new TextComponentTranslation("orbis.gui.conditions"), this.conditionTree));
+
+		this.subTreeViewer.setTreeIndex(CHOSEN_TREE_INDEX);
 
 		this.conditionTree.reset(this.schedule.getConditionGuiPos());
 
@@ -699,6 +703,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 		super.onGuiClosed();
 
 		this.varDisplay.updateVariableData();
+		CHOSEN_TREE_INDEX = this.subTreeViewer.getTreeIndex();
 	}
 
 	@Override

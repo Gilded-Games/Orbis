@@ -108,3 +108,6 @@ orbis.gui.choose_project_file=Choose Project File
 orbis.gui.loot_table=Loot Table File
 
 orbis.gui.apply_loot_table=Apply Loot Table
+
+orbis.gui.custom_rotation=Custom Rotation
+orbis.gui.rotation_degrees=Rotation (In Degrees)

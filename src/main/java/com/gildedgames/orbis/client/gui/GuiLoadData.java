@@ -114,7 +114,6 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 	@Override
 	public void build(IGuiContext context)
 	{
-		//TODO:
 		this.getViewing().dim().mod().width(179 * 2).height(169).x(this.width / 2 - 90 - (176 / 2)).y(this.height / 2 - (147 / 2) + 12).flush();
 
 		this.directoryViewer = new GuiDirectoryViewer(Pos2D.build().addX(80).addY(61).flush(),

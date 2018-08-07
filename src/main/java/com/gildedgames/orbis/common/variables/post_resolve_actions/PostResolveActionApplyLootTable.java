@@ -15,6 +15,7 @@ import com.gildedgames.orbis_api.data.schedules.ScheduleRegion;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Collections;
@@ -116,7 +117,7 @@ public class PostResolveActionApplyLootTable implements IPostResolveAction, IDat
 	}
 
 	@Override
-	public List<IBakedPosAction> bakeActions(IRegion bounds, Random rand)
+	public List<IBakedPosAction> bakeActions(IRegion bounds, Random rand, Rotation rotation)
 	{
 		if (this.lootTableChooser.getData() == null)
 		{

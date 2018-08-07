@@ -83,6 +83,29 @@ public class GuiSelectableTree extends GuiElement
 		this.context().addChildren(tree);
 	}
 
+	public int getTreeIndex()
+	{
+		int selectedTreeIndex = 0;
+
+		for (int i = 0; i < this.managedTrees.size(); i++)
+		{
+			Pair<ITextComponent, GuiTree> pair = this.managedTrees.get(i);
+
+			if (pair.getRight() == this.currentTree)
+			{
+				selectedTreeIndex = i;
+				break;
+			}
+		}
+
+		return selectedTreeIndex;
+	}
+
+	public void setTreeIndex(int index)
+	{
+		this.dropdown.setChosenElement(this.dropdown.getList().getElements().get(index));
+	}
+
 	public void setTrees(ITextComponent text, Pair<ITextComponent, GuiTree>... trees)
 	{
 		int selectedTreeIndex = 0;
