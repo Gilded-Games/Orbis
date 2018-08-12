@@ -167,12 +167,12 @@ public class OrbisDeveloperEventsClient
 					playerOrbis.powers().setScheduling(!playerOrbis.powers().isScheduling());
 				}*/
 
-				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindIncreaseReach.getKeyCode()))
+				if (OrbisKeyBindings.keyBindIncreaseReach.isPressed() || (OrbisKeyBindings.keyBindIncreaseReach.isKeyDown() && Keyboard.isRepeatEvent()))
 				{
 					playerOrbis.setDeveloperReach(reach + 1);
 				}
 
-				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindDecreaseReach.getKeyCode()))
+				if (OrbisKeyBindings.keyBindDecreaseReach.isPressed() || (OrbisKeyBindings.keyBindDecreaseReach.isKeyDown() && Keyboard.isRepeatEvent()))
 				{
 					playerOrbis.setDeveloperReach(reach - 1);
 				}
