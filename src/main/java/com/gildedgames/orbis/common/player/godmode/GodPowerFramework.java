@@ -76,37 +76,35 @@ public class GodPowerFramework implements IGodPower
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && !pos.equals(this.getPrevPlacingPos()) && playerOrbis
 				.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower())
 		{
-			IShape shape = WorldObjectUtils.getIntersectingShape(player.getEntityWorld(), pos);
+			WorldObjectUtils.getIntersectingShape(player.getEntityWorld(), pos)
+					.filter(Framework.class::isInstance)
+					.map(Framework.class::cast)
+					.ifPresent(framework -> {
+						FrameworkNode node;
 
-			if (shape instanceof Framework)
-			{
-				Framework framework = (Framework) shape;
+						if (data == null)
+						{
+							node = new FrameworkNode(new BlueprintNode(palette));
+						}
+						else
+						{
+							node = new FrameworkNode(new BlueprintNode(data));
+						}
 
-				FrameworkNode node;
+						BlockPos nonRelative = node.getBounds().getMin().toImmutable();
 
-				if (data == null)
-				{
-					node = new FrameworkNode(new BlueprintNode(palette));
-				}
-				else
-				{
-					node = new FrameworkNode(new BlueprintNode(data));
-				}
+						int xDif = -framework.getPos().getX() - (data != null ? data.getWidth() / 2 : palette.getLargestDim().getWidth() / 2);
+						int yDif = -framework.getPos().getY();
+						int zDif = -framework.getPos().getZ() - (data != null ? data.getLength() / 2 : palette.getLargestDim().getLength() / 2);
 
-				BlockPos nonRelative = node.getBounds().getMin().toImmutable();
+						BlockPos relativePos = pos.add(xDif, yDif, zDif);
 
-				int xDif = -framework.getPos().getX() - (data != null ? data.getWidth() / 2 : palette.getLargestDim().getWidth() / 2);
-				int yDif = -framework.getPos().getY();
-				int zDif = -framework.getPos().getZ() - (data != null ? data.getLength() / 2 : palette.getLargestDim().getLength() / 2);
+						this.prevPlacingPos = relativePos;
 
-				BlockPos relativePos = pos.add(xDif, yDif, zDif);
+						RegionHelp.translate(node.getBounds(), relativePos);
 
-				this.prevPlacingPos = relativePos;
-
-				RegionHelp.translate(node.getBounds(), relativePos);
-
-				OrbisCore.network().sendPacketToServer(new PacketAddNode(framework, node, nonRelative));
-			}
+						OrbisCore.network().sendPacketToServer(new PacketAddNode(framework, node, nonRelative));
+					});
 		}
 	}
 

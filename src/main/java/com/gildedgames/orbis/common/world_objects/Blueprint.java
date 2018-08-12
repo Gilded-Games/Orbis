@@ -14,6 +14,7 @@ import com.gildedgames.orbis_api.data.region.IColored;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.*;
+import com.gildedgames.orbis_api.util.RegionHelp;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.util.mc.NBT;
 import com.gildedgames.orbis_api.world.IWorldObject;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -163,30 +165,14 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		return null;
 	}
 
-	public ISchedule findIntersectingSchedule(BlockPos pos)
+	public Optional<ISchedule> findIntersectingSchedule(BlockPos pos)
 	{
 		if (this.getCurrentScheduleLayerNode() == null)
 		{
-			return null;
+			return Optional.empty();
 		}
 
-		for (ISchedule r : this.getCurrentScheduleLayerNode().getData().getScheduleRecord().getSchedules(ISchedule.class))
-		{
-			int minX = r.getBounds().getMin().getX() + this.getPos().getX();
-			int minY = r.getBounds().getMin().getY() + this.getPos().getY();
-			int minZ = r.getBounds().getMin().getZ() + this.getPos().getZ();
-
-			int maxX = minX + r.getBounds().getWidth() - 1;
-			int maxY = minY + r.getBounds().getHeight() - 1;
-			int maxZ = minZ + r.getBounds().getLength() - 1;
-
-			if (pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY && pos.getZ() >= minZ && pos.getZ() <= maxZ)
-			{
-				return r;
-			}
-		}
-
-		return null;
+		return RegionHelp.findIntersecting(this.getCurrentScheduleLayerNode().getData().getScheduleRecord().getSchedules(ISchedule.class),this.getPos(),pos);
 	}
 
 	private void checkScheduleLayerExists()

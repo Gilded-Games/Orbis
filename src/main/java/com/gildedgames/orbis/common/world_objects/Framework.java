@@ -24,6 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Framework extends AbstractRegion implements IWorldObject, IColored, IMutableRegion, IRotateable, IFrameworkDataListener
 {
@@ -101,7 +102,8 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 		return nodes;
 	}
 
-	public IFrameworkNode findIntersectingNode(BlockPos pos)
+	// this one might just stay this way
+	public Optional<IFrameworkNode> findIntersectingNode(BlockPos pos)
 	{
 		for (Map.Entry<Pair<Integer, IFrameworkNode>, BlockPos> entry : this.data.getNodeToPosMap().entrySet())
 		{
@@ -118,11 +120,11 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 
 			if (pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY && pos.getZ() >= minZ && pos.getZ() <= maxZ)
 			{
-				return node;
+				return Optional.of(node);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@Override

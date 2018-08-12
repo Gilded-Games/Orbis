@@ -9,6 +9,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.Objects;
+
 @Mod.EventBusSubscriber()
 public class ItemsOrbis
 {
@@ -20,8 +22,6 @@ public class ItemsOrbis
 
 	public static final ItemBlueprintPalette blueprint_palette = new ItemBlueprintPalette();
 
-	public static final ItemEntity entity_item = new ItemEntity();
-
 	public static final ItemFramework framework = new ItemFramework();
 
 	public static final ItemBlueprintStacker blueprint_stacker = new ItemBlueprintStacker();
@@ -31,13 +31,12 @@ public class ItemsOrbis
 	{
 		final ItemRegistryHelper items = new ItemRegistryHelper(event.getRegistry());
 
-		items.register("blueprint", blueprint.setCreativeTab(null));
-		items.register("block_chunk", block_chunk.setCreativeTab(null));
-		items.register("block_palette", block_palette.setCreativeTab(null));
-		items.register("blueprint_palette", blueprint_palette.setCreativeTab(null));
-		items.register("framework", framework.setCreativeTab(null));
-		items.register("blueprint_stacker", blueprint_stacker.setCreativeTab(null));
-		//items.register("entity_item", entity_item.setCreativeTab(ENTITY_TAB));
+		items.register("blueprint", blueprint);
+		items.register("block_chunk", block_chunk);
+		items.register("block_palette", block_palette);
+		items.register("blueprint_palette", blueprint_palette);
+		items.register("framework", framework);
+		items.register("blueprint_stacker", blueprint_stacker);
 	}
 
 	private static class ItemRegistryHelper
@@ -65,7 +64,7 @@ public class ItemsOrbis
 
 		private void register(final ItemBlock item)
 		{
-			item.setRegistryName(item.getBlock().getRegistryName());
+			item.setRegistryName(Objects.requireNonNull(item.getBlock().getRegistryName()));
 			item.setUnlocalizedName(item.getBlock().getUnlocalizedName());
 			this.registry.register(item);
 		}

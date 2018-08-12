@@ -46,16 +46,10 @@ public class OrbisGuiHandler implements IGuiHandler
 			case EDIT_SCHEDULE_REGION:
 				return new ContainerGeneric();
 			case POST_GEN:
-				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-				if (shape instanceof Blueprint)
-				{
-					Blueprint blueprint = (Blueprint) shape;
-
-					return new ContainerEditBlueprintPostGen(playerOrbis, blueprint);
-				}
-
-				return null;
+				return WorldObjectUtils.getIntersectingShape(world, pos)
+						.filter(Blueprint.class::isInstance)
+						.map(Blueprint.class::cast)
+						.map(blueprint -> new ContainerEditBlueprintPostGen(playerOrbis,blueprint)).orElse(null);
 			default:
 				return null;
 		}
@@ -74,29 +68,16 @@ public class OrbisGuiHandler implements IGuiHandler
 			case LOAD_DATA:
 				return new GuiLoadData(null, playerOrbis);
 			case EDIT_SCHEDULE_REGION:
-				IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-				if (shape instanceof Blueprint)
-				{
-					Blueprint blueprint = (Blueprint) shape;
-
-					ISchedule schedule = blueprint.findIntersectingSchedule(pos);
-
-					return new GuiEditScheduledRegion(null, blueprint, schedule);
-				}
-				return null;
+				return WorldObjectUtils.getIntersectingShape(world, pos)
+						.filter(Blueprint.class::isInstance)
+						.map(Blueprint.class::cast)
+						.map(blueprint -> blueprint.findIntersectingSchedule(pos).map(schedule -> new GuiEditScheduledRegion(null,blueprint,schedule)).orElse(null)).orElse(null);
 			case POST_GEN:
-				shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-				if (shape instanceof Blueprint)
-				{
-					Blueprint blueprint = (Blueprint) shape;
-					GuiScreen screen = FMLClientHandler.instance().getClient().currentScreen;
-
-					return new GuiEditBlueprintPostGen(screen instanceof GuiViewer ? (GuiViewer) screen : null, blueprint);
-				}
-
-				return null;
+				GuiScreen screen = FMLClientHandler.instance().getClient().currentScreen;
+				return WorldObjectUtils.getIntersectingShape(world, pos)
+						.filter(Blueprint.class::isInstance)
+						.map(Blueprint.class::cast)
+						.map(blueprint -> new GuiEditBlueprintPostGen(screen instanceof GuiViewer? (GuiViewer)screen:null, blueprint)).orElse(null);
 			default:
 				return null;
 		}

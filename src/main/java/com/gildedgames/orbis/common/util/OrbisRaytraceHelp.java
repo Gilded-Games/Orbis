@@ -9,6 +9,7 @@ import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.util.RegionHelp;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.block.state.IBlockState;
@@ -24,6 +25,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OrbisRaytraceHelp
 {
@@ -31,46 +33,22 @@ public class OrbisRaytraceHelp
 	public static final LocateWithPos<IShape> WORLD_OBJECT_LOCATOR = (world, pos, prevPos) -> WorldObjectUtils.getIntersectingShape(world, pos);
 
 	public static final LocateWithPos<IFrameworkNode> FRAMEWORK_NODE_LOCATOR = (world, pos, prevPos) ->
-	{
-		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-		if (shape instanceof Framework)
-		{
-			Framework framework = (Framework) shape;
-
-			return framework.findIntersectingNode(pos);
-		}
-
-		return null;
-	};
+			WorldObjectUtils.getIntersectingShape(world, pos)
+					.filter(Framework.class::isInstance)
+					.map(Framework.class::cast)
+					.flatMap(f -> f.findIntersectingNode(pos));
 
 	public static final LocateWithPos<ISchedule> SCHEDULE_LOCATOR = (world, pos, prevPos) ->
-	{
-		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-		if (shape instanceof Blueprint)
-		{
-			Blueprint blueprint = (Blueprint) shape;
-
-			return blueprint.findIntersectingSchedule(pos);
-		}
-
-		return null;
-	};
+			WorldObjectUtils.getIntersectingShape(world, pos)
+					.filter(Blueprint.class::isInstance)
+					.map(Blueprint.class::cast)
+					.flatMap(b -> b.findIntersectingSchedule(pos));
 
 	public static final LocateWithPos<Entrance> ENTRANCE_LOCATOR = (world, pos, prevPos) ->
-	{
-		IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-
-		if (shape instanceof Blueprint)
-		{
-			Blueprint blueprint = (Blueprint) shape;
-
-			return blueprint.findIntersectingEntrance(pos);
-		}
-
-		return null;
-	};
+			WorldObjectUtils.getIntersectingShape(world, pos)
+					.filter(Blueprint.class::isInstance)
+					.map(Blueprint.class::cast)
+					.flatMap(b -> RegionHelp.findIntersecting(b.getData().entrances(), b.getPos(), pos));
 
 	private static final List<Class<? extends IWorldObject>> blueprintClass;
 
@@ -83,20 +61,7 @@ public class OrbisRaytraceHelp
 	private static <T> T locate(World world, final BlockPos pos,
 			final Vec3d endPosition, BlockPos prevPos, final RaytraceAction<T> action, LocateWithPos<T> shapeLocator)
 	{
-		final T foundRegion = shapeLocator.locate(world, pos, prevPos);
-
-		final T result;
-
-		if (foundRegion != null)
-		{
-			result = action.onLocate(foundRegion, pos, endPosition);
-		}
-		else
-		{
-			result = action.onNotLocate(pos, endPosition);
-		}
-
-		return result;
+		return shapeLocator.locate(world, pos, prevPos).map(foundRegion -> action.onLocate(foundRegion,pos,endPosition)).orElse(action.onNotLocate(pos,endPosition));
 	}
 
 	public static double getFinalExtendedReach(final EntityPlayer player, double currentReach)
@@ -180,40 +145,40 @@ public class OrbisRaytraceHelp
 		RayTraceResult blockRaytrace = raytraceLocateObject(player, startPos, endPos,
 				(world, pos, prevPos) ->
 				{
-					IShape shape = WorldObjectUtils.getIntersectingShape(world, pos);
-					IShape prevShape = WorldObjectUtils.getIntersectingShape(world, prevPos);
+					Optional<RayTraceResult> result = WorldObjectUtils.getIntersectingShape(world, pos)
+							.filter(Blueprint.class::isInstance)
+							.map(Blueprint.class::cast)
+							.flatMap(blueprint -> {
+								if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayerNode() != null)
+								{
+									IBlockState state = blueprint.getCurrentScheduleLayerNode().getData().getStateRecord()
+											.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
+													pos.getZ() - blueprint.getMin().getZ());
 
-					if (shape instanceof Blueprint)
+									if (state != null)
+									{
+										return Optional.of(new RayTraceResult(player, new Vec3d(pos)));
+									}
+								}
+								return Optional.empty();
+							});
+					if (!result.isPresent())
 					{
-						Blueprint blueprint = (Blueprint) shape;
-
-						if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayerNode() != null)
-						{
-							IBlockState state = blueprint.getCurrentScheduleLayerNode().getData().getStateRecord()
-									.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
-											pos.getZ() - blueprint.getMin().getZ());
-
-							if (state != null)
-							{
-								return new RayTraceResult(player, new Vec3d(pos));
-							}
-						}
+						result = WorldObjectUtils.getIntersectingShape(world, prevPos)
+								.filter(Blueprint.class::isInstance)
+								.map(Blueprint.class::cast)
+								.map(blueprint -> {
+									if (blueprint.contains(prevPos))
+									{
+										return new RayTraceResult(player, new Vec3d(prevPos));
+									}
+									return null;
+								});
 					}
 
-					if (prevShape instanceof Blueprint)
-					{
-						Blueprint blueprint = (Blueprint) prevShape;
-
-						if (blueprint.contains(prevPos))
-						{
-							if (shape != blueprint)
-							{
-								return new RayTraceResult(player, new Vec3d(prevPos));
-							}
-						}
-					}
-
-					return world.getBlockState(pos) != Blocks.AIR.getDefaultState() ? new RayTraceResult(player, new Vec3d(pos)) : null;
+					if (result.isPresent())
+						return result;
+					return Optional.ofNullable(world.getBlockState(pos) != Blocks.AIR.getDefaultState() ? new RayTraceResult(player, new Vec3d(pos)) : null);
 				});
 
 		RayTraceResult result = Keyboard.isKeyDown(OrbisKeyBindings.keyBindControl.getKeyCode()) ?
@@ -420,7 +385,7 @@ public class OrbisRaytraceHelp
 
 	public interface LocateWithPos<T>
 	{
-		T locate(World world, BlockPos pos, BlockPos prevPos);
+		Optional<T> locate(World world, BlockPos pos, BlockPos prevPos);
 	}
 
 	public static class RaytraceAction<T>
