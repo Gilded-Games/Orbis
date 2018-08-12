@@ -13,9 +13,11 @@ import com.gildedgames.orbis_api.data.management.IDataMetadata;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -145,6 +147,11 @@ public class ItemFramework extends Item implements ModelRegisterCallback, ItemSt
 
 			}
 		}
+	}
+
+	@Override
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+	{
 	}
 
 	@Override

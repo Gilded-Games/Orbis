@@ -16,10 +16,12 @@ import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -78,6 +80,11 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 		event.getModelRegistry().putObject(new ModelResourceLocation(OrbisCore.MOD_ID + ":block_palette", "inventory"), dummyModel);
 	}
 
+	@Override
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+	{
+	}
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModel()
@@ -89,6 +96,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBlockPaletteRenderer.DummyTile.class, tesr);
 		dummyModel = tesr.baked;
 
+		//TODO: Replace with TileEntityItemStackRenderer, instead of a tile entity hack
 		ForgeHooksClient.registerTESRItemStack(this, 0, TileEntityBlockPaletteRenderer.DummyTile.class);
 	}
 
@@ -111,6 +119,15 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
 
+		powerReplacement(playerOrbis, layer);
+
+		final BlockFilter filter = new BlockFilter(layer);
+
+		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
+	}
+
+	private void powerReplacement(PlayerOrbis playerOrbis, BlockFilterLayer layer)
+	{
 		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getReplacePower())
 		{
 			layer.setFilterType(BlockFilterType.ALL_EXCEPT);
@@ -124,10 +141,6 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 			layer.setRequiredBlocks(layer.getReplacementBlocks());
 			layer.setReplacementBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
 		}
-
-		final BlockFilter filter = new BlockFilter(layer);
-
-		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
 	}
 
 	@Override
@@ -137,19 +150,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
 
-		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getReplacePower())
-		{
-			layer.setFilterType(BlockFilterType.ALL_EXCEPT);
-
-			layer.setRequiredBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
-		}
-		else if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getDeletePower())
-		{
-			layer.setFilterType(BlockFilterType.ONLY);
-
-			layer.setRequiredBlocks(layer.getReplacementBlocks());
-			layer.setReplacementBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
-		}
+		powerReplacement(playerOrbis, layer);
 
 		final BlockFilter filter = new BlockFilter(layer);
 

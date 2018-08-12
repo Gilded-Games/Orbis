@@ -12,10 +12,13 @@ import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.data.management.IDataCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -102,6 +105,10 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1))
 				&& playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
 		{
+			if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+				return;
+			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
@@ -112,6 +119,11 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 				playerOrbis.getWorldActionLog().track(world, new WorldActionBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
 			}
 		}
+	}
+
+	@Override
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+	{
 	}
 
 	@Override

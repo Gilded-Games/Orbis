@@ -13,9 +13,12 @@ import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -102,6 +105,11 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 	}
 
 	@Override
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+	{
+	}
+
+	@Override
 	public boolean getShareTag()
 	{
 		return true;
@@ -127,6 +135,11 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && stacker != null && playerOrbis.powers().getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
+
+			if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+				return;
+			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
