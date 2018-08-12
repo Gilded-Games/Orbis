@@ -162,19 +162,6 @@ public class OrbisRaytraceHelp
 								}
 								return Optional.empty();
 							});
-					if (!result.isPresent())
-					{
-						result = WorldObjectUtils.getIntersectingShape(world, prevPos)
-								.filter(Blueprint.class::isInstance)
-								.map(Blueprint.class::cast)
-								.map(blueprint -> {
-									if (blueprint.contains(prevPos))
-									{
-										return new RayTraceResult(player, new Vec3d(prevPos));
-									}
-									return null;
-								});
-					}
 
 					if (result.isPresent())
 						return result;
