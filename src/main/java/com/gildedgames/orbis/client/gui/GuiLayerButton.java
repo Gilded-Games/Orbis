@@ -20,13 +20,21 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 {
 	public static final ResourceLocation TICK_BOX_EYE = OrbisCore.getResource("layer_gui/tick_box_eye.png");
 
+	public static final ResourceLocation TICK_BOX_EYE_SELECTED = OrbisCore.getResource("layer_gui/tick_box_eye_selected.png");
+
 	private GuiTickBox hidden;
 
 	private INode<IScheduleLayer, LayerLink> scheduleNode;
 
-	public GuiLayerButton(Rect rect, INode<IScheduleLayer, LayerLink> scheduleNode)
+	private GuiLayerEditor editor;
+
+	private boolean selected,previousState;
+
+	public GuiLayerButton(GuiLayerEditor editor, Rect rect, INode<IScheduleLayer, LayerLink> scheduleNode)
 	{
 		super(rect);
+
+		this.editor = editor;
 
 		this.scheduleNode = scheduleNode;
 
@@ -44,6 +52,11 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 
 		this.hidden.listenOnPress((ticked) ->
 		{
+			if (selected && !ticked)
+			{
+				this.hidden.setTicked(true);
+				return;
+			}
 			this.scheduleNode.getData().setVisible(ticked);
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
@@ -58,10 +71,26 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 				}
 			}
 		});
-
 		this.context().addChildren(this.hidden);
 
 		this.state().setCanBeTopHoverElement(true);
+	}
+
+	public void setSelected(boolean flag)
+	{
+		if (!flag)
+		{
+			selected = false;
+			this.hidden.setTicked(previousState);
+			this.hidden.setTickedTexture(TICK_BOX_EYE);
+		}
+		else
+		{
+			selected = true;
+			previousState = this.hidden.isTicked();
+			this.hidden.setTicked(true);
+			this.hidden.setTickedTexture(TICK_BOX_EYE_SELECTED);
+		}
 	}
 
 	@Override

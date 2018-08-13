@@ -259,7 +259,7 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 				},
 				(n) ->
 				{
-					GuiLayerButton button = new GuiLayerButton(
+					GuiLayerButton button = new GuiLayerButton(this,
 							Dim2D.build().width(25 + this.fontRenderer.getStringWidth(n.getData().getOptions().getDisplayNameVar().getData())).height(20)
 									.flush(), n);
 
@@ -419,7 +419,7 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 		this.blueprintVariablesTree = new GuiTree<>(Dim2D.build().width(184).height(86).x(8).y(27).flush(), (nodeId) ->
 		{
 			NodeMultiParented<BlueprintVariable, NBT> node = new NodeMultiParented<>(
-					new BlueprintVariable(new GuiVarInteger("orbis.gui.value"), "V" + String.valueOf(nodeId)), true,
+					new BlueprintVariable<>(new GuiVarInteger("orbis.gui.value"), "V" + String.valueOf(nodeId)), true,
 					false);
 
 			node.setNodeId(nodeId);
@@ -512,12 +512,16 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 					OrbisCore.LOGGER.error("Layer index is -1 while trying to click on a node in GuiSaveData.");
 				}
 
+				if (currentSelectedLayerNode != null)
+				{
+					tree.getButtonFromNode(GuiLayerEditor.this.currentSelectedLayerNode).setSelected(false);
+				}
 				GuiLayerEditor.this.currentSelectedNode = node;
 				GuiLayerEditor.this.currentSelectedLayerNode = node;
 				GuiLayerEditor.this.currentSelectedConditionNode = null;
 				GuiLayerEditor.this.currentSelectedVariableNode = null;
 				GuiLayerEditor.this.currentSelectedPostResolveActionNode = null;
-
+				tree.getButtonFromNode(currentSelectedLayerNode).setSelected(true);
 				GuiLayerEditor.this.variablesHeader.setTitle(new TextComponentTranslation("orbis.gui.variables", String
 						.valueOf(node.getData().getOptions().getDisplayNameVar().getData())));
 			}
@@ -1156,6 +1160,36 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 		}
 
 		super.keyTyped(typedChar, keyCode);
+	}
+
+	public IScheduleLayer getCurrentSelectedLayer()
+	{
+		return currentSelectedLayer;
+	}
+
+	public INode getCurrentSelectedNode()
+	{
+		return currentSelectedNode;
+	}
+
+	public INode<IScheduleLayer, LayerLink> getCurrentSelectedLayerNode()
+	{
+		return currentSelectedLayerNode;
+	}
+
+	public INode<IGuiCondition, ConditionLink> getCurrentSelectedConditionNode()
+	{
+		return currentSelectedConditionNode;
+	}
+
+	public INode<BlueprintVariable, NBT> getCurrentSelectedVariableNode()
+	{
+		return currentSelectedVariableNode;
+	}
+
+	public INode<IPostResolveAction, NBT> getCurrentSelectedPostResolveActionNode()
+	{
+		return currentSelectedPostResolveActionNode;
 	}
 
 	@Override
