@@ -136,6 +136,9 @@ public class OrbisRaytraceHelp
 	{
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 
+		if (playerOrbis == null)
+			return null;
+
 		final double reach = playerOrbis.getDeveloperReach();
 		Vec3d lookVec = player.getLookVec();
 
@@ -145,32 +148,46 @@ public class OrbisRaytraceHelp
 		RayTraceResult blockRaytrace = raytraceLocateObject(player, startPos, endPos,
 				(world, pos, prevPos) ->
 				{
-					Optional<RayTraceResult> result = WorldObjectUtils.getIntersectingShape(world, pos)
-							.filter(Blueprint.class::isInstance)
-							.map(Blueprint.class::cast)
-							.flatMap(blueprint -> {
-								if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayerNode() != null)
-								{
-									IBlockState state = blueprint.getCurrentScheduleLayerNode().getData().getStateRecord()
-											.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
-													pos.getZ() - blueprint.getMin().getZ());
+					IShape shape = WorldObjectUtils.getIntersectingShape(world, pos).orElse(null);
+					IShape prevShape = WorldObjectUtils.getIntersectingShape(world, prevPos).orElse(null);
 
-									if (state != null)
-									{
-										return Optional.of(new RayTraceResult(player, new Vec3d(pos)));
-									}
-								}
-								return Optional.empty();
-							});
+					if (shape instanceof Blueprint)
+					{
+						Blueprint blueprint = (Blueprint) shape;
 
-					if (result.isPresent())
-						return result;
-					return Optional.ofNullable(world.getBlockState(pos) != Blocks.AIR.getDefaultState() ? new RayTraceResult(player, new Vec3d(pos)) : null);
+						if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayerNode() != null)
+						{
+							IBlockState state = blueprint.getCurrentScheduleLayerNode().getData().getStateRecord()
+									.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
+											pos.getZ() - blueprint.getMin().getZ());
+
+							if (state != null)
+							{
+								return Optional.of(new RayTraceResult(player, new Vec3d(pos)));
+							}
+						}
+					}
+
+					if (prevShape instanceof Blueprint)
+					{
+						Blueprint blueprint = (Blueprint) prevShape;
+
+						if (blueprint.contains(prevPos))
+						{
+							if (shape != blueprint)
+							{
+								return Optional.of(new RayTraceResult(player, new Vec3d(prevPos)));
+							}
+						}
+
+					}
+					return world.getBlockState(pos) != Blocks.AIR.getDefaultState() ?
+							Optional.of(new RayTraceResult(player, new Vec3d(pos))) :
+							Optional.empty();
 				});
 
-		RayTraceResult result = Keyboard.isKeyDown(OrbisKeyBindings.keyBindControl.getKeyCode()) ?
-				new RayTraceResult(player, endPos) :
-				blockRaytrace != null ? blockRaytrace : new RayTraceResult(player, endPos);
+		RayTraceResult result = OrbisKeyBindings.keyBindControl.isKeyDown() ?
+				new RayTraceResult(player, endPos) : blockRaytrace != null ? blockRaytrace : new RayTraceResult(player, endPos);
 
 		Vec3d clampedVec = new Vec3d(MathHelper.floor(result.hitVec.x),
 				Math.max(player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS ? 1 : 0, MathHelper.floor(result.hitVec.y)),
