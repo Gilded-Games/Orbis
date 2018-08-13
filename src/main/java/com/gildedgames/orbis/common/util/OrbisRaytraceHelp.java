@@ -21,7 +21,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,39 +147,28 @@ public class OrbisRaytraceHelp
 		RayTraceResult blockRaytrace = raytraceLocateObject(player, startPos, endPos,
 				(world, pos, prevPos) ->
 				{
-					IShape shape = WorldObjectUtils.getIntersectingShape(world, pos).orElse(null);
-					IShape prevShape = WorldObjectUtils.getIntersectingShape(world, prevPos).orElse(null);
+					Optional<Blueprint> shape = WorldObjectUtils.getIntersectingShape(world, pos, Blueprint.class);
+					Optional<Blueprint> prevShape = WorldObjectUtils.getIntersectingShape(world, prevPos, Blueprint.class);
 
-					if (shape instanceof Blueprint)
-					{
-						Blueprint blueprint = (Blueprint) shape;
-
+					Optional<RayTraceResult> result = shape.flatMap(blueprint -> {
 						if (blueprint.contains(pos) && blueprint.getCurrentScheduleLayerNode() != null)
 						{
 							IBlockState state = blueprint.getCurrentScheduleLayerNode().getData().getStateRecord()
 									.get(pos.getX() - blueprint.getMin().getX(), pos.getY() - blueprint.getMin().getY(),
 											pos.getZ() - blueprint.getMin().getZ());
-
-							if (state != null)
-							{
-								return Optional.of(new RayTraceResult(player, new Vec3d(pos)));
-							}
+							return state == null ? Optional.empty() : Optional.of(new RayTraceResult(player, new Vec3d(pos)));
 						}
-					}
+						return Optional.empty();
+					});
+					if (result.isPresent())
+						return result;
 
-					if (prevShape instanceof Blueprint)
-					{
-						Blueprint blueprint = (Blueprint) prevShape;
+					result = prevShape.flatMap(blueprint ->
+							shape.flatMap(current -> current != blueprint ? Optional.of(new RayTraceResult(player, new Vec3d(prevPos))) : Optional.empty())
+					);
+					if (result.isPresent())
+						return result;
 
-						if (blueprint.contains(prevPos))
-						{
-							if (shape != blueprint)
-							{
-								return Optional.of(new RayTraceResult(player, new Vec3d(prevPos)));
-							}
-						}
-
-					}
 					return world.getBlockState(pos) != Blocks.AIR.getDefaultState() ?
 							Optional.of(new RayTraceResult(player, new Vec3d(pos))) :
 							Optional.empty();
