@@ -26,9 +26,9 @@ public class OrbisKeyBindings
 
 	public static KeyBinding keyBindRedo = new KeyBinding("keybindings.redo", Keyboard.KEY_Y, "key.categories.misc");
 
-	public static KeyBinding keyBindIncreaseReach = new KeyBinding("keybindings.increaseReach", Keyboard.KEY_ADD, "key.categories.misc");
+	public static KeyBinding keyBindIncreaseReach = new KeyBinding("keybindings.increaseReach", Keyboard.KEY_LBRACKET, "key.categories.misc");
 
-	public static KeyBinding keyBindDecreaseReach = new KeyBinding("keybindings.decreaseReach", Keyboard.KEY_SUBTRACT, "key.categories.misc");
+	public static KeyBinding keyBindDecreaseReach = new KeyBinding("keybindings.decreaseReach", Keyboard.KEY_RBRACKET, "key.categories.misc");
 
 	public static void init()
 	{
