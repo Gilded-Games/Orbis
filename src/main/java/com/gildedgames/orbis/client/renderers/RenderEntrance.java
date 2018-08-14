@@ -8,6 +8,7 @@ import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -30,10 +31,12 @@ public class RenderEntrance implements IWorldRenderer
 	private RenderShape renderShape;
 
 	private Region bb;
+	private IWorldObject parent;
 
 	public RenderEntrance(IWorldObject parentObject, final Entrance entrance)
 	{
 		this.entrance = entrance;
+		this.parent=parentObject;
 
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -41,7 +44,6 @@ public class RenderEntrance implements IWorldRenderer
 		try
 		{
 			this.bb = new Region(this.entrance.getBounds());
-			this.bb.add(parentObject.getPos());
 
 			this.renderShape = new RenderShape(this.bb);
 
@@ -116,12 +118,18 @@ public class RenderEntrance implements IWorldRenderer
 	public void preRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
 	{
 
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(
+				parent.getPos().getX(),
+				parent.getPos().getY(),
+				parent.getPos().getZ()
+		);
 	}
 
 	@Override
 	public void postRenderSub(IWorldRenderer sub, World world, float partialTicks, boolean useCamera)
 	{
-
+		GlStateManager.popMatrix();
 	}
 
 	@Override
