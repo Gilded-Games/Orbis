@@ -164,7 +164,9 @@ public class OrbisRaytraceHelp
 						return result;
 
 					result = prevShape.flatMap(blueprint ->
-							shape.flatMap(current -> current != blueprint ? Optional.of(new RayTraceResult(player, new Vec3d(prevPos))) : Optional.empty())
+							shape.map(current -> current != blueprint).orElse(true) ?
+									Optional.of(new RayTraceResult(player, new Vec3d(prevPos))) :
+									Optional.empty()
 					);
 					if (result.isPresent())
 						return result;
