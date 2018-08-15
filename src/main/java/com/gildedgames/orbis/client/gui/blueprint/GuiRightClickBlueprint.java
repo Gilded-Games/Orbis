@@ -24,6 +24,8 @@ public class GuiRightClickBlueprint extends GuiViewer
 	{
 		super(new GuiElement(Dim2D.flush(), false), null);
 
+		this.setDrawDefaultBackground(false);
+
 		this.blueprint = blueprint;
 	}
 
