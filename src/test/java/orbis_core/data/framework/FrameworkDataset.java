@@ -6,8 +6,6 @@ import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.framework.FrameworkEdge;
 import com.gildedgames.orbis_api.data.framework.FrameworkNode;
 import com.gildedgames.orbis_api.data.framework.Graph;
-import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayUtil;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.pathway.PathwayData;
 import com.gildedgames.orbis_api.data.region.Region;
 import net.minecraft.util.math.BlockPos;
@@ -39,9 +37,9 @@ public class FrameworkDataset
 
 	private static void addEntrance(BlueprintData b, PathwayData pathway, Region region)
 	{
-		Region br = new Region(new BlockPos(0, 0, 0), new BlockPos(b.getWidth() - 1, b.getHeight() - 1, b.getLength() - 1));
+		/*Region br = new Region(new BlockPos(0, 0, 0), new BlockPos(b.getWidth() - 1, b.getHeight() - 1, b.getLength() - 1));
 
-		b.addEntrance(new Entrance(region, pathway, PathwayUtil.sidesOfConnection(br, region)));
+		b.addEntrance(new Entrance(region, pathway, PathwayUtil.sideOfConnection(br, region)));*/
 	}
 
 	public static FrameworkData framework1()
@@ -91,10 +89,12 @@ public class FrameworkDataset
 
 		int amt_nodes = random.nextInt(140) + 1;
 		List<FrameworkNode> nodes = new ArrayList<>();
+
 		for (int i = 0; i < amt_nodes; i++)
 		{
 			nodes.add(frameworkData.addNode(BlueprintDataset.randomSchedule(random, pathway), null).getValue());
 		}
+
 		List<FrameworkNode> connectedNodes = new ArrayList<>();
 		Graph<FrameworkNode, FrameworkEdge> graph = frameworkData.getGraph();
 		for (FrameworkNode n1 : nodes)
@@ -108,7 +108,7 @@ public class FrameworkDataset
 				while (true)
 				{
 					FrameworkNode n2 = connectedNodes.get(random.nextInt(connectedNodes.size()));
-					if (graph.edgesOf(n2).size() < n2.maxEdges())
+					if (graph.edgesOf(n2).size() < n2.getMaxEdges())
 					{
 						frameworkData.addEdge(n1, n2);
 						connectedNodes.add(n1);
@@ -124,8 +124,8 @@ public class FrameworkDataset
 			{
 				if (n1 != n2
 						&& frameworkData.edgeAt(n1, n2) == null
-						&& graph.edgesOf(n1).size() < n1.maxEdges()
-						&& graph.edgesOf(n2).size() < n2.maxEdges())
+						&& graph.edgesOf(n1).size() < n1.getMaxEdges()
+						&& graph.edgesOf(n2).size() < n2.getMaxEdges())
 				{
 					if (random.nextFloat() < probability)
 					{

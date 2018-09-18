@@ -10,7 +10,7 @@ item.orbis.blueprint_stacker.name=Blueprint Stacker
 block.orbis.orbis_floor.name=Orbis Floor
 
 # Commands
-gameMode.developer=Developer Mode
+gameMode.designer=Designer Mode
 
 # Key Bindings
 keybindings.control=Control
@@ -111,3 +111,6 @@ orbis.gui.apply_loot_table=Apply Loot Table
 
 orbis.gui.custom_rotation=Custom Rotation
 orbis.gui.rotation_degrees=Rotation (In Degrees)
+
+orbis.gui.check_entrance_trigger_id=Check Entrance Trigger ID
+orbis.gui.trigger_id=Trigger ID

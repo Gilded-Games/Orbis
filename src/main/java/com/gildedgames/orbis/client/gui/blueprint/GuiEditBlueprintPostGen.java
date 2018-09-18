@@ -172,6 +172,8 @@ public class GuiEditBlueprintPostGen extends GuiViewer implements IListViewerLis
 			}
 		}
 
+		context.addChildren(this.layerViewer, inventory);
+
 		if (true)
 		{
 			List<Runnable> calls = Lists.newArrayList();
@@ -201,8 +203,6 @@ public class GuiEditBlueprintPostGen extends GuiViewer implements IListViewerLis
 			calls.forEach(Runnable::run);
 			calls.clear();
 		}
-
-		context.addChildren(this.layerViewer, inventory);
 	}
 
 	@Override

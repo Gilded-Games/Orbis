@@ -115,7 +115,12 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 		GlStateManager.popMatrix();
 	}
 
-	private void render(final World world, final IWorldRenderer renderer, final float partialTicks, final IRegion encompassing)
+	public void render(World world, IWorldRenderer renderer, float partialTicks)
+	{
+		this.render(world, renderer, partialTicks, null);
+	}
+
+	public void render(final World world, final IWorldRenderer renderer, final float partialTicks, final IRegion encompassing)
 	{
 		if (!renderer.isDisabled())
 		{
@@ -124,6 +129,7 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 
 			try
 			{
+				GlStateManager.pushMatrix();
 				renderer.preRenderAllSubs(world, partialTicks, true);
 
 				for (final IWorldRenderer sub : renderer.getSubRenderers(world))
@@ -136,13 +142,14 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 				}
 
 				renderer.postRenderAllSubs(world, partialTicks, true);
+				GlStateManager.popMatrix();
 			}
 			finally
 			{
 				w.unlock();
 			}
 
-			if (RegionHelp.intersects2D(renderer.getBoundingBox(), encompassing))
+			if (encompassing == null || RegionHelp.intersects2D(renderer.getBoundingBox(), encompassing))
 			{
 				renderer.render(world, partialTicks, true);
 			}

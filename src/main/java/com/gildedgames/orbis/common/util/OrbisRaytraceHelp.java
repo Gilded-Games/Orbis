@@ -6,7 +6,7 @@ import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
 import com.gildedgames.orbis_api.util.RegionHelp;
@@ -43,7 +43,7 @@ public class OrbisRaytraceHelp
 					.map(Blueprint.class::cast)
 					.flatMap(b -> b.findIntersectingSchedule(pos));
 
-	public static final LocateWithPos<Entrance> ENTRANCE_LOCATOR = (world, pos, prevPos) ->
+	public static final LocateWithPos<IEntrance> ENTRANCE_LOCATOR = (world, pos, prevPos) ->
 			WorldObjectUtils.getIntersectingShape(world, pos)
 					.filter(Blueprint.class::isInstance)
 					.map(Blueprint.class::cast)
@@ -60,7 +60,8 @@ public class OrbisRaytraceHelp
 	private static <T> T locate(World world, final BlockPos pos,
 			final Vec3d endPosition, BlockPos prevPos, final RaytraceAction<T> action, LocateWithPos<T> shapeLocator)
 	{
-		return shapeLocator.locate(world, pos, prevPos).map(foundRegion -> action.onLocate(foundRegion,pos,endPosition)).orElse(action.onNotLocate(pos,endPosition));
+		return shapeLocator.locate(world, pos, prevPos).map(foundRegion -> action.onLocate(foundRegion, pos, endPosition))
+				.orElse(action.onNotLocate(pos, endPosition));
 	}
 
 	public static double getFinalExtendedReach(final EntityPlayer player, double currentReach)
@@ -136,7 +137,9 @@ public class OrbisRaytraceHelp
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 
 		if (playerOrbis == null)
+		{
 			return null;
+		}
 
 		final double reach = playerOrbis.getDeveloperReach();
 		Vec3d lookVec = player.getLookVec();
@@ -161,7 +164,9 @@ public class OrbisRaytraceHelp
 						return Optional.empty();
 					});
 					if (result.isPresent())
+					{
 						return result;
+					}
 
 					result = prevShape.flatMap(blueprint ->
 							shape.map(current -> current != blueprint).orElse(true) ?
@@ -169,7 +174,9 @@ public class OrbisRaytraceHelp
 									Optional.empty()
 					);
 					if (result.isPresent())
+					{
 						return result;
+					}
 
 					return world.getBlockState(pos) != Blocks.AIR.getDefaultState() ?
 							Optional.of(new RayTraceResult(player, new Vec3d(pos))) :

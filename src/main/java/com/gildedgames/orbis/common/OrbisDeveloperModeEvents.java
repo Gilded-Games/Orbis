@@ -36,7 +36,7 @@ public class OrbisDeveloperModeEvents
 			final String gamemodeString = args[0];
 			boolean setsDeveloperMode = false;
 
-			if (gamemodeString.equals("developer"))
+			if (gamemodeString.equals("designer"))
 			{
 				setsDeveloperMode = true;
 			}
@@ -68,7 +68,7 @@ public class OrbisDeveloperModeEvents
 					PlayerOrbis.get(player).setDeveloperMode(true);
 					player.setGameType(GameType.CREATIVE);
 
-					final ITextComponent itextcomponent = new TextComponentTranslation("gameMode.developer", new Object[0]);
+					final ITextComponent itextcomponent = new TextComponentTranslation("gameMode.designer", new Object[0]);
 
 					event.setCanceled(true);
 

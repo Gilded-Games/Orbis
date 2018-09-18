@@ -9,7 +9,7 @@ import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintVariable;
 import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IColored;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -120,9 +121,10 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 		}
 	}
 
-	public Entrance findIntersectingEntrance(IShape s)
+	@Nonnull
+	public Optional<IEntrance> findIntersectingEntrance(IShape s)
 	{
-		for (Entrance e : this.getData().entrances())
+		for (IEntrance e : this.getData().entrances())
 		{
 			int minX = e.getBounds().getMin().getX() + this.getPos().getX();
 			int minY = e.getBounds().getMin().getY() + this.getPos().getY();
@@ -137,16 +139,17 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 			if (maxX >= r.getBoundingBox().getMin().getX() && minX <= r.getMax().getX() && maxY >= r.getMin().getY() && minY <= r.getMax().getY()
 					&& maxZ >= r.getMin().getZ() && minZ <= r.getMax().getZ())
 			{
-				return e;
+				return Optional.of(e);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
-	public Entrance findIntersectingEntrance(BlockPos pos)
+	@Nonnull
+	public Optional<IEntrance> findIntersectingEntrance(BlockPos pos)
 	{
-		for (Entrance e : this.getData().entrances())
+		for (IEntrance e : this.getData().entrances())
 		{
 			int minX = e.getBounds().getMin().getX() + this.getPos().getX();
 			int minY = e.getBounds().getMin().getY() + this.getPos().getY();
@@ -158,13 +161,14 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 
 			if (pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY && pos.getZ() >= minZ && pos.getZ() <= maxZ)
 			{
-				return e;
+				return Optional.of(e);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
+	@Nonnull
 	public Optional<ISchedule> findIntersectingSchedule(BlockPos pos)
 	{
 		if (this.getCurrentScheduleLayerNode() == null)
@@ -172,7 +176,7 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 			return Optional.empty();
 		}
 
-		return RegionHelp.findIntersecting(this.getCurrentScheduleLayerNode().getData().getScheduleRecord().getSchedules(ISchedule.class),this.getPos(),pos);
+		return RegionHelp.findIntersecting(this.getCurrentScheduleLayerNode().getData().getScheduleRecord().getSchedules(ISchedule.class), this.getPos(), pos);
 	}
 
 	private void checkScheduleLayerExists()
@@ -389,13 +393,13 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	}
 
 	@Override
-	public void onAddEntrance(Entrance entrance)
+	public void onAddEntrance(IEntrance entrance)
 	{
 		this.markDirty();
 	}
 
 	@Override
-	public void onRemoveEntrance(Entrance entrance)
+	public void onRemoveEntrance(IEntrance entrance)
 	{
 		this.markDirty();
 	}

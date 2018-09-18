@@ -514,7 +514,12 @@ public class GuiLayerEditor extends GuiViewer implements IDropdownHolder
 
 				if (currentSelectedLayerNode != null)
 				{
-					tree.getButtonFromNode(GuiLayerEditor.this.currentSelectedLayerNode).setSelected(false);
+					GuiLayerButton button = tree.getButtonFromNode(GuiLayerEditor.this.currentSelectedLayerNode);
+
+					if (button != null)
+					{
+						button.setSelected(false);
+					}
 				}
 				GuiLayerEditor.this.currentSelectedNode = node;
 				GuiLayerEditor.this.currentSelectedLayerNode = node;

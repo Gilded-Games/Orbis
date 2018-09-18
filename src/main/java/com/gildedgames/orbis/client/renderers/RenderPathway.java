@@ -1,18 +1,20 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.client.OrbisDeveloperEventsClient;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
+import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayNode;
+import com.gildedgames.orbis_api.data.framework.generation.searching.StepAStar;
 import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
@@ -36,16 +38,16 @@ public class RenderPathway implements IWorldRenderer
 
 	private Collection<BlueprintData> pieces;
 
-	private PathwayNode startingNode;
+	private StepAStar<PathwayNode> stepAStar;
 
 	private Map<BlueprintData, RenderBlueprintBlocks> pieceToRenderCache = Maps.newHashMap();
 
 	private IRegion pathwayRegion;
 
-	public RenderPathway(final Collection<BlueprintData> pieces, PathwayNode startingNode, IRegion pathwayRegion)
+	public RenderPathway(final Collection<BlueprintData> pieces, StepAStar<PathwayNode> stepAStar, IRegion pathwayRegion)
 	{
 		this.pieces = pieces;
-		this.startingNode = startingNode;
+		this.stepAStar = stepAStar;
 		this.pathwayRegion = pathwayRegion;
 	}
 
@@ -77,20 +79,18 @@ public class RenderPathway implements IWorldRenderer
 	@Override
 	public Object getRenderedObject()
 	{
-		return this.startingNode;
+		return this.stepAStar;
 	}
 
-	public void cachePieces(World world, float partialTicks, boolean useCamera)
+	public void cachePieces(World world)
 	{
 		for (BlueprintData piece : this.pieces)
 		{
 			Blueprint bp = new Blueprint(world, BlockPos.ORIGIN, piece);
 
-			RenderBlueprintBlocks render = new RenderBlueprintBlocks(bp, world);
+			RenderBlueprintBlocks render = new RenderBlueprintBlocks(bp, world, false);
 
 			render.shapeData = bp.createShapeData();
-
-			render.cacheRender(world, partialTicks, useCamera);
 
 			this.pieceToRenderCache.put(piece, render);
 		}
@@ -119,10 +119,12 @@ public class RenderPathway implements IWorldRenderer
 	{
 		if (this.pieceToRenderCache.isEmpty())
 		{
-			this.cachePieces(world, partialTicks, useCamera);
+			this.cachePieces(world);
 		}
 
-		if (this.startingNode == null)
+		GodPowerPathway p = PlayerOrbis.get(this.mc.player).powers().getPathwayPower();
+
+		if (this.stepAStar == null || p.getStepAStar() == null || p.getStepAStar().currentState() == null)
 		{
 			return;
 		}
@@ -138,7 +140,7 @@ public class RenderPathway implements IWorldRenderer
 			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);
 		}
 
-		for (PathwayNode n : this.startingNode.fullPath())
+		for (PathwayNode n : p.getStepAStar().currentState().fullPath())
 		{
 			GlStateManager.pushMatrix();
 
@@ -164,8 +166,8 @@ public class RenderPathway implements IWorldRenderer
 
 			GlStateManager.translate(n.getPos().getX(), n.getPos().getY(), n.getPos().getZ());
 
-			float oldMaxX = n.getMin().getX() + n.getBlockDataContainer().getWidth();
-			float oldMaxZ = n.getMin().getZ() + n.getBlockDataContainer().getLength();
+			float oldMaxX = n.getMax().getX();
+			float oldMaxZ = n.getMax().getZ();
 
 			float xDif = (n.getMax().getX() - oldMaxX) / 2.0F;
 			float zDif = Math.abs(n.getMax().getZ() - oldMaxZ) / 2.0F;
@@ -178,27 +180,6 @@ public class RenderPathway implements IWorldRenderer
 
 			GlStateManager.translate(-n.getWidth() / 2.0F, -n.getHeight() / 2.0F, -n.getLength() / 2.0F);
 
-			/*if (n.getRotation() == Rotation.CLOCKWISE_90)
-			{
-				GlStateManager.translate(1.0F, 0, 0.0F);
-			}
-
-			if (n.getRotation() == Rotation.COUNTERCLOCKWISE_90)
-			{
-				GlStateManager.translate(-1.0F, 0, -0.0F);
-			}*/
-
-			if (n.getRotation() == Rotation.CLOCKWISE_90)
-			{
-
-			}
-			else
-			{
-				int roundX = RotationHelp.getRounding(n.getWidth());
-				int roundZ = RotationHelp.getRounding(n.getLength());
-				//GlStateManager.translate(-roundX, 2, -roundZ);
-			}
-
 			RenderHelper.disableStandardItemLighting();
 
 			if (Minecraft.isAmbientOcclusionEnabled())
@@ -210,7 +191,9 @@ public class RenderPathway implements IWorldRenderer
 				GlStateManager.shadeModel(GL11.GL_FLAT);
 			}
 
-			GlStateManager.callList(render.getGlIndex());
+			GlStateManager.translate(offsetPlayerX, offsetPlayerY, offsetPlayerZ);
+
+			OrbisDeveloperEventsClient.CHUNK_RENDERER_MANAGER.render(world, render, partialTicks);
 
 			RenderHelper.enableStandardItemLighting();
 
@@ -246,7 +229,7 @@ public class RenderPathway implements IWorldRenderer
 	@Override
 	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
 	{
-		
+
 	}
 
 	@Override
@@ -258,9 +241,6 @@ public class RenderPathway implements IWorldRenderer
 	@Override
 	public void onRemoved()
 	{
-		for (RenderBlueprintBlocks render : this.pieceToRenderCache.values())
-		{
-			GlStateManager.glDeleteLists(render.getGlIndex(), 1);
-		}
+		this.pieceToRenderCache.clear();
 	}
 }

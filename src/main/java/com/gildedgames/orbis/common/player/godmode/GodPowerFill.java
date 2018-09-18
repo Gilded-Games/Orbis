@@ -16,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -41,7 +40,7 @@ public class GodPowerFill implements IGodPower
 			this.clientHandler = new GodPowerFillClient(this);
 		}
 
-		this.shapeSelector = new ShapeSelectorFilter(p -> new BlockFilter(BlockFilterHelper.getNewFillLayer(p.getHeldItem(EnumHand.MAIN_HAND))), false);
+		this.shapeSelector = new ShapeSelectorFilter(p -> new BlockFilter(BlockFilterHelper.getNewFillLayer(p.getHeldItemMainhand())), false);
 		this.stagedInventory = new StagedInventory<>(playerOrbis.getEntity(), () -> new InventoryBlockForge(playerOrbis.getEntity()),
 				m -> PlayerOrbis.get(m).powers().getFillPower().getStagedInventory(), "blockForge");
 	}

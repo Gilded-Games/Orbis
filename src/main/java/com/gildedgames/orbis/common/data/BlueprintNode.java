@@ -16,7 +16,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class BlueprintNode implements IFrameworkNode
 {
@@ -66,13 +65,13 @@ public class BlueprintNode implements IFrameworkNode
 	}
 
 	@Override
-	public List<BlueprintData> possibleValues(Random random)
+	public BlueprintData getBlueprintData()
 	{
-		return this.values;
+		return null;
 	}
 
 	@Override
-	public int maxEdges()
+	public int getMaxEdges()
 	{
 		return this.maxEntrances;
 	}

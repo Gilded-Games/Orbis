@@ -51,7 +51,7 @@ public class ShapeSelectorSelect implements IShapeSelector
 			{
 				for (BlockPos pos : shape.getShapeData())
 				{
-					if (b.findIntersectingSchedule(pos) != null)
+					if (b.findIntersectingSchedule(pos).isPresent())
 					{
 						return false;
 					}

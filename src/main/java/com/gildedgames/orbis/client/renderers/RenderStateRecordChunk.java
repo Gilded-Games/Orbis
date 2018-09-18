@@ -275,8 +275,8 @@ public class RenderStateRecordChunk implements IWorldRenderer, IFocusedRender
 
 		if (useCamera)
 		{
-			GlStateManager.translate(-0.005F, -0.005F, -0.005F);
-			GlStateManager.scale(1.01F, 1.01F, 1.01F);
+			//GlStateManager.translate(-0.005F, -0.005F, -0.005F);
+			//GlStateManager.scale(1.01F, 1.01F, 1.01F);
 			GodPowerBlueprint bp = PlayerOrbis.get(mc.player).powers().getBlueprintPower();
 
 			GlStateManager.translate(-offsetPlayerX, -offsetPlayerY, -offsetPlayerZ);

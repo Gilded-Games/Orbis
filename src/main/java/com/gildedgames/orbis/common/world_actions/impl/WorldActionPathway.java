@@ -4,8 +4,8 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
 import com.gildedgames.orbis_api.core.CreationData;
+import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
 import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
 import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayNode;
 import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayProblem;
@@ -55,7 +55,7 @@ public class WorldActionPathway implements IWorldAction
 		{
 			GodPowerPathway p = player.powers().getPathwayPower();
 
-			p.processPathway(player, this.start, this.end);
+			p.processPathway(player, this.start, this.end, true);
 
 			this.problem = p.getPathwayProblem();
 			this.stepAStar = p.getStepAStar();
@@ -68,7 +68,7 @@ public class WorldActionPathway implements IWorldAction
 		{
 			this.oldContent.add(Pair.of(n.getMin(), BlueprintHelper.fetchBlocksInside(n, world)));
 			BakedBlueprint baked = new BakedBlueprint(n.getData(),
-					new CreationData(world, player.getEntity()).pos(n.getMin()).rotation(n.getRotation()).placesAir(true));
+					new CreationData(world, player.getEntity()).pos(n.getMin()).rotation(n.getRotation()).placesAir(false));
 
 			baked.bake();
 

@@ -15,7 +15,7 @@ import com.gildedgames.orbis.common.world_actions.IWorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogClient;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -67,7 +67,7 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private ISchedule selectedSchedule;
 
-	private Entrance selectedEntrance;
+	private IEntrance selectedEntrance;
 
 	private OrbisInstance orbisInstance;
 
@@ -272,7 +272,7 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.selectedSchedule;
 	}
 
-	public Entrance getSelectedEntrance()
+	public IEntrance getSelectedEntrance()
 	{
 		return this.selectedEntrance;
 	}

@@ -99,7 +99,8 @@ public class RenderUtil
 		final BlockPos center = RegionHelp.getBottomCenter(region);
 
 		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		RenderUtil.renderLabel(string, -offsetPlayerX + center.getX(), -offsetPlayerY + region.getMax().getY() + yOffset, -offsetPlayerZ + center.getZ());
+		RenderUtil.renderLabel(string, -offsetPlayerX + center.getX() + 0.5F, -offsetPlayerY + region.getMax().getY() + yOffset,
+				-offsetPlayerZ + center.getZ() + 0.5F);
 	}
 
 	public static void renderDimensionsAbove(final IRegion region, final float partialTicks)

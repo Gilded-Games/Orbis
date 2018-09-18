@@ -20,7 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketSetTriggerId implements IMessage
+public class PacketSetScheduleTriggerId implements IMessage
 {
 
 	private IDataIdentifier id;
@@ -33,12 +33,12 @@ public class PacketSetTriggerId implements IMessage
 
 	private NBTFunnel funnel;
 
-	public PacketSetTriggerId()
+	public PacketSetScheduleTriggerId()
 	{
 
 	}
 
-	public PacketSetTriggerId(IDataIdentifier id, int layerId, int scheduleId, String triggerId)
+	public PacketSetScheduleTriggerId(IDataIdentifier id, int layerId, int scheduleId, String triggerId)
 	{
 		this.id = id;
 
@@ -48,7 +48,7 @@ public class PacketSetTriggerId implements IMessage
 		this.triggerId = triggerId;
 	}
 
-	public PacketSetTriggerId(Blueprint blueprint, ISchedule schedule, String triggerId)
+	public PacketSetScheduleTriggerId(Blueprint blueprint, ISchedule schedule, String triggerId)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
 
@@ -58,7 +58,7 @@ public class PacketSetTriggerId implements IMessage
 		this.triggerId = triggerId;
 	}
 
-	public PacketSetTriggerId(int worldObjectId, int layerId, int scheduleId, String triggerId)
+	public PacketSetScheduleTriggerId(int worldObjectId, int layerId, int scheduleId, String triggerId)
 	{
 		this.worldObjectId = worldObjectId;
 
@@ -96,10 +96,10 @@ public class PacketSetTriggerId implements IMessage
 		ByteBufUtils.writeTag(buf, tag);
 	}
 
-	public static class HandlerClient extends MessageHandlerClient<PacketSetTriggerId, IMessage>
+	public static class HandlerClient extends MessageHandlerClient<PacketSetScheduleTriggerId, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetTriggerId message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSetScheduleTriggerId message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -138,10 +138,10 @@ public class PacketSetTriggerId implements IMessage
 		}
 	}
 
-	public static class HandlerServer extends MessageHandlerServer<PacketSetTriggerId, IMessage>
+	public static class HandlerServer extends MessageHandlerServer<PacketSetScheduleTriggerId, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSetTriggerId message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSetScheduleTriggerId message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -180,12 +180,12 @@ public class PacketSetTriggerId implements IMessage
 						if (message.id == null)
 						{
 							OrbisCore.network().sendPacketToAllPlayers(
-									new PacketSetTriggerId(message.worldObjectId, message.layerId, message.scheduleId, message.triggerId));
+									new PacketSetScheduleTriggerId(message.worldObjectId, message.layerId, message.scheduleId, message.triggerId));
 						}
 						else
 						{
 							OrbisCore.network()
-									.sendPacketToAllPlayers(new PacketSetTriggerId(message.id, message.layerId, message.scheduleId, message.triggerId));
+									.sendPacketToAllPlayers(new PacketSetScheduleTriggerId(message.id, message.layerId, message.scheduleId, message.triggerId));
 						}
 					}
 				}

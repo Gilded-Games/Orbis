@@ -43,7 +43,7 @@ public class CreationDataOrbis extends CreationData
 
 		if (this.schedules())
 		{
-			return WorldObjectUtils.getIntersectingShape(this.getWorld(), pos) != null;
+			return WorldObjectUtils.getIntersectingShape(this.getWorld(), pos).isPresent();
 		}
 
 		return true;

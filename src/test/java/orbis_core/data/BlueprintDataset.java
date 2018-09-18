@@ -2,8 +2,6 @@ package orbis_core.data;
 
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayUtil;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
 import com.gildedgames.orbis_api.data.pathway.PathwayData;
 import com.gildedgames.orbis_api.data.region.Region;
 import net.minecraft.util.math.BlockPos;
@@ -69,8 +67,8 @@ public class BlueprintDataset
 			Region r = new Region(new BlockPos(x, y, z), new BlockPos(x, y + 1, z));
 			Region br = new Region(new BlockPos(0, 0, 0), new BlockPos(blueprint.getWidth() - 1, blueprint.getHeight() - 1, blueprint.getLength() - 1));
 
-			Entrance e = new Entrance(r, pathway, PathwayUtil.sidesOfConnection(br, r));
-			blueprint.addEntrance(e);
+			//Entrance e = new Entrance(r, pathway, PathwayUtil.sideOfConnection(br, r));
+			//blueprint.addEntrance(e);
 		}
 		return new ScheduleData(b);
 	}

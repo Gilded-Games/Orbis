@@ -67,7 +67,7 @@ public class NetworkingOrbis
 				Side.SERVER);
 		network.reg(PacketRemoveSchedule.HandlerServer.class, PacketRemoveSchedule.class,
 				Side.SERVER);
-		network.reg(PacketSetTriggerId.HandlerServer.class, PacketSetTriggerId.class,
+		network.reg(PacketSetScheduleTriggerId.HandlerServer.class, PacketSetScheduleTriggerId.class,
 				Side.SERVER);
 		network.reg(PacketSetScheduleLayerOptions.HandlerServer.class, PacketSetScheduleLayerOptions.class,
 				Side.SERVER);
@@ -114,6 +114,9 @@ public class NetworkingOrbis
 
 		network.reg(PacketBlueprintScheduleLayerGuiPos.HandlerServer.class, PacketBlueprintScheduleLayerGuiPos.class, Side.SERVER);
 
+		network.reg(PacketSetEntranceTriggerId.HandlerServer.class, PacketSetEntranceTriggerId.class,
+				Side.SERVER);
+
 		// C L I E N T
 		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);
 		network.reg(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, Side.CLIENT);
@@ -142,7 +145,7 @@ public class NetworkingOrbis
 				Side.CLIENT);
 		network.reg(PacketRemoveSchedule.HandlerClient.class, PacketRemoveSchedule.class,
 				Side.CLIENT);
-		network.reg(PacketSetTriggerId.HandlerClient.class, PacketSetTriggerId.class,
+		network.reg(PacketSetScheduleTriggerId.HandlerClient.class, PacketSetScheduleTriggerId.class,
 				Side.CLIENT);
 		network.reg(PacketSetScheduleLayerOptions.HandlerClient.class, PacketSetScheduleLayerOptions.class,
 				Side.CLIENT);
@@ -158,6 +161,9 @@ public class NetworkingOrbis
 		network.reg(PacketBlueprintPostgenReplaceLayerChanges.HandlerClient.class, PacketBlueprintPostgenReplaceLayerChanges.class, Side.CLIENT);
 
 		network.reg(PacketBlueprintScheduleLayerGuiPos.HandlerClient.class, PacketBlueprintScheduleLayerGuiPos.class, Side.CLIENT);
+
+		network.reg(PacketSetEntranceTriggerId.HandlerClient.class, PacketSetEntranceTriggerId.class,
+				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());
 	}

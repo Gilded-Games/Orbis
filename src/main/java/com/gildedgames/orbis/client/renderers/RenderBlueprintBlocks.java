@@ -6,7 +6,7 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.core.tree.LayerLink;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.util.mc.BlockUtil;
@@ -15,12 +15,16 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -63,11 +67,18 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 
 	private BlockPos lastMin;
 
-	private int glIndex = -1;
-
 	private Rotation lastRotation;
 
-	public RenderBlueprintBlocks(final Blueprint blueprint, final World world)
+	private CachedRender cachedBlocks;
+
+	private boolean hasResetBlockCache;
+
+	public RenderBlueprintBlocks(Blueprint blueprint, World world)
+	{
+		this(blueprint, world, true);
+	}
+
+	public RenderBlueprintBlocks(final Blueprint blueprint, final World world, boolean displayEntrances)
 	{
 		this.blockRenderer = this.mc.getBlockRendererDispatcher();
 		this.blueprint = blueprint;
@@ -99,10 +110,13 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 			w.unlock();
 		}
 
-		this.blueprint.getData().entrances().forEach(this::cacheEntrance);
+		if (displayEntrances)
+		{
+			this.blueprint.getData().entrances().forEach(this::cacheEntrance);
+		}
 	}
 
-	private void cacheEntrance(Entrance entrance)
+	private void cacheEntrance(IEntrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -158,71 +172,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	public Object getRenderedObject()
 	{
 		return this.blueprint;
-	}
-
-	public void cacheRender(final World world, final float partialTicks, boolean useCamera)
-	{
-		if (!this.renderBlocks)
-		{
-			return;
-		}
-
-		GlStateManager.pushMatrix();
-
-		this.glIndex = GLAllocation.generateDisplayLists(1);
-		GlStateManager.glNewList(this.glIndex, GL11.GL_COMPILE);
-
-		final Tessellator tessellator = Tessellator.getInstance();
-		final BufferBuilder buffer = tessellator.getBuffer();
-
-		this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.enableBlend();
-
-		if (Minecraft.isAmbientOcclusionEnabled())
-		{
-			GlStateManager.shadeModel(GL11.GL_SMOOTH);
-		}
-		else
-		{
-			GlStateManager.shadeModel(GL11.GL_FLAT);
-		}
-
-		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-
-		for (final BlockPos pos : this.shapeData)
-		{
-			this.renderPos(pos, buffer);
-		}
-
-		buffer.setTranslation(0, 0, 0);
-
-		tessellator.draw();
-
-		RenderHelper.enableStandardItemLighting();
-
-		/** TODO: Temp disabled te rendering because of strange bug when holding a blueprint and loading a world first time**/
-		/*final int pass = net.minecraftforge.client.MinecraftForgeClient.getRenderPass();
-
-		TileEntityRendererDispatcher.instance.preDrawBatch();
-
-		*//** Render tile entities separately since they're done on their own
-	 * draw call with the tesselator **//*
-		for (final BlockPos min : this.shapeData)
-		{
-			this.renderTileEntityIfPossible(min, partialTicks, pass);
-		}
-
-		TileEntityRendererDispatcher.instance.drawBatch(pass);*/
-
-		GlStateManager.glEndList();
-
-		RenderHelper.enableStandardItemLighting();
-
-		GlStateManager.popMatrix();
-
-		this.render(world, partialTicks, useCamera);
 	}
 
 	private void renderTileEntityIfPossible(final BlockPos pos, final float partialTicks, final int pass)
@@ -288,11 +237,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 		return this.lock;
 	}
 
-	public int getGlIndex()
-	{
-		return this.glIndex;
-	}
-
 	@Override
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
@@ -301,17 +245,25 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 			this.lastRotation = this.blueprint.getRotation();
 		}
 
-		if (this.lastMin == null || this.glIndex == -1)
+		if (this.lastMin == null || this.cachedBlocks == null || this.hasResetBlockCache)
 		{
 			this.lastMin = this.blueprint.getMin();
 			this.shapeData = BlockPos.getAllInBoxMutable(BlockPos.ORIGIN,
 					this.blueprint.getMax().add(-this.blueprint.getMin().getX(), -this.blueprint.getMin().getY(), -this.blueprint.getMin().getZ()));
+
+			this.hasResetBlockCache = false;
 		}
 
-		if (this.glIndex == -1)
+		if (this.cachedBlocks == null)
 		{
-			this.cacheRender(world, partialTicks, useCamera);
-			return;
+			this.cachedBlocks = new CachedRender(DefaultVertexFormats.BLOCK,
+					(VertexFormat format, BufferBuilder buffer, World theWorld, float thePartialTicks) ->
+					{
+						for (final BlockPos pos : this.shapeData)
+						{
+							this.renderPos(pos, buffer);
+						}
+					});
 		}
 
 		final double offsetPlayerX = this.mc.player.lastTickPosX + (this.mc.player.posX - this.mc.player.lastTickPosX) * partialTicks;
@@ -333,7 +285,26 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 			RenderUtil.rotateRender(this.blueprint, bp.getPlacingRotation());
 		}
 
-		GlStateManager.callList(this.glIndex);
+		if (this.renderBlocks)
+		{
+			this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GlStateManager.enableBlend();
+
+			if (Minecraft.isAmbientOcclusionEnabled())
+			{
+				GlStateManager.shadeModel(GL11.GL_SMOOTH);
+			}
+			else
+			{
+				GlStateManager.shadeModel(GL11.GL_FLAT);
+			}
+
+			this.cachedBlocks.render(world, partialTicks);
+
+			RenderHelper.enableStandardItemLighting();
+		}
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -374,10 +345,6 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 	@Override
 	public void onRemoved()
 	{
-		if (this.glIndex != -1)
-		{
-			GLAllocation.deleteDisplayLists(this.glIndex, 1);
-			this.glIndex = -1;
-		}
+
 	}
 }

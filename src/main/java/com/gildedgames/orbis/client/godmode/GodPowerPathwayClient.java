@@ -104,9 +104,9 @@ public class GodPowerPathwayClient implements IGodPowerClient
 				{
 					GodPowerPathway p = playerOrbis.powers().getPathwayPower();
 
-					p.processPathway(playerOrbis, input.getSelectPos(), endPos);
+					p.processPathway(playerOrbis, input.getSelectPos(), endPos, true);
 
-					this.renderPathway = new RenderPathway(p.getActivePieces(playerOrbis), p.getStepAStar().currentState(),
+					this.renderPathway = new RenderPathway(p.getActivePieces(playerOrbis), p.getStepAStar(),
 							p.getPathwayProblem().getBoundingBox());
 				}
 			}

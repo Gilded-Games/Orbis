@@ -9,7 +9,7 @@ import com.gildedgames.orbis_api.data.framework.generation.FDGDEdge;
 import com.gildedgames.orbis_api.data.framework.generation.FDGDNode;
 import com.gildedgames.orbis_api.data.framework.generation.FailedToGenerateException;
 import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayNode;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.util.RegionHelp;
@@ -208,7 +208,7 @@ public class FrameworkDebug
 			{
 				this.glDrawRegion(fragment, 0.5f, 0.5f, 1.0f);
 
-				for (Entrance e : RotationHelp.getEntrances(fragment.getData(), fragment.getRotation(), RegionHelp.getCenter(fragment)))
+				for (IEntrance e : RotationHelp.getEntrances(fragment.getData(), fragment.getRotation(), RegionHelp.getCenter(fragment)))
 				{
 					float x = e.getBounds().getMin().getX(), z = e.getBounds().getMin().getZ();
 					float maxX = e.getBounds().getMax().getX(), maxZ = e.getBounds().getMax().getZ();
@@ -300,7 +300,7 @@ public class FrameworkDebug
 		this.glDrawRegion(n.getRegionForBlueprint(), 0.5f, 0.5f, 1.0f);
 		if (this.showEntrances)
 		{
-			for (Entrance e : n.getEntrances(n.getRotation()))
+			for (IEntrance e : n.getEntrances(n.getRotation()))
 			{
 				float x = e.getBounds().getMin().getX(), z = e.getBounds().getMin().getZ();
 				float maxX = e.getBounds().getMax().getX(), maxZ = e.getBounds().getMax().getZ();

@@ -2,14 +2,13 @@ package com.gildedgames.orbis.common.network;
 
 import com.gildedgames.orbis.client.gui.GuiLoadData;
 import com.gildedgames.orbis.client.gui.blueprint.GuiEditBlueprintPostGen;
+import com.gildedgames.orbis.client.gui.entrance.GuiEditEntrance;
 import com.gildedgames.orbis.client.gui.schedules.GuiEditScheduledRegion;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerEditBlueprintPostGen;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.data.schedules.ISchedule;
 import com.gildedgames.orbis_api.util.mc.ContainerGeneric;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.gui.GuiScreen;
@@ -32,6 +31,8 @@ public class OrbisGuiHandler implements IGuiHandler
 
 	public static final int POST_GEN = 3;
 
+	public static final int EDIT_ENTRANCE = 4;
+
 	@Override
 	public Container getServerGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z)
 	{
@@ -49,7 +50,9 @@ public class OrbisGuiHandler implements IGuiHandler
 				return WorldObjectUtils.getIntersectingShape(world, pos)
 						.filter(Blueprint.class::isInstance)
 						.map(Blueprint.class::cast)
-						.map(blueprint -> new ContainerEditBlueprintPostGen(playerOrbis,blueprint)).orElse(null);
+						.map(blueprint -> new ContainerEditBlueprintPostGen(playerOrbis, blueprint)).orElse(null);
+			case EDIT_ENTRANCE:
+				return new ContainerGeneric();
 			default:
 				return null;
 		}
@@ -71,13 +74,20 @@ public class OrbisGuiHandler implements IGuiHandler
 				return WorldObjectUtils.getIntersectingShape(world, pos)
 						.filter(Blueprint.class::isInstance)
 						.map(Blueprint.class::cast)
-						.map(blueprint -> blueprint.findIntersectingSchedule(pos).map(schedule -> new GuiEditScheduledRegion(null,blueprint,schedule)).orElse(null)).orElse(null);
+						.map(blueprint -> blueprint.findIntersectingSchedule(pos).map(schedule -> new GuiEditScheduledRegion(null, blueprint, schedule))
+								.orElse(null)).orElse(null);
+			case EDIT_ENTRANCE:
+				return WorldObjectUtils.getIntersectingShape(world, pos)
+						.filter(Blueprint.class::isInstance)
+						.map(Blueprint.class::cast)
+						.map(blueprint -> blueprint.findIntersectingEntrance(pos).map(entrance -> new GuiEditEntrance(null, blueprint, entrance))
+								.orElse(null)).orElse(null);
 			case POST_GEN:
 				GuiScreen screen = FMLClientHandler.instance().getClient().currentScreen;
 				return WorldObjectUtils.getIntersectingShape(world, pos)
 						.filter(Blueprint.class::isInstance)
 						.map(Blueprint.class::cast)
-						.map(blueprint -> new GuiEditBlueprintPostGen(screen instanceof GuiViewer? (GuiViewer)screen:null, blueprint)).orElse(null);
+						.map(blueprint -> new GuiEditBlueprintPostGen(screen instanceof GuiViewer ? (GuiViewer) screen : null, blueprint)).orElse(null);
 			default:
 				return null;
 		}

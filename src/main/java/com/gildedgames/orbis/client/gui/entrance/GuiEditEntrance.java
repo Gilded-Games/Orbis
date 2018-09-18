@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.gui.schedules;
+package com.gildedgames.orbis.client.gui.entrance;
 
 import com.gildedgames.orbis.client.gui.GuiSelectableTree;
 import com.gildedgames.orbis.client.gui.GuiTree;
@@ -6,8 +6,7 @@ import com.gildedgames.orbis.client.gui.GuiVariablesHeader;
 import com.gildedgames.orbis.client.gui.IGuiTreeListener;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetScheduleTriggerId;
-import com.gildedgames.orbis.common.variables.post_resolve_actions.PostResolveActionApplyLootTable;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketSetEntranceTriggerId;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElementWithData;
@@ -28,17 +27,11 @@ import com.gildedgames.orbis_api.client.rect.RectModifier;
 import com.gildedgames.orbis_api.core.tree.ConditionLink;
 import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.core.tree.NodeMultiParented;
-import com.gildedgames.orbis_api.core.variables.conditions.GuiConditionCheckBlueprintVariable;
-import com.gildedgames.orbis_api.core.variables.conditions.GuiConditionPercentage;
-import com.gildedgames.orbis_api.core.variables.conditions.GuiConditionRatio;
-import com.gildedgames.orbis_api.core.variables.conditions.IGuiCondition;
+import com.gildedgames.orbis_api.core.variables.conditions.GuiConditionCheckEntranceTriggerId;
+import com.gildedgames.orbis_api.core.variables.conditions.IGuiConditionEntrance;
 import com.gildedgames.orbis_api.core.variables.displays.GuiVarDisplay;
-import com.gildedgames.orbis_api.core.variables.post_resolve_actions.IPostResolveAction;
-import com.gildedgames.orbis_api.core.variables.post_resolve_actions.PostResolveActionMutateBlueprintVariable;
-import com.gildedgames.orbis_api.core.variables.post_resolve_actions.PostResolveActionSpawnEntities;
 import com.gildedgames.orbis_api.data.IDataUser;
-import com.gildedgames.orbis_api.data.schedules.ISchedule;
-import com.gildedgames.orbis_api.util.mc.NBT;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -50,21 +43,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
+public class GuiEditEntrance extends GuiViewer implements IDropdownHolder
 {
 	private static final ResourceLocation CONTAINER = OrbisCore.getResource("generic/container.png");
 
 	private static int CHOSEN_TREE_INDEX = 0;
 
-	private final ISchedule schedule;
+	private final IEntrance entrance;
 
-	private GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> conditionTree;
-
-	private GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> postResolveActionTree;
+	private GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> conditionTree;
 
 	private GuiSelectableTree subTreeViewer;
 
@@ -76,13 +66,9 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 	private INode currentSelectedNode;
 
-	private INode<IGuiCondition, ConditionLink> currentSelectedConditionNode;
+	private INode<IGuiConditionEntrance, ConditionLink> currentSelectedConditionNode;
 
-	private INode<IPostResolveAction, NBT> currentSelectedPostResolveActionNode;
-
-	private GuiDropdown<DropdownElementWithData<Supplier<IGuiCondition>>> conditionsDropdown;
-
-	private GuiDropdown<DropdownElementWithData<Supplier<IPostResolveAction>>> postResolveActionDropdown;
+	private GuiDropdown<DropdownElementWithData<Supplier<IGuiConditionEntrance>>> conditionsDropdown;
 
 	private GuiInput triggerId;
 
@@ -94,13 +80,13 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 	private GuiTextureRepeatable triggerBackdrop;
 
-	public GuiEditScheduledRegion(GuiViewer prevFrame, Blueprint blueprint, ISchedule scheduleRegion)
+	public GuiEditEntrance(GuiViewer prevFrame, Blueprint blueprint, IEntrance entrance)
 	{
 		super(new GuiElement(Dim2D.flush(), false), prevFrame);
 
 		this.blueprint = blueprint;
 
-		this.schedule = scheduleRegion;
+		this.entrance = entrance;
 
 		this.allowUserInput = true;
 	}
@@ -144,13 +130,13 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 		this.dropdown.state().setZOrder(Integer.MAX_VALUE);
 
-		final List<INode<IGuiCondition, ConditionLink>> roots = Lists.newArrayList();
-		final List<INode<IGuiCondition, ConditionLink>> visitedNodes = Lists.newArrayList();
-		final List<INode<IGuiCondition, ConditionLink>> children = Lists.newArrayList();
+		final List<INode<IGuiConditionEntrance, ConditionLink>> roots = Lists.newArrayList();
+		final List<INode<IGuiConditionEntrance, ConditionLink>> visitedNodes = Lists.newArrayList();
+		final List<INode<IGuiConditionEntrance, ConditionLink>> children = Lists.newArrayList();
 
 		this.conditionTree = new GuiTree<>(Dim2D.build().width(184).height(86).x(8).y(27).flush(), (nodeId) ->
 		{
-			NodeMultiParented<IGuiCondition, ConditionLink> node = new NodeMultiParented<>(new GuiConditionPercentage(), true);
+			NodeMultiParented<IGuiConditionEntrance, ConditionLink> node = new NodeMultiParented<>(new GuiConditionCheckEntranceTriggerId(), true);
 
 			node.setNodeId(nodeId);
 
@@ -165,7 +151,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 						@Override
 						public void onClick(final GuiDropdownList list, final EntityPlayer player)
 						{
-							GuiEditScheduledRegion.this.conditionTree.startLinking(ConditionLink.AND);
+							GuiEditEntrance.this.conditionTree.startLinking(ConditionLink.AND);
 						}
 					});
 
@@ -174,7 +160,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 						@Override
 						public void onClick(final GuiDropdownList list, final EntityPlayer player)
 						{
-							GuiEditScheduledRegion.this.conditionTree.startLinking(ConditionLink.OR);
+							GuiEditEntrance.this.conditionTree.startLinking(ConditionLink.OR);
 						}
 					});
 
@@ -183,7 +169,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.unlink_child"), () -> {
 							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
 
-							for (INode<IGuiCondition, ConditionLink> child : node.getTree().get(node.getChildrenIds()))
+							for (INode<IGuiConditionEntrance, ConditionLink> child : node.getTree().get(node.getChildrenIds()))
 							{
 								list.addDropdownElements(
 										new DropdownElement(new TextComponentString("C" + String.valueOf(child.getNodeId())))
@@ -205,7 +191,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 						elements.add(new DropdownElement(new TextComponentTranslation("orbis.gui.unlink_parent"), () -> {
 							GuiDropdownList list = new GuiDropdownList(Dim2D.flush());
 
-							for (INode<IGuiCondition, ConditionLink> parent : node.getTree().get(node.getParentsIds()))
+							for (INode<IGuiConditionEntrance, ConditionLink> parent : node.getTree().get(node.getParentsIds()))
 							{
 								list.addDropdownElements(
 										new DropdownElement(new TextComponentString("C" + String.valueOf(parent.getNodeId())))
@@ -243,9 +229,9 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 					n.fetchRoots(roots, visitedNodes);
 
-					return !((n.getParentsIds().isEmpty() || (GuiEditScheduledRegion.this.schedule != null && !roots
-							.contains(GuiEditScheduledRegion.this.schedule
-									.getConditionNodeTree().getRootNode()))) && n != GuiEditScheduledRegion.this.schedule.getConditionNodeTree()
+					return !((n.getParentsIds().isEmpty() || (GuiEditEntrance.this.entrance != null && !roots
+							.contains(GuiEditEntrance.this.entrance
+									.getConditionNodeTree().getRootNode()))) && n != GuiEditEntrance.this.entrance.getConditionNodeTree()
 							.getRootNode());
 				},
 				(n) ->
@@ -256,61 +242,29 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 					return button;
 				},
-				() -> this.schedule.getConditionNodeTree().findNextAvailableId());
+				() -> this.entrance.getConditionNodeTree().findNextAvailableId());
 
 		this.conditionTree.setCanDeleteNode((node) -> node.getTree().size() == 1 || node.getTree().getRootNodeId() != node.getNodeId());
 
-		this.postResolveActionTree = new GuiTree<>(Dim2D.build().width(184).height(86).x(8).y(27).flush(), (nodeId) ->
-		{
-			PostResolveActionMutateBlueprintVariable action = new PostResolveActionMutateBlueprintVariable();
-
-			action.setUsedData(GuiEditScheduledRegion.this.blueprint.getData().getVariableTree());
-
-			NodeMultiParented<IPostResolveAction, NBT> node = new NodeMultiParented<>(
-					action, true,
-					false);
-
-			node.setNodeId(nodeId);
-
-			return node;
-		},
-				(node) -> Collections.emptyList(),
-				(l) -> "",
-				(n) -> true,
-				(n) ->
-				{
-					String name = "A" + String.valueOf(n.getNodeId());
-
-					GuiButtonVanilla button = new GuiButtonVanilla(Dim2D.build().width(10 + this.fontRenderer.getStringWidth(name)).height(20).flush());
-
-					button.getInner().displayString = name;
-
-					return button;
-				},
-				() -> this.schedule.getPostResolveActionNodeTree().findNextAvailableId());
-
 		this.conditionTree.build(this);
-		this.postResolveActionTree.build(this);
 
 		this.conditionTree.state().setZOrder(1);
-		this.postResolveActionTree.state().setZOrder(1);
 
 		this.conditionTree.state().addEvent(new MouseInputDisabledWhenNotHovered());
-		this.postResolveActionTree.state().addEvent(new MouseInputDisabledWhenNotHovered());
 
 		this.conditionTree.state().setVisible(false);
 		this.conditionTree.state().setEnabled(false);
 
-		this.conditionTree.listen(new IGuiTreeListener<IGuiCondition, ConditionLink, GuiButtonVanilla>()
+		this.conditionTree.listen(new IGuiTreeListener<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla>()
 		{
 
 			@Override
-			public void onLinkNodes(GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> tree, INode<IGuiCondition, ConditionLink> n1,
-					INode<IGuiCondition, ConditionLink> n2,
+			public void onLinkNodes(GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> tree, INode<IGuiConditionEntrance, ConditionLink> n1,
+					INode<IGuiConditionEntrance, ConditionLink> n2,
 					ConditionLink conditionLink)
 			{
 
-				INode<IGuiCondition, ConditionLink> root = GuiEditScheduledRegion.this.schedule.getConditionNodeTree().getRootNode();
+				INode<IGuiConditionEntrance, ConditionLink> root = GuiEditEntrance.this.entrance.getConditionNodeTree().getRootNode();
 
 				if (root != null)
 				{
@@ -321,10 +275,10 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 					if (!roots.contains(root))
 					{
-						INode<IGuiCondition, ConditionLink> prominentRoot = null;
+						INode<IGuiConditionEntrance, ConditionLink> prominentRoot = null;
 						int prominentRootChildSize = 0;
 
-						for (INode<IGuiCondition, ConditionLink> node : roots)
+						for (INode<IGuiConditionEntrance, ConditionLink> node : roots)
 						{
 							children.clear();
 							node.fetchAllChildren(children);
@@ -338,118 +292,37 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 						if (prominentRoot != root && prominentRoot != null)
 						{
-							GuiEditScheduledRegion.this.schedule.getConditionNodeTree().setRootNode(prominentRoot.getNodeId());
+							GuiEditEntrance.this.entrance.getConditionNodeTree().setRootNode(prominentRoot.getNodeId());
 						}
 					}
 				}
 			}
 
 			@Override
-			public void onClickNode(GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> tree, INode<IGuiCondition, ConditionLink> node)
+			public void onClickNode(GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> tree, INode<IGuiConditionEntrance, ConditionLink> node)
 			{
-				GuiEditScheduledRegion.this.varDisplay.updateVariableData();
+				GuiEditEntrance.this.varDisplay.updateVariableData();
 
-				GuiEditScheduledRegion.this.varDisplayScrollDecorator.resetScroll();
-				GuiEditScheduledRegion.this.varDisplay.display(node.getData());
+				GuiEditEntrance.this.varDisplayScrollDecorator.resetScroll();
+				GuiEditEntrance.this.varDisplay.display(node.getData());
 
-				GuiEditScheduledRegion.this.variablesHeader.setTitleAndDropdown(new TextComponentTranslation("orbis.gui.variables",
-						I18n.format("orbis.gui.condition") + " " + String.valueOf(node.getNodeId())), GuiEditScheduledRegion.this.conditionsDropdown);
+				GuiEditEntrance.this.variablesHeader.setTitleAndDropdown(new TextComponentTranslation("orbis.gui.variables",
+						I18n.format("orbis.gui.condition") + " " + String.valueOf(node.getNodeId())), GuiEditEntrance.this.conditionsDropdown);
 
-				DropdownElementWithData<Supplier<IGuiCondition>> element = new DropdownElementWithData<>(new TextComponentTranslation(node.getData().getName()),
-						null);
-
-				GuiEditScheduledRegion.this.conditionsDropdown.setChosenElement(element);
-
-				GuiEditScheduledRegion.this.currentSelectedNode = node;
-
-				GuiEditScheduledRegion.this.currentSelectedConditionNode = node;
-				GuiEditScheduledRegion.this.currentSelectedPostResolveActionNode = null;
-			}
-
-			@Override
-			public void onAddNode(GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> tree, INode<IGuiCondition, ConditionLink> node, boolean oldNode)
-			{
-				if (!oldNode)
-				{
-					if (node.getData() instanceof IDataUser)
-					{
-						IDataUser dataUser = (IDataUser) node.getData();
-
-						if (dataUser.getDataIdentifier().equals("blueprintVariables"))
-						{
-							dataUser.setUsedData(GuiEditScheduledRegion.this.blueprint.getData().getVariableTree());
-						}
-					}
-
-					GuiEditScheduledRegion.this.schedule.getConditionNodeTree().put(node.getNodeId(), node);
-				}
-			}
-
-			@Override
-			public void onMoveNode(GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> tree, INode<IGuiCondition, ConditionLink> node, Pos2D pos)
-			{
-				node.getData().setGuiPos(pos);
-			}
-
-			@Override
-			public void onRemoveNode(GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> tree, INode<IGuiCondition, ConditionLink> node)
-			{
-				GuiEditScheduledRegion.this.schedule.getConditionNodeTree().remove(node.getNodeId());
-
-				if (node == GuiEditScheduledRegion.this.currentSelectedNode)
-				{
-					GuiEditScheduledRegion.this.varDisplayScrollDecorator.resetScroll();
-					GuiEditScheduledRegion.this.varDisplay.reset();
-
-					GuiEditScheduledRegion.this.variablesHeader.setTitle(new TextComponentTranslation("orbis.gui.variables", ""));
-				}
-			}
-
-			@Override
-			public void onMovePane(GuiTree<IGuiCondition, ConditionLink, GuiButtonVanilla> tree, Pos2D pos)
-			{
-				GuiEditScheduledRegion.this.schedule.setConditionGuiPos(pos);
-			}
-		});
-
-		this.postResolveActionTree.listen(new IGuiTreeListener<IPostResolveAction, NBT, GuiButtonVanilla>()
-		{
-
-			@Override
-			public void onLinkNodes(GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> tree, INode<IPostResolveAction, NBT> n1,
-					INode<IPostResolveAction, NBT> n2,
-					NBT conditionLink)
-			{
-
-			}
-
-			@Override
-			public void onClickNode(GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> tree, INode<IPostResolveAction, NBT> node)
-			{
-				GuiEditScheduledRegion.this.varDisplay.updateVariableData();
-
-				GuiEditScheduledRegion.this.varDisplayScrollDecorator.resetScroll();
-				GuiEditScheduledRegion.this.varDisplay.display(node.getData());
-
-				GuiEditScheduledRegion.this.variablesHeader
-						.setTitleAndDropdown(new TextComponentTranslation("orbis.gui.variables",
-										I18n.format("orbis.gui.post_resolve_action") + " " + String.valueOf(node.getNodeId())),
-								GuiEditScheduledRegion.this.postResolveActionDropdown);
-
-				DropdownElementWithData<Supplier<IPostResolveAction>> element = new DropdownElementWithData<>(
+				DropdownElementWithData<Supplier<IGuiConditionEntrance>> element = new DropdownElementWithData<>(
 						new TextComponentTranslation(node.getData().getName()),
 						null);
 
-				GuiEditScheduledRegion.this.postResolveActionDropdown.setChosenElement(element);
+				GuiEditEntrance.this.conditionsDropdown.setChosenElement(element);
 
-				GuiEditScheduledRegion.this.currentSelectedNode = node;
+				GuiEditEntrance.this.currentSelectedNode = node;
 
-				GuiEditScheduledRegion.this.currentSelectedConditionNode = null;
-				GuiEditScheduledRegion.this.currentSelectedPostResolveActionNode = node;
+				GuiEditEntrance.this.currentSelectedConditionNode = node;
 			}
 
 			@Override
-			public void onAddNode(GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> tree, INode<IPostResolveAction, NBT> node, boolean oldNode)
+			public void onAddNode(GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> tree, INode<IGuiConditionEntrance, ConditionLink> node,
+					boolean oldNode)
 			{
 				if (!oldNode)
 				{
@@ -459,38 +332,39 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 						if (dataUser.getDataIdentifier().equals("blueprintVariables"))
 						{
-							dataUser.setUsedData(GuiEditScheduledRegion.this.blueprint.getData().getVariableTree());
+							dataUser.setUsedData(GuiEditEntrance.this.blueprint.getData().getVariableTree());
 						}
 					}
 
-					GuiEditScheduledRegion.this.schedule.getPostResolveActionNodeTree().put(node.getNodeId(), node);
+					GuiEditEntrance.this.entrance.getConditionNodeTree().put(node.getNodeId(), node);
 				}
 			}
 
 			@Override
-			public void onMoveNode(GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> tree, INode<IPostResolveAction, NBT> node, Pos2D pos)
+			public void onMoveNode(GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> tree, INode<IGuiConditionEntrance, ConditionLink> node,
+					Pos2D pos)
 			{
 				node.getData().setGuiPos(pos);
 			}
 
 			@Override
-			public void onRemoveNode(GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> tree, INode<IPostResolveAction, NBT> node)
+			public void onRemoveNode(GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> tree, INode<IGuiConditionEntrance, ConditionLink> node)
 			{
-				GuiEditScheduledRegion.this.schedule.getPostResolveActionNodeTree().remove(node.getNodeId());
+				GuiEditEntrance.this.entrance.getConditionNodeTree().remove(node.getNodeId());
 
-				if (node == GuiEditScheduledRegion.this.currentSelectedNode)
+				if (node == GuiEditEntrance.this.currentSelectedNode)
 				{
-					GuiEditScheduledRegion.this.varDisplayScrollDecorator.resetScroll();
-					GuiEditScheduledRegion.this.varDisplay.reset();
+					GuiEditEntrance.this.varDisplayScrollDecorator.resetScroll();
+					GuiEditEntrance.this.varDisplay.reset();
 
-					GuiEditScheduledRegion.this.variablesHeader.setTitle(new TextComponentTranslation("orbis.gui.variables", ""));
+					GuiEditEntrance.this.variablesHeader.setTitle(new TextComponentTranslation("orbis.gui.variables", ""));
 				}
 			}
 
 			@Override
-			public void onMovePane(GuiTree<IPostResolveAction, NBT, GuiButtonVanilla> tree, Pos2D pos)
+			public void onMovePane(GuiTree<IGuiConditionEntrance, ConditionLink, GuiButtonVanilla> tree, Pos2D pos)
 			{
-				GuiEditScheduledRegion.this.schedule.setPostResolveActionGuiPos(pos);
+				GuiEditEntrance.this.entrance.setConditionGuiPos(pos);
 			}
 		});
 
@@ -501,7 +375,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 			{
 				super.updateVariableData();
 
-				GuiEditScheduledRegion.this.blueprint.markDirty();
+				GuiEditEntrance.this.blueprint.markDirty();
 			}
 		};
 
@@ -509,51 +383,19 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 		this.conditionsDropdown = new GuiDropdown<>(Dim2D.build().width(153).flush(), (e) ->
 		{
-			IGuiCondition condition = e.getData().get();
+			IGuiConditionEntrance condition = e.getData().get();
 
-			condition.setGuiPos(GuiEditScheduledRegion.this.currentSelectedConditionNode.getData().getGuiPos());
+			condition.setGuiPos(GuiEditEntrance.this.currentSelectedConditionNode.getData().getGuiPos());
 
-			GuiEditScheduledRegion.this.currentSelectedConditionNode.setData(condition);
+			GuiEditEntrance.this.currentSelectedConditionNode.setData(condition);
 
-			GuiEditScheduledRegion.this.varDisplay.updateVariableData();
+			GuiEditEntrance.this.varDisplay.updateVariableData();
 
-			GuiEditScheduledRegion.this.varDisplayScrollDecorator.resetScroll();
-			GuiEditScheduledRegion.this.varDisplay.display(condition);
+			GuiEditEntrance.this.varDisplayScrollDecorator.resetScroll();
+			GuiEditEntrance.this.varDisplay.display(condition);
 		},
-				new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.percentage"), GuiConditionPercentage::new),
-				new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.ratio"), GuiConditionRatio::new),
-				new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.check_blueprint_variable"),
-						() ->
-						{
-							GuiConditionCheckBlueprintVariable cond = new GuiConditionCheckBlueprintVariable();
-
-							cond.setUsedData(GuiEditScheduledRegion.this.blueprint.getData().getVariableTree());
-
-							return cond;
-						}));
-
-		this.postResolveActionDropdown = new GuiDropdown<>(Dim2D.build().width(153).flush(), (e) ->
-		{
-			IPostResolveAction action = e.getData().get();
-
-			action.setGuiPos(GuiEditScheduledRegion.this.currentSelectedPostResolveActionNode.getData().getGuiPos());
-
-			GuiEditScheduledRegion.this.currentSelectedPostResolveActionNode.setData(action);
-
-			GuiEditScheduledRegion.this.varDisplay.updateVariableData();
-
-			GuiEditScheduledRegion.this.varDisplayScrollDecorator.resetScroll();
-			GuiEditScheduledRegion.this.varDisplay.display(action);
-		},
-				new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.mutate_blueprint_variable"), () ->
-				{
-					PostResolveActionMutateBlueprintVariable action = new PostResolveActionMutateBlueprintVariable();
-
-					action.setUsedData(GuiEditScheduledRegion.this.blueprint.getData().getVariableTree());
-
-					return action;
-				}), new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.spawn_entities"), PostResolveActionSpawnEntities::new),
-				new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.apply_loot_table"), PostResolveActionApplyLootTable::new));
+				new DropdownElementWithData<>(new TextComponentTranslation("orbis.gui.check_entrance_trigger_id"),
+						GuiConditionCheckEntranceTriggerId::new));
 
 		this.varDisplayScrollDecorator.dim()
 				.add(new RectModifier("offsetFromVarHeader", this.variablesHeader, (source, modifying) ->
@@ -620,7 +462,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 		this.triggerId = new GuiInput(Dim2D.build().center(true).width(110).height(20).addX(xOffsetInput).addY(yOffset + yOffsetInput).flush());
 
-		this.triggerId.getInner().setText(this.schedule.getTriggerId());
+		this.triggerId.getInner().setText(this.entrance.getTriggerId());
 
 		this.saveButton = new GuiButtonVanilla(
 				Dim2D.build().center(true).width(50).height(20).addY(30).addX(-30).addX(xOffsetInput).addY(yOffset + yOffsetInput).flush());
@@ -643,23 +485,15 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 
 		this.subTreeViewer.setTrees(
 				new TextComponentTranslation("orbis.gui.selected", ""),
-				Pair.of(new TextComponentTranslation("orbis.gui.post_resolve_actions"), this.postResolveActionTree),
 				Pair.of(new TextComponentTranslation("orbis.gui.conditions"), this.conditionTree));
 
 		this.subTreeViewer.setTreeIndex(CHOSEN_TREE_INDEX);
 
-		this.conditionTree.reset(this.schedule.getConditionGuiPos());
+		this.conditionTree.reset(this.entrance.getConditionGuiPos());
 
-		for (INode<IGuiCondition, ConditionLink> n : this.schedule.getConditionNodeTree().getNodes())
+		for (INode<IGuiConditionEntrance, ConditionLink> n : this.entrance.getConditionNodeTree().getNodes())
 		{
 			this.conditionTree.addNode(n, n.getData().getGuiPos(), true);
-		}
-
-		this.postResolveActionTree.reset(this.schedule.getPostResolveActionGuiPos());
-
-		for (INode<IPostResolveAction, NBT> n : this.schedule.getPostResolveActionNodeTree().getNodes())
-		{
-			this.postResolveActionTree.addNode(n, n.getData().getGuiPos(), true);
 		}
 	}
 
@@ -692,7 +526,7 @@ public class GuiEditScheduledRegion extends GuiViewer implements IDropdownHolder
 		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			OrbisCore.network().sendPacketToServer(
-					new PacketSetScheduleTriggerId(this.blueprint, this.schedule,
+					new PacketSetEntranceTriggerId(this.blueprint, this.entrance,
 							this.triggerId.getInner().getText()));
 		}
 	}

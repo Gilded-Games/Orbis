@@ -6,11 +6,10 @@ import com.gildedgames.orbis_api.core.tree.INode;
 import com.gildedgames.orbis_api.core.tree.INodeTreeListener;
 import com.gildedgames.orbis_api.core.tree.LayerLink;
 import com.gildedgames.orbis_api.data.blueprint.IBlueprintDataListener;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
 import com.gildedgames.orbis_api.data.schedules.IScheduleLayerHolderListener;
-import com.gildedgames.orbis_api.data.shapes.CuboidShape;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -40,8 +39,6 @@ public class RenderBlueprintEditing
 
 	private RenderShape renderShape;
 
-	private RenderShape renderOutskirts;
-
 	public RenderBlueprintEditing(final Blueprint blueprint)
 	{
 		this.blueprint = blueprint;
@@ -55,20 +52,6 @@ public class RenderBlueprintEditing
 
 		try
 		{
-			this.renderOutskirts = new RenderShape(new CuboidShape(this.blueprint.getMin().add(1, 1, 1), this.blueprint.getMax().add(-1, -1, -1), false));
-
-			this.renderOutskirts.useCustomColors = true;
-
-			this.renderOutskirts.colorGrid = 0x000000;
-			this.renderOutskirts.colorBorder = 0x000000;
-
-			this.renderOutskirts.box = false;
-
-			if (this.blueprint.getLength() >= 3 && this.blueprint.getWidth() >= 3)
-			{
-				this.subRenderers.add(this.renderOutskirts);
-			}
-
 			for (Integer id : this.blueprint.getData().getScheduleLayerTree().getInternalMap().keySet())
 			{
 				INode<IScheduleLayer, LayerLink> layer = this.blueprint.getData().getScheduleLayerTree().get(id);
@@ -127,8 +110,6 @@ public class RenderBlueprintEditing
 	public void render(final World world, final float partialTicks, boolean useCamera)
 	{
 		PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
-
-		this.renderOutskirts.setDisabled(playerOrbis.powers().getCurrentPower() != playerOrbis.powers().getEntrancePower());
 
 		if (playerOrbis.getSelectedRegion() == this.blueprint && playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower())
 		{
@@ -309,7 +290,7 @@ public class RenderBlueprintEditing
 	}
 
 	@Override
-	public void onAddEntrance(Entrance entrance)
+	public void onAddEntrance(IEntrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();
@@ -327,7 +308,7 @@ public class RenderBlueprintEditing
 	}
 
 	@Override
-	public void onRemoveEntrance(Entrance entrance)
+	public void onRemoveEntrance(IEntrance entrance)
 	{
 		final Lock w = this.lock.writeLock();
 		w.lock();

@@ -73,36 +73,40 @@ public class GodPowerPathway implements IGodPower
 		return this.pathwayProblem;
 	}
 
-	public void processPathway(PlayerOrbis playerOrbis, BlockPos start, BlockPos end)
+	public void processPathway(PlayerOrbis playerOrbis, BlockPos start, BlockPos end, boolean finishImmediately)
 	{
 		Collection<BlueprintData> pieces = this.getActivePieces(playerOrbis);
 
 		BlueprintData initialData = random(pieces);
 
-		if (start.getX() > end.getX() && start.getZ() > end.getZ())
-		{
-			BlockPos temp = start;
-
-			start = end;
-			end = temp;
-		}
-
 		this.initialNode = new BlueprintRegion(start, initialData);
 
-		this.pathwayProblem = new PathwayProblem(start, this.initialNode, end, Lists.newArrayList(pieces),
+		this.pathwayProblem = new PathwayProblem(playerOrbis.getWorld(), start, this.initialNode, end, Lists.newArrayList(pieces),
 				Collections.emptyList());
 		this.stepAStar = new StepAStar<>(this.pathwayProblem, 1.2F);
 
-		while (!this.stepAStar.isTerminated())
+		if (finishImmediately)
 		{
-			this.stepAStar.step();
+			while (!this.stepAStar.isTerminated())
+			{
+				this.stepAStar.step();
+			}
 		}
 	}
 
 	@Override
 	public void onUpdate(final EntityPlayer player, final PlayerOrbis playerOrbis, final boolean isPowerActive)
 	{
-
+		if (player.world.isRemote && this.stepAStar != null)
+		{
+			if (!this.stepAStar.isTerminated())
+			{
+				for (int step = 0; step < 1; step++)
+				{
+					this.stepAStar.step();
+				}
+			}
+		}
 	}
 
 	@Override
