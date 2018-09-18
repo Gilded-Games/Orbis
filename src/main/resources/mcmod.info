@@ -10,7 +10,6 @@
     "url": "https://orbis.gildedgames.com",
     "credits": "Designed and developed by Gilded Games with <3. Made possible thanks to our supporters on Patreon, and with special thanks to our project reporters, contributors, and moderation team.",
     "logoFile": "/assets/orbis/full-logo.png",
-    "useDependencyInformation": true,
-    "useMetadata": false
+    "useDependencyInformation": false
   }]
 }
