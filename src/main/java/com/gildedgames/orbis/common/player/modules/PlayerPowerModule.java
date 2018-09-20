@@ -6,7 +6,6 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.*;
-import com.gildedgames.orbis_api.OrbisAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -62,12 +61,9 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		powers.add(this.fillPower);
 		powers.add(this.deletePower);
 		powers.add(this.replacePower);
-		powers.add(this.blueprintPower);
 		powers.add(this.selectPower);
-		powers.add(this.entrancePower);
-		powers.add(this.pathwayPower);
-		powers.add(this.frameworkPower);
 		powers.add(this.spectatorPower);
+		powers.add(this.blueprintPower);
 
 		this.powers = powers.toArray(new IGodPower[powers.size()]);
 	}
@@ -137,6 +133,11 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		return this.powers[this.currentPowerIndex];
 	}
 
+	public void setCurrentPower(final int powerIndex)
+	{
+		this.currentPowerIndex = powerIndex;
+	}
+
 	public void setCurrentPower(final Class<? extends IGodPower> clazz)
 	{
 		int foundIndex = -1;
@@ -161,11 +162,6 @@ public class PlayerPowerModule extends PlayerOrbisModule
 				OrbisCore.network().sendPacketToServer(new PacketChangePower(this.currentPowerIndex));
 			}
 		}
-	}
-
-	public void setCurrentPower(final int powerIndex)
-	{
-		this.currentPowerIndex = powerIndex;
 	}
 
 	public int getCurrentPowerIndex()

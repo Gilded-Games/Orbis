@@ -44,7 +44,7 @@ public class TileEntityBlockDataContainerRenderer extends TileEntitySpecialRende
 	public final BakedModel baked = new BakedModel();
 
 	private final LoadingCache<BlockDataContainer, Optional<RenderBlueprintBlocks>> blueprintCache = CacheBuilder.newBuilder()
-			.maximumSize(1000)
+			.maximumSize(200)
 			.expireAfterWrite(10, TimeUnit.MINUTES)
 			.removalListener(this)
 			.build(

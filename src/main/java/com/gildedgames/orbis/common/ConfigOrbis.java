@@ -9,11 +9,13 @@ import java.io.File;
 
 public class ConfigOrbis
 {
-	public final ConfigCategory biomes, dimensions;
+	public final ConfigCategory biomes, dimensions, misc;
 
 	private final Configuration configuration;
 
 	private int orbisDimId;
+
+	private boolean seenAlphaNotice;
 
 	public ConfigOrbis(File file)
 	{
@@ -21,6 +23,7 @@ public class ConfigOrbis
 
 		this.biomes = this.configuration.getCategory("Biome IDs");
 		this.dimensions = this.configuration.getCategory("Dimension IDs");
+		this.misc = this.configuration.getCategory("Miscellaneous");
 
 		this.loadAndSync();
 	}
@@ -28,6 +31,7 @@ public class ConfigOrbis
 	private void loadAndSync()
 	{
 		this.orbisDimId = this.getInt(this.dimensions, "Orbis Dimension ID", 4);
+		this.seenAlphaNotice = this.getBoolean(this.misc, "Has Seen Alpha Notice", false);
 
 		if (this.configuration.hasChanged())
 		{
@@ -57,6 +61,23 @@ public class ConfigOrbis
 	public int getOrbisDimId()
 	{
 		return this.orbisDimId;
+	}
+
+	public boolean hasSeenAlphaNotice()
+	{
+		return this.seenAlphaNotice;
+	}
+
+	public void markSeenAlphaNotice()
+	{
+		this.seenAlphaNotice = true;
+
+		this.configuration.get(this.misc.getName(), "Has Seen Alpha Notice", false).set(true);
+
+		if (this.configuration.hasChanged())
+		{
+			this.configuration.save();
+		}
 	}
 }
 

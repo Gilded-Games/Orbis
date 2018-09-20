@@ -52,7 +52,7 @@ public class GodPowerDelete implements IGodPower
 	@Override
 	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
-		return false;
+		return true;
 	}
 
 	@Override

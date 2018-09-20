@@ -9,7 +9,7 @@
     "authorList": [ "Brandon Pearce", "Emile van Krieken" ],
     "url": "https://orbis.gildedgames.com",
     "credits": "Designed and developed by Gilded Games with <3. Made possible thanks to our supporters on Patreon, and with special thanks to our project reporters, contributors, and moderation team.",
-    "logoFile": "/assets/orbis/full-logo.png",
+    "logoFile": "/assets/orbis/full_logo.png",
     "useDependencyInformation": false
   }]
 }

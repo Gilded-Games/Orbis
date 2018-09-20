@@ -97,7 +97,7 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null || !playerOrbis.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID()))
+		if (Minecraft.getMinecraft().currentScreen != null)
 		{
 			return;
 		}
@@ -105,10 +105,12 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1))
 				&& playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
 		{
-			if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			if (playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			{
 				return;
+			}
 			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
-			playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this, 4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))

@@ -27,7 +27,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.io.IOException;
 import java.util.List;
@@ -98,17 +100,17 @@ public class GuiFillMenu extends GuiFrameCreative
 	@Override
 	public void build(IGuiContext context)
 	{
-		Pos2D center = Pos2D.flush((this.width / 2) + 100, this.height / 2);
+		Pos2D center = Pos2D.flush(MathHelper.floor((this.width / 2) + 100), MathHelper.floor(this.height / 2));
 
 		this.forgeButton = GuiFactoryOrbis.createForgeButton();
 
 		this.forgeButton.dim().mod().pos(center).center(true).addY(72 - 6).addX(60).flush();
 
-		this.matrix = new GuiTexture(Dim2D.build().width(85).height(105).center(true).pos(center).addX(60).addY(-15).flush(), MATRIX_ICON);
-		this.flow = new GuiTexture(Dim2D.build().width(8).height(14).center(true).pos(center).addX(60).addY(52 - 6).flush(), FLOW_ICON);
+		this.matrix = new GuiTexture(Dim2D.build().width(85).height(105).center(true).snapToIntegers(true).pos(center).addX(60).addY(-15).flush(), MATRIX_ICON);
+		this.flow = new GuiTexture(Dim2D.build().width(8).height(14).center(true).snapToIntegers(true).pos(center).addX(60).addY(52 - 6).flush(), FLOW_ICON);
 
 		this.combineTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addX(60).addY(-49 - 9).flush(),
-				new Text(new TextComponentString("Combine"), 1.0F));
+				new Text(new TextComponentTranslation("orbis.gui.combine"), 1.0F));
 
 		context.addChildren(this.matrix);
 		context.addChildren(this.flow);
@@ -127,13 +129,16 @@ public class GuiFillMenu extends GuiFrameCreative
 
 		this.noise.setSliderValue(this.playerOrbis.powers().getFillPower().getFilterOptions().getEdgeNoiseVar().getData());
 
-		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(0).addX(-200).flush(),
-				new Text(new TextComponentString("Chooses Per Block:"), 1.0F));
+		GuiText fillingOptions = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(-25).addX(-210).flush(),
+				new Text(new TextComponentTranslation("orbis.gui.fillingOptions"), 1.0F));
 
-		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-200).addY(11).flush(),
+		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(0).addX(-190).flush(),
+				new Text(new TextComponentTranslation("orbis.gui.choosePerBlock"), 1.0F));
+
+		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-210).addY(-3).flush(),
 				this.playerOrbis.powers().getFillPower().getFilterOptions().getChoosesPerBlockVar().getData());
 
-		context.addChildren(this.noise, noiseTitle, this.choosesPerBlock, chooseTitle);
+		context.addChildren(this.choosesPerBlock, fillingOptions, chooseTitle);
 	}
 
 	@Override

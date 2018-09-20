@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.client;
 
+import com.gildedgames.orbis.client.gui.GuiAlphaNotice;
 import com.gildedgames.orbis.client.gui.GuiLayerEditor;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
@@ -29,6 +30,7 @@ import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.Item;
@@ -80,6 +82,13 @@ public class OrbisDeveloperEventsClient
 	@SubscribeEvent
 	public static void onGuiOpen(final GuiOpenEvent event)
 	{
+		if (event.getGui() instanceof GuiMainMenu && !OrbisCore.CONFIG.hasSeenAlphaNotice())
+		{
+			event.setGui(new GuiAlphaNotice());
+
+			return;
+		}
+
 		if (event.getGui() instanceof GuiIngameMenu)
 		{
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);

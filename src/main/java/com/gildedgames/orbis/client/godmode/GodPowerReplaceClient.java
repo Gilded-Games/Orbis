@@ -1,11 +1,13 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
+import com.gildedgames.orbis.client.gui.fill.GuiFillMenu;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerReplace;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -36,7 +38,7 @@ public class GodPowerReplaceClient implements IGodPowerClient
 	@Override
 	public void onOpenGui(final EntityPlayer player)
 	{
-
+		Minecraft.getMinecraft().displayGuiScreen(new GuiFillMenu(player, PlayerOrbis.get(player).powers().getFillPower().getForgeInventory()));
 	}
 
 	@Override
