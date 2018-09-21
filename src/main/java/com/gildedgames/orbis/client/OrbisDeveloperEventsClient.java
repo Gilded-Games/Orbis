@@ -11,9 +11,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
-import com.gildedgames.orbis.common.network.packets.PacketOpenPowerGui;
-import com.gildedgames.orbis.common.network.packets.PacketRotateBlueprint;
-import com.gildedgames.orbis.common.network.packets.PacketSetBlockDataContainerInHand;
+import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
@@ -31,6 +29,7 @@ import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -90,7 +89,7 @@ public class OrbisDeveloperEventsClient
 			return;
 		}
 
-		/*if (event.getGui() instanceof GuiIngameMenu)
+		if (event.getGui() instanceof GuiIngameMenu)
 		{
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(mc.player);
 			final ISelectionInput selectionInput = playerOrbis.selectionInputs().getCurrentSelectionInput();
@@ -117,7 +116,7 @@ public class OrbisDeveloperEventsClient
 					event.setCanceled(true);
 				}
 			}
-		}*/
+		}
 
 		if (event.getGui() instanceof GuiInventory)
 		{
