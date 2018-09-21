@@ -50,6 +50,8 @@ orbis.gui.choosePerBlock=Change Per Position
 orbis.gui.fillingOptions=WHEN USING PALETTES:
 orbis.gui.combine=Combine
 
+orbis.gui.combine_blocks=Combine Blocks
+
 orbis.gui.alpha_notice_title=§lA L P H A  N O T I C E
 orbis.gui.alpha_notice=Dear players,\n\nThis is an ALPHA VERSION of the mod. Earlier in the year we showed posters showing off procedural generation tech that allowed you to create dungeons, cities, villages, etc. This technology is very far into development but is NOT YET READY for public testing.\n\nWhat this version contains is the BUILDING TOOLS that Orbis and its Designer Gamemode have to offer. We decided to release this early since we've had positive reception to these early features. Keep in mind this is still work-in-progress, and the very ambitious features mentioned earlier are still very much on their way. We appreciate your patience during this time! Happy building,\n\nGilded Games.
 

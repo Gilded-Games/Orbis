@@ -3,28 +3,31 @@ package com.gildedgames.orbis.client.gui.fill;
 import com.gildedgames.orbis.client.gui.util.GuiFactoryOrbis;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.containers.ContainerCombineMatrix;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSetFilterOptions;
+import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
 import com.gildedgames.orbis_api.client.gui.util.GuiInputSlider;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
 import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiContainerCreativePublic;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiFrameCreative;
+import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.core.variables.displays.GuiTickBox;
 import com.gildedgames.orbis_api.util.InputHelper;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -34,13 +37,15 @@ import net.minecraft.util.text.TextComponentTranslation;
 import java.io.IOException;
 import java.util.List;
 
-public class GuiFillMenu extends GuiFrameCreative
+public class GuiCombineMatrix extends GuiViewer
 {
+	private static final ResourceLocation INVENTORY = OrbisCore.getResource("blueprint_gui/blueprint_inventory.png");
+
 	private static final ResourceLocation MATRIX_ICON = OrbisCore.getResource("filter_gui/filter_matrix.png");
 
 	private static final ResourceLocation FLOW_ICON = OrbisCore.getResource("filter_gui/flow_icon.png");
 
-	private final ContainerFillMenu container;
+	private final ContainerCombineMatrix container;
 
 	private GuiAbstractButton forgeButton;
 
@@ -54,18 +59,23 @@ public class GuiFillMenu extends GuiFrameCreative
 
 	private PlayerOrbis playerOrbis;
 
-	public GuiFillMenu(final EntityPlayer player, final IInventory forgeInventory)
+	private GuiButtonVanilla back;
+
+	public GuiCombineMatrix(final EntityPlayer player)
 	{
-		super(player);
+		super(new GuiElement(Dim2D.flush(), false), null,
+				new ContainerCombineMatrix(player.inventory, PlayerOrbis.get(player).powers().getFillPower().getForgeInventory()));
 
 		this.playerOrbis = PlayerOrbis.get(player);
 
-		this.setExtraSlots(16);
+		this.container = (ContainerCombineMatrix) this.inventorySlots;
+	}
 
-		this.container = new ContainerFillMenu(player, forgeInventory, this);
-
-		this.inventorySlots = this.container;
-		player.openContainer = this.inventorySlots;
+	@Override
+	public void initContainerSize()
+	{
+		this.guiLeft = (this.width - this.xSize) / 2;
+		this.guiTop = ((this.height - this.ySize) / 2) - 38;
 	}
 
 	private List<ItemStack> getItemStacksInForge()
@@ -129,16 +139,24 @@ public class GuiFillMenu extends GuiFrameCreative
 
 		this.noise.setSliderValue(this.playerOrbis.powers().getFillPower().getFilterOptions().getEdgeNoiseVar().getData());
 
-		GuiText fillingOptions = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(-25).addX(-210).flush(),
+		GuiText fillingOptions = new GuiText(Dim2D.build().width(140).height(20).pos(center).center(true).addY(-85).addX(-12).flush(),
 				new Text(new TextComponentTranslation("orbis.gui.fillingOptions"), 1.0F));
 
-		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).addY(0).addX(-190).flush(),
+		GuiText chooseTitle = new GuiText(Dim2D.build().width(140).height(20).pos(center).center(true).addY(-65).addX(0).flush(),
 				new Text(new TextComponentTranslation("orbis.gui.choosePerBlock"), 1.0F));
 
-		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-210).addY(-3).flush(),
+		this.choosesPerBlock = new GuiTickBox(center.clone().addX(-68).addY(-73).flush(),
 				this.playerOrbis.powers().getFillPower().getFilterOptions().getChoosesPerBlockVar().getData());
 
-		context.addChildren(this.choosesPerBlock, fillingOptions, chooseTitle);
+		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).center(true).snapToIntegers(true).pos(center).flush(), INVENTORY);
+
+		this.back = new GuiButtonVanilla(Dim2D.build().pos(center).addY(65).center(true).width(80).height(20).flush());
+
+		this.back.getInner().displayString = I18n.format("orbis.gui.back");
+
+		this.back.state().setCanBeTopHoverElement(true);
+
+		context.addChildren(this.choosesPerBlock, fillingOptions, chooseTitle, inventory, this.back);
 	}
 
 	@Override
@@ -147,11 +165,6 @@ public class GuiFillMenu extends GuiFrameCreative
 		super.drawElements();
 
 		this.forgeButton.state().setEnabled(this.getItemStacksInForge().size() >= 2);
-
-		this.forgeButton.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
-		this.matrix.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
-		this.flow.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
-		this.combineTitle.state().setVisible(this.getSelectedTabIndex() != CreativeTabs.INVENTORY.getTabIndex());
 	}
 
 	@Override
@@ -165,35 +178,13 @@ public class GuiFillMenu extends GuiFrameCreative
 
 			ItemBlockPalette.setFilterLayer(stack, BlockFilterHelper.createFillLayer(this.getItemStacksInForge()));
 
+			OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
 			Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 		}
-	}
 
-	public static class ContainerFillMenu extends ContainerCreativePublic
-	{
-
-		public SlotForge[] slots;
-
-		public ContainerFillMenu(final EntityPlayer player, final IInventory forgeInventory, final GuiContainerCreativePublic gui)
+		if (this.back.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
-			super(player, gui);
-
-			this.slots = new SlotForge[4 * 4];
-
-			final int indexOffset = 55;
-
-			for (int i = 0; i < 4; ++i)
-			{
-				for (int j = 0; j < 4; ++j)
-				{
-					final SlotForge slot = new SlotForge(forgeInventory, indexOffset, indexOffset + (i * 4 + j), 222 + j * 18, 27 + i * 18);
-
-					this.addSlotToContainer(slot);
-
-					this.slots[i * 4 + j] = slot;
-				}
-			}
+			Minecraft.getMinecraft().displayGuiScreen(new GuiInventory(this.mc.player));
 		}
-
 	}
 }

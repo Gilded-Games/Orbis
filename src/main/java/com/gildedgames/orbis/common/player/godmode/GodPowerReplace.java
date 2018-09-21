@@ -53,7 +53,7 @@ public class GodPowerReplace implements IGodPower
 	@Override
 	public boolean hasCustomGui(PlayerOrbis playerOrbis)
 	{
-		return true;
+		return false;
 	}
 
 	@Override

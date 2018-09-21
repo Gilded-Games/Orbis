@@ -56,7 +56,6 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private final List<PlayerOrbisObserver> observers = Lists.newArrayList();
 
-	@SideOnly(Side.CLIENT)
 	private double developerReach = 5.0D;
 
 	private boolean developerModeEnabled;
@@ -308,7 +307,6 @@ public class PlayerOrbis implements IPlayerOrbis
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	public double getDeveloperReach()
 	{
 		return this.developerReach;
