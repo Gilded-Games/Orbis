@@ -46,7 +46,7 @@ orbis.gui.display_name=Display Name
 orbis.gui.value=Value
 orbis.gui.variable=Variable %s
 orbis.gui.variable_type=Variable Type:
-orbis.gui.choosePerBlock=Pick One Block
+orbis.gui.choosePerBlock=Change Per Position
 orbis.gui.fillingOptions=WHEN USING PALETTES:
 orbis.gui.combine=Combine
 
