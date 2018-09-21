@@ -117,8 +117,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				// TODO: DESIGN DECISION: It deletes according to your current main hand. Might be confusing.
-				final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewDeleteLayer(player.getHeldItemMainhand()));
+				final BlockFilter filter = new BlockFilter(new BlockFilterHelper.BlockDeleteFilter());
 
 				OrbisCore.network().sendPacketToServer(new PacketFilterShape(shape, filter));
 			}

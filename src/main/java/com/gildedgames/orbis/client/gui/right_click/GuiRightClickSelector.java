@@ -38,9 +38,8 @@ public class GuiRightClickSelector extends GuiViewer
 	public void build(IGuiContext context)
 	{
 		context.addChildren(new GuiDropdownList<IDropdownElement>(Dim2D.build().pos(this.width / 2, this.height / 2).width(70).flush(),
-				GuiRightClickElements.delete(this.region),
 				GuiRightClickElements.copy(this.region),
-				new DropdownElement(new TextComponentString("Remove"))
+				new DropdownElement(new TextComponentString("Clear Selection"))
 				{
 					@Override
 					public void onClick(final GuiDropdownList list, final EntityPlayer player)
