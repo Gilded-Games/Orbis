@@ -183,7 +183,7 @@ public class OrbisRaytraceHelp
 							Optional.empty();
 				});
 
-		RayTraceResult result = OrbisKeyBindings.keyBindControl.isKeyDown() ?
+		RayTraceResult result = player.world.isRemote && OrbisKeyBindings.keyBindControl.isKeyDown() ?
 				new RayTraceResult(player, endPos) : blockRaytrace != null ? blockRaytrace : new RayTraceResult(player, endPos);
 
 		Vec3d clampedVec = new Vec3d(MathHelper.floor(result.hitVec.x),
