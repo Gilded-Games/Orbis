@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
+import com.gildedgames.orbis.common.network.CommandActivateDesignerGamemode;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
@@ -362,5 +363,11 @@ public class OrbisCore
 	{
 		//OrbisAPI.services().startProjectManager();
 		startDataCache();
+	}
+
+	@Mod.EventHandler
+	public void serverStarting(FMLServerStartingEvent event)
+	{
+		event.registerServerCommand(new CommandActivateDesignerGamemode());
 	}
 }
