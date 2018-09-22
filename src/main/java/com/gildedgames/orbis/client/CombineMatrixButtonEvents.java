@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client;
 
 import com.gildedgames.orbis.client.gui.util.GuiCombineButton;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.network.packets.PacketOpenGui;
 import net.minecraft.client.Minecraft;
@@ -23,13 +24,13 @@ public class CombineMatrixButtonEvents
 	{
 		GuiScreen gui = event.getGui();
 
-		if (gui instanceof GuiContainerCreative)
+		if (gui instanceof GuiContainerCreative && PlayerOrbis.get(Minecraft.getMinecraft().player).inDeveloperMode())
 		{
 			int max = event.getButtonList().stream().mapToInt((button) -> button.id).max().orElse(-1);
 
 			BUTTON_ID = max + 1;
 
-			event.getButtonList().add(new GuiCombineButton(BUTTON_ID, gui.width / 2 + 100, gui.height / 2 - 51, 20, 20, ""));
+			event.getButtonList().add(new GuiCombineButton(BUTTON_ID, gui.width / 2 + 19, gui.height / 2 - 90, 20, 20, ""));
 		}
 	}
 
@@ -38,7 +39,7 @@ public class CombineMatrixButtonEvents
 	{
 		GuiScreen gui = event.getGui();
 
-		if (gui instanceof GuiContainerCreative)
+		if (gui instanceof GuiContainerCreative && PlayerOrbis.get(Minecraft.getMinecraft().player).inDeveloperMode())
 		{
 			if (event.getButton() != null && event.getButton().id == BUTTON_ID)
 			{
