@@ -3,27 +3,14 @@ package com.gildedgames.orbis.common.items;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.renderers.tiles.TileEntityBlockPaletteRenderer;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
-import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilterMultiple;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.block.BlockDataWithConditions;
-import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
-import com.gildedgames.orbis_api.block.BlockFilterType;
-import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -33,10 +20,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.List;
-
 @Mod.EventBusSubscriber(Side.CLIENT)
-public class ItemBlockPalette extends Item implements ModelRegisterCallback, IShapeSelector
+public class ItemBlockPalette extends Item implements ModelRegisterCallback
 {
 
 	@SideOnly(Side.CLIENT)
@@ -98,63 +83,5 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback, ISh
 
 		//TODO: Replace with TileEntityItemStackRenderer, instead of a tile entity hack
 		ForgeHooksClient.registerTESRItemStack(this, 0, TileEntityBlockPaletteRenderer.DummyTile.class);
-	}
-
-	@Override
-	public boolean isSelectorActive(final PlayerOrbis playerOrbis, final World world)
-	{
-		return true;
-	}
-
-	@Override
-	public boolean canSelectShape(final PlayerOrbis playerOrbis, final IShape shape, final World world)
-	{
-		return WorldObjectUtils.getIntersectingShapes(world, Blueprint.class, shape).size() == 1 || !playerOrbis.powers().isScheduling();
-	}
-
-	@Override
-	public void onSelect(final PlayerOrbis playerOrbis, final IShape selectedShape, final World world, BlockPos start, BlockPos end)
-	{
-		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
-
-		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
-
-		powerReplacement(playerOrbis, layer);
-
-		final BlockFilter filter = new BlockFilter(layer);
-
-		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
-	}
-
-	private void powerReplacement(PlayerOrbis playerOrbis, BlockFilterLayer layer)
-	{
-		if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getReplacePower())
-		{
-			layer.setFilterType(BlockFilterType.ALL_EXCEPT);
-
-			layer.setRequiredBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
-		}
-		else if (playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getDeletePower())
-		{
-			layer.setFilterType(BlockFilterType.ONLY);
-
-			layer.setRequiredBlocks(layer.getReplacementBlocks());
-			layer.setReplacementBlocks(new BlockDataWithConditions(Blocks.AIR.getDefaultState(), 1.0F));
-		}
-	}
-
-	@Override
-	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
-	{
-		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
-
-		final BlockFilterLayer layer = ItemBlockPalette.getFilterLayer(held);
-
-		powerReplacement(playerOrbis, layer);
-
-		final BlockFilter filter = new BlockFilter(layer);
-
-		playerOrbis.getWorldActionLog()
-				.track(world, new WorldActionFilterMultiple(selectedShape, filter, playerOrbis.powers().isScheduling(), multiplePositions));
 	}
 }

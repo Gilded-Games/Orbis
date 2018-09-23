@@ -2,12 +2,14 @@ package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.player.godmode.GodPowerFill;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -56,7 +58,7 @@ public class GodPowerFillClient implements IGodPowerClient
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
-		return held.getItem() instanceof ItemBlock;
+		return held.getItem() instanceof ItemBlock || held.getItem() instanceof ItemBlockPalette || held.getItem() instanceof ItemBucket;
 	}
 
 	@Override

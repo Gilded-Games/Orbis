@@ -25,6 +25,7 @@ import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import com.gildedgames.orbis_api.IOHelper;
 import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockDataWithConditions;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
 import com.gildedgames.orbis_api.client.gui.data.Text;
@@ -37,7 +38,7 @@ import com.gildedgames.orbis_api.network.INetworkMultipleParts;
 import com.gildedgames.orbis_api.util.io.IClassSerializer;
 import com.gildedgames.orbis_api.util.io.SimpleSerializer;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import net.minecraft.block.state.IBlockState;
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,6 +59,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 @Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION,
 		dependencies = OrbisCore.MOD_DEPENDENCIES, certificateFingerprint = OrbisCore.MOD_FINGERPRINT)
@@ -290,9 +293,9 @@ public class OrbisCore
 		BlockFilterHelper.registerBlockRecognition(new BlockFilterHelper.IBlockRecognition()
 		{
 			@Override
-			public IBlockState[] recognize(ItemStack stack)
+			public List<BlockDataWithConditions> recognize(ItemStack stack)
 			{
-				IBlockState[] blocks = null;
+				List<BlockDataWithConditions> blocks = Collections.emptyList();
 
 				if (stack.getItem() instanceof ItemBlockPalette)
 				{
@@ -300,14 +303,9 @@ public class OrbisCore
 
 					if (layer != null)
 					{
-						blocks = new IBlockState[layer.getReplacementBlocks().size()];
+						blocks = Lists.newArrayList();
 
-						for (int i = 0; i < blocks.length; i++)
-						{
-							final IBlockState state = layer.getReplacementBlocks().get(i).getBlockState();
-
-							blocks[i] = state;
-						}
+						blocks.addAll(layer.getReplacementBlocks());
 					}
 				}
 
