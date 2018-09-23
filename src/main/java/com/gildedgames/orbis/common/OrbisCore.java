@@ -71,7 +71,7 @@ public class OrbisCore
 
 	public static final String MOD_ID = "orbis";
 
-	public static final String MOD_VERSION = "1.12.2-1.0.1";
+	public static final String MOD_VERSION = "1.12.2-1.0.11";
 
 	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.9,)";
 
