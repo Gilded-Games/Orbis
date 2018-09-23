@@ -30,7 +30,7 @@ public class CombineMatrixButtonEvents
 
 			BUTTON_ID = max + 1;
 
-			event.getButtonList().add(new GuiCombineButton(BUTTON_ID, gui.width / 2 + 19, gui.height / 2 - 90, 20, 20, ""));
+			event.getButtonList().add(new GuiCombineButton(BUTTON_ID, gui.width / 2 + 48, gui.height / 2 + 70, 20, 20, ""));
 		}
 	}
 
