@@ -76,7 +76,7 @@ public class OrbisCore
 
 	public static final String MOD_VERSION = "1.12.2-1.0.12";
 
-	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.91,)";
+	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.10,)";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
