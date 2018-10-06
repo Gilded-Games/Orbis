@@ -187,7 +187,8 @@ public class OrbisRaytraceHelp
 				new RayTraceResult(player, endPos) : blockRaytrace != null ? blockRaytrace : new RayTraceResult(player, endPos);
 
 		Vec3d clampedVec = new Vec3d(MathHelper.floor(result.hitVec.x),
-				Math.max(player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS ? 1 : 0, MathHelper.floor(result.hitVec.y)),
+				Math.max(player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS ? 1 : MathHelper.floor(result.hitVec.y),
+						MathHelper.floor(result.hitVec.y)),
 				MathHelper.floor(result.hitVec.z));
 		result = new RayTraceResult(player, clampedVec);
 
