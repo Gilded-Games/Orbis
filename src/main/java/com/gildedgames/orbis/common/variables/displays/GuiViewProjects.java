@@ -27,6 +27,7 @@ import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorListener
@@ -138,15 +139,15 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 		{
 			try
 			{
-				final IData data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
+				final Optional<IData> data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
 
-				if (data == null)
+				if (!data.isPresent())
 				{
 					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
 					return;
 				}
 
-				if (this.onDoubleClickFile.apply(data))
+				if (this.onDoubleClickFile.apply(data.get()))
 				{
 					this.mc.displayGuiScreen(this.getPreviousViewer().getActualScreen());
 				}

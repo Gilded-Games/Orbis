@@ -20,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketCreateItemBlockDataContainer implements IMessage
 {
 
@@ -75,14 +77,18 @@ public class PacketCreateItemBlockDataContainer implements IMessage
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				final BlockDataContainer container = ItemBlockDataContainer.getDataContainer(message.stack);
+				final Optional<BlockDataContainer> container = ItemBlockDataContainer.getDataContainer(message.stack);
 
-				final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
+				if (container.isPresent())
+				{
+					final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
 
-				final IRegion region = RotationHelp.regionFromCenter(message.pos, container, rotation);
+					final IRegion region = RotationHelp.regionFromCenter(message.pos, container.get(), rotation);
 
-				final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(player.world));
-				primer.create(region, container, new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false), null);
+					final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(player.world));
+					primer.create(region, container.get(), new CreationData(player.world, player).pos(region.getMin()).rotation(rotation).placesAir(false),
+							null);
+				}
 			}
 
 			return null;

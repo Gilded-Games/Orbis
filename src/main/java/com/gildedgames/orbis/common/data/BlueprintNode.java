@@ -97,7 +97,7 @@ public class BlueprintNode implements IFrameworkNode
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.data = OrbisAPI.services().getProjectManager().findData(funnel.get("data"));
+		OrbisAPI.services().getProjectManager().findData(funnel.get("data")).ifPresent(data -> this.data = (BlueprintData) data);
 		this.palette = funnel.get("palette");
 		this.bounds = funnel.get("bounds");
 

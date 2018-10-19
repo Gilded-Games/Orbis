@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketAddSchedule implements IMessage
 {
 
@@ -128,20 +130,20 @@ public class PacketAddSchedule implements IMessage
 					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 				}
 
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof BlueprintData)
+				if (data.isPresent() && data.get() instanceof BlueprintData)
 				{
-					final BlueprintData bData = (BlueprintData) data;
+					final BlueprintData bData = (BlueprintData) data.get();
 
 					if (message.scheduleId == -1)
 					{
@@ -186,20 +188,20 @@ public class PacketAddSchedule implements IMessage
 					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 				}
 
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof BlueprintData)
+				if (data.isPresent() && data.get() instanceof BlueprintData)
 				{
-					final BlueprintData bData = (BlueprintData) data;
+					final BlueprintData bData = (BlueprintData) data.get();
 
 					int scheduleId = bData.getScheduleLayerTree().get(message.layerId).getData().getScheduleRecord().addSchedule(message.schedule, worldObject);
 

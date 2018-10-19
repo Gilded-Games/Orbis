@@ -63,7 +63,7 @@ public class TileEntityFrameworkRenderer extends TileEntitySpecialRenderer<TileE
 				return;
 			}
 
-			final RenderFrameworkEditing framework = OrbisClientCaches.getFrameworkRenders().get(id).orNull();
+			final RenderFrameworkEditing framework = OrbisClientCaches.getFrameworkRenders().get(id).orElse(null);
 
 			if (framework == null)
 			{

@@ -21,6 +21,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketRemoveNode extends PacketMultipleParts
 {
 
@@ -98,22 +100,22 @@ public class PacketRemoveNode extends PacketMultipleParts
 
 			try
 			{
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
 					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof FrameworkData)
+				if (data.isPresent() && data.get() instanceof FrameworkData)
 				{
-					final FrameworkData fData = (FrameworkData) data;
+					final FrameworkData fData = (FrameworkData) data.get();
 
 					fData.removeNode(message.nodeId);
 				}
@@ -139,22 +141,22 @@ public class PacketRemoveNode extends PacketMultipleParts
 
 			try
 			{
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
 					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof FrameworkData)
+				if (data.isPresent() && data.get() instanceof FrameworkData)
 				{
-					final FrameworkData fData = (FrameworkData) data;
+					final FrameworkData fData = (FrameworkData) data.get();
 
 					boolean removed = fData.removeNode(message.nodeId);
 

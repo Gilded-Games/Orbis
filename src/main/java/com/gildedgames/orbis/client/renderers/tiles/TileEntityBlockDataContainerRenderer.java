@@ -10,7 +10,6 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.util.OpenGLHelper;
-import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
@@ -32,6 +31,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -79,14 +79,14 @@ public class TileEntityBlockDataContainerRenderer extends TileEntitySpecialRende
 				return;
 			}
 
-			final BlockDataContainer container = ItemBlockDataContainer.getDataContainer(this.stack);
+			final Optional<BlockDataContainer> container = ItemBlockDataContainer.getDataContainer(this.stack);
 
-			if (container == null)
+			if (!container.isPresent())
 			{
 				return;
 			}
 
-			final RenderBlueprintBlocks blueprint = this.blueprintCache.get(container).orNull();
+			final RenderBlueprintBlocks blueprint = this.blueprintCache.get(container.get()).orElse(null);
 
 			if (blueprint == null)
 			{
@@ -134,12 +134,7 @@ public class TileEntityBlockDataContainerRenderer extends TileEntitySpecialRende
 			return;
 		}
 
-		final RenderBlueprintBlocks blueprint = opt.orNull();
-
-		if (blueprint != null)
-		{
-			blueprint.onRemoved();
-		}
+		opt.ifPresent(RenderBlueprintBlocks::onRemoved);
 	}
 
 	public static class DummyTile extends TileEntityBlockDataContainer

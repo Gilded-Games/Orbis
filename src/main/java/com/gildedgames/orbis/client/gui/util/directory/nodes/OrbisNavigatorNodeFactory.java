@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
@@ -56,14 +57,14 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 
 				try
 				{
-					final IProject project = OrbisAPI.services().getProjectManager().findProject(file.getName());
+					final Optional<IProject> project = OrbisAPI.services().getProjectManager().findProject(file.getName());
 
-					if (project != null)
+					if (project.isPresent())
 					{
 						// TODO: Refresh cache in case contents of project changed outside of game.
 						//project.loadAndCacheData();
 
-						node = new NavigatorNodeProject(file, project);
+						node = new NavigatorNodeProject(file, project.get());
 					}
 				}
 				catch (final OrbisMissingProjectException e)

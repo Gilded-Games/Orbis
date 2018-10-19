@@ -20,6 +20,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketBlueprintRemovePostGenReplaceLayer extends PacketMultipleParts
 {
 
@@ -99,22 +101,22 @@ public class PacketBlueprintRemovePostGenReplaceLayer extends PacketMultiplePart
 
 			try
 			{
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
 					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof BlueprintData)
+				if (data.isPresent() && data.get() instanceof BlueprintData)
 				{
-					final BlueprintData bData = (BlueprintData) data;
+					final BlueprintData bData = (BlueprintData) data.get();
 
 					bData.removePostGenReplaceLayer(message.scheduleLayerIndex);
 				}
@@ -140,22 +142,22 @@ public class PacketBlueprintRemovePostGenReplaceLayer extends PacketMultiplePart
 
 			try
 			{
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
 					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof BlueprintData)
+				if (data.isPresent() && data.get() instanceof BlueprintData)
 				{
-					final BlueprintData bData = (BlueprintData) data;
+					final BlueprintData bData = (BlueprintData) data.get();
 
 					bData.removePostGenReplaceLayer(message.scheduleLayerIndex);
 

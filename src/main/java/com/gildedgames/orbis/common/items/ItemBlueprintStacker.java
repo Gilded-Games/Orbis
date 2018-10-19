@@ -32,6 +32,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
+import java.util.Optional;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ItemBlueprintStacker extends Item implements ModelRegisterCallback, ItemStackInput
 {
@@ -76,11 +78,11 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 		return funnel.get("stacker_id");
 	}
 
-	public static BlueprintStackerData getBlueprintStacker(final ItemStack stack)
+	public static Optional<BlueprintStackerData> getBlueprintStacker(final ItemStack stack)
 	{
 		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("stacker_id"))
 		{
-			return null;
+			return Optional.empty();
 		}
 
 		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
@@ -136,10 +138,12 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 				.canInteractWithItems(playerOrbis))
 		{
 
-			if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			if (playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			{
 				return;
+			}
 			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
-			playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this, 4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))

@@ -13,6 +13,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketSendDataToCache extends PacketMultipleParts
 {
 
@@ -74,9 +76,9 @@ public class PacketSendDataToCache extends PacketMultipleParts
 				return null;
 			}
 
-			final IDataCache cache = OrbisCore.getDataCache().findCache(message.cacheId);
+			final Optional<IDataCache> cache = OrbisCore.getDataCache().findCache(message.cacheId);
 
-			cache.setData(message.data.getMetadata().getIdentifier().getDataId(), message.data);
+			cache.ifPresent(iDataCache -> iDataCache.setData(message.data.getMetadata().getIdentifier().getDataId(), message.data));
 
 			return null;
 		}

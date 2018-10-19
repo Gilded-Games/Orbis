@@ -21,6 +21,8 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.UUID;
 
 public class PacketDeleteFile extends PacketMultipleParts
 {
@@ -85,26 +87,34 @@ public class PacketDeleteFile extends PacketMultipleParts
 
 			try
 			{
-				final IProject project = OrbisCore.getProjectManager().findProject(message.project);
+				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
 
-				project.getCache().removeData(project.getCache().getDataId(message.location));
-
-				final File file = new File(project.getLocationAsFile(), message.location);
-
-				if (file.delete())
+				if (project.isPresent())
 				{
-					if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveData)
+					Optional<UUID> id = project.get().getCache().getDataId(message.location);
+
+					if (id.isPresent())
 					{
-						final GuiSaveData viewProjects = (GuiSaveData) Minecraft.getMinecraft().currentScreen;
+						project.get().getCache().removeData(id.get());
 
-						viewProjects.refreshNavigator();
-					}
+						final File file = new File(project.get().getLocationAsFile(), message.location);
 
-					if (Minecraft.getMinecraft().currentScreen instanceof GuiLoadData)
-					{
-						final GuiLoadData loadBlueprints = (GuiLoadData) Minecraft.getMinecraft().currentScreen;
+						if (file.delete())
+						{
+							if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveData)
+							{
+								final GuiSaveData viewProjects = (GuiSaveData) Minecraft.getMinecraft().currentScreen;
 
-						loadBlueprints.refreshNavigator();
+								viewProjects.refreshNavigator();
+							}
+
+							if (Minecraft.getMinecraft().currentScreen instanceof GuiLoadData)
+							{
+								final GuiLoadData loadBlueprints = (GuiLoadData) Minecraft.getMinecraft().currentScreen;
+
+								loadBlueprints.refreshNavigator();
+							}
+						}
 					}
 				}
 			}
@@ -127,15 +137,23 @@ public class PacketDeleteFile extends PacketMultipleParts
 				return null;
 			}
 
-			final IProject project = OrbisCore.getProjectManager().findProject(message.project);
+			final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
 
-			project.getCache().removeData(project.getCache().getDataId(message.location));
-
-			final File file = new File(project.getLocationAsFile(), message.location);
-
-			if (file.delete())
+			if (project.isPresent())
 			{
-				OrbisCore.network().sendPacketToPlayer(new PacketDeleteFile(message.project, message.location), (EntityPlayerMP) player);
+				Optional<UUID> id = project.get().getCache().getDataId(message.location);
+
+				if (id.isPresent())
+				{
+					project.get().getCache().removeData(id.get());
+
+					final File file = new File(project.get().getLocationAsFile(), message.location);
+
+					if (file.delete())
+					{
+						OrbisCore.network().sendPacketToPlayer(new PacketDeleteFile(message.project, message.location), (EntityPlayerMP) player);
+					}
+				}
 			}
 
 			return null;

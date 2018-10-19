@@ -11,7 +11,6 @@ import com.gildedgames.orbis.common.util.WorldRenderHelp;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.util.OpenGLHelper;
-import com.google.common.base.Optional;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -31,6 +30,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRenderer<TileEntityBlueprintPalette>
@@ -78,6 +78,11 @@ public class TileEntityBlueprintPaletteRenderer extends TileEntitySpecialRendere
 				}
 
 				i++;
+			}
+
+			if (id == null)
+			{
+				return;
 			}
 
 			final Optional<RenderBlueprintBlocks> opt = OrbisClientCaches.getBlueprintRenders().get(id);

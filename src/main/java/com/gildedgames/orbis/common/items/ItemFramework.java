@@ -31,6 +31,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
+import java.util.Optional;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ItemFramework extends Item implements ModelRegisterCallback, ItemStackInput
 {
@@ -100,9 +102,12 @@ public class ItemFramework extends Item implements ModelRegisterCallback, ItemSt
 		{
 			try
 			{
-				final IDataMetadata data = OrbisCore.getProjectManager().findMetadata(id);
+				final Optional<IDataMetadata> data = OrbisCore.getProjectManager().findMetadata(id);
 
-				return data.getName();
+				if (data.isPresent())
+				{
+					return data.get().getName();
+				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{

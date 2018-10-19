@@ -45,6 +45,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
+import java.util.Optional;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemStackInput
 {
@@ -86,16 +88,14 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
 
-		final IDataIdentifier id = funnel.get("blueprint_id");
-
-		return id;
+		return funnel.get("blueprint_id");
 	}
 
-	public static BlueprintData getBlueprint(final ItemStack stack)
+	public static Optional<BlueprintData> getBlueprint(final ItemStack stack)
 	{
 		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("blueprint_id"))
 		{
-			return null;
+			return Optional.empty();
 		}
 
 		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
@@ -128,9 +128,12 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 		{
 			try
 			{
-				final IDataMetadata data = OrbisCore.getProjectManager().findMetadata(id);
+				final Optional<IDataMetadata> data = OrbisCore.getProjectManager().findMetadata(id);
 
-				return data.getName();
+				if (data.isPresent())
+				{
+					return data.get().getName();
+				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{
@@ -171,10 +174,12 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 				.getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
-            if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
-                return;
-            playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
-            playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
+			if (playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			{
+				return;
+			}
+			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this, 4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))

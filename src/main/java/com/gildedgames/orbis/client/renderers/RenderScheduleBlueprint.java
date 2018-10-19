@@ -1,5 +1,9 @@
 package com.gildedgames.orbis.client.renderers;
 
+import com.gildedgames.orbis.client.OrbisClientCaches;
+import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.util.WorldRenderHelp;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.region.IRegion;
@@ -7,11 +11,6 @@ import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.data.schedules.ScheduleBlueprint;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis.client.OrbisClientCaches;
-import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.util.WorldRenderHelp;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,6 +19,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -205,7 +205,7 @@ public class RenderScheduleBlueprint implements IWorldRenderer
 	@Override
 	public void preRenderAllSubs(World world, float partialTicks, boolean useCamera)
 	{
-		
+
 	}
 
 	@Override

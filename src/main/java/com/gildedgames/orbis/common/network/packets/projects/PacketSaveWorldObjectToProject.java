@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.io.File;
+import java.util.Optional;
 
 public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 {
@@ -95,10 +96,10 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 
 			try
 			{
-				final IProject project = OrbisCore.getProjectManager().findProject(message.project);
+				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
 				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-				if (project != null && worldObject.getData() != null)
+				if (project.isPresent() && worldObject.getData() != null)
 				{
 					IData data = worldObject.getData();
 
@@ -108,19 +109,19 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 					 * a clone. Many issues are caused if two files use
 					 * the same identifier.
 					 */
-					if (data.getMetadata().getIdentifier() != null && project.getCache().hasData(data.getMetadata().getIdentifier().getDataId()))
+					if (data.getMetadata().getIdentifier() != null && project.get().getCache().hasData(data.getMetadata().getIdentifier().getDataId()))
 					{
 						data = data.clone();
-						data.getMetadata().setIdentifier(project.getCache().createNextIdentifier());
+						data.getMetadata().setIdentifier(project.get().getCache().createNextIdentifier());
 					}
 
 					data.preSaveToDisk(worldObject);
 
-					final File file = new File(project.getLocationAsFile(), message.location);
+					final File file = new File(project.get().getLocationAsFile(), message.location);
 
-					project.getCache().setData(data, message.location);
+					project.get().getCache().setData(data, message.location);
 
-					project.writeData(data, file);
+					project.get().writeData(data, file);
 
 					OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) player);
 				}
