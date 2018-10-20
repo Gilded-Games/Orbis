@@ -103,11 +103,12 @@ public class PacketSendProjectListing extends PacketMultipleParts
 				 * If the last date that the server project was changed is different to the
 				 * local one, it will request to download that project from the server.
 				 */
-				if (existing != null && !existing.getMetadata().getLastChanged().equals(project.getMetadata().getLastChanged()) && existing.getMetadata()
+				if (existing != null && !existing.getInfo().getMetadata().getLastChanged().equals(project.getInfo().getMetadata().getLastChanged()) && existing
+						.getInfo().getMetadata()
 						.isDownloaded())
 				{
-					project.getMetadata().setDownloading(true);
-					OrbisCore.network().sendPacketToServer(new PacketRequestProject(project.getProjectIdentifier()));
+					project.getInfo().getMetadata().setDownloading(true);
+					OrbisCore.network().sendPacketToServer(new PacketRequestProject(project.getInfo().getIdentifier()));
 				}
 			}
 

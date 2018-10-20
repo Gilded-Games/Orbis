@@ -49,7 +49,7 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 	 */
 	public PacketSaveWorldObjectToProject(final IProject project, final IWorldObject object, final String location)
 	{
-		this.project = project.getProjectIdentifier();
+		this.project = project.getInfo().getIdentifier();
 		this.worldObjectId = WorldObjectManager.get(object.getWorld()).getID(object);
 		this.location = location;
 	}

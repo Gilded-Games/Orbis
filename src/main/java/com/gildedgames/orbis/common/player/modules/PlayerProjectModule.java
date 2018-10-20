@@ -42,7 +42,7 @@ public class PlayerProjectModule extends PlayerOrbisModule
 
 		if (this.currentProject != null)
 		{
-			funnel.set("projectId", this.currentProject.getProjectIdentifier());
+			funnel.set("projectId", this.currentProject.getInfo().getIdentifier());
 		}
 	}
 

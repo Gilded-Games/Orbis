@@ -46,9 +46,9 @@ public class PacketSendProject extends PacketMultipleParts
 
 	public PacketSendProject(final IProject project)
 	{
-		this.project = project.getProjectIdentifier();
+		this.project = project.getInfo().getIdentifier();
 		this.cache = project.getCache();
-		this.lastChanged = project.getMetadata().getLastChanged();
+		this.lastChanged = project.getInfo().getMetadata().getLastChanged();
 	}
 
 	@Override
@@ -126,10 +126,10 @@ public class PacketSendProject extends PacketMultipleParts
 						}
 					}
 
-					project.get().getMetadata().setDownloaded(true);
-					project.get().getMetadata().setDownloading(false);
+					project.get().getInfo().getMetadata().setDownloaded(true);
+					project.get().getInfo().getMetadata().setDownloading(false);
 
-					project.get().getMetadata().setLastChanged(message.lastChanged);
+					project.get().getInfo().getMetadata().setLastChanged(message.lastChanged);
 
 					OrbisCore.LOGGER.debug("Project downloaded! " + project.get().getLocationAsFile().getName());
 				}

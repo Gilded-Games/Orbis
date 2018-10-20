@@ -20,6 +20,8 @@ import java.util.function.Function;
 
 public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 {
+	public static final String METADATA_EXTENSION = "metadata";
+
 	private Function<String, Boolean> extensionValidator;
 
 	public OrbisNavigatorNodeFactory()
@@ -39,7 +41,7 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 
 		try
 		{
-			if (Files.getAttribute(Paths.get(file.getPath()), "dos:hidden") == Boolean.TRUE)
+			if (Files.getAttribute(Paths.get(file.getPath()), "dos:hidden") == Boolean.TRUE || extension.equals(METADATA_EXTENSION))
 			{
 				return null;
 			}
