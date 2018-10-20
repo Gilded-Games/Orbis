@@ -8,7 +8,10 @@ import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.network.CommandActivateDesignerGamemode;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
+import com.gildedgames.orbis.common.network.packets.PacketSendDataCachePool;
+import com.gildedgames.orbis.common.network.packets.PacketWorldObjectManager;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
+import com.gildedgames.orbis.common.network.packets.projects.PacketSendProjectListing;
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeCuboid;
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeLine;
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeSphere;
@@ -42,6 +45,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
@@ -124,8 +128,8 @@ public class OrbisCore
 		 */
 		if (!event.player.world.isRemote)
 		{
-			//OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
-			//OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
+			OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
+			OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
 		}
 	}
 
@@ -141,7 +145,7 @@ public class OrbisCore
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(player.getServer().getWorld(world.provider.getDimension()));
 
-				//OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
 			}
 		}
 	}
@@ -325,7 +329,7 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onFMLPreInit(final FMLPreInitializationEvent event)
 	{
-		//OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+		OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
 
 		NetworkingOrbis.preInit();
 
@@ -346,7 +350,7 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onServerStopping(final FMLServerStoppingEvent event)
 	{
-		//OrbisAPI.services().stopProjectManager();
+		OrbisAPI.services().stopProjectManager();
 		stopDataCache();
 	}
 
@@ -359,7 +363,7 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void serverStarted(final FMLServerStartedEvent event)
 	{
-		//OrbisAPI.services().startProjectManager();
+		OrbisAPI.services().startProjectManager();
 		startDataCache();
 	}
 
