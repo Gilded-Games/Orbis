@@ -43,7 +43,6 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListener
@@ -461,12 +460,6 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 
 	@Override
 	public void onDirectoryOpen(final IDirectoryNavigator navigator, final File file)
-	{
-
-	}
-
-	@Override
-	public void onDirectoriesViewed(IDirectoryNavigator navigator, List<File> files)
 	{
 
 	}

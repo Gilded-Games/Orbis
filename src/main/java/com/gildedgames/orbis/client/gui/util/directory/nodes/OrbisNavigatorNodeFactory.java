@@ -10,6 +10,7 @@ import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.json.JsonData;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.impl.OrbisProjectManager;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +42,8 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 
 		try
 		{
-			if (Files.getAttribute(Paths.get(file.getPath()), "dos:hidden") == Boolean.TRUE || extension.equals(METADATA_EXTENSION))
+			if (Files.getAttribute(Paths.get(file.getPath()), "dos:hidden") == Boolean.TRUE || extension.equals(METADATA_EXTENSION) || FilenameUtils
+					.getName(file.getPath()).equals("project_data.json"))
 			{
 				return null;
 			}

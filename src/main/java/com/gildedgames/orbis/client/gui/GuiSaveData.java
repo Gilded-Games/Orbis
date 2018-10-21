@@ -36,7 +36,6 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListener
@@ -335,12 +334,6 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 
 	@Override
 	public void onDirectoryOpen(final IDirectoryNavigator navigator, final File file)
-	{
-
-	}
-
-	@Override
-	public void onDirectoriesViewed(IDirectoryNavigator navigator, List<File> files)
 	{
 
 	}

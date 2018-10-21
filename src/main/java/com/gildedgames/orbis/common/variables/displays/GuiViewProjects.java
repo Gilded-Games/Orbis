@@ -27,7 +27,6 @@ import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -165,12 +164,6 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 
 	@Override
 	public void onDirectoryOpen(final IDirectoryNavigator navigator, final File file)
-	{
-
-	}
-
-	@Override
-	public void onDirectoriesViewed(IDirectoryNavigator navigator, List<File> files)
 	{
 
 	}
