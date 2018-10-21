@@ -7,6 +7,7 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -48,7 +49,7 @@ public class OrbisClientCaches
 									return Optional.of(framework);
 								}
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.FRAMEWORK_RENDER_CACHE: ", e);
 							}
@@ -81,7 +82,7 @@ public class OrbisClientCaches
 									return Optional.of(blueprint);
 								}
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_RENDER_CACHE: ", e);
 							}
@@ -121,7 +122,7 @@ public class OrbisClientCaches
 								}
 
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_BDC_CACHE: ", e);
 							}
@@ -156,7 +157,7 @@ public class OrbisClientCaches
 									return Optional.of(blueprint);
 								}
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_RENDER_CACHE: ", e);
 							}

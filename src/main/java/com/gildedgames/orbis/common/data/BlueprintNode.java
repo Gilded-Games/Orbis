@@ -1,6 +1,8 @@
 package com.gildedgames.orbis.common.data;
 
 import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -97,7 +99,15 @@ public class BlueprintNode implements IFrameworkNode
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		OrbisAPI.services().getProjectManager().findData(funnel.get("data")).ifPresent(data -> this.data = (BlueprintData) data);
+		try
+		{
+			OrbisAPI.services().getProjectManager().findData(funnel.get("data")).ifPresent(data -> this.data = (BlueprintData) data);
+		}
+		catch (OrbisMissingProjectException | OrbisMissingDataException e)
+		{
+			OrbisAPI.LOGGER.error(e);
+		}
+
 		this.palette = funnel.get("palette");
 		this.bounds = funnel.get("bounds");
 

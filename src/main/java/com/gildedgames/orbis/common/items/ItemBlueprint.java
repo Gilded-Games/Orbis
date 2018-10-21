@@ -102,7 +102,16 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		final IDataIdentifier id = funnel.get("blueprint_id");
 
-		return OrbisAPI.services().getProjectManager().findData(id);
+		try
+		{
+			return OrbisAPI.services().getProjectManager().findData(id);
+		}
+		catch (OrbisMissingProjectException | OrbisMissingDataException e)
+		{
+			OrbisAPI.LOGGER.error(e);
+		}
+
+		return Optional.empty();
 	}
 
 	@SideOnly(Side.CLIENT)
