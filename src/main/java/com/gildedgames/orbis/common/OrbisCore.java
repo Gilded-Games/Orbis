@@ -128,8 +128,11 @@ public class OrbisCore
 		 */
 		if (!event.player.world.isRemote)
 		{
-			OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
-			OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
+			if (OrbisCore.CONFIG.useExperimentalFeatures())
+			{
+				OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
+				OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
+			}
 		}
 	}
 
@@ -145,7 +148,10 @@ public class OrbisCore
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(player.getServer().getWorld(world.provider.getDimension()));
 
-				OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				if (OrbisCore.CONFIG.useExperimentalFeatures())
+				{
+					OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				}
 			}
 		}
 	}
@@ -329,13 +335,17 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onFMLPreInit(final FMLPreInitializationEvent event)
 	{
-		OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+		OrbisCore.CONFIG = new ConfigOrbis(event.getSuggestedConfigurationFile());
+
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+		}
 
 		NetworkingOrbis.preInit();
 
 		OrbisTileEntities.preInit();
 
-		OrbisCore.CONFIG = new ConfigOrbis(event.getSuggestedConfigurationFile());
 		OrbisCore.PROXY.preInit(event);
 	}
 
@@ -350,7 +360,11 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onServerStopping(final FMLServerStoppingEvent event)
 	{
-		OrbisAPI.services().stopProjectManager();
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			OrbisAPI.services().stopProjectManager();
+		}
+
 		stopDataCache();
 	}
 
@@ -363,7 +377,11 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void serverStarted(final FMLServerStartedEvent event)
 	{
-		OrbisAPI.services().startProjectManager();
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			OrbisAPI.services().startProjectManager();
+		}
+
 		startDataCache();
 	}
 
