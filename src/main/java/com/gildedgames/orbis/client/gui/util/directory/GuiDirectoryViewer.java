@@ -259,6 +259,12 @@ public class GuiDirectoryViewer extends GuiElement implements IDirectoryNavigato
 	}
 
 	@Override
+	public void onDirectoriesViewed(IDirectoryNavigator navigator, List<File> files)
+	{
+		
+	}
+
+	@Override
 	public void onBack(final IDirectoryNavigator navigator)
 	{
 

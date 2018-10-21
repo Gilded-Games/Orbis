@@ -36,6 +36,7 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListener
@@ -137,6 +138,9 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 		this.directoryViewer.setDisplayBackdrop(false);
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
+
+		this.directoryViewer.getNavigator()
+				.injectDirectories(OrbisCore.getProjectManager().getLocation(), OrbisCore.getProjectManager().getExtraProjectSourceFolders());
 
 		context.addChildren(this.directoryViewer);
 	}
@@ -331,6 +335,12 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 
 	@Override
 	public void onDirectoryOpen(final IDirectoryNavigator navigator, final File file)
+	{
+
+	}
+
+	@Override
+	public void onDirectoriesViewed(IDirectoryNavigator navigator, List<File> files)
 	{
 
 	}
