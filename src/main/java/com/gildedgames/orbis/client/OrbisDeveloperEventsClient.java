@@ -436,7 +436,7 @@ public class OrbisDeveloperEventsClient
 	public static void onRenderWorldLast(final RenderWorldLastEvent event)
 	{
 		ModelOrbisFloor.setMimicModel(null);
-		ModelOrbisFloor.setFloorColor(0x000000);
+		ModelOrbisFloor.setFloorColor(0xFFFFFF);
 
 		final World world = Minecraft.getMinecraft().world;
 
