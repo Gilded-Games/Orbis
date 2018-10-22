@@ -7,7 +7,6 @@ import com.gildedgames.orbis.common.data.BlueprintNode;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.network.CommandActivateDesignerGamemode;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataCachePool;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectManager;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
@@ -105,8 +104,15 @@ public class OrbisCore
 
 		if (playerOrbis.powers().getSelectPower().getSelectedRegion() != null && !world.isRemote)
 		{
-			OrbisCore.network().sendPacketToServer(new PacketClearSelectedRegion());
-			OrbisCore.network().sendPacketToServer(new PacketWorldObjectRemove(world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+			final WorldObjectManager manager = WorldObjectManager.get(player.world);
+
+			WorldShape selection = playerOrbis.powers().getSelectPower().getSelectedRegion();
+			int id = manager.getID(selection);
+
+			manager.removeObject(id);
+
+			OrbisCore.network()
+					.sendPacketToDimension(new PacketWorldObjectRemove(id, world.provider.getDimension()), world.provider.getDimension());
 
 			playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 		}
