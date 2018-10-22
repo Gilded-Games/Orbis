@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common;
 
+import com.gildedgames.orbis.common.blocks.BlocksOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDestroy;
@@ -115,6 +116,12 @@ public class OrbisDeveloperModeEvents
 	@SubscribeEvent
 	public static void onPlayerBreak(BlockEvent.BreakEvent event)
 	{
+		if (event.getState() == BlocksOrbis.orbis_floor.getDefaultState())
+		{
+			event.setCanceled(true);
+			return;
+		}
+
 		EntityPlayer player = event.getPlayer();
 		PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 
@@ -135,7 +142,7 @@ public class OrbisDeveloperModeEvents
 			te.writeToNBT(teData);
 		}
 
-		IBlockState state = world.getBlockState(pos);
+		IBlockState state = event.getState();
 
 		BlockData blockData = teData == null ? new BlockData(state) : new BlockData(state, teData);
 

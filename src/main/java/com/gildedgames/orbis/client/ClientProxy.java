@@ -20,7 +20,7 @@ public class ClientProxy extends CommonProxy
 
 		Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) ->
 		{
-			if (ModelOrbisFloor.currentMimicBlock.getBlock() != BlocksOrbis.orbis_floor)
+			if (ModelOrbisFloor.currentMimicBlock != null && ModelOrbisFloor.currentMimicBlock.getBlock() != BlocksOrbis.orbis_floor)
 			{
 				return Minecraft.getMinecraft().getBlockColors()
 						.colorMultiplier(ModelOrbisFloor.currentMimicBlock, new FakeOrbisFloorWorld(ModelOrbisFloor.currentMimicBlock), pos, tintIndex);

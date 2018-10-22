@@ -61,6 +61,8 @@ public class OrbisDeveloperEventsClient
 
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
+	public static IBakedModel original;
+
 	private static double prevReach;
 
 	private static IWorldObject prevSelection;
@@ -69,11 +71,10 @@ public class OrbisDeveloperEventsClient
 
 	private static boolean prevDimSet;
 
-	public static IBakedModel original;
-
 	@SubscribeEvent
-	public static void modelBakeEvent(final ModelBakeEvent event){
-		ModelResourceLocation resourceLocation = new ModelResourceLocation(new ResourceLocation("orbis","orbis_floor"), "normal");
+	public static void modelBakeEvent(final ModelBakeEvent event)
+	{
+		ModelResourceLocation resourceLocation = new ModelResourceLocation(new ResourceLocation("orbis", "orbis_floor"), "normal");
 		original = event.getModelRegistry().getObject(resourceLocation);
 		event.getModelRegistry().putObject(resourceLocation, new ModelOrbisFloor());
 	}
@@ -434,6 +435,9 @@ public class OrbisDeveloperEventsClient
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onRenderWorldLast(final RenderWorldLastEvent event)
 	{
+		ModelOrbisFloor.setMimicModel(null);
+		ModelOrbisFloor.setFloorColor(0x000000);
+
 		final World world = Minecraft.getMinecraft().world;
 
 		CHUNK_RENDERER_MANAGER.render(world, event.getPartialTicks());
