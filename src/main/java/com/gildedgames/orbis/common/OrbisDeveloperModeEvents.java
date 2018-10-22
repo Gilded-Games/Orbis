@@ -38,7 +38,7 @@ public class OrbisDeveloperModeEvents
 			final String gamemodeString = args[0];
 			boolean setsDeveloperMode = false;
 
-			if (gamemodeString.equals("designer"))
+			if (gamemodeString.equals("designer") || "designer".startsWith(gamemodeString))
 			{
 				setsDeveloperMode = true;
 			}
@@ -70,24 +70,24 @@ public class OrbisDeveloperModeEvents
 					PlayerOrbis.get(player).setDeveloperMode(true);
 					player.setGameType(GameType.CREATIVE);
 
-					final ITextComponent itextcomponent = new TextComponentTranslation("gameMode.designer", new Object[0]);
+					final ITextComponent itextcomponent = new TextComponentTranslation("gameMode.designer");
 
 					event.setCanceled(true);
 
 					if (event.getSender().getEntityWorld().getGameRules().getBoolean("sendCommandFeedback"))
 					{
-						player.sendMessage(new TextComponentTranslation("gameMode.changed", new Object[] { itextcomponent }));
+						player.sendMessage(new TextComponentTranslation("gameMode.changed", itextcomponent));
 					}
 
 					if (player == event.getSender())
 					{
 						CommandBase.notifyCommandListener(event.getSender(), event.getCommand(), 1, "commands.gamemode.success.self",
-								new Object[] { itextcomponent });
+								itextcomponent);
 					}
 					else
 					{
 						CommandBase.notifyCommandListener(event.getSender(), event.getCommand(), 1, "commands.gamemode.success.other",
-								new Object[] { player.getName(), itextcomponent });
+								player.getName(), itextcomponent);
 					}
 				}
 				else
