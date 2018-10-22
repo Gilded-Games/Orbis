@@ -1,10 +1,7 @@
 package com.gildedgames.orbis.common;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.CommandGameMode;
-import net.minecraft.command.NumberInvalidException;
+import net.minecraft.command.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -32,6 +29,10 @@ public class OrbisDeveloperModeEvents
 		if (event.getCommand() instanceof CommandGameMode)
 		{
 			final String[] args = event.getParameters();
+			if(args.length==0)
+			{
+				event.setException(new WrongUsageException("commands.gamemode.usage"));
+			}
 
 			final String gamemodeString = args[0];
 			boolean setsDeveloperMode = false;
