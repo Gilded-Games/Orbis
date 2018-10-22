@@ -6,6 +6,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintStacker;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
@@ -138,7 +139,12 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null || !playerOrbis.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID()))
+		if (Minecraft.getMinecraft().currentScreen != null)
+		{
+			return;
+		}
+
+		if (!playerOrbis.inDeveloperMode())
 		{
 			return;
 		}
@@ -190,7 +196,7 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 				}
 				else
 				{
-					playerOrbis.getWorldActionLog().track(world, new WorldActionBlueprintStacker(createPos));
+					playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionBlueprintStacker(createPos));
 				}
 			}
 		}

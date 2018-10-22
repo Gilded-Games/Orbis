@@ -17,6 +17,7 @@ import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.OrbisAPI;
@@ -188,13 +189,16 @@ public class OrbisDeveloperEventsClient
 
 				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
 				{
+					String worldActionLog = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getCreativePower() ?
+							WorldActionLogs.BLOCKS : WorldActionLogs.NORMAL;
+
 					if (OrbisKeyBindings.keyBindRedo.isPressed())
 					{
-						playerOrbis.getWorldActionLog().redo(mc.world);
+						playerOrbis.getWorldActionLog(worldActionLog).redo(mc.world);
 					}
 					else if (OrbisKeyBindings.keyBindUndo.isPressed())
 					{
-						playerOrbis.getWorldActionLog().undo(mc.world);
+						playerOrbis.getWorldActionLog(worldActionLog).undo(mc.world);
 					}
 				}
 
@@ -216,7 +220,8 @@ public class OrbisDeveloperEventsClient
 					{
 						final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewDeleteLayer(mc.player.getHeldItemMainhand()));
 
-						playerOrbis.getWorldActionLog().track(mc.world, new WorldActionFilter(select.getSelectedRegion().getBoundingBox(), filter, false));
+						playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
+								.apply(mc.world, new WorldActionFilter(select.getSelectedRegion().getBoundingBox(), filter, false));
 					}
 				}
 
@@ -272,76 +277,79 @@ public class OrbisDeveloperEventsClient
 	{
 		final PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
 
-		IShapeSelector selector = playerOrbis.powers().getCurrentPower().getShapeSelector();
-		final ISelectionInput selectionInput = playerOrbis.selectionInputs().getCurrentSelectionInput();
-
-		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
-
-		if (held.getItem() instanceof IShapeSelector)
-		{
-			selector = (IShapeSelector) held.getItem();
-		}
-
-		if (held.getItem() instanceof ItemStackInput)
-		{
-			final ItemStackInput input = (ItemStackInput) held.getItem();
-
-			input.onMouseEvent(event, playerOrbis);
-		}
-
 		if (playerOrbis.inDeveloperMode())
 		{
+			IShapeSelector selector = playerOrbis.powers().getCurrentPower().getShapeSelector();
+			final ISelectionInput selectionInput = playerOrbis.selectionInputs().getCurrentSelectionInput();
+
+			final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+
+			if (held.getItem() instanceof IShapeSelector)
+			{
+				selector = (IShapeSelector) held.getItem();
+			}
+
+			if (held.getItem() instanceof ItemStackInput)
+			{
+				final ItemStackInput input = (ItemStackInput) held.getItem();
+
+				input.onMouseEvent(event, playerOrbis);
+			}
+
 			selectionInput.onMouseEvent(event, selector, playerOrbis);
-		}
 
-		final IWorldObject activeRegion = selectionInput.getActiveSelection();
+			final IWorldObject activeRegion = selectionInput.getActiveSelection();
 
-		//Change reach
-		if (OrbisKeyBindings.keyBindControl.isKeyDown() || (activeRegion != null && selectionInput.shouldClearSelectionOnEscape()))
-		{
-			if (activeRegion != null && prevSelection == null)
+			//Change reach
+			if (OrbisKeyBindings.keyBindControl.isKeyDown() || (activeRegion != null && selectionInput.shouldClearSelectionOnEscape()))
 			{
-				prevSelection = activeRegion;
-
-				prevReach = playerOrbis.getDeveloperReach();
-			}
-
-			if (OrbisKeyBindings.keyBindControl.isKeyDown())
-			{
-				prevReach = playerOrbis.getDeveloperReach();
-			}
-
-			final RayTraceResult blockRaytrace = OrbisRaytraceHelp.getStandardRaytrace(playerOrbis.getEntity());
-			double reach = playerOrbis.getReach();
-
-			if (event.getDwheel() > 0)
-			{
-				playerOrbis.setDeveloperReach(reach + 1);
-
-				event.setCanceled(true);
-			}
-			else if (event.getDwheel() < 0)
-			{
-				if (blockRaytrace != null)
+				if (activeRegion != null && prevSelection == null)
 				{
-					final int x = MathHelper.floor(playerOrbis.getEntity().posX);
-					final int y = MathHelper.floor(playerOrbis.getEntity().posY);
-					final int z = MathHelper.floor(playerOrbis.getEntity().posZ);
+					prevSelection = activeRegion;
 
-					final double deltaX = x - blockRaytrace.hitVec.x;
-					final double deltaY = y - blockRaytrace.hitVec.y;
-					final double deltaZ = z - blockRaytrace.hitVec.z;
-
-					final float distance = MathHelper.floor((float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
-
-					playerOrbis.setDeveloperReach(distance);
-
-					reach = playerOrbis.getReach();
+					prevReach = playerOrbis.getDeveloperReach();
 				}
 
-				playerOrbis.setDeveloperReach(reach - 1);
+				if (OrbisKeyBindings.keyBindControl.isKeyDown())
+				{
+					prevReach = playerOrbis.getDeveloperReach();
+				}
 
-				event.setCanceled(true);
+				if (playerOrbis.powers().getCurrentPower() != playerOrbis.powers().getCreativePower())
+				{
+					final RayTraceResult blockRaytrace = OrbisRaytraceHelp.getStandardRaytrace(playerOrbis.getEntity());
+					double reach = playerOrbis.getReach();
+
+					if (event.getDwheel() > 0)
+					{
+						playerOrbis.setDeveloperReach(reach + 1);
+
+						event.setCanceled(true);
+					}
+					else if (event.getDwheel() < 0)
+					{
+						if (blockRaytrace != null)
+						{
+							final int x = MathHelper.floor(playerOrbis.getEntity().posX);
+							final int y = MathHelper.floor(playerOrbis.getEntity().posY);
+							final int z = MathHelper.floor(playerOrbis.getEntity().posZ);
+
+							final double deltaX = x - blockRaytrace.hitVec.x;
+							final double deltaY = y - blockRaytrace.hitVec.y;
+							final double deltaZ = z - blockRaytrace.hitVec.z;
+
+							final float distance = MathHelper.floor((float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
+
+							playerOrbis.setDeveloperReach(distance);
+
+							reach = playerOrbis.getReach();
+						}
+
+						playerOrbis.setDeveloperReach(reach - 1);
+
+						event.setCanceled(true);
+					}
+				}
 			}
 		}
 	}

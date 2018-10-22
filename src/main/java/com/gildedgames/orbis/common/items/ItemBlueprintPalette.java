@@ -8,6 +8,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintPalette;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
@@ -125,7 +126,12 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 			return;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen != null || !playerOrbis.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID()))
+		if (Minecraft.getMinecraft().currentScreen != null)
+		{
+			return;
+		}
+
+		if (!playerOrbis.inDeveloperMode())
 		{
 			return;
 		}
@@ -135,10 +141,12 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && palette != null && playerOrbis.powers().getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
-			if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			if (playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			{
 				return;
+			}
 			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
-			playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this, 4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
@@ -174,7 +182,7 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 				}
 				else
 				{
-					playerOrbis.getWorldActionLog().track(world, new WorldActionBlueprintPalette(createPos));
+					playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionBlueprintPalette(createPos));
 				}
 			}
 		}

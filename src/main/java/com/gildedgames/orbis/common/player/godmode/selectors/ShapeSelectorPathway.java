@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.player.godmode.selectors;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemsOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionPathway;
 import com.gildedgames.orbis_api.data.region.IShape;
 import net.minecraft.item.ItemStack;
@@ -42,7 +43,7 @@ public class ShapeSelectorPathway implements IShapeSelector
 			return;
 		}
 
-		playerOrbis.getWorldActionLog().track(world, new WorldActionPathway(start, end));
+		playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionPathway(start, end));
 	}
 
 	@Override

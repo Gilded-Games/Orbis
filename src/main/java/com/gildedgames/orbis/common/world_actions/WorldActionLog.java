@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.world_actions;
 
-import com.gildedgames.orbis.common.util.FixedStack;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.util.FixedStack;
 import net.minecraft.world.World;
 
 public class WorldActionLog implements IWorldActionLog
@@ -20,8 +20,11 @@ public class WorldActionLog implements IWorldActionLog
 
 	private PlayerOrbis playerOrbis;
 
-	public WorldActionLog(PlayerOrbis playerOrbis, int historySize)
+	private String worldActionLogId;
+
+	public WorldActionLog(String worldActionLogId, PlayerOrbis playerOrbis, int historySize)
 	{
+		this.worldActionLogId = worldActionLogId;
 		this.playerOrbis = playerOrbis;
 		this.historySize = historySize;
 
@@ -35,6 +38,14 @@ public class WorldActionLog implements IWorldActionLog
 	 * @param action The tracked action
 	 */
 	@Override
+	public void apply(World world, IWorldAction action)
+	{
+		this.track(world, action);
+
+		action.redo(this.playerOrbis, world);
+	}
+
+	@Override
 	public void track(World world, IWorldAction action)
 	{
 		if (action == null)
@@ -47,8 +58,6 @@ public class WorldActionLog implements IWorldActionLog
 		this.past.push(action);
 
 		action.setWorld(this.playerOrbis, world);
-
-		action.redo(this.playerOrbis, world);
 	}
 
 	@Override

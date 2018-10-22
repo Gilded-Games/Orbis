@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddWorldObject;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.data.region.IShape;
@@ -42,7 +43,7 @@ public class ShapeSelectorBlueprint implements IShapeSelector
 		{
 			final Blueprint blueprint = new Blueprint(world, selectedShape.getBoundingBox());
 
-			playerOrbis.getWorldActionLog().track(world, new WorldActionAddWorldObject(blueprint));
+			playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionAddWorldObject(blueprint));
 		}
 	}
 

@@ -1,9 +1,10 @@
 package com.gildedgames.orbis.common;
 
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceFactory;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
+import com.gildedgames.orbis_api.OrbisAPI;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -24,6 +25,11 @@ public class CommonProxy
 	public void init(FMLInitializationEvent event)
 	{
 
+	}
+
+	public EntityPlayer getPlayer()
+	{
+		return null;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilterMultiple;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -56,7 +57,7 @@ public class ShapeSelectorFilter implements IShapeSelector
 
 		final BlockFilter filter = this.filterSupplier.apply(playerOrbis.getEntity());
 
-		playerOrbis.getWorldActionLog().track(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
+		playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionFilter(selectedShape, filter, playerOrbis.powers().isScheduling()));
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class ShapeSelectorFilter implements IShapeSelector
 
 		final BlockFilter filter = this.filterSupplier.apply(playerOrbis.getEntity());
 
-		playerOrbis.getWorldActionLog()
-				.track(world, new WorldActionFilterMultiple(selectedShape, filter, playerOrbis.powers().isScheduling(), multiplePositions));
+		playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
+				.apply(world, new WorldActionFilterMultiple(selectedShape, filter, playerOrbis.powers().isScheduling(), multiplePositions));
 	}
 }

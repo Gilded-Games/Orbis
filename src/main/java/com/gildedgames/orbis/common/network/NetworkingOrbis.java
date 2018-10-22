@@ -7,10 +7,7 @@ import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.network.packets.gui.*;
 import com.gildedgames.orbis.common.network.packets.projects.*;
-import com.gildedgames.orbis.common.network.packets.world_actions.PacketClearWorldActions;
-import com.gildedgames.orbis.common.network.packets.world_actions.PacketRedoWorldAction;
-import com.gildedgames.orbis.common.network.packets.world_actions.PacketTrackWorldAction;
-import com.gildedgames.orbis.common.network.packets.world_actions.PacketUndoWorldAction;
+import com.gildedgames.orbis.common.network.packets.world_actions.*;
 import com.gildedgames.orbis_api.network.INetworkMultipleParts;
 import com.gildedgames.orbis_api.network.NetworkMultipleParts;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -74,6 +71,8 @@ public class NetworkingOrbis
 		network.reg(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class,
 				Side.SERVER);
 
+		network.reg(PacketApplyWorldAction.HandlerServer.class, PacketApplyWorldAction.class,
+				Side.SERVER);
 		network.reg(PacketTrackWorldAction.HandlerServer.class, PacketTrackWorldAction.class,
 				Side.SERVER);
 		network.reg(PacketRedoWorldAction.HandlerServer.class, PacketRedoWorldAction.class,

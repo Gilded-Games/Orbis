@@ -2,6 +2,8 @@ package com.gildedgames.orbis.client;
 
 import com.gildedgames.orbis.common.CommonProxy;
 import com.gildedgames.orbis_api.OrbisAPI;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
 public class ClientProxy extends CommonProxy
@@ -14,5 +16,11 @@ public class ClientProxy extends CommonProxy
 		OrbisKeyBindings.init();
 
 		OrbisAPI.services().lootTableCache().attachReloadListener();
+	}
+
+	@Override
+	public EntityPlayer getPlayer()
+	{
+		return FMLClientHandler.instance().getClientPlayerEntity();
 	}
 }

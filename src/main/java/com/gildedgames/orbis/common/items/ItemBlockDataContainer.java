@@ -7,6 +7,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataToCache;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDataContainer;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.data.management.IDataCache;
@@ -113,6 +114,11 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 			return;
 		}
 
+		if (!playerOrbis.inDeveloperMode())
+		{
+			return;
+		}
+
 		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1))
 				&& playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null)
 		{
@@ -129,7 +135,8 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
-				playerOrbis.getWorldActionLog().track(world, new WorldActionBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
+				playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
+						.apply(world, new WorldActionBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
 			}
 		}
 	}

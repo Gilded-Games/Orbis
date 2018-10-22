@@ -46,6 +46,9 @@ public class PacketSendDataToCache extends PacketMultipleParts
 
 		this.cacheId = tag.getString("cacheId");
 		this.data = funnel.get("state");
+
+		// Set the metadata back in when reading everything
+		this.data.setMetadata(funnel.get("meta"));
 	}
 
 	@Override
@@ -56,6 +59,9 @@ public class PacketSendDataToCache extends PacketMultipleParts
 
 		tag.setString("cacheId", this.cacheId);
 		funnel.set("state", this.data);
+
+		// Metadata is not serialized by default in IData, so we serialise manually
+		funnel.set("meta", this.data.getMetadata());
 
 		ByteBufUtils.writeTag(buf, tag);
 	}

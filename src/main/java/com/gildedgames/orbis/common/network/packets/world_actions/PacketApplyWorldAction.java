@@ -12,7 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketTrackWorldAction extends PacketMultipleParts
+public class PacketApplyWorldAction extends PacketMultipleParts
 {
 	private IWorldAction action;
 
@@ -20,17 +20,17 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 
 	private NBTFunnel funnel;
 
-	public PacketTrackWorldAction()
+	public PacketApplyWorldAction()
 	{
 
 	}
 
-	private PacketTrackWorldAction(byte[] data)
+	private PacketApplyWorldAction(byte[] data)
 	{
 		super(data);
 	}
 
-	public PacketTrackWorldAction(String worldActionLogId, IWorldAction action)
+	public PacketApplyWorldAction(String worldActionLogId, IWorldAction action)
 	{
 		this.worldActionLogId = worldActionLogId;
 		this.action = action;
@@ -39,7 +39,7 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 	@Override
 	public PacketMultipleParts createPart(byte[] data)
 	{
-		return new PacketTrackWorldAction(data);
+		return new PacketApplyWorldAction(data);
 	}
 
 	@Override
@@ -60,10 +60,10 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 		ByteBufUtils.writeTag(buf, tag);
 	}
 
-	public static class HandlerServer extends MessageHandlerServer<PacketTrackWorldAction, IMessage>
+	public static class HandlerServer extends MessageHandlerServer<PacketApplyWorldAction, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketTrackWorldAction message, final EntityPlayer player)
+		public IMessage onMessage(final PacketApplyWorldAction message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
@@ -74,7 +74,7 @@ public class PacketTrackWorldAction extends PacketMultipleParts
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				playerOrbis.getWorldActionLog(message.funnel.getTag().getString("i")).track(player.getEntityWorld(), message.funnel.get("a"));
+				playerOrbis.getWorldActionLog(message.funnel.getTag().getString("i")).apply(player.getEntityWorld(), message.funnel.get("a"));
 			}
 
 			return null;

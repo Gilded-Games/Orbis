@@ -231,13 +231,16 @@ public class GuiDirectoryViewer extends GuiElement implements IDirectoryNavigato
 		this.context().addChildren(this.backButton);
 		this.context().addChildren(this.forwardButton);
 
-		this.dropdownList = new GuiDropdownList<>(Dim2D.build().flush());
+		this.dropdownList = new GuiDropdownList<>(Dim2D.build().width(70).flush());
 
 		this.dropdownList.state().setVisible(false);
+		this.dropdownList.state().setCanBeTopHoverElement(true);
 
 		this.context().addChildNoMods(this.dropdownList);
 
 		this.refreshFiles();
+
+		this.state().setCanBeTopHoverElement(true);
 	}
 
 	@Override

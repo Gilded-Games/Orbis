@@ -2,11 +2,9 @@ package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
+import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.management.IProject;
-import com.gildedgames.orbis_api.data.management.IProjectCache;
-import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
+import com.gildedgames.orbis_api.data.management.*;
 import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
@@ -14,10 +12,10 @@ import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -110,18 +108,25 @@ public class PacketSendProject extends PacketMultipleParts
 						{
 							final File file = new File(project.get().getLocationAsFile(), dataLoc.get());
 
-							try (FileOutputStream out = new FileOutputStream(file))
+							String extension = FilenameUtils.getExtension(dataLoc.get());
+
+							Optional<IDataLoader<IProject>> dataLoader = OrbisAPI.services().getProjectManager().getDataLoaderForExtension(extension);
+							Optional<IMetadataLoader<IProject>> metadataLoader = OrbisAPI.services().getProjectManager()
+									.getMetadataLoaderForExtension(extension);
+
+							if (!dataLoader.isPresent() || !metadataLoader.isPresent())
 							{
-								final NBTTagCompound tag = new NBTTagCompound();
-								final NBTFunnel funnel = new NBTFunnel(tag);
-
-								funnel.set("state", data);
-
-								CompressedStreamTools.writeCompressed(tag, out);
+								OrbisCore.LOGGER.error("Failed to save project data state (" + data.getMetadata().getIdentifier() + ") to disk");
+								continue;
 							}
-							catch (final IOException e)
+
+							try (FileOutputStream stream = new FileOutputStream(file))
 							{
-								OrbisCore.LOGGER.error("Failed to save project state to disk", e);
+								dataLoader.get().saveData(project.get(), data, file, stream);
+							}
+							catch (IOException e)
+							{
+								OrbisAPI.LOGGER.error("Failed to write data to project directory", data, e);
 							}
 						}
 					}

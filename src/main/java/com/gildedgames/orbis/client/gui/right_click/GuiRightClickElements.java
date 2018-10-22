@@ -9,6 +9,7 @@ import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveEntrance;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSchedule;
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
@@ -105,7 +106,7 @@ public class GuiRightClickElements
 				PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 				final BlockFilter filter = new BlockFilter(BlockFilterHelper.getNewVoidLayer());
 
-				playerOrbis.getWorldActionLog().track(player.getEntityWorld(), new WorldActionFilter(shape, filter, false));
+				playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(player.getEntityWorld(), new WorldActionFilter(shape, filter, false));
 			}
 		};
 	}

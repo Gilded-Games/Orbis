@@ -14,6 +14,7 @@ import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world_actions.IWorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogClient;
+import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IShape;
@@ -22,6 +23,7 @@ import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.util.mc.NBTHelper;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -37,8 +39,10 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class PlayerOrbis implements IPlayerOrbis
 {
@@ -70,9 +74,17 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private OrbisInstance orbisInstance;
 
-	private IWorldActionLog worldActionLog = new WorldActionLog(this, 20);
+	private IWorldActionLog worldActionLog = new WorldActionLog(WorldActionLogs.NORMAL, this, 20);
 
-	private IWorldActionLog worldActionLogClient = new WorldActionLogClient();
+	private IWorldActionLog worldActionLogClient = new WorldActionLogClient(WorldActionLogs.NORMAL);
+
+	private IWorldActionLog worldActionLogForBlocks = new WorldActionLog(WorldActionLogs.BLOCKS, this, 20);
+
+	private IWorldActionLog worldActionLogForBlocksClient = new WorldActionLogClient(WorldActionLogs.BLOCKS);
+
+	private Map<String, IWorldActionLog> clientWorldActionLogs;
+
+	private Map<String, IWorldActionLog> serverWorldActionLogs;
 
 	public PlayerOrbis()
 	{
@@ -99,6 +111,7 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.modules.add(this.selectionInputModule);
 	}
 
+	@Nullable
 	public static PlayerOrbis get(final Entity player)
 	{
 		if (!PlayerOrbis.hasCapability(player))
@@ -139,14 +152,26 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.observers.remove(observer);
 	}
 
-	public IWorldActionLog getWorldActionLog()
+	public IWorldActionLog getWorldActionLog(String worldActionLogId)
 	{
-		if (this.getWorld().isRemote)
+		if (this.clientWorldActionLogs == null)
 		{
-			return this.worldActionLogClient;
+			this.clientWorldActionLogs = Maps.newHashMap();
+			this.serverWorldActionLogs = Maps.newHashMap();
+
+			this.clientWorldActionLogs.put(WorldActionLogs.NORMAL, this.worldActionLogClient);
+			this.clientWorldActionLogs.put(WorldActionLogs.BLOCKS, this.worldActionLogForBlocksClient);
+
+			this.serverWorldActionLogs.put(WorldActionLogs.NORMAL, this.worldActionLog);
+			this.serverWorldActionLogs.put(WorldActionLogs.BLOCKS, this.worldActionLogForBlocks);
 		}
 
-		return this.worldActionLog;
+		if (this.getWorld().isRemote)
+		{
+			return this.clientWorldActionLogs.get(worldActionLogId);
+		}
+
+		return this.serverWorldActionLogs.get(worldActionLogId);
 	}
 
 	/**
@@ -179,7 +204,8 @@ public class PlayerOrbis implements IPlayerOrbis
 
 		if (!this.getWorld().isRemote)
 		{
-			this.getWorldActionLog().clear();
+			this.getWorldActionLog(WorldActionLogs.NORMAL).clear();
+			this.getWorldActionLog(WorldActionLogs.BLOCKS).clear();
 		}
 	}
 

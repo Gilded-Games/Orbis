@@ -200,6 +200,11 @@ public class PlayerPowerModule extends PlayerOrbisModule
 	@Override
 	public void onUpdate()
 	{
+		if (this.getEntity().world.isRemote && OrbisCore.PROXY.getPlayer() != this.getEntity())
+		{
+			return;
+		}
+
 		for (final IGodPower power : this.powers)
 		{
 			power.onUpdate(this.getEntity(), this.getPlayer(), this.isCurrentPower(power));

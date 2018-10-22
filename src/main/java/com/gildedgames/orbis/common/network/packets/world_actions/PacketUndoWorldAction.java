@@ -4,26 +4,33 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PacketUndoWorldAction implements IMessage
 {
+	private String worldActionLogId;
 
 	public PacketUndoWorldAction()
 	{
 
 	}
 
+	public PacketUndoWorldAction(String worldActionLogId)
+	{
+		this.worldActionLogId = worldActionLogId;
+	}
+
 	@Override
 	public void fromBytes(final ByteBuf buf)
 	{
-
+		this.worldActionLogId = ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
 	public void toBytes(final ByteBuf buf)
 	{
-
+		ByteBufUtils.writeUTF8String(buf, this.worldActionLogId);
 	}
 
 	public static class HandlerServer extends MessageHandlerServer<PacketUndoWorldAction, IMessage>
@@ -40,7 +47,7 @@ public class PacketUndoWorldAction implements IMessage
 
 			if (playerOrbis.inDeveloperMode())
 			{
-				playerOrbis.getWorldActionLog().undo(player.getEntityWorld());
+				playerOrbis.getWorldActionLog(message.worldActionLogId).undo(player.getEntityWorld());
 			}
 
 			return null;
