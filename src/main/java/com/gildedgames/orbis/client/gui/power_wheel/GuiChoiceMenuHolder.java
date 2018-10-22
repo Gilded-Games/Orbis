@@ -226,7 +226,10 @@ public class GuiChoiceMenuHolder extends GuiViewer
 				new TextComponentString(this.mc.player.world.provider.getDimensionType() != WorldProviderOrbis.ORBIS ? "Teleport to Orbis" : "Teleport Back"),
 				1.0F));
 
-		//context.addChildren(this.left, this.right, genIcon, scheduleIcon);
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			context.addChildren(this.left, this.right, genIcon, scheduleIcon);
+		}
 
 		for (final GuiChoiceMenu menu : this.menus)
 		{

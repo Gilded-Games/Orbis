@@ -62,19 +62,19 @@ public class NavigatorNodeProject implements INavigatorNode
 	@Override
 	public boolean isOnClient()
 	{
-		return this.project.getMetadata().isDownloaded();
+		return this.project.getInfo().getMetadata().isDownloaded();
 	}
 
 	@Override
 	public boolean isDownloading()
 	{
-		return this.project.getMetadata().isDownloading();
+		return this.project.getInfo().getMetadata().isDownloading();
 	}
 
 	@Override
 	public void onOpen(final IDirectoryNavigator navigator)
 	{
-		if (this.project.getMetadata().isDownloaded() || Minecraft.getMinecraft().isIntegratedServerRunning())
+		if (this.project.getInfo().getMetadata().isDownloaded() || Minecraft.getMinecraft().isIntegratedServerRunning())
 		{
 			navigator.openDirectory(this.file);
 		}
@@ -98,8 +98,8 @@ public class NavigatorNodeProject implements INavigatorNode
 				@Override
 				public void onClick(final GuiDropdownList list, final EntityPlayer player)
 				{
-					NavigatorNodeProject.this.project.getMetadata().setDownloading(true);
-					OrbisCore.network().sendPacketToServer(new PacketRequestProject(NavigatorNodeProject.this.project.getProjectIdentifier()));
+					NavigatorNodeProject.this.project.getInfo().getMetadata().setDownloading(true);
+					OrbisCore.network().sendPacketToServer(new PacketRequestProject(NavigatorNodeProject.this.project.getInfo().getIdentifier()));
 				}
 			});
 		}

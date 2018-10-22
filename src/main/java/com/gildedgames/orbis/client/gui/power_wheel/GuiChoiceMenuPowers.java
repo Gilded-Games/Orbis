@@ -13,9 +13,9 @@ public class GuiChoiceMenuPowers extends GuiChoiceMenu
 	{
 		super();
 
-		this.choices = new Choice[playerOrbis.powers().array().length - 1];
+		this.choices = new Choice[playerOrbis.powers().array().length - (OrbisCore.CONFIG.useExperimentalFeatures() ? 0 : 1)];
 
-		for (int i = 0; i < playerOrbis.powers().array().length - 1; i++)
+		for (int i = 0; i < playerOrbis.powers().array().length - (OrbisCore.CONFIG.useExperimentalFeatures() ? 0 : 1); i++)
 		{
 			final IGodPower power = playerOrbis.powers().array()[i];
 			final GuiChoiceMenu.Choice choice = new PowerChoice(power, power.getClientHandler().displayName());

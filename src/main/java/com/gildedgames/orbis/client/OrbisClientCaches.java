@@ -7,18 +7,19 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -38,19 +39,22 @@ public class OrbisClientCaches
 						{
 							try
 							{
-								final FrameworkData data = OrbisCore.getProjectManager().findData(id);
+								final Optional<FrameworkData> data = OrbisCore.getProjectManager().findData(id);
 
-								final RenderFrameworkEditing framework = new RenderFrameworkEditing(
-										new Framework(Minecraft.getMinecraft().world, data));
+								if (data.isPresent())
+								{
+									final RenderFrameworkEditing framework = new RenderFrameworkEditing(
+											new Framework(Minecraft.getMinecraft().world, data.get()));
 
-								return Optional.of(framework);
+									return Optional.of(framework);
+								}
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.FRAMEWORK_RENDER_CACHE: ", e);
 							}
 
-							return Optional.absent();
+							return Optional.empty();
 						}
 					});
 
@@ -67,20 +71,23 @@ public class OrbisClientCaches
 						{
 							try
 							{
-								final BlueprintData data = OrbisCore.getProjectManager().findData(id);
+								final Optional<BlueprintData> data = OrbisCore.getProjectManager().findData(id);
 
-								final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
-										new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, data),
-										Minecraft.getMinecraft().world);
+								if (data.isPresent())
+								{
+									final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
+											new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, data.get()),
+											Minecraft.getMinecraft().world);
 
-								return Optional.of(blueprint);
+									return Optional.of(blueprint);
+								}
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_RENDER_CACHE: ", e);
 							}
 
-							return Optional.absent();
+							return Optional.empty();
 						}
 					});
 
@@ -96,27 +103,31 @@ public class OrbisClientCaches
 						{
 							try
 							{
-								final BlueprintStackerData data = OrbisCore.getProjectManager().findData(id);
+								final Optional<BlueprintStackerData> data = OrbisCore.getProjectManager().findData(id);
 
-								BlockDataContainer[] bdc = new BlockDataContainer[data.getSegments().length];
-
-								Random rand = new Random();
-
-								for (int i = 0; i < data.getSegments().length; i++)
+								if (data.isPresent())
 								{
-									BlockDataContainer container = data.get(Minecraft.getMinecraft().world, rand, i);
+									BlockDataContainer[] bdc = new BlockDataContainer[data.get().getSegments().length];
 
-									bdc[i] = container;
+									Random rand = new Random();
+
+									for (int i = 0; i < data.get().getSegments().length; i++)
+									{
+										BlockDataContainer container = data.get().get(Minecraft.getMinecraft().world, rand, i);
+
+										bdc[i] = container;
+									}
+
+									return Optional.of(bdc);
 								}
 
-								return Optional.of(bdc);
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_BDC_CACHE: ", e);
 							}
 
-							return Optional.absent();
+							return Optional.empty();
 						}
 					});
 
@@ -132,22 +143,26 @@ public class OrbisClientCaches
 						{
 							try
 							{
-								final BlueprintStackerData data = OrbisCore.getProjectManager().findData(id);
+								final Optional<BlueprintStackerData> data = OrbisCore.getProjectManager().findData(id);
 
-								BlockDataContainer container = data.get(Minecraft.getMinecraft().world, new Random(), data.getSegments().length);
+								if (data.isPresent())
+								{
+									BlockDataContainer container = data.get()
+											.get(Minecraft.getMinecraft().world, new Random(), data.get().getSegments().length);
 
-								final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
-										new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, new BlueprintData(container)),
-										Minecraft.getMinecraft().world);
+									final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
+											new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, new BlueprintData(container)),
+											Minecraft.getMinecraft().world);
 
-								return Optional.of(blueprint);
+									return Optional.of(blueprint);
+								}
 							}
-							catch (final OrbisMissingDataException e)
+							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
 							{
 								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_RENDER_CACHE: ", e);
 							}
 
-							return Optional.absent();
+							return Optional.empty();
 						}
 					});
 
@@ -188,12 +203,7 @@ public class OrbisClientCaches
 				return;
 			}
 
-			final IWorldRenderer worldRenderer = opt.orNull();
-
-			if (worldRenderer != null)
-			{
-				worldRenderer.onRemoved();
-			}
+			opt.ifPresent(IWorldRenderer::onRemoved);
 		}
 	}
 

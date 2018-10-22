@@ -3,9 +3,11 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
+import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
@@ -101,7 +103,15 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.data = OrbisAPI.services().getProjectManager().findData(funnel.get("d"));
+		try
+		{
+			OrbisAPI.services().getProjectManager().findData(funnel.get("d")).ifPresent(data -> this.data = (BlueprintData) data);
+		}
+		catch (OrbisMissingProjectException | OrbisMissingDataException e)
+		{
+			OrbisAPI.LOGGER.error(e);
+		}
+
 		this.pos = funnel.getPos("p");
 	}
 }

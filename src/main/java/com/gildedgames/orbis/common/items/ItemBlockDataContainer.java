@@ -32,6 +32,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ItemBlockDataContainer extends Item implements ModelRegisterCallback, ItemStackInput
 {
@@ -53,31 +56,39 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 			stack.setTagCompound(new NBTTagCompound());
 		}
 
-		final IDataCache cache = OrbisCore.getDataCache().findCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE);
+		final Optional<IDataCache> cache = OrbisCore.getDataCache().findCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE);
 
-		final boolean shouldSend = container.getMetadata().getIdentifier() == null;
-		final int id = cache.addData(container);
-
-		stack.getTagCompound().setInteger("dataId", id);
-
-		if (!player.world.isRemote && shouldSend)
+		if (cache.isPresent())
 		{
-			OrbisCore.network().sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
+			final boolean shouldSend = container.getMetadata().getIdentifier() == null;
+			final UUID id = cache.get().addData(container);
+
+			stack.getTagCompound().setUniqueId("dataId", id);
+
+			if (!player.world.isRemote && shouldSend)
+			{
+				OrbisCore.network().sendPacketToAllPlayers(new PacketSendDataToCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE, container));
+			}
 		}
 	}
 
-	public static BlockDataContainer getDataContainer(final ItemStack stack)
+	public static Optional<BlockDataContainer> getDataContainer(final ItemStack stack)
 	{
-		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("dataId"))
+		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("dataIdLeast"))
 		{
-			return null;
+			return Optional.empty();
 		}
 
 		final NBTTagCompound tag = stack.getTagCompound();
 
-		final IDataCache cache = OrbisCore.getDataCache().findCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE);
+		final Optional<IDataCache> cache = OrbisCore.getDataCache().findCache(OrbisCore.BLOCK_DATA_CONTAINERS_CACHE);
 
-		return cache.getData(tag.getInteger("dataId"));
+		if (cache.isPresent())
+		{
+			return cache.get().getData(tag.getUniqueId("dataId"));
+		}
+
+		return Optional.empty();
 	}
 
 	@SideOnly(Side.CLIENT)

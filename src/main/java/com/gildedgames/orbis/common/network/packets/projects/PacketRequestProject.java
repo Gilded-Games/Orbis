@@ -16,6 +16,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketRequestProject extends PacketMultipleParts
 {
 
@@ -74,9 +76,9 @@ public class PacketRequestProject extends PacketMultipleParts
 
 			try
 			{
-				final IProject project = OrbisCore.getProjectManager().findProject(message.project);
+				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
 
-				OrbisCore.network().sendPacketToPlayer(new PacketSendProject(project), (EntityPlayerMP) player);
+				project.ifPresent(iProject -> OrbisCore.network().sendPacketToPlayer(new PacketSendProject(iProject), (EntityPlayerMP) player));
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{

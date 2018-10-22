@@ -17,6 +17,8 @@ public class ConfigOrbis
 
 	private boolean seenAlphaNotice;
 
+	private boolean useExperimentalFeatures;
+
 	public ConfigOrbis(File file)
 	{
 		this.configuration = new Configuration(file, true);
@@ -32,6 +34,7 @@ public class ConfigOrbis
 	{
 		this.orbisDimId = this.getInt(this.dimensions, "Orbis Dimension ID", 4);
 		this.seenAlphaNotice = this.getBoolean(this.misc, "Has Seen Alpha Notice", false);
+		this.useExperimentalFeatures = this.getBoolean(this.misc, "Use Experimental Features", false);
 
 		if (this.configuration.hasChanged())
 		{
@@ -56,6 +59,11 @@ public class ConfigOrbis
 	private boolean getBoolean(ConfigCategory category, String name, boolean defaultValue)
 	{
 		return this.configuration.get(category.getName(), name, defaultValue).getBoolean();
+	}
+
+	public boolean useExperimentalFeatures()
+	{
+		return this.useExperimentalFeatures;
 	}
 
 	public int getOrbisDimId()

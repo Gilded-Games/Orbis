@@ -10,7 +10,6 @@ import com.gildedgames.orbis.common.tiles.TileEntityBlueprintStacker;
 import com.gildedgames.orbis.common.util.WorldRenderHelp;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.util.OpenGLHelper;
-import com.google.common.base.Optional;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -30,6 +29,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public class TileEntityBlueprintStackerRenderer extends TileEntitySpecialRenderer<TileEntityBlueprintStacker>
@@ -57,14 +57,14 @@ public class TileEntityBlueprintStackerRenderer extends TileEntitySpecialRendere
 				return;
 			}
 
-			final BlueprintStackerData stacker = ItemBlueprintStacker.getBlueprintStacker(this.stack);
+			final Optional<BlueprintStackerData> stacker = ItemBlueprintStacker.getBlueprintStacker(this.stack);
 
-			if (stacker == null)
+			if (!stacker.isPresent())
 			{
 				return;
 			}
 
-			final Optional<RenderBlueprintBlocks> opt = OrbisClientCaches.getBlueprintStackerRenders().get(stacker.getMetadata().getIdentifier());
+			final Optional<RenderBlueprintBlocks> opt = OrbisClientCaches.getBlueprintStackerRenders().get(stacker.get().getMetadata().getIdentifier());
 
 			if (!opt.isPresent())
 			{

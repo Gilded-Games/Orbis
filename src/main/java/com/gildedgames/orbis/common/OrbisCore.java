@@ -5,9 +5,12 @@ import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
+import com.gildedgames.orbis.common.network.CommandActivateDesignerGamemode;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
-import com.gildedgames.orbis.common.network.packets.PacketClearSelectedRegion;
+import com.gildedgames.orbis.common.network.packets.PacketSendDataCachePool;
+import com.gildedgames.orbis.common.network.packets.PacketWorldObjectManager;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
+import com.gildedgames.orbis.common.network.packets.projects.PacketSendProjectListing;
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeCuboid;
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeLine;
 import com.gildedgames.orbis.common.player.godmode.selection_types.SelectionTypeSphere;
@@ -24,6 +27,7 @@ import com.gildedgames.orbis.common.world_objects.WorldRegion;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import com.gildedgames.orbis_api.IOHelper;
 import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.block.BlockDataWithConditions;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.block.BlockFilterLayer;
 import com.gildedgames.orbis_api.client.gui.data.Text;
@@ -36,10 +40,11 @@ import com.gildedgames.orbis_api.network.INetworkMultipleParts;
 import com.gildedgames.orbis_api.util.io.IClassSerializer;
 import com.gildedgames.orbis_api.util.io.SimpleSerializer;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
-import net.minecraft.block.state.IBlockState;
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
@@ -57,6 +62,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 @Mod(name = OrbisCore.MOD_NAME, modid = OrbisCore.MOD_ID, version = OrbisCore.MOD_VERSION,
 		dependencies = OrbisCore.MOD_DEPENDENCIES, certificateFingerprint = OrbisCore.MOD_FINGERPRINT)
@@ -70,9 +77,9 @@ public class OrbisCore
 
 	public static final String MOD_ID = "orbis";
 
-	public static final String MOD_VERSION = "1.12.2-1.0.0";
+	public static final String MOD_VERSION = "1.12.2-1.0.13";
 
-	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.8,)";
+	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.11,)";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
@@ -97,8 +104,15 @@ public class OrbisCore
 
 		if (playerOrbis.powers().getSelectPower().getSelectedRegion() != null && !world.isRemote)
 		{
-			OrbisCore.network().sendPacketToServer(new PacketClearSelectedRegion());
-			OrbisCore.network().sendPacketToServer(new PacketWorldObjectRemove(world, playerOrbis.powers().getSelectPower().getSelectedRegion()));
+			final WorldObjectManager manager = WorldObjectManager.get(player.world);
+
+			WorldShape selection = playerOrbis.powers().getSelectPower().getSelectedRegion();
+			int id = manager.getID(selection);
+
+			manager.removeObject(id);
+
+			OrbisCore.network()
+					.sendPacketToDimension(new PacketWorldObjectRemove(id, world.provider.getDimension()), world.provider.getDimension());
 
 			playerOrbis.powers().getSelectPower().setSelectedRegion(null);
 		}
@@ -120,8 +134,11 @@ public class OrbisCore
 		 */
 		if (!event.player.world.isRemote)
 		{
-			//OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
-			//OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
+			if (OrbisCore.CONFIG.useExperimentalFeatures())
+			{
+				OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) event.player);
+				OrbisCore.network().sendPacketToPlayer(new PacketSendDataCachePool(getDataCache()), (EntityPlayerMP) event.player);
+			}
 		}
 	}
 
@@ -137,7 +154,10 @@ public class OrbisCore
 			{
 				final WorldObjectManager manager = WorldObjectManager.get(player.getServer().getWorld(world.provider.getDimension()));
 
-				//OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				if (OrbisCore.CONFIG.useExperimentalFeatures())
+				{
+					OrbisCore.network().sendPacketToPlayer(new PacketWorldObjectManager(manager), (EntityPlayerMP) player);
+				}
 			}
 		}
 	}
@@ -289,9 +309,9 @@ public class OrbisCore
 		BlockFilterHelper.registerBlockRecognition(new BlockFilterHelper.IBlockRecognition()
 		{
 			@Override
-			public IBlockState[] recognize(ItemStack stack)
+			public List<BlockDataWithConditions> recognize(ItemStack stack)
 			{
-				IBlockState[] blocks = null;
+				List<BlockDataWithConditions> blocks = Collections.emptyList();
 
 				if (stack.getItem() instanceof ItemBlockPalette)
 				{
@@ -299,14 +319,9 @@ public class OrbisCore
 
 					if (layer != null)
 					{
-						blocks = new IBlockState[layer.getReplacementBlocks().size()];
+						blocks = Lists.newArrayList();
 
-						for (int i = 0; i < blocks.length; i++)
-						{
-							final IBlockState state = layer.getReplacementBlocks().get(i).getBlockState();
-
-							blocks[i] = state;
-						}
+						blocks.addAll(layer.getReplacementBlocks());
 					}
 				}
 
@@ -326,13 +341,17 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onFMLPreInit(final FMLPreInitializationEvent event)
 	{
-		//OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+		OrbisCore.CONFIG = new ConfigOrbis(event.getSuggestedConfigurationFile());
+
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+		}
 
 		NetworkingOrbis.preInit();
 
 		OrbisTileEntities.preInit();
 
-		OrbisCore.CONFIG = new ConfigOrbis(event.getSuggestedConfigurationFile());
 		OrbisCore.PROXY.preInit(event);
 	}
 
@@ -347,7 +366,11 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void onServerStopping(final FMLServerStoppingEvent event)
 	{
-		//OrbisAPI.services().stopProjectManager();
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			OrbisAPI.services().stopProjectManager();
+		}
+
 		stopDataCache();
 	}
 
@@ -360,7 +383,17 @@ public class OrbisCore
 	@Mod.EventHandler
 	public void serverStarted(final FMLServerStartedEvent event)
 	{
-		//OrbisAPI.services().startProjectManager();
+		if (OrbisCore.CONFIG.useExperimentalFeatures())
+		{
+			OrbisAPI.services().startProjectManager();
+		}
+
 		startDataCache();
+	}
+
+	@Mod.EventHandler
+	public void serverStarting(FMLServerStartingEvent event)
+	{
+		event.registerServerCommand(new CommandActivateDesignerGamemode());
 	}
 }

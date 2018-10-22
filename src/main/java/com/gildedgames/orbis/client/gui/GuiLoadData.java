@@ -43,6 +43,7 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListener
 {
@@ -132,6 +133,9 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 		this.directoryViewer.getNavigator().addListener(this);
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
+
+		this.directoryViewer.getNavigator()
+				.injectDirectories(OrbisCore.getProjectManager().getLocation(), OrbisCore.getProjectManager().getExtraProjectSourceFolders());
 
 		this.tabFrames[0] = this.directoryViewer;
 		this.tabFrames[1] = new GuiElement(Dim2D.flush(), false);
@@ -286,12 +290,16 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 					}
 					else
 					{
-						final BlueprintData data = OrbisCore.getProjectManager().findData(id);
-						final DataCondition condition = new DataCondition();
+						final Optional<BlueprintData> data = OrbisCore.getProjectManager().findData(id);
 
-						condition.setWeight(s.getCount());
+						if (data.isPresent())
+						{
+							final DataCondition condition = new DataCondition();
 
-						palette.add(data, condition);
+							condition.setWeight(s.getCount());
+
+							palette.add(data.get(), condition);
+						}
 					}
 				}
 				catch (final OrbisMissingDataException | OrbisMissingProjectException e)
@@ -316,32 +324,34 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 
 			try
 			{
-				final IData data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
-				ItemStack onMouse = this.mc.player.inventory.getItemStack();
+				final Optional<IData> data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
 
-				if (data == null)
+				if (data.isPresent())
 				{
-					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
-					return;
-				}
+					ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				if (onMouse.getItem() instanceof ItemBlueprint && data.getMetadata().getIdentifier().equals(ItemBlueprint.getBlueprintId(onMouse)))
-				{
-					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
+					if (onMouse.getItem() instanceof ItemBlueprint && data.get().getMetadata().getIdentifier().equals(ItemBlueprint.getBlueprintId(onMouse)))
+					{
+						onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
 
-					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+					}
+					else
+					{
+						ItemBlueprint.setBlueprint(stack, data.get().getMetadata().getIdentifier());
+
+						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+						{
+							stack.setCount(64);
+						}
+
+						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+						Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+					}
 				}
 				else
 				{
-					ItemBlueprint.setBlueprint(stack, data.getMetadata().getIdentifier());
-
-					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-					{
-						stack.setCount(64);
-					}
-
-					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
@@ -355,33 +365,37 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 
 			try
 			{
-				final IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
-				ItemStack onMouse = this.mc.player.inventory.getItemStack();
+				final Optional<IData> data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
 
-				if (data == null)
+				if (data.isPresent())
+				{
+					ItemStack onMouse = this.mc.player.inventory.getItemStack();
+
+					if (onMouse.getItem() instanceof ItemFramework && data.get().getMetadata().getIdentifier().equals(ItemFramework.getDataId(onMouse)))
+					{
+						onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
+
+						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+					}
+					else
+					{
+						ItemFramework.setDataId(stack, data.get().getMetadata().getIdentifier());
+
+						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+						{
+							stack.setCount(64);
+						}
+
+						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+						Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+					}
+				}
+				else
 				{
 					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
 					return;
 				}
 
-				if (onMouse.getItem() instanceof ItemFramework && data.getMetadata().getIdentifier().equals(ItemFramework.getDataId(onMouse)))
-				{
-					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
-
-					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
-				}
-				else
-				{
-					ItemFramework.setDataId(stack, data.getMetadata().getIdentifier());
-
-					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-					{
-						stack.setCount(64);
-					}
-
-					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
-				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)
 			{
@@ -394,33 +408,36 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 
 			try
 			{
-				IData data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
-				ItemStack onMouse = this.mc.player.inventory.getItemStack();
+				Optional<IData> data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
 
-				if (data == null)
+				if (data.isPresent())
 				{
-					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
-					return;
-				}
+					ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				if (onMouse.getItem() instanceof ItemBlueprintStacker && data.getMetadata().getIdentifier()
-						.equals(ItemBlueprintStacker.getBlueprintStackerId(onMouse)))
-				{
-					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
+					if (onMouse.getItem() instanceof ItemBlueprintStacker && data.get().getMetadata().getIdentifier()
+							.equals(ItemBlueprintStacker.getBlueprintStackerId(onMouse)))
+					{
+						onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
 
-					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
+					}
+					else
+					{
+						ItemBlueprintStacker.setBlueprintStacker(stack, (BlueprintStackerData) data.get());
+
+						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+						{
+							stack.setCount(64);
+						}
+
+						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+						Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+					}
 				}
 				else
 				{
-					ItemBlueprintStacker.setBlueprintStacker(stack, (BlueprintStackerData) data);
-
-					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-					{
-						stack.setCount(64);
-					}
-
-					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
+					return;
 				}
 			}
 			catch (OrbisMissingDataException | OrbisMissingProjectException e)

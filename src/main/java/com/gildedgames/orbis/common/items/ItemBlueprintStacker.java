@@ -8,6 +8,8 @@ import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintStacker;
 import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
+import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -31,6 +33,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
+
+import java.util.Optional;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ItemBlueprintStacker extends Item implements ModelRegisterCallback, ItemStackInput
@@ -76,18 +80,27 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 		return funnel.get("stacker_id");
 	}
 
-	public static BlueprintStackerData getBlueprintStacker(final ItemStack stack)
+	public static Optional<BlueprintStackerData> getBlueprintStacker(final ItemStack stack)
 	{
 		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("stacker_id"))
 		{
-			return null;
+			return Optional.empty();
 		}
 
 		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
 
 		final IDataIdentifier id = funnel.get("stacker_id");
 
-		return OrbisAPI.services().getProjectManager().findData(id);
+		try
+		{
+			return OrbisAPI.services().getProjectManager().findData(id);
+		}
+		catch (OrbisMissingProjectException | OrbisMissingDataException e)
+		{
+			OrbisAPI.LOGGER.error(e);
+		}
+
+		return Optional.empty();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -136,10 +149,12 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 				.canInteractWithItems(playerOrbis))
 		{
 
-			if(playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			if (playerOrbis.getEntity().getCooldownTracker().hasCooldown(this))
+			{
 				return;
+			}
 			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
-			playerOrbis.getEntity().getCooldownTracker().setCooldown(this,4);
+			playerOrbis.getEntity().getCooldownTracker().setCooldown(this, 4);
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))

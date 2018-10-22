@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 {
@@ -103,7 +104,7 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 			return null;
 		}
 
-		return ItemBlueprintStacker.getBlueprintStacker(stack);
+		return ItemBlueprintStacker.getBlueprintStacker(stack).orElse(null);
 	}
 
 	public BlueprintData getPlacingBlueprint()
@@ -151,7 +152,7 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 				try
 				{
 					final IDataIdentifier id = ItemBlueprint.getBlueprintId(stack);
-					this.placingBlueprint = OrbisCore.getProjectManager().findData(id);
+					OrbisCore.getProjectManager().findData(id).ifPresent(data -> this.placingBlueprint = (BlueprintData) data);
 				}
 				catch (final OrbisMissingDataException | OrbisMissingProjectException e)
 				{
@@ -162,12 +163,9 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 			else if (stack.getItem() instanceof ItemBlockDataContainer)
 			{
 				this.placingPalette = null;
-				final BlockDataContainer container = ItemBlockDataContainer.getDataContainer(stack);
+				final Optional<BlockDataContainer> container = ItemBlockDataContainer.getDataContainer(stack);
 
-				if (container != null)
-				{
-					this.placingBlueprint = new BlueprintData(container);
-				}
+				container.ifPresent(blockDataContainer -> this.placingBlueprint = new BlueprintData(blockDataContainer));
 			}
 			else
 			{
@@ -185,12 +183,9 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 		{
 			this.placingPalette = null;
 
-			final BlockDataContainer container = ItemBlockDataContainer.getDataContainer(stack);
+			final Optional<BlockDataContainer> container = ItemBlockDataContainer.getDataContainer(stack);
 
-			if (container != null)
-			{
-				this.placingBlueprint = new BlueprintData(container);
-			}
+			container.ifPresent(blockDataContainer -> this.placingBlueprint = new BlueprintData(blockDataContainer));
 		}
 	}
 

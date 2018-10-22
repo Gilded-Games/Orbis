@@ -24,6 +24,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.Optional;
+
 public class PacketAddNode extends PacketMultipleParts
 {
 
@@ -110,7 +112,7 @@ public class PacketAddNode extends PacketMultipleParts
 
 			try
 			{
-				final IWorldObject worldObject;
+				IWorldObject worldObject;
 
 				if (message.worldObjectId == -1)
 				{
@@ -121,20 +123,20 @@ public class PacketAddNode extends PacketMultipleParts
 					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 				}
 
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof FrameworkData)
+				if (data.isPresent() && data.get() instanceof FrameworkData)
 				{
-					final FrameworkData fData = (FrameworkData) data;
+					final FrameworkData fData = (FrameworkData) data.get();
 
 					fData.addNode(message.node, worldObject);
 				}
@@ -171,20 +173,20 @@ public class PacketAddNode extends PacketMultipleParts
 					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 				}
 
-				final IData data;
+				final Optional<IData> data;
 
 				if (message.id == null)
 				{
-					data = worldObject.getData();
+					data = Optional.of(worldObject.getData());
 				}
 				else
 				{
 					data = OrbisCore.getProjectManager().findData(message.id);
 				}
 
-				if (data instanceof FrameworkData)
+				if (data.isPresent() && data.get() instanceof FrameworkData)
 				{
-					final FrameworkData fData = (FrameworkData) data;
+					final FrameworkData fData = (FrameworkData) data.get();
 
 					fData.addNode(message.node, worldObject);
 

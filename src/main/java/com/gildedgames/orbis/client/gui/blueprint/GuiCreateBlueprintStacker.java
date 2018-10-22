@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class GuiCreateBlueprintStacker extends GuiViewer implements IListViewerListener, IListNavigatorListener<SlotHashed>
 {
@@ -91,8 +92,16 @@ public class GuiCreateBlueprintStacker extends GuiViewer implements IListViewerL
 
 			if (!topStack.isEmpty() && !bottomStack.isEmpty())
 			{
-				IDataHolder<BlueprintData> top = new BlueprintDataHolder(ItemBlueprint.getBlueprint(topStack));
-				IDataHolder<BlueprintData> bottom = new BlueprintDataHolder(ItemBlueprint.getBlueprint(bottomStack));
+				Optional<BlueprintData> topData = ItemBlueprint.getBlueprint(topStack);
+				Optional<BlueprintData> bottomData = ItemBlueprint.getBlueprint(bottomStack);
+
+				if (!topData.isPresent() || !bottomData.isPresent())
+				{
+					return;
+				}
+
+				IDataHolder<BlueprintData> top = new BlueprintDataHolder(topData.get());
+				IDataHolder<BlueprintData> bottom = new BlueprintDataHolder(bottomData.get());
 
 				if (top.get(null, null) == null)
 				{
@@ -112,11 +121,11 @@ public class GuiCreateBlueprintStacker extends GuiViewer implements IListViewerL
 
 					if (!stack.isEmpty())
 					{
-						BlueprintData bp = ItemBlueprint.getBlueprint(stack);
+						Optional<BlueprintData> bp = ItemBlueprint.getBlueprint(stack);
 
-						if (bp != null)
+						if (bp.isPresent())
 						{
-							segments.add(new BlueprintDataHolder(bp));
+							segments.add(new BlueprintDataHolder(bp.get()));
 							continue;
 						}
 

@@ -36,6 +36,7 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListener
 {
@@ -137,6 +138,9 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 
 		this.directoryViewer.getNavigator().openDirectory(OrbisCore.getProjectManager().getLocation());
 
+		this.directoryViewer.getNavigator()
+				.injectDirectories(OrbisCore.getProjectManager().getLocation(), OrbisCore.getProjectManager().getExtraProjectSourceFolders());
+
 		context.addChildren(this.directoryViewer);
 	}
 
@@ -166,6 +170,19 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 		}
 	}
 
+	private boolean projectUUIDAlreadyExists(UUID uuid)
+	{
+		for (IProject project : OrbisCore.getProjectManager().getCachedProjects())
+		{
+			if (project.getInfo().getIdentifier().getProjectId().equals(uuid))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	@Override
 	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException
 	{
@@ -183,7 +200,14 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 			{
 				if (!this.nameInput.getInner().getText().isEmpty())
 				{
-					final IProjectIdentifier id = new ProjectIdentifier(this.nameInput.getInner().getText(), Minecraft.getMinecraft().player.getName());
+					UUID uuid = UUID.randomUUID();
+
+					while (this.projectUUIDAlreadyExists(uuid))
+					{
+						uuid = UUID.randomUUID();
+					}
+
+					final IProjectIdentifier id = new ProjectIdentifier(uuid, Minecraft.getMinecraft().player.getName());
 
 					if (!OrbisCore.getProjectManager().projectNameExists(this.nameInput.getInner().getText()) && !OrbisCore.getProjectManager()
 							.projectExists(id))
@@ -247,7 +271,7 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 					 */
 					boolean notSameProjectOrNoProject = data.getMetadata().getIdentifier() != null &&
 							(data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
-									.equals(this.project.getProjectIdentifier()));
+									.equals(this.project.getInfo().getIdentifier()));
 
 					if (data.getMetadata().getIdentifier() != null && ((this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
 							&& !canOverwrite) || notSameProjectOrNoProject))

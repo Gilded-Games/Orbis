@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.player.godmode.selectors;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.items.ItemBlockPalette;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilterMultiple;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -35,7 +36,8 @@ public class ShapeSelectorFilter implements IShapeSelector
 	{
 		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
 
-		return held.getItem() instanceof ItemBlock || (this.canSelectWithoutItems && held.isEmpty()) || held.getItem() instanceof ItemBucket;
+		return held.getItem() instanceof ItemBlock || (this.canSelectWithoutItems && held.isEmpty()) || held.getItem() instanceof ItemBucket || held
+				.getItem() instanceof ItemBlockPalette;
 	}
 
 	@Override

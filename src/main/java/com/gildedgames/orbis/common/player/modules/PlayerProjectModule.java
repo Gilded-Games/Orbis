@@ -42,7 +42,7 @@ public class PlayerProjectModule extends PlayerOrbisModule
 
 		if (this.currentProject != null)
 		{
-			funnel.set("projectId", this.currentProject.getProjectIdentifier());
+			funnel.set("projectId", this.currentProject.getInfo().getIdentifier());
 		}
 	}
 
@@ -57,7 +57,7 @@ public class PlayerProjectModule extends PlayerOrbisModule
 		{
 			try
 			{
-				this.currentProject = OrbisCore.getProjectManager().findProject(id);
+				OrbisCore.getProjectManager().findProject(id).ifPresent(project -> this.currentProject = project);
 			}
 			catch (final OrbisMissingProjectException e)
 			{

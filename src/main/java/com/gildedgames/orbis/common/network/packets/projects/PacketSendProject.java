@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class PacketSendProject extends PacketMultipleParts
 {
@@ -45,9 +46,9 @@ public class PacketSendProject extends PacketMultipleParts
 
 	public PacketSendProject(final IProject project)
 	{
-		this.project = project.getProjectIdentifier();
+		this.project = project.getInfo().getIdentifier();
 		this.cache = project.getCache();
-		this.lastChanged = project.getMetadata().getLastChanged();
+		this.lastChanged = project.getInfo().getMetadata().getLastChanged();
 	}
 
 	@Override
@@ -92,41 +93,46 @@ public class PacketSendProject extends PacketMultipleParts
 
 			try
 			{
-				final IProject project = OrbisCore.getProjectManager().findProject(message.project);
+				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
 
-				if (project != null)
+				if (project.isPresent())
 				{
-					project.setCache(message.cache);
+					project.get().setCache(message.cache);
 
 					/**
 					 * Save all state to disk.
 					 */
 					for (final IData data : message.cache.getAllData())
 					{
-						final File file = new File(project.getLocationAsFile(), message.cache.getDataLocation(data.getMetadata().getIdentifier().getDataId()));
+						Optional<String> dataLoc = message.cache.getDataLocation(data.getMetadata().getIdentifier().getDataId());
 
-						try (FileOutputStream out = new FileOutputStream(file))
+						if (dataLoc.isPresent())
 						{
-							final NBTTagCompound tag = new NBTTagCompound();
-							final NBTFunnel funnel = new NBTFunnel(tag);
+							final File file = new File(project.get().getLocationAsFile(), dataLoc.get());
 
-							funnel.set("state", data);
+							try (FileOutputStream out = new FileOutputStream(file))
+							{
+								final NBTTagCompound tag = new NBTTagCompound();
+								final NBTFunnel funnel = new NBTFunnel(tag);
 
-							CompressedStreamTools.writeCompressed(tag, out);
-						}
-						catch (final IOException e)
-						{
-							OrbisCore.LOGGER.error("Failed to save project state to disk", e);
+								funnel.set("state", data);
+
+								CompressedStreamTools.writeCompressed(tag, out);
+							}
+							catch (final IOException e)
+							{
+								OrbisCore.LOGGER.error("Failed to save project state to disk", e);
+							}
 						}
 					}
 
-					project.getMetadata().setDownloaded(true);
-					project.getMetadata().setDownloading(false);
+					project.get().getInfo().getMetadata().setDownloaded(true);
+					project.get().getInfo().getMetadata().setDownloading(false);
 
-					project.getMetadata().setLastChanged(message.lastChanged);
+					project.get().getInfo().getMetadata().setLastChanged(message.lastChanged);
+
+					OrbisCore.LOGGER.debug("Project downloaded! " + project.get().getLocationAsFile().getName());
 				}
-
-				OrbisCore.LOGGER.debug("Project downloaded! " + project.getLocationAsFile().getName());
 			}
 			catch (final OrbisMissingProjectException e)
 			{
