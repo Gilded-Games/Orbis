@@ -32,6 +32,7 @@ public class OrbisDeveloperModeEvents
 			if(args.length==0)
 			{
 				event.setException(new WrongUsageException("commands.gamemode.usage"));
+				return;
 			}
 
 			final String gamemodeString = args[0];
