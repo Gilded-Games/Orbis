@@ -7,10 +7,7 @@ import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockPlace;
 import com.gildedgames.orbis_api.block.BlockData;
 import com.gildedgames.orbis_api.block.BlockInstance;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.CommandGameMode;
-import net.minecraft.command.NumberInvalidException;
+import net.minecraft.command.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -42,11 +39,16 @@ public class OrbisDeveloperModeEvents
 		if (event.getCommand() instanceof CommandGameMode)
 		{
 			final String[] args = event.getParameters();
+			if (args.length == 0)
+			{
+				event.setException(new WrongUsageException("commands.gamemode.usage"));
+				return;
+			}
 
 			final String gamemodeString = args[0];
 			boolean setsDeveloperMode = false;
 
-			if (gamemodeString.equals("designer"))
+			if (gamemodeString.equals("designer") || "designer".startsWith(gamemodeString))
 			{
 				setsDeveloperMode = true;
 			}
@@ -78,24 +80,24 @@ public class OrbisDeveloperModeEvents
 					PlayerOrbis.get(player).setDeveloperMode(true);
 					player.setGameType(GameType.CREATIVE);
 
-					final ITextComponent itextcomponent = new TextComponentTranslation("gameMode.designer", new Object[0]);
+					final ITextComponent itextcomponent = new TextComponentTranslation("gameMode.designer");
 
 					event.setCanceled(true);
 
 					if (event.getSender().getEntityWorld().getGameRules().getBoolean("sendCommandFeedback"))
 					{
-						player.sendMessage(new TextComponentTranslation("gameMode.changed", new Object[] { itextcomponent }));
+						player.sendMessage(new TextComponentTranslation("gameMode.changed", itextcomponent));
 					}
 
 					if (player == event.getSender())
 					{
 						CommandBase.notifyCommandListener(event.getSender(), event.getCommand(), 1, "commands.gamemode.success.self",
-								new Object[] { itextcomponent });
+								itextcomponent);
 					}
 					else
 					{
 						CommandBase.notifyCommandListener(event.getSender(), event.getCommand(), 1, "commands.gamemode.success.other",
-								new Object[] { player.getName(), itextcomponent });
+								player.getName(), itextcomponent);
 					}
 				}
 				else

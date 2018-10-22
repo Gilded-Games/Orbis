@@ -6,6 +6,7 @@ import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionInputs;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionTypes;
+import com.gildedgames.orbis.client.model.ModelOrbisFloor;
 import com.gildedgames.orbis.client.renderers.ChunkRendererManager;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
@@ -34,16 +35,16 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -67,6 +68,15 @@ public class OrbisDeveloperEventsClient
 	private static int prevDim;
 
 	private static boolean prevDimSet;
+
+	public static IBakedModel original;
+
+	@SubscribeEvent
+	public static void modelBakeEvent(final ModelBakeEvent event){
+		ModelResourceLocation resourceLocation = new ModelResourceLocation(new ResourceLocation("orbis","orbis_floor"), "normal");
+		original = event.getModelRegistry().getObject(resourceLocation);
+		event.getModelRegistry().putObject(resourceLocation, new ModelOrbisFloor());
+	}
 
 	@SubscribeEvent()
 	public static void onModelRegistryReady(final ModelRegistryEvent event)
