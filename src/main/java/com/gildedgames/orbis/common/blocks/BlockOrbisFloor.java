@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -46,9 +47,19 @@ public class BlockOrbisFloor extends Block implements ModelRegisterCallback
 	{
 		if (OrbisAPI.isClient() && ModelOrbisFloor.currentMimicBlock != null)
 		{
-			ModelOrbisFloor.currentMimicBlock.getBlock().getSoundType(ModelOrbisFloor.currentMimicBlock, world, pos, entity);
+			return ModelOrbisFloor.currentMimicBlock.getBlock().getSoundType(ModelOrbisFloor.currentMimicBlock, world, pos, entity);
 		}
 		return super.getSoundType(state, world, pos, entity);
+	}
+
+	@Override
+	public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
+	{
+		if (OrbisAPI.isClient() && ModelOrbisFloor.currentMimicBlock != null)
+		{
+			return ModelOrbisFloor.currentMimicBlock.getBlock().canRenderInLayer(ModelOrbisFloor.currentMimicBlock, layer);
+		}
+		return super.canRenderInLayer(state, layer);
 	}
 
 	@Override
