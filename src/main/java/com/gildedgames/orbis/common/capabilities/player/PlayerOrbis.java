@@ -5,10 +5,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
-import com.gildedgames.orbis.common.player.modules.PlayerPowerModule;
-import com.gildedgames.orbis.common.player.modules.PlayerProjectModule;
-import com.gildedgames.orbis.common.player.modules.PlayerSelectionInputModule;
-import com.gildedgames.orbis.common.player.modules.PlayerSelectionTypesModule;
+import com.gildedgames.orbis.common.player.modules.*;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world_actions.IWorldActionLog;
@@ -59,6 +56,8 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private final PlayerSelectionInputModule selectionInputModule;
 
+	private final PlayerCreationSettingsModule creationSettingsModule;
+
 	private final List<PlayerOrbisModule> modules = Lists.newArrayList();
 
 	private final List<PlayerOrbisObserver> observers = Lists.newArrayList();
@@ -99,6 +98,7 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.selectionTypeModule = null;
 		this.projectModule = null;
 		this.selectionInputModule = null;
+		this.creationSettingsModule = null;
 
 		this.stagedOrbisSettingsInventory = new StagedInventory<>(this.getEntity(), () -> new InventoryBlockForge(this.getEntity(), 1),
 				m -> PlayerOrbis.get(m).getStagedOrbisSettingsInventory(), "orbisSettings");
@@ -112,11 +112,13 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.selectionTypeModule = new PlayerSelectionTypesModule(this);
 		this.projectModule = new PlayerProjectModule(this);
 		this.selectionInputModule = new PlayerSelectionInputModule(this);
+		this.creationSettingsModule = new PlayerCreationSettingsModule(this);
 
 		this.modules.add(this.godPowerModule);
 		this.modules.add(this.selectionTypeModule);
 		this.modules.add(this.projectModule);
 		this.modules.add(this.selectionInputModule);
+		this.modules.add(this.creationSettingsModule);
 
 		this.stagedOrbisSettingsInventory = new StagedInventory<>(this.getEntity(), () -> new InventoryBlockForge(this.getEntity(), 1),
 				m -> PlayerOrbis.get(m).getStagedOrbisSettingsInventory(), "orbisSettings");
@@ -243,6 +245,11 @@ public class PlayerOrbis implements IPlayerOrbis
 	public PlayerSelectionInputModule selectionInputs()
 	{
 		return this.selectionInputModule;
+	}
+
+	public PlayerCreationSettingsModule getCreationSettings()
+	{
+		return this.creationSettingsModule;
 	}
 
 	public PlayerProjectModule projects()

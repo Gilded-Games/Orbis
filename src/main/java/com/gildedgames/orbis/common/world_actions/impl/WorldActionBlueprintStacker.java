@@ -1,5 +1,6 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
@@ -9,7 +10,6 @@ import com.gildedgames.orbis_api.processing.DataPrimer;
 import com.gildedgames.orbis_api.util.BlueprintHelper;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +25,8 @@ public class WorldActionBlueprintStacker extends WorldActionBase
 	private BlockDataContainer chosenBlueprint;
 
 	private IRegion region;
+
+	private ICreationData creationData;
 
 	private WorldActionBlueprintStacker()
 	{
@@ -42,11 +44,20 @@ public class WorldActionBlueprintStacker extends WorldActionBase
 		super.redo(player, world);
 
 		final Rotation rotation = player.powers().getBlueprintPower().getPlacingRotation();
-		ICreationData data = new CreationData(world, player.getEntity()).rotation(rotation).placesAir(false).seed(this.getSeed());
+
+		if (this.creationData == null)
+		{
+			this.creationData = new CreationData(world, player.getEntity()).rotation(rotation).placesAir(player.getCreationSettings().placesAirBlocks())
+					.seed(this.getSeed());
+		}
+		else
+		{
+			this.creationData.rotation(rotation).creator(player.getEntity());
+		}
 
 		if (this.chosenBlueprint == null)
 		{
-			this.chosenBlueprint = player.powers().getBlueprintPower().getStackerInHand().get(data.getWorld(), data.getRandom());
+			this.chosenBlueprint = player.powers().getBlueprintPower().getStackerInHand().get(this.creationData.getWorld(), this.creationData.getRandom());
 			this.region = RotationHelp.regionFromCenter(this.pos, this.chosenBlueprint, rotation);
 		}
 
@@ -54,7 +65,7 @@ public class WorldActionBlueprintStacker extends WorldActionBase
 
 		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.region, this.chosenBlueprint, data.pos(this.region.getMin()), null);
+		primer.create(this.region, this.chosenBlueprint, this.creationData.pos(this.region.getMin()), null);
 	}
 
 	@Override

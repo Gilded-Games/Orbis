@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.network;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
+import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlacesAirBlocks;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.network.packets.gui.*;
@@ -69,6 +70,9 @@ public class NetworkingOrbis
 		network.reg(PacketSetScheduleLayerOptions.HandlerServer.class, PacketSetScheduleLayerOptions.class,
 				Side.SERVER);
 		network.reg(PacketTeleportOrbis.HandlerServer.class, PacketTeleportOrbis.class,
+				Side.SERVER);
+
+		network.reg(PacketSetPlacesAirBlocks.HandlerServer.class, PacketSetPlacesAirBlocks.class,
 				Side.SERVER);
 
 		network.reg(PacketApplyWorldAction.HandlerServer.class, PacketApplyWorldAction.class,
@@ -162,6 +166,9 @@ public class NetworkingOrbis
 		network.reg(PacketBlueprintScheduleLayerGuiPos.HandlerClient.class, PacketBlueprintScheduleLayerGuiPos.class, Side.CLIENT);
 
 		network.reg(PacketSetEntranceTriggerId.HandlerClient.class, PacketSetEntranceTriggerId.class,
+				Side.CLIENT);
+
+		network.reg(PacketSetPlacesAirBlocks.HandlerClient.class, PacketSetPlacesAirBlocks.class,
 				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());

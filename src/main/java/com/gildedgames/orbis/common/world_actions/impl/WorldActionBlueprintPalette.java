@@ -2,9 +2,9 @@ package com.gildedgames.orbis.common.world_actions.impl;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
+import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
@@ -30,6 +30,8 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 
 	private BakedBlueprint baked;
 
+	private ICreationData creationData;
+
 	private WorldActionBlueprintPalette()
 	{
 
@@ -46,11 +48,21 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 		super.redo(player, world);
 
 		final Rotation rotation = player.powers().getBlueprintPower().getPlacingRotation();
-		ICreationData data = new CreationData(world, player.getEntity()).rotation(rotation).placesAir(false).seed(this.getSeed());
+
+		if (this.creationData == null)
+		{
+			this.creationData = new CreationData(world, player.getEntity()).rotation(rotation).placesAir(player.getCreationSettings().placesAirBlocks())
+					.seed(this.getSeed());
+		}
+		else
+		{
+			this.creationData.rotation(rotation).creator(player.getEntity());
+		}
 
 		if (this.chosenBlueprint == null)
 		{
-			this.chosenBlueprint = player.powers().getBlueprintPower().getPlacingPalette().fetchRandom(data.getWorld(), data.getRandom());
+			this.chosenBlueprint = player.powers().getBlueprintPower().getPlacingPalette()
+					.fetchRandom(this.creationData.getWorld(), this.creationData.getRandom());
 			this.region = RotationHelp.regionFromCenter(this.pos, this.chosenBlueprint, rotation);
 		}
 
@@ -60,7 +72,7 @@ public class WorldActionBlueprintPalette extends WorldActionBase
 
 		if (this.baked == null)
 		{
-			this.baked = new BakedBlueprint(this.chosenBlueprint, data.pos(this.region.getMin()));
+			this.baked = new BakedBlueprint(this.chosenBlueprint, this.creationData.pos(this.region.getMin()));
 
 			this.baked.bake();
 		}

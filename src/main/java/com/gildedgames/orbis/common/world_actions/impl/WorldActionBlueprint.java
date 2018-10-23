@@ -31,6 +31,8 @@ public class WorldActionBlueprint extends WorldActionBase
 
 	private IRegion bb;
 
+	private ICreationData creationData;
+
 	private WorldActionBlueprint()
 	{
 
@@ -58,11 +60,19 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		ICreationData creationData = new CreationData(world, player.getEntity()).pos(this.pos.add(-this.data.getWidth() / 2, 0, -this.data.getLength() / 2))
-				.rotation(rotation).placesAir(false)
-				.seed(this.getSeed());
+		if (this.creationData == null)
+		{
+			this.creationData = new CreationData(world, player.getEntity()).pos(this.pos.add(-this.data.getWidth() / 2, 0, -this.data.getLength() / 2))
+					.rotation(rotation).placesAir(player.getCreationSettings().placesAirBlocks())
+					.seed(this.getSeed());
+		}
+		else
+		{
+			this.creationData.pos(this.pos.add(-this.data.getWidth() / 2, 0, -this.data.getLength() / 2))
+					.rotation(rotation).creator(player.getEntity());
+		}
 
-		BakedBlueprint baked = new BakedBlueprint(this.data, creationData);
+		BakedBlueprint baked = new BakedBlueprint(this.data, this.creationData);
 
 		baked.bake();
 

@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.items.ItemBlockDataContainer;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.CreationData;
+import com.gildedgames.orbis_api.core.ICreationData;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis_api.processing.DataPrimer;
@@ -29,6 +30,8 @@ public class WorldActionBlockDataContainer implements IWorldAction
 	private BlockDataContainer oldContent;
 
 	private IRegion bb;
+
+	private ICreationData creationData;
 
 	private WorldActionBlockDataContainer()
 	{
@@ -58,8 +61,18 @@ public class WorldActionBlockDataContainer implements IWorldAction
 			this.oldContent = BlueprintHelper.fetchBlocksInside(this.bb, world);
 
 			final DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
-			primer.create(this.bb, container.get(), new CreationData(world, player.getEntity()).pos(this.bb.getMin()).rotation(rotation).placesAir(false),
-					null);
+
+			if (this.creationData == null)
+			{
+				this.creationData = new CreationData(world, player.getEntity()).pos(this.bb.getMin()).rotation(rotation)
+						.placesAir(player.getCreationSettings().placesAirBlocks());
+			}
+			else
+			{
+				this.creationData.pos(this.bb.getMin()).world(world).rotation(rotation);
+			}
+
+			primer.create(this.bb, container.get(), this.creationData, null);
 		}
 	}
 

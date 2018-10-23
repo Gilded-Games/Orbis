@@ -50,6 +50,8 @@ orbis.gui.choosePerBlock=Change Per Position
 orbis.gui.fillingOptions=WHEN USING PALETTES:
 orbis.gui.combine=Combine
 orbis.gui.change_floor_visuals=Change Floor Visuals:
+orbis.gui.creation_settings=Creation Settings:
+orbis.gui.place_air_blocks=Place Air Blocks
 
 orbis.gui.combine_blocks=Combine Blocks
 
