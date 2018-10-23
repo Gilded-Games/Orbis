@@ -5,10 +5,12 @@ import com.gildedgames.orbis.client.gui.blueprint.GuiEditBlueprintPostGen;
 import com.gildedgames.orbis.client.gui.entrance.GuiEditEntrance;
 import com.gildedgames.orbis.client.gui.fill.GuiCombineMatrix;
 import com.gildedgames.orbis.client.gui.schedules.GuiEditScheduledRegion;
+import com.gildedgames.orbis.client.gui.settings.GuiOrbisSettings;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.containers.ContainerCombineMatrix;
 import com.gildedgames.orbis.common.containers.ContainerEditBlueprintPostGen;
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
+import com.gildedgames.orbis.common.containers.ContainerOrbisSettings;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
 import com.gildedgames.orbis_api.util.mc.ContainerGeneric;
@@ -37,6 +39,8 @@ public class OrbisGuiHandler implements IGuiHandler
 
 	public static final int COMBINE_MATRIX = 5;
 
+	public static final int ORBIS_SETTINGS = 6;
+
 	@Override
 	public Container getServerGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z)
 	{
@@ -59,6 +63,8 @@ public class OrbisGuiHandler implements IGuiHandler
 				return new ContainerGeneric();
 			case COMBINE_MATRIX:
 				return new ContainerCombineMatrix(player.inventory, playerOrbis.powers().getFillPower().getForgeInventory());
+			case ORBIS_SETTINGS:
+				return new ContainerOrbisSettings(player.inventory, playerOrbis.getOrbisSettingsInventory());
 			default:
 				return null;
 		}
@@ -96,6 +102,8 @@ public class OrbisGuiHandler implements IGuiHandler
 						.map(blueprint -> new GuiEditBlueprintPostGen(screen instanceof GuiViewer ? (GuiViewer) screen : null, blueprint)).orElse(null);
 			case COMBINE_MATRIX:
 				return new GuiCombineMatrix(player);
+			case ORBIS_SETTINGS:
+				return new GuiOrbisSettings(player);
 			default:
 				return null;
 		}

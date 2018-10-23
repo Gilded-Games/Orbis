@@ -41,7 +41,7 @@ public class GodPowerFill implements IGodPower
 		}
 
 		this.shapeSelector = new ShapeSelectorFilter(p -> new BlockFilter(BlockFilterHelper.getNewFillLayer(p.getHeldItemMainhand())), false);
-		this.stagedInventory = new StagedInventory<>(playerOrbis.getEntity(), () -> new InventoryBlockForge(playerOrbis.getEntity()),
+		this.stagedInventory = new StagedInventory<>(playerOrbis.getEntity(), () -> new InventoryBlockForge(playerOrbis.getEntity(), 16),
 				m -> PlayerOrbis.get(m).powers().getFillPower().getStagedInventory(), "blockForge");
 	}
 

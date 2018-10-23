@@ -19,14 +19,17 @@ import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis_api.inventory.InventoryBlockForge;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.util.mc.NBTHelper;
+import com.gildedgames.orbis_api.util.mc.StagedInventory;
 import com.gildedgames.orbis_api.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -59,6 +62,8 @@ public class PlayerOrbis implements IPlayerOrbis
 	private final List<PlayerOrbisModule> modules = Lists.newArrayList();
 
 	private final List<PlayerOrbisObserver> observers = Lists.newArrayList();
+
+	private final StagedInventory<InventoryBlockForge> stagedOrbisSettingsInventory;
 
 	private double developerReach = 5.0D;
 
@@ -94,6 +99,9 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.selectionTypeModule = null;
 		this.projectModule = null;
 		this.selectionInputModule = null;
+
+		this.stagedOrbisSettingsInventory = new StagedInventory<>(this.getEntity(), () -> new InventoryBlockForge(this.getEntity(), 1),
+				m -> PlayerOrbis.get(m).getStagedOrbisSettingsInventory(), "orbisSettings");
 	}
 
 	public PlayerOrbis(final EntityPlayer entity)
@@ -109,6 +117,9 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.modules.add(this.selectionTypeModule);
 		this.modules.add(this.projectModule);
 		this.modules.add(this.selectionInputModule);
+
+		this.stagedOrbisSettingsInventory = new StagedInventory<>(this.getEntity(), () -> new InventoryBlockForge(this.getEntity(), 1),
+				m -> PlayerOrbis.get(m).getStagedOrbisSettingsInventory(), "orbisSettings");
 	}
 
 	@Nullable
@@ -150,6 +161,16 @@ public class PlayerOrbis implements IPlayerOrbis
 	public boolean removeObserver(final PlayerOrbisObserver observer)
 	{
 		return this.observers.remove(observer);
+	}
+
+	public StagedInventory<InventoryBlockForge> getStagedOrbisSettingsInventory()
+	{
+		return this.stagedOrbisSettingsInventory;
+	}
+
+	public IInventory getOrbisSettingsInventory()
+	{
+		return this.stagedOrbisSettingsInventory.get();
 	}
 
 	public IWorldActionLog getWorldActionLog(String worldActionLogId)
@@ -214,6 +235,8 @@ public class PlayerOrbis implements IPlayerOrbis
 		OrbisCore.network().sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.powers().getBlueprintPower().getStagedInventory()),
 				(EntityPlayerMP) other.getEntity());
 		OrbisCore.network().sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.powers().getFillPower().getStagedInventory()),
+				(EntityPlayerMP) other.getEntity());
+		OrbisCore.network().sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.getStagedOrbisSettingsInventory()),
 				(EntityPlayerMP) other.getEntity());
 	}
 

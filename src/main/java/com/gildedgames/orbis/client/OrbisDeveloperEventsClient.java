@@ -6,6 +6,7 @@ import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuHolder;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuPowers;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionInputs;
 import com.gildedgames.orbis.client.gui.power_wheel.GuiChoiceMenuSelectionTypes;
+import com.gildedgames.orbis.client.gui.settings.GuiOrbisSettings;
 import com.gildedgames.orbis.client.model.ModelOrbisFloor;
 import com.gildedgames.orbis.client.renderers.ChunkRendererManager;
 import com.gildedgames.orbis.common.OrbisCore;
@@ -435,8 +436,20 @@ public class OrbisDeveloperEventsClient
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onRenderWorldLast(final RenderWorldLastEvent event)
 	{
-		ModelOrbisFloor.setMimicModel(null);
-		ModelOrbisFloor.setFloorColor(0xFFFFFF);
+		if (!ModelOrbisFloor.useBlock)
+		{
+			ModelOrbisFloor.setMimicModel(null);
+
+			if (GuiOrbisSettings.FLOOR_COLOR.matches("^[0-9a-fA-F]+$"))
+			{
+				ModelOrbisFloor.setFloorColor((int) Long.parseLong(GuiOrbisSettings.FLOOR_COLOR, 16));
+			}
+		}
+		else
+		{
+			ModelOrbisFloor.setFloorColor(0xFFFFFF);
+			ModelOrbisFloor.setMimicModel(GuiOrbisSettings.FLOOR_BLOCK);
+		}
 
 		final World world = Minecraft.getMinecraft().world;
 

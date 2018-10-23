@@ -2,6 +2,8 @@ package com.gildedgames.orbis.client.gui.power_wheel;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.common.network.OrbisGuiHandler;
+import com.gildedgames.orbis.common.network.packets.PacketOpenGui;
 import com.gildedgames.orbis.common.network.packets.PacketSetScheduling;
 import com.gildedgames.orbis.common.network.packets.PacketTeleportOrbis;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
@@ -15,6 +17,7 @@ import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.util.InputHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
@@ -55,15 +58,17 @@ public class GuiChoiceMenuHolder extends GuiViewer
 
 	private final static ResourceLocation PORTAL_BACK_TEXTURE = OrbisCore.getResource("godmode/overlay/portal_back.png");
 
+	private final static ResourceLocation SETTINGS_TEXTURE = OrbisCore.getResource("godmode/overlay/settings.png");
+
 	private static int choicePageIndex;
 
 	private final GuiChoiceMenu[] menus;
 
 	private final GuiTexture[] tabs;
 
-	private GuiTexture left, right, portal;
+	private GuiTexture left, right, portal, settings;
 
-	private GuiText portalTitle;
+	private GuiText customTitle;
 
 	public GuiChoiceMenuHolder(final GuiChoiceMenu... menus)
 	{
@@ -143,19 +148,29 @@ public class GuiChoiceMenuHolder extends GuiViewer
 	@Override
 	public void drawElements()
 	{
+		this.customTitle.setText(Text.EMPTY);
+
 		super.drawElements();
 
 		if (this.portal.state().isHoveredAndTopElement())
 		{
 			this.portal.dim().mod().scale(1.1F).flush();
-
-			this.portalTitle.state().setVisible(true);
+			this.customTitle.setText(new Text(new TextComponentString(
+					this.mc.player.world.provider.getDimensionType() != WorldProviderOrbis.ORBIS ? "Teleport to Orbis" : "Teleport Back"), 1.0F));
 		}
 		else
 		{
 			this.portal.dim().mod().scale(1.0F).flush();
+		}
 
-			this.portalTitle.state().setVisible(false);
+		if (this.settings.state().isHoveredAndTopElement())
+		{
+			this.settings.dim().mod().scale(1.1F).flush();
+			this.customTitle.setText(new Text(new TextComponentString("Orbis Settings"), 1.0F));
+		}
+		else
+		{
+			this.settings.dim().mod().scale(1.0F).flush();
 		}
 	}
 
@@ -191,9 +206,17 @@ public class GuiChoiceMenuHolder extends GuiViewer
 		this.portal = new GuiTexture(Dim2D.build().pos(center).addX(-75).width(24).height(24).center(true).flush(),
 				this.mc.player.world.provider.getDimensionType() != WorldProviderOrbis.ORBIS ? PORTAL_TEXTURE : PORTAL_BACK_TEXTURE);
 
+		this.settings = new GuiTexture(Dim2D.build().pos(center).addX(-68).addY(-25).width(14).height(14).center(true).flush(), SETTINGS_TEXTURE);
+
+		if (this.mc.player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS)
+		{
+			context.addChildren(this.settings);
+		}
+
 		context.addChildren(this.portal);
 
 		this.portal.state().setCanBeTopHoverElement(true);
+		this.settings.state().setCanBeTopHoverElement(true);
 
 		this.left = new GuiTexture(
 				Dim2D.build().pos(center).addY(54).addX(-23).width(22).height(16).flush(),
@@ -222,9 +245,7 @@ public class GuiChoiceMenuHolder extends GuiViewer
 			this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
 		}
 
-		this.portalTitle = new GuiText(Dim2D.build().center(true).pos(center).addY(-86).flush(), new Text(
-				new TextComponentString(this.mc.player.world.provider.getDimensionType() != WorldProviderOrbis.ORBIS ? "Teleport to Orbis" : "Teleport Back"),
-				1.0F));
+		this.customTitle = new GuiText(Dim2D.build().center(true).pos(center).addY(-86).flush(), Text.EMPTY);
 
 		if (OrbisCore.CONFIG.useExperimentalFeatures())
 		{
@@ -242,7 +263,7 @@ public class GuiChoiceMenuHolder extends GuiViewer
 		this.getCurrentMenu().state().setEnabled(true);
 		this.getCurrentMenu().state().setVisible(true);
 
-		context.addChildren(this.portalTitle);
+		context.addChildren(this.customTitle);
 
 		this.left.state().setCanBeTopHoverElement(true);
 		this.right.state().setCanBeTopHoverElement(true);
@@ -288,6 +309,15 @@ public class GuiChoiceMenuHolder extends GuiViewer
 			if (this.portal.state().isHoveredAndTopElement())
 			{
 				OrbisCore.network().sendPacketToServer(new PacketTeleportOrbis());
+			}
+
+			if (this.settings.state().isHoveredAndTopElement())
+			{
+				EntityPlayer player = Minecraft.getMinecraft().player;
+
+				OrbisCore.network().sendPacketToServer(
+						new PacketOpenGui(OrbisGuiHandler.ORBIS_SETTINGS, player.getPosition().getX(), player.getPosition().getY(),
+								player.getPosition().getZ()));
 			}
 		}
 
