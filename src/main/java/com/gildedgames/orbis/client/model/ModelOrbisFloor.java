@@ -56,7 +56,8 @@ public class ModelOrbisFloor implements IBakedModel
 	@Override
 	public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand)
 	{
-		return getMimicModel().getQuads(state, side, rand);
+		IBakedModel mimic = getMimicModel();
+		return mimic.getQuads(mimic == OrbisDeveloperEventsClient.original ? state : currentMimicBlock, side, rand);
 	}
 
 	@Override
