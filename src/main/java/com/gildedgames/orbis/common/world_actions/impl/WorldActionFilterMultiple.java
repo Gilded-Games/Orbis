@@ -4,20 +4,25 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.util.CreationDataOrbis;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.block.BlockFilter;
+import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
+import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.data.region.IShape;
+import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis_api.processing.DataPrimer;
 import com.gildedgames.orbis_api.util.BlueprintHelper;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.Set;
 
 public class WorldActionFilterMultiple extends WorldActionBase
 {
@@ -30,14 +35,14 @@ public class WorldActionFilterMultiple extends WorldActionBase
 
 	private List<Pair<BlockDataContainer, BlockPos>> oldContent = Lists.newArrayList();
 
-	private List<BlockPos> multiplePositions;
+	private Set<BlockPos> multiplePositions;
 
 	private WorldActionFilterMultiple()
 	{
 
 	}
 
-	public WorldActionFilterMultiple(IShape shapeToFilter, BlockFilter filter, boolean schedules, List<BlockPos> multiplePositions)
+	public WorldActionFilterMultiple(IShape shapeToFilter, BlockFilter filter, boolean schedules, Set<BlockPos> multiplePositions)
 	{
 		this.shapeToFilter = shapeToFilter;
 		this.filter = filter;
@@ -52,9 +57,17 @@ public class WorldActionFilterMultiple extends WorldActionBase
 
 		this.oldContent.clear();
 
-		for (BlockPos pos : this.multiplePositions)
+		int width = this.shapeToFilter.getBoundingBox().getWidth();
+		int height = this.shapeToFilter.getBoundingBox().getHeight();
+		int length = this.shapeToFilter.getBoundingBox().getLength();
+
+		for (BlockPos p : this.multiplePositions)
 		{
-			this.oldContent.add(Pair.of(BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world, pos), pos));
+			IRegion bb = new Region(p, p.add(width, height, length));
+
+			BlockDataContainer container = BlueprintHelper.fetchBlocksInside(Blocks.STRUCTURE_VOID.getDefaultState(), bb, world, null);
+
+			this.oldContent.add(Pair.of(container, p));
 		}
 
 		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).seed(this.getSeed()).placesVoid(true);
@@ -74,9 +87,18 @@ public class WorldActionFilterMultiple extends WorldActionBase
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
+		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).seed(this.getSeed());
+
+		BlockFilter filter = new BlockFilterHelper.BlockDeleteFilter();
+
+		for (BlockPos pos : this.multiplePositions)
+		{
+			filter.apply(null, this.shapeToFilter, creationData.pos(pos), player.powers().getFillPower().getFilterOptions());
+		}
+
 		for (Pair<BlockDataContainer, BlockPos> pair : this.oldContent)
 		{
-			primer.create(pair.getLeft(), new CreationData(world).pos(pair.getRight()).placesVoid(true));
+			primer.create(pair.getLeft(), new CreationData(world).pos(pair.getRight()).placesAir(false));
 		}
 	}
 
@@ -96,7 +118,7 @@ public class WorldActionFilterMultiple extends WorldActionBase
 		funnel.set("f", this.filter);
 		funnel.set("s", this.shapeToFilter);
 		tag.setBoolean("sc", this.schedules);
-		funnel.setList("p", this.multiplePositions, NBTFunnel.POS_SETTER);
+		funnel.setSet("p", this.multiplePositions, NBTFunnel.POS_SETTER);
 	}
 
 	@Override
@@ -109,6 +131,6 @@ public class WorldActionFilterMultiple extends WorldActionBase
 		this.filter = funnel.get("f");
 		this.shapeToFilter = funnel.get("s");
 		this.schedules = tag.getBoolean("sc");
-		this.multiplePositions = funnel.getList("p", NBTFunnel.POS_GETTER);
+		this.multiplePositions = funnel.getSet("p", NBTFunnel.POS_GETTER);
 	}
 }
