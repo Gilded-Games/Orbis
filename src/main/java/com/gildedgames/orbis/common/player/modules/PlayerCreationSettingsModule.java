@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.player.modules;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
+import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlaceChunksAsGhostRegions;
 import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlacesAirBlocks;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,7 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public class PlayerCreationSettingsModule extends PlayerOrbisModule
 {
 
-	private boolean placesAirBlocks;
+	private boolean placesAirBlocks, placeChunksAsGhostRegions;
 
 	public PlayerCreationSettingsModule(final PlayerOrbis playerOrbis)
 	{
@@ -32,6 +33,21 @@ public class PlayerCreationSettingsModule extends PlayerOrbisModule
 		this.placesAirBlocks = flag;
 	}
 
+	public boolean placeChunksAsGhostRegions()
+	{
+		return this.placeChunksAsGhostRegions;
+	}
+
+	public void setPlaceChunksAsGhostRegions(boolean flag)
+	{
+		if (this.getWorld().isRemote)
+		{
+			OrbisCore.network().sendPacketToServer(new PacketSetPlaceChunksAsGhostRegions(flag));
+		}
+
+		this.placeChunksAsGhostRegions = flag;
+	}
+
 	@Override
 	public void onUpdate()
 	{
@@ -44,6 +60,7 @@ public class PlayerCreationSettingsModule extends PlayerOrbisModule
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		tag.setBoolean("placesAirBlocks", this.placesAirBlocks);
+		tag.setBoolean("placeChunksAsGhostRegions", this.placeChunksAsGhostRegions);
 	}
 
 	@Override
@@ -52,5 +69,6 @@ public class PlayerCreationSettingsModule extends PlayerOrbisModule
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		this.placesAirBlocks = tag.getBoolean("placesAirBlocks");
+		this.placeChunksAsGhostRegions = tag.getBoolean("placeChunksAsGhostRegions");
 	}
 }

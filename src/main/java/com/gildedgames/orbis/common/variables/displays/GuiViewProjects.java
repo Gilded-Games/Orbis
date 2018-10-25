@@ -19,8 +19,6 @@ import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IProject;
 import net.minecraft.client.Minecraft;
@@ -140,24 +138,17 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 		}
 		else
 		{
-			try
+			final Optional<IData> data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
+
+			if (!data.isPresent())
 			{
-				final Optional<IData> data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
-
-				if (!data.isPresent())
-				{
-					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
-					return;
-				}
-
-				if (this.onDoubleClickFile.apply(data.get()))
-				{
-					this.mc.displayGuiScreen(this.getPreviousViewer().getActualScreen());
-				}
+				OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project, node.getFile());
+				return;
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+
+			if (this.onDoubleClickFile.apply(data.get()))
 			{
-				OrbisCore.LOGGER.error(e);
+				this.mc.displayGuiScreen(this.getPreviousViewer().getActualScreen());
 			}
 		}
 	}

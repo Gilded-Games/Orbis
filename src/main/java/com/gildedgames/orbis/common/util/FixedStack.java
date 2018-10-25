@@ -104,6 +104,18 @@ public class FixedStack<E> implements Collection<E>
         return toPop;
     }
 
+    public E peek()
+    {
+        if (this.size <= 0)
+        {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked") final E toPeek = (E) this.elementData[this.maxIndex];
+
+        return toPeek;
+    }
+
     @Override
     public boolean remove(Object o)
     {

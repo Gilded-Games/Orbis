@@ -3,7 +3,6 @@ package com.gildedgames.orbis.common.network.packets.projects;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.*;
 import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
@@ -23,7 +22,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class PacketSendProject extends PacketMultipleParts
+public class PacketSendProjectCache extends PacketMultipleParts
 {
 
 	private IProjectIdentifier project;
@@ -32,17 +31,17 @@ public class PacketSendProject extends PacketMultipleParts
 
 	private LocalDateTime lastChanged;
 
-	public PacketSendProject()
+	public PacketSendProjectCache()
 	{
 
 	}
 
-	private PacketSendProject(final byte[] data)
+	private PacketSendProjectCache(final byte[] data)
 	{
 		super(data);
 	}
 
-	public PacketSendProject(final IProject project)
+	public PacketSendProjectCache(final IProject project)
 	{
 		this.project = project.getInfo().getIdentifier();
 		this.cache = project.getCache();
@@ -76,72 +75,69 @@ public class PacketSendProject extends PacketMultipleParts
 	@Override
 	public PacketMultipleParts createPart(final byte[] data)
 	{
-		return new PacketSendProject(data);
+		return new PacketSendProjectCache(data);
 	}
 
-	public static class HandlerClient extends MessageHandlerClient<PacketSendProject, IMessage>
+	public static class HandlerClient extends MessageHandlerClient<PacketSendProjectCache, IMessage>
 	{
 		@Override
-		public IMessage onMessage(final PacketSendProject message, final EntityPlayer player)
+		public IMessage onMessage(final PacketSendProjectCache message, final EntityPlayer player)
 		{
 			if (player == null || player.world == null)
 			{
 				return null;
 			}
 
-			try
+			final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
+
+			if (project.isPresent())
 			{
-				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
+				project.get().setCache(message.cache);
 
-				if (project.isPresent())
+				/**
+				 * Save all state to disk.
+				 */
+				for (final IData data : message.cache.getAllData())
 				{
-					project.get().setCache(message.cache);
+					Optional<String> dataLoc = message.cache.getDataLocation(data.getMetadata().getIdentifier().getDataId());
 
-					/**
-					 * Save all state to disk.
-					 */
-					for (final IData data : message.cache.getAllData())
+					if (dataLoc.isPresent())
 					{
-						Optional<String> dataLoc = message.cache.getDataLocation(data.getMetadata().getIdentifier().getDataId());
+						final File file = new File(project.get().getLocationAsFile(), dataLoc.get());
 
-						if (dataLoc.isPresent())
+						String extension = FilenameUtils.getExtension(dataLoc.get());
+
+						Optional<IDataLoader<IProject>> dataLoader = OrbisAPI.services().getProjectManager().getDataLoaderForExtension(extension);
+						Optional<IMetadataLoader<IProject>> metadataLoader = OrbisAPI.services().getProjectManager()
+								.getMetadataLoaderForExtension(extension);
+
+						if (!dataLoader.isPresent() || !metadataLoader.isPresent())
 						{
-							final File file = new File(project.get().getLocationAsFile(), dataLoc.get());
+							OrbisCore.LOGGER.error("Failed to save project data state (" + data.getMetadata().getIdentifier() + ") to disk");
+							continue;
+						}
 
-							String extension = FilenameUtils.getExtension(dataLoc.get());
-
-							Optional<IDataLoader<IProject>> dataLoader = OrbisAPI.services().getProjectManager().getDataLoaderForExtension(extension);
-							Optional<IMetadataLoader<IProject>> metadataLoader = OrbisAPI.services().getProjectManager()
-									.getMetadataLoaderForExtension(extension);
-
-							if (!dataLoader.isPresent() || !metadataLoader.isPresent())
-							{
-								OrbisCore.LOGGER.error("Failed to save project data state (" + data.getMetadata().getIdentifier() + ") to disk");
-								continue;
-							}
-
-							try (FileOutputStream stream = new FileOutputStream(file))
-							{
-								dataLoader.get().saveData(project.get(), data, file, stream);
-							}
-							catch (IOException e)
-							{
-								OrbisAPI.LOGGER.error("Failed to write data to project directory", data, e);
-							}
+						try (FileOutputStream stream = new FileOutputStream(file))
+						{
+							dataLoader.get().saveData(project.get(), data, file, stream);
+						}
+						catch (IOException e)
+						{
+							OrbisAPI.LOGGER.error("Failed to write data to project directory", data, e);
 						}
 					}
-
-					project.get().getInfo().getMetadata().setDownloaded(true);
-					project.get().getInfo().getMetadata().setDownloading(false);
-
-					project.get().getInfo().getMetadata().setLastChanged(message.lastChanged);
-
-					OrbisCore.LOGGER.debug("Project downloaded! " + project.get().getLocationAsFile().getName());
 				}
+
+				project.get().getInfo().getMetadata().setDownloaded(true);
+				project.get().getInfo().getMetadata().setDownloading(false);
+
+				project.get().getInfo().getMetadata().setLastChanged(message.lastChanged);
+
+				OrbisCore.LOGGER.debug("Project downloaded! " + project.get().getLocationAsFile().getName());
 			}
-			catch (final OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Could not find project to send project cache to", message.project);
 			}
 
 			if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveData)

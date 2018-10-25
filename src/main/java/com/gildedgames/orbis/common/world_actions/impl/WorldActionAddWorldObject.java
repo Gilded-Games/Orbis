@@ -5,7 +5,6 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
@@ -71,6 +70,12 @@ public class WorldActionAddWorldObject implements IWorldAction
 	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 		this.worldObject.setWorld(world);
+	}
+
+	@Override
+	public boolean isTemporary()
+	{
+		return false;
 	}
 
 	@Override

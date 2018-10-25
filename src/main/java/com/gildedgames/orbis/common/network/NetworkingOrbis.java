@@ -3,6 +3,7 @@ package com.gildedgames.orbis.common.network;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
 import com.gildedgames.orbis.common.network.packets.blueprints.*;
+import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlaceChunksAsGhostRegions;
 import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlacesAirBlocks;
 import com.gildedgames.orbis.common.network.packets.framework.PacketAddNode;
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
@@ -74,6 +75,8 @@ public class NetworkingOrbis
 
 		network.reg(PacketSetPlacesAirBlocks.HandlerServer.class, PacketSetPlacesAirBlocks.class,
 				Side.SERVER);
+		network.reg(PacketSetPlaceChunksAsGhostRegions.HandlerServer.class, PacketSetPlaceChunksAsGhostRegions.class,
+				Side.SERVER);
 
 		network.reg(PacketApplyWorldAction.HandlerServer.class, PacketApplyWorldAction.class,
 				Side.SERVER);
@@ -123,7 +126,7 @@ public class NetworkingOrbis
 		// C L I E N T
 		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);
 		network.reg(PacketWorldObjectManager.HandlerClient.class, PacketWorldObjectManager.class, Side.CLIENT);
-		network.reg(PacketSendProject.HandlerClient.class, PacketSendProject.class, Side.CLIENT);
+		network.reg(PacketSendProjectCache.HandlerClient.class, PacketSendProjectCache.class, Side.CLIENT);
 		network.reg(PacketSendProjectListing.HandlerClient.class, PacketSendProjectListing.class, Side.CLIENT);
 		network.reg(PacketWorldObjectRemove.HandlerClient.class, PacketWorldObjectRemove.class, Side.CLIENT);
 		network.reg(PacketWorldObjectAdd.HandlerClient.class, PacketWorldObjectAdd.class, Side.CLIENT);
@@ -169,6 +172,8 @@ public class NetworkingOrbis
 				Side.CLIENT);
 
 		network.reg(PacketSetPlacesAirBlocks.HandlerClient.class, PacketSetPlacesAirBlocks.class,
+				Side.CLIENT);
+		network.reg(PacketSetPlaceChunksAsGhostRegions.HandlerClient.class, PacketSetPlaceChunksAsGhostRegions.class,
 				Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(OrbisCore.INSTANCE, new OrbisGuiHandler());

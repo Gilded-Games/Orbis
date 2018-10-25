@@ -9,11 +9,17 @@ public abstract class WorldActionBase implements IWorldAction
 {
 	private long seed;
 
-	private boolean seedSet;
+	private boolean seedSet, temporary;
 
 	public long getSeed()
 	{
 		return this.seed;
+	}
+
+	@Override
+	public boolean isTemporary()
+	{
+		return this.temporary;
 	}
 
 	@Override
@@ -37,6 +43,7 @@ public abstract class WorldActionBase implements IWorldAction
 	{
 		tag.setLong("seed", this.seed);
 		tag.setBoolean("seedSet", this.seedSet);
+		tag.setBoolean("temporary", this.temporary);
 	}
 
 	@Override
@@ -44,5 +51,6 @@ public abstract class WorldActionBase implements IWorldAction
 	{
 		this.seed = tag.getLong("seed");
 		this.seedSet = tag.getBoolean("seedSet");
+		this.temporary = tag.getBoolean("temporary");
 	}
 }

@@ -6,9 +6,9 @@ import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
 import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
+import com.gildedgames.orbis_api.data.management.IData;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
 import com.gildedgames.orbis_api.processing.DataPrimer;
@@ -19,6 +19,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public class WorldActionBlueprint extends WorldActionBase
 {
@@ -113,13 +115,17 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		try
+		IDataIdentifier id = funnel.get("d");
+
+		Optional<IData> data = OrbisAPI.services().getProjectManager().findData(id);
+
+		if (data.isPresent())
 		{
-			OrbisAPI.services().getProjectManager().findData(funnel.get("d")).ifPresent(data -> this.data = (BlueprintData) data);
+			this.data = (BlueprintData) data.get();
 		}
-		catch (OrbisMissingProjectException | OrbisMissingDataException e)
+		else
 		{
-			OrbisAPI.LOGGER.error(e);
+			OrbisAPI.LOGGER.error("Could not find project from blueprint action", id);
 		}
 
 		this.pos = funnel.getPos("p");

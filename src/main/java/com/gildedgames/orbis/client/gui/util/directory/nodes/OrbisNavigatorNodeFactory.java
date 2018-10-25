@@ -3,7 +3,6 @@ package com.gildedgames.orbis.client.gui.util.directory.nodes;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNodeFactory;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -59,21 +58,18 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 			{
 				OrbisAPI.services().getProjectManager().refreshCache();
 
-				try
+				final Optional<IProject> project = OrbisAPI.services().getProjectManager().findProject(file.getName());
+
+				if (project.isPresent())
 				{
-					final Optional<IProject> project = OrbisAPI.services().getProjectManager().findProject(file.getName());
+					// TODO: Refresh cache in case contents of project changed outside of game.
+					//project.loadAndCacheData();
 
-					if (project.isPresent())
-					{
-						// TODO: Refresh cache in case contents of project changed outside of game.
-						//project.loadAndCacheData();
-
-						node = new NavigatorNodeProject(file, project.get());
-					}
+					node = new NavigatorNodeProject(file, project.get());
 				}
-				catch (final OrbisMissingProjectException e)
+				else
 				{
-					OrbisAPI.LOGGER.error("Project couldn't be found in cache, skipping node!", e);
+					OrbisAPI.LOGGER.error("Project couldn't be found in cache, skipping node!", file.getName());
 				}
 			}
 			else

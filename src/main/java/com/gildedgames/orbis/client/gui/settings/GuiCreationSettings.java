@@ -27,11 +27,11 @@ public class GuiCreationSettings extends GuiViewer
 
 	private final ContainerCreationSettings container;
 
-	private GuiText creationSettingsTitle, placeAirBlocksTitle;
+	private GuiText creationSettingsTitle, placeAirBlocksTitle, placeChunksAsGhostRegionsTitle;
 
 	private GuiTexture titleBar;
 
-	private GuiTickBox placeAirBlocks;
+	private GuiTickBox placeAirBlocks, placeChunksAsGhostRegions;
 
 	private PlayerOrbis playerOrbis;
 
@@ -58,6 +58,7 @@ public class GuiCreationSettings extends GuiViewer
 		super.onGuiClosed();
 
 		this.playerOrbis.getCreationSettings().setPlacesAirBlocks(this.placeAirBlocks.isTicked());
+		this.playerOrbis.getCreationSettings().setPlaceChunksAsGhostRegions(this.placeChunksAsGhostRegions.isTicked());
 	}
 
 	@Override
@@ -65,23 +66,29 @@ public class GuiCreationSettings extends GuiViewer
 	{
 		Pos2D center = InputHelper.getCenter();
 
-		this.titleBar = new GuiTexture(Dim2D.build().width(154).height(30).center(true).snapToIntegers(true).pos(center).addY(-45).flush(),
+		this.titleBar = new GuiTexture(Dim2D.build().width(154).height(30).center(true).snapToIntegers(true).pos(center).addY(-65).flush(),
 				TITLE_BAR_TEXTURE);
 
-		this.creationSettingsTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addY(-50).flush(),
+		this.creationSettingsTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addY(-70).flush(),
 				new Text(new TextComponentTranslation("orbis.gui.creation_settings"), 1.0F));
 
 		context.addChildren(this.titleBar);
 		context.addChildren(this.creationSettingsTitle);
 
-		this.placeAirBlocksTitle = new GuiText(Dim2D.build().pos(center).centerX(true).addY(-20).flush(),
+		this.placeAirBlocksTitle = new GuiText(Dim2D.build().pos(center).addX(-40).addY(-40).flush(),
 				new Text(new TextComponentTranslation("orbis.gui.place_air_blocks"), 1.0F));
 
-		this.placeAirBlocks = new GuiTickBox(center.clone().addX(-62).addY(-23).flush(), this.playerOrbis.getCreationSettings().placesAirBlocks());
+		this.placeChunksAsGhostRegionsTitle = new GuiText(Dim2D.build().pos(center).addX(-40).addY(-20).flush(),
+				new Text(new TextComponentTranslation("orbis.gui.place_chunks_as_ghost_regions"), 1.0F));
+
+		this.placeAirBlocks = new GuiTickBox(center.clone().addX(-62).addY(-43).flush(), this.playerOrbis.getCreationSettings().placesAirBlocks());
+
+		this.placeChunksAsGhostRegions = new GuiTickBox(center.clone().addX(-62).addY(-23).flush(),
+				this.playerOrbis.getCreationSettings().placeChunksAsGhostRegions());
 
 		GuiTexture inventory = new GuiTexture(Dim2D.build().width(176).height(90).center(true).snapToIntegers(true).pos(center).addY(45).flush(), INVENTORY);
 
-		context.addChildren(inventory, this.placeAirBlocks, this.placeAirBlocksTitle);
+		context.addChildren(inventory, this.placeAirBlocks, this.placeAirBlocksTitle, this.placeChunksAsGhostRegions, this.placeChunksAsGhostRegionsTitle);
 	}
 
 	@Override

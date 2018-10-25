@@ -122,6 +122,12 @@ public class WorldActionAddBlueprint implements IWorldAction
 	}
 
 	@Override
+	public boolean isTemporary()
+	{
+		return false;
+	}
+
+	@Override
 	public void write(NBTTagCompound tag)
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);

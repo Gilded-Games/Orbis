@@ -11,8 +11,10 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSched
 import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionGenerateGhostBlockDataContainer;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
+import com.gildedgames.orbis.common.world_objects.GhostBlockDataContainer;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.client.gui.data.DropdownElement;
@@ -121,6 +123,18 @@ public class GuiRightClickElements
 				final BlockFilter filter = new BlockFilter(new BlockFilterHelper.BlockDeleteFilter());
 
 				OrbisCore.network().sendPacketToServer(new PacketFilterShape(shape, filter));
+			}
+		};
+	}
+
+	public static DropdownElement generate(GhostBlockDataContainer ghost)
+	{
+		return new DropdownElement(new TextComponentString("Generate"))
+		{
+			@Override
+			public void onClick(final GuiDropdownList list, final EntityPlayer player)
+			{
+				PlayerOrbis.get(player).getWorldActionLog(WorldActionLogs.NORMAL).apply(player.world, new WorldActionGenerateGhostBlockDataContainer(ghost));
 			}
 		};
 	}

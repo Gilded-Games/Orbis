@@ -9,6 +9,7 @@ import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.items.*;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
+import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
@@ -22,8 +23,6 @@ import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
 import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.DataCondition;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
@@ -278,33 +277,30 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 
 			for (final ItemStack s : InventoryHelper.getItemStacks(this.container.slots))
 			{
-				try
+				final IDataIdentifier id = ItemBlueprint.getBlueprintId(s);
+
+				if (palette.getIDToConditions().containsKey(id))
 				{
-					final IDataIdentifier id = ItemBlueprint.getBlueprintId(s);
+					final DataCondition condition = palette.getIDToConditions().get(id);
 
-					if (palette.getIDToConditions().containsKey(id))
+					condition.setWeight(condition.getWeight() + 1.0F);
+				}
+				else
+				{
+					final Optional<BlueprintData> data = OrbisCore.getProjectManager().findData(id);
+
+					if (data.isPresent())
 					{
-						final DataCondition condition = palette.getIDToConditions().get(id);
+						final DataCondition condition = new DataCondition();
 
-						condition.setWeight(condition.getWeight() + 1.0F);
+						condition.setWeight(s.getCount());
+
+						palette.add(data.get(), condition);
 					}
 					else
 					{
-						final Optional<BlueprintData> data = OrbisCore.getProjectManager().findData(id);
-
-						if (data.isPresent())
-						{
-							final DataCondition condition = new DataCondition();
-
-							condition.setWeight(s.getCount());
-
-							palette.add(data.get(), condition);
-						}
+						OrbisAPI.LOGGER.error("Could not find data in GuiLoadData", id);
 					}
-				}
-				catch (final OrbisMissingDataException | OrbisMissingProjectException e)
-				{
-					OrbisCore.LOGGER.error(e);
 				}
 			}
 
@@ -322,127 +318,103 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.blueprint);
 
-			try
+			final Optional<IData> data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
+
+			if (data.isPresent())
 			{
-				final Optional<IData> data = OrbisCore.getProjectManager().findData(this.project, node.getFile());
+				ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				if (data.isPresent())
+				if (onMouse.getItem() instanceof ItemBlueprint && data.get().getMetadata().getIdentifier().equals(ItemBlueprint.getBlueprintId(onMouse)))
 				{
-					ItemStack onMouse = this.mc.player.inventory.getItemStack();
+					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
 
-					if (onMouse.getItem() instanceof ItemBlueprint && data.get().getMetadata().getIdentifier().equals(ItemBlueprint.getBlueprintId(onMouse)))
-					{
-						onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
-
-						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
-					}
-					else
-					{
-						ItemBlueprint.setBlueprint(stack, data.get().getMetadata().getIdentifier());
-
-						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-						{
-							stack.setCount(64);
-						}
-
-						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-						Minecraft.getMinecraft().player.inventory.setItemStack(stack);
-					}
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
 				}
 				else
 				{
-					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
+					ItemBlueprint.setBlueprint(stack, data.get().getMetadata().getIdentifier());
+
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+					{
+						stack.setCount(64);
+					}
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project, node.getFile());
 			}
 		}
 		else if (node instanceof NavigatorNodeFramework)
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.framework);
 
-			try
+			final Optional<IData> data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+
+			if (data.isPresent())
 			{
-				final Optional<IData> data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+				ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				if (data.isPresent())
+				if (onMouse.getItem() instanceof ItemFramework && data.get().getMetadata().getIdentifier().equals(ItemFramework.getDataId(onMouse)))
 				{
-					ItemStack onMouse = this.mc.player.inventory.getItemStack();
+					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
 
-					if (onMouse.getItem() instanceof ItemFramework && data.get().getMetadata().getIdentifier().equals(ItemFramework.getDataId(onMouse)))
-					{
-						onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
-
-						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
-					}
-					else
-					{
-						ItemFramework.setDataId(stack, data.get().getMetadata().getIdentifier());
-
-						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-						{
-							stack.setCount(64);
-						}
-
-						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-						Minecraft.getMinecraft().player.inventory.setItemStack(stack);
-					}
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
 				}
 				else
 				{
-					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
-					return;
-				}
+					ItemFramework.setDataId(stack, data.get().getMetadata().getIdentifier());
 
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+					{
+						stack.setCount(64);
+					}
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project, node.getFile());
 			}
 		}
 		else if (node instanceof NavigatorNodeBlueprintStacker)
 		{
 			final ItemStack stack = new ItemStack(ItemsOrbis.blueprint_stacker);
 
-			try
+			Optional<IData> data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+
+			if (data.isPresent())
 			{
-				Optional<IData> data = OrbisCore.getProjectManager().findData(GuiLoadData.this.project, node.getFile());
+				ItemStack onMouse = this.mc.player.inventory.getItemStack();
 
-				if (data.isPresent())
+				if (onMouse.getItem() instanceof ItemBlueprintStacker && data.get().getMetadata().getIdentifier()
+						.equals(ItemBlueprintStacker.getBlueprintStackerId(onMouse)))
 				{
-					ItemStack onMouse = this.mc.player.inventory.getItemStack();
+					onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
 
-					if (onMouse.getItem() instanceof ItemBlueprintStacker && data.get().getMetadata().getIdentifier()
-							.equals(ItemBlueprintStacker.getBlueprintStackerId(onMouse)))
-					{
-						onMouse.setCount(Math.min(64, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : onMouse.getCount() + 1));
-
-						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
-					}
-					else
-					{
-						ItemBlueprintStacker.setBlueprintStacker(stack, (BlueprintStackerData) data.get());
-
-						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-						{
-							stack.setCount(64);
-						}
-
-						OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
-						Minecraft.getMinecraft().player.inventory.setItemStack(stack);
-					}
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(onMouse));
 				}
 				else
 				{
-					OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project);
-					return;
+					ItemBlueprintStacker.setBlueprintStacker(stack, (BlueprintStackerData) data.get());
+
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+					{
+						stack.setCount(64);
+					}
+
+					OrbisCore.network().sendPacketToServer(new PacketSetItemStack(stack));
+					Minecraft.getMinecraft().player.inventory.setItemStack(stack);
 				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.info("Could not load data: " + node.getFile() + " - Project: " + this.project, node.getFile());
 			}
 		}
 	}

@@ -1,8 +1,6 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
@@ -94,12 +92,12 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 				return null;
 			}
 
-			try
-			{
-				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+			final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
+			final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-				if (project.isPresent() && worldObject.getData() != null)
+			if (project.isPresent())
+			{
+				if (worldObject.getData() != null)
 				{
 					IData data = worldObject.getData();
 
@@ -126,9 +124,9 @@ public class PacketSaveWorldObjectToProject extends PacketMultipleParts
 					OrbisCore.network().sendPacketToPlayer(new PacketSendProjectListing(), (EntityPlayerMP) player);
 				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Could not find project to save world object to", message.project, worldObject);
 			}
 
 			return null;

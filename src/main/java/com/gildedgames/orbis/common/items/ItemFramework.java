@@ -6,8 +6,6 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.management.IDataMetadata;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -100,18 +98,11 @@ public class ItemFramework extends Item implements ModelRegisterCallback, ItemSt
 
 		if (id != null)
 		{
-			try
-			{
-				final Optional<IDataMetadata> data = OrbisCore.getProjectManager().findMetadata(id);
+			final Optional<IDataMetadata> data = OrbisCore.getProjectManager().findMetadata(id);
 
-				if (data.isPresent())
-				{
-					return data.get().getName();
-				}
-			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			if (data.isPresent())
 			{
-				OrbisCore.LOGGER.error(e);
+				return data.get().getName();
 			}
 		}
 

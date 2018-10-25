@@ -3,6 +3,8 @@ package com.gildedgames.orbis.common.capabilities.player;
 import com.gildedgames.orbis.common.OrbisCapabilities;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.*;
+import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlaceChunksAsGhostRegions;
+import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlacesAirBlocks;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
 import com.gildedgames.orbis.common.player.modules.*;
@@ -213,6 +215,13 @@ public class PlayerOrbis implements IPlayerOrbis
 						(EntityPlayerMP) this.getEntity());
 		OrbisCore.network()
 				.sendPacketToPlayer(new PacketSetScheduling(this.powers().isScheduling()),
+						(EntityPlayerMP) this.getEntity());
+
+		OrbisCore.network()
+				.sendPacketToPlayer(new PacketSetPlacesAirBlocks(this.getCreationSettings().placesAirBlocks()),
+						(EntityPlayerMP) this.getEntity());
+		OrbisCore.network()
+				.sendPacketToPlayer(new PacketSetPlaceChunksAsGhostRegions(this.getCreationSettings().placeChunksAsGhostRegions()),
 						(EntityPlayerMP) this.getEntity());
 	}
 
