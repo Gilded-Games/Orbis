@@ -12,13 +12,12 @@ import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddBlueprint;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.DataCondition;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.management.IDataMetadata;
+import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.region.Region;
 import com.gildedgames.orbis_api.data.schedules.ScheduleBlueprint;
 import com.gildedgames.orbis_api.util.RegionHelp;
@@ -68,6 +67,18 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 		event.getModelRegistry().putObject(new ModelResourceLocation(OrbisCore.MOD_ID + ":blueprint", "inventory"), dummyModel);
 	}
 
+	public static OrbisItemMetadata getOrbisMetadata(final ItemStack stack)
+	{
+		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("metadata"))
+		{
+			return null;
+		}
+
+		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
+
+		return funnel.get("metadata");
+	}
+
 	public static void setBlueprint(final ItemStack stack, final IDataIdentifier id)
 	{
 		if (stack.getTagCompound() == null)
@@ -78,6 +89,10 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 		final NBTFunnel funnel = new NBTFunnel(stack.getTagCompound());
 
 		funnel.set("blueprint_id", id);
+
+		Optional<BlueprintData> data = OrbisAPI.services().getProjectManager().findData(id);
+
+		data.ifPresent(blueprintData -> funnel.set("metadata", new OrbisItemMetadata(blueprintData.getMetadata().getName(), blueprintData)));
 	}
 
 	public static IDataIdentifier getBlueprintId(final ItemStack stack)
@@ -103,16 +118,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		final IDataIdentifier id = funnel.get("blueprint_id");
 
-		try
-		{
-			return OrbisAPI.services().getProjectManager().findData(id);
-		}
-		catch (OrbisMissingProjectException | OrbisMissingDataException e)
-		{
-			OrbisAPI.LOGGER.error(e);
-		}
-
-		return Optional.empty();
+		return OrbisAPI.services().getProjectManager().findData(id);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -136,18 +142,39 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		if (id != null)
 		{
-			try
-			{
-				final Optional<IDataMetadata> data = OrbisCore.getProjectManager().findMetadata(id);
+			final Optional<IDataMetadata> data = OrbisCore.getProjectManager().findMetadata(id);
 
-				if (data.isPresent())
-				{
-					return data.get().getName();
-				}
-			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			if (data.isPresent())
 			{
-				OrbisCore.LOGGER.error(e);
+				return data.get().getName();
+			}
+			else
+			{
+				OrbisItemMetadata meta = getOrbisMetadata(stack);
+
+				if (meta != null)
+				{
+					if (OrbisCore.getProjectManager().projectExists(id.getProjectIdentifier()))
+					{
+						Optional<IProject> project = OrbisCore.getProjectManager().findProject(id.getProjectIdentifier());
+
+						if (project.isPresent())
+						{
+							if (project.get().getInfo().getMetadata().isDownloaded() || Minecraft.getMinecraft().isIntegratedServerRunning())
+							{
+								return meta.getName() + " (Data Missing)";
+							}
+							else
+							{
+								return meta.getName() + " (Project Not Downloaded)";
+							}
+						}
+					}
+					else
+					{
+						return meta.getName() + " (Project Missing)";
+					}
+				}
 			}
 		}
 

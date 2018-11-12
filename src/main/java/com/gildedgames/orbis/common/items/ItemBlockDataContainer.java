@@ -8,9 +8,14 @@ import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataToCache;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
+import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddWorldObject;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDataContainer;
+import com.gildedgames.orbis.common.world_objects.GhostBlockDataContainer;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.data.management.IDataCache;
+import com.gildedgames.orbis_api.data.region.IRegion;
+import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis_api.util.RotationHelp;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -135,8 +141,28 @@ public class ItemBlockDataContainer extends Item implements ModelRegisterCallbac
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
-				playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
-						.apply(world, new WorldActionBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
+				if (playerOrbis.getCreationSettings().placeChunksAsGhostRegions())
+				{
+					final Optional<BlockDataContainer> container = ItemBlockDataContainer.getDataContainer(playerOrbis.getEntity().getHeldItemMainhand());
+
+					if (container.isPresent())
+					{
+						Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
+
+						Region tempRegion = new Region(container.get());
+
+						IRegion tempRegion2 = RotationHelp.regionFromCenter(createPos, tempRegion, rotation);
+
+						GhostBlockDataContainer ghost = new GhostBlockDataContainer(world, tempRegion2.getMin(), container.get());
+
+						playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionAddWorldObject(ghost));
+					}
+				}
+				else
+				{
+					playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
+							.apply(world, new WorldActionBlockDataContainer(playerOrbis.getEntity().getHeldItemMainhand(), createPos));
+				}
 			}
 		}
 	}

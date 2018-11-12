@@ -6,9 +6,9 @@ import com.gildedgames.orbis.common.network.packets.PacketWorldObjectAdd;
 import com.gildedgames.orbis.common.network.packets.PacketWorldObjectRemove;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.CreationData;
+import com.gildedgames.orbis_api.core.ICreationData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.region.IRegion;
 import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
@@ -30,6 +30,8 @@ public class WorldActionAddBlueprint implements IWorldAction
 	private Blueprint blueprint;
 
 	private BlockDataContainer oldContent;
+
+	private ICreationData creationData;
 
 	private WorldActionAddBlueprint()
 	{
@@ -53,7 +55,16 @@ public class WorldActionAddBlueprint implements IWorldAction
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.blueprint.getBlockDataContainer(), new CreationData(world).pos(this.blueprint.getMin()).placesVoid(true));
+		if (this.creationData == null)
+		{
+			this.creationData = new CreationData(world).pos(this.blueprint.getMin()).placesVoid(true).placesAir(player.getCreationSettings().placesAirBlocks());
+		}
+		else
+		{
+			this.creationData.pos(this.blueprint.getMin()).world(world);
+		}
+
+		primer.create(this.blueprint.getBlockDataContainer(), this.creationData);
 
 		final WorldObjectManager manager = WorldObjectManager.get(world);
 
@@ -108,6 +119,12 @@ public class WorldActionAddBlueprint implements IWorldAction
 		this.initBlueprint(playerOrbis);
 
 		this.blueprint.setWorld(world);
+	}
+
+	@Override
+	public boolean isTemporary()
+	{
+		return false;
 	}
 
 	@Override

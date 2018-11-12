@@ -2,8 +2,6 @@ package com.gildedgames.orbis.common.network.packets.framework;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.management.IData;
@@ -98,31 +96,40 @@ public class PacketRemoveNode extends PacketMultipleParts
 				return null;
 			}
 
-			try
+			final Optional<IData> data;
+
+			if (message.id == null)
 			{
-				final Optional<IData> data;
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-				if (message.id == null)
-				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				data = Optional.of(worldObject.getData());
+			}
+			else
+			{
+				data = OrbisCore.getProjectManager().findData(message.id);
+			}
 
-					data = Optional.of(worldObject.getData());
-				}
-				else
-				{
-					data = OrbisCore.getProjectManager().findData(message.id);
-				}
-
-				if (data.isPresent() && data.get() instanceof FrameworkData)
+			if (data.isPresent())
+			{
+				if (data.get() instanceof FrameworkData)
 				{
 					final FrameworkData fData = (FrameworkData) data.get();
 
 					fData.removeNode(message.nodeId);
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Data requested to be removed as a node is not actually a node", data.get());
+				}
+
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (message.id != null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Node requested to be removed doesn't exist in project", message.id);
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Node requested to be removed doesn't exist in the world", message.worldObjectId);
 			}
 
 			return null;
@@ -139,22 +146,22 @@ public class PacketRemoveNode extends PacketMultipleParts
 				return null;
 			}
 
-			try
+			final Optional<IData> data;
+
+			if (message.id == null)
 			{
-				final Optional<IData> data;
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-				if (message.id == null)
-				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				data = Optional.of(worldObject.getData());
+			}
+			else
+			{
+				data = OrbisCore.getProjectManager().findData(message.id);
+			}
 
-					data = Optional.of(worldObject.getData());
-				}
-				else
-				{
-					data = OrbisCore.getProjectManager().findData(message.id);
-				}
-
-				if (data.isPresent() && data.get() instanceof FrameworkData)
+			if (data.isPresent())
+			{
+				if (data.get() instanceof FrameworkData)
 				{
 					final FrameworkData fData = (FrameworkData) data.get();
 
@@ -177,10 +184,18 @@ public class PacketRemoveNode extends PacketMultipleParts
 						}
 					}
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Data requested to be removed as a node is not actually a node", data.get());
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (message.id != null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Node requested to be removed doesn't exist in project", message.id);
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Node requested to be removed doesn't exist in the world", message.worldObjectId);
 			}
 
 			return null;

@@ -1,8 +1,6 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis_api.network.NetworkUtils;
@@ -74,15 +72,15 @@ public class PacketRequestProject extends PacketMultipleParts
 				return null;
 			}
 
-			try
-			{
-				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
+			final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
 
-				project.ifPresent(iProject -> OrbisCore.network().sendPacketToPlayer(new PacketSendProject(iProject), (EntityPlayerMP) player));
-			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			if (project.isPresent())
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.network().sendPacketToPlayer(new PacketSendProjectCache(project.get()), (EntityPlayerMP) player);
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Could not find project requested", message.project);
 			}
 
 			return null;

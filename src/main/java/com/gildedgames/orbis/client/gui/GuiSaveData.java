@@ -24,7 +24,6 @@ import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
 import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IProject;
@@ -254,52 +253,45 @@ public class GuiSaveData extends GuiViewer implements IDirectoryNavigatorListene
 	{
 		if (Minecraft.getMinecraft().isIntegratedServerRunning())
 		{
-			try
-			{
-				final IWorldObject worldObject = this.worldObject;
+			final IWorldObject worldObject = this.worldObject;
 
-				//TODO: Make sure the new data has the same dimensions as the old data if you're overwriting
-				if (this.project != null && (this.data != null || worldObject.getData() != null) && (!file.exists() || canOverwrite))
+			//TODO: Make sure the new data has the same dimensions as the old data if you're overwriting
+			if (this.project != null && (this.data != null || worldObject.getData() != null) && (!file.exists() || canOverwrite))
+			{
+				IData data = worldObject == null ? this.data : worldObject.getData();
+
+				/**
+				 * Check if the state has already been stored.
+				 * If so, we should addNew a new identifier for it as
+				 * a clone. Many issues are caused if two files use
+				 * the same identifier.
+				 */
+				boolean notSameProjectOrNoProject = data.getMetadata().getIdentifier() != null &&
+						(data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
+								.equals(this.project.getInfo().getIdentifier()));
+
+				if (data.getMetadata().getIdentifier() != null && ((this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
+						&& !canOverwrite) || notSameProjectOrNoProject))
 				{
-					IData data = worldObject == null ? this.data : worldObject.getData();
+					data = data.clone();
 
-					/**
-					 * Check if the state has already been stored.
-					 * If so, we should addNew a new identifier for it as
-					 * a clone. Many issues are caused if two files use
-					 * the same identifier.
-					 */
-					boolean notSameProjectOrNoProject = data.getMetadata().getIdentifier() != null &&
-							(data.getMetadata().getIdentifier().getProjectIdentifier() == null || !data.getMetadata().getIdentifier().getProjectIdentifier()
-									.equals(this.project.getInfo().getIdentifier()));
-
-					if (data.getMetadata().getIdentifier() != null && ((this.project.getCache().hasData(data.getMetadata().getIdentifier().getDataId())
-							&& !canOverwrite) || notSameProjectOrNoProject))
-					{
-						data = data.clone();
-
-						data.getMetadata().setIdentifier(this.project.getCache().createNextIdentifier());
-					}
-
-					if (worldObject != null)
-					{
-						data.preSaveToDisk(worldObject);
-					}
-
-					this.project.getCache().setData(data, location);
-
-					this.project.writeData(data, file);
-					this.refreshNavigator();
-
-					if (canOverwrite && data instanceof BlueprintData)
-					{
-						OrbisClientCaches.getBlueprintRenders().refresh(data.getMetadata().getIdentifier());
-					}
+					data.getMetadata().setIdentifier(this.project.getCache().createNextIdentifier());
 				}
-			}
-			catch (final OrbisMissingProjectException e)
-			{
-				OrbisCore.LOGGER.error(e);
+
+				if (worldObject != null)
+				{
+					data.preSaveToDisk(worldObject);
+				}
+
+				this.project.getCache().setData(data, location);
+
+				this.project.writeData(data, file);
+				this.refreshNavigator();
+
+				if (canOverwrite && data instanceof BlueprintData)
+				{
+					OrbisClientCaches.getBlueprintRenders().refresh(data.getMetadata().getIdentifier());
+				}
 			}
 		}
 		else

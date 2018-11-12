@@ -55,6 +55,13 @@ public class WorldActionLog implements IWorldActionLog
 
 		this.future.clear();
 
+		IWorldAction lastAction = this.past.peek();
+
+		if (lastAction != null && lastAction.isTemporary())
+		{
+			this.past.pop();
+		}
+
 		this.past.push(action);
 
 		action.setWorld(this.playerOrbis, world);

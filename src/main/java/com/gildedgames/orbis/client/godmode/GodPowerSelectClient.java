@@ -1,14 +1,12 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
-import com.gildedgames.orbis.client.gui.right_click.GuiRightClickSchedule;
-import com.gildedgames.orbis.client.gui.right_click.GuiRightClickScheduleRegion;
-import com.gildedgames.orbis.client.gui.right_click.GuiRightClickSelector;
+import com.gildedgames.orbis.client.gui.right_click.*;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSelect;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis.common.world_objects.GhostBlockDataContainer;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
@@ -120,6 +118,11 @@ public class GodPowerSelectClient implements IGodPowerClient
 					if (!(selectedShape instanceof Blueprint) && selectedShape instanceof WorldShape)
 					{
 						Minecraft.getMinecraft().displayGuiScreen(new GuiRightClickSelector(playerOrbis, (WorldShape) selectedShape));
+					}
+					else if (selectedShape instanceof GhostBlockDataContainer)
+					{
+						Minecraft.getMinecraft()
+								.displayGuiScreen(new GuiRightClickGhostBlockDataContainer(playerOrbis, (GhostBlockDataContainer) selectedShape));
 					}
 					else
 					{

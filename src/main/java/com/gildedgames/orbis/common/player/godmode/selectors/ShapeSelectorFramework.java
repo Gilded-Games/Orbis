@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
+import java.util.Set;
 
 public class ShapeSelectorFramework implements IShapeSelector
 {
@@ -55,7 +55,7 @@ public class ShapeSelectorFramework implements IShapeSelector
 	}
 
 	@Override
-	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions)
+	public void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, Set<BlockPos> multiplePositions)
 	{
 
 	}

@@ -2,8 +2,6 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
@@ -117,31 +115,31 @@ public class PacketAddSchedule implements IMessage
 				return null;
 			}
 
-			try
+			final IWorldObject worldObject;
+
+			if (message.worldObjectId == -1)
 			{
-				final IWorldObject worldObject;
+				worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
+			}
+			else
+			{
+				worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+			}
 
-				if (message.worldObjectId == -1)
-				{
-					worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
-				}
-				else
-				{
-					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
-				}
+			final Optional<IData> data;
 
-				final Optional<IData> data;
+			if (message.id == null)
+			{
+				data = Optional.of(worldObject.getData());
+			}
+			else
+			{
+				data = OrbisCore.getProjectManager().findData(message.id);
+			}
 
-				if (message.id == null)
-				{
-					data = Optional.of(worldObject.getData());
-				}
-				else
-				{
-					data = OrbisCore.getProjectManager().findData(message.id);
-				}
-
-				if (data.isPresent() && data.get() instanceof BlueprintData)
+			if (data.isPresent())
+			{
+				if (data.get() instanceof BlueprintData)
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
@@ -155,10 +153,18 @@ public class PacketAddSchedule implements IMessage
 								.setSchedule(message.scheduleId, message.schedule, worldObject);
 					}
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Data isn't a blueprint", message.id, this.getClass());
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (message.id != null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in project", message.id, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
 			}
 
 			return null;
@@ -175,31 +181,31 @@ public class PacketAddSchedule implements IMessage
 				return null;
 			}
 
-			try
+			final IWorldObject worldObject;
+
+			if (message.worldObjectId == -1)
 			{
-				final IWorldObject worldObject;
+				worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
+			}
+			else
+			{
+				worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+			}
 
-				if (message.worldObjectId == -1)
-				{
-					worldObject = WorldObjectUtils.getIntersectingShape(player.world, Blueprint.class, message.pos);
-				}
-				else
-				{
-					worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
-				}
+			final Optional<IData> data;
 
-				final Optional<IData> data;
+			if (message.id == null)
+			{
+				data = Optional.of(worldObject.getData());
+			}
+			else
+			{
+				data = OrbisCore.getProjectManager().findData(message.id);
+			}
 
-				if (message.id == null)
-				{
-					data = Optional.of(worldObject.getData());
-				}
-				else
-				{
-					data = OrbisCore.getProjectManager().findData(message.id);
-				}
-
-				if (data.isPresent() && data.get() instanceof BlueprintData)
+			if (data.isPresent())
+			{
+				if (data.get() instanceof BlueprintData)
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
@@ -225,10 +231,18 @@ public class PacketAddSchedule implements IMessage
 						}
 					}
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Data isn't a blueprint", message.id, this.getClass());
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (message.id != null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in project", message.id, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
 			}
 
 			return null;

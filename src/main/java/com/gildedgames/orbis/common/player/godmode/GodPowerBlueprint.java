@@ -12,13 +12,14 @@ import com.gildedgames.orbis.common.network.OrbisGuiHandler;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.player.godmode.selectors.ShapeSelectorBlueprint;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
+import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.util.mc.StagedInventory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -149,15 +150,21 @@ public class GodPowerBlueprint implements IGodPower<GodPowerBlueprintClient>
 				this.placingPalette = null;
 				this.placingBlueprint = null;
 
-				try
+				final IDataIdentifier id = ItemBlueprint.getBlueprintId(stack);
+				Optional<IData> data = OrbisCore.getProjectManager().findData(id);
+
+				if (data.isPresent() && data.get() instanceof BlueprintData)
 				{
-					final IDataIdentifier id = ItemBlueprint.getBlueprintId(stack);
-					OrbisCore.getProjectManager().findData(id).ifPresent(data -> this.placingBlueprint = (BlueprintData) data);
+					this.placingBlueprint = (BlueprintData) data.get();
 				}
-				catch (final OrbisMissingDataException | OrbisMissingProjectException e)
+				else if (player.world.isRemote && id != null)
 				{
-					OrbisCore.LOGGER.error("Missing in " + this.getClass().getName() + " : ", e);
-					player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
+					Optional<IProject> project = OrbisCore.getProjectManager().findProject(id.getProjectIdentifier());
+
+					if (project.isPresent() && !project.get().getInfo().getMetadata().isDownloaded() && !Minecraft.getMinecraft().isIntegratedServerRunning())
+					{
+						//TODO: Make fake blueprint to place
+					}
 				}
 			}
 			else if (stack.getItem() instanceof ItemBlockDataContainer)

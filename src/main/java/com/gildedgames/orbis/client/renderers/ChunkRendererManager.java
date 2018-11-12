@@ -41,9 +41,12 @@ public class ChunkRendererManager implements PlayerOrbisObserver, IWorldObjectMa
 
 	public static IChunkRendererCapability getChunkRenderer(final World world, final int chunkX, final int chunkZ)
 	{
-		final IChunkRendererCapability data = world.getChunkFromChunkCoords(chunkX, chunkZ).getCapability(OrbisCapabilities.CHUNK_RENDERER, EnumFacing.UP);
+		if (world == null)
+		{
+			throw new IllegalArgumentException("The world passed into getChunkRenderer is null");
+		}
 
-		return data;
+		return world.getChunkFromChunkCoords(chunkX, chunkZ).getCapability(OrbisCapabilities.CHUNK_RENDERER, EnumFacing.UP);
 	}
 
 	public void unload()

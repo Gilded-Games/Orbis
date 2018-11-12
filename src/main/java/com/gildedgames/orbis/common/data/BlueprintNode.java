@@ -1,12 +1,13 @@
 package com.gildedgames.orbis.common.data;
 
+import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis_api.data.management.IData;
+import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.data.pathway.PathwayData;
 import com.gildedgames.orbis_api.data.region.IMutableRegion;
 import com.gildedgames.orbis_api.data.region.Region;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class BlueprintNode implements IFrameworkNode
 {
@@ -98,14 +100,17 @@ public class BlueprintNode implements IFrameworkNode
 	public void read(NBTTagCompound tag)
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
+		IDataIdentifier id = funnel.get("data");
 
-		try
+		Optional<IData> data = OrbisAPI.services().getProjectManager().findData(id);
+
+		if (data.isPresent())
 		{
-			OrbisAPI.services().getProjectManager().findData(funnel.get("data")).ifPresent(data -> this.data = (BlueprintData) data);
+			this.data = (BlueprintData) data.get();
 		}
-		catch (OrbisMissingProjectException | OrbisMissingDataException e)
+		else
 		{
-			OrbisAPI.LOGGER.error(e);
+			OrbisCore.LOGGER.error("Could not load back BlueprintData", id, this.getClass());
 		}
 
 		this.palette = funnel.get("palette");

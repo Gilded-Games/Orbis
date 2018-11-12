@@ -15,7 +15,7 @@ import com.gildedgames.orbis_api.data.region.IShape;
 import com.gildedgames.orbis_api.data.shapes.AbstractShape;
 import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.world.IWorldObject;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 import org.lwjgl.input.Mouse;
 
-import java.util.List;
+import java.util.Set;
 
 public class SelectionInputBrush implements ISelectionInput
 {
@@ -40,7 +40,7 @@ public class SelectionInputBrush implements ISelectionInput
 
 	private IGodPower prevPower;
 
-	private List<BlockPos> paintedPositions = Lists.newArrayList();
+	private Set<BlockPos> paintedPositions = Sets.newHashSet();
 
 	private boolean painting;
 

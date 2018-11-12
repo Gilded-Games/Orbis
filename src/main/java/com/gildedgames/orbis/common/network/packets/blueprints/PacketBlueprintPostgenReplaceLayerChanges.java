@@ -2,8 +2,6 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.schedules.PostGenReplaceLayer;
 import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
@@ -96,23 +94,24 @@ public class PacketBlueprintPostgenReplaceLayerChanges extends PacketMultiplePar
 				return null;
 			}
 
-			try
+			final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+
+			if (worldObject instanceof Blueprint)
 			{
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				final Blueprint b = (Blueprint) worldObject;
 
-				if (worldObject instanceof Blueprint)
-				{
-					final Blueprint b = (Blueprint) worldObject;
+				PostGenReplaceLayer layer = b.getData().getPostGenReplaceLayer(message.layerId);
 
-					PostGenReplaceLayer layer = b.getData().getPostGenReplaceLayer(message.layerId);
-
-					layer.setRequired(message.required);
-					layer.setReplaced(message.replaced);
-				}
+				layer.setRequired(message.required);
+				layer.setReplaced(message.replaced);
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (worldObject == null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("World object isn't a Blueprint", message.worldObjectId, this.getClass());
 			}
 
 			return null;
@@ -129,30 +128,31 @@ public class PacketBlueprintPostgenReplaceLayerChanges extends PacketMultiplePar
 				return null;
 			}
 
-			try
+			final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+
+			if (worldObject instanceof Blueprint)
 			{
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				final Blueprint b = (Blueprint) worldObject;
 
-				if (worldObject instanceof Blueprint)
+				PostGenReplaceLayer layer = b.getData().getPostGenReplaceLayer(message.layerId);
+
+				layer.setRequired(message.required);
+				layer.setReplaced(message.replaced);
+
+				if (player.world.getMinecraftServer().isDedicatedServer())
 				{
-					final Blueprint b = (Blueprint) worldObject;
-
-					PostGenReplaceLayer layer = b.getData().getPostGenReplaceLayer(message.layerId);
-
-					layer.setRequired(message.required);
-					layer.setReplaced(message.replaced);
-
-					if (player.world.getMinecraftServer().isDedicatedServer())
-					{
-						OrbisCore.network()
-								.sendPacketToAllPlayers(new PacketBlueprintPostgenReplaceLayerChanges(message.worldObjectId, message.layerId, message.required,
-										message.replaced));
-					}
+					OrbisCore.network()
+							.sendPacketToAllPlayers(new PacketBlueprintPostgenReplaceLayerChanges(message.worldObjectId, message.layerId, message.required,
+									message.replaced));
 				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (worldObject == null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("World object isn't a Blueprint", message.worldObjectId, this.getClass());
 			}
 
 			return null;

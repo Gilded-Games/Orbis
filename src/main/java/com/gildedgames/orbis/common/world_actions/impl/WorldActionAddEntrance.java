@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
-import com.gildedgames.orbis_api.data.pathway.Entrance;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
+import com.gildedgames.orbis_api.data.pathway.Entrance;
+import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -42,6 +42,12 @@ public class WorldActionAddEntrance implements IWorldAction
 	public void setWorld(PlayerOrbis playerOrbis, World world)
 	{
 		this.blueprint.setWorld(world);
+	}
+
+	@Override
+	public boolean isTemporary()
+	{
+		return false;
 	}
 
 	@Override

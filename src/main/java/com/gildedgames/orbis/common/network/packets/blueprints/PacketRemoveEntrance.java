@@ -2,8 +2,6 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.management.IData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
@@ -95,32 +93,39 @@ public class PacketRemoveEntrance implements IMessage
 			{
 				return null;
 			}
+			final Optional<IData> data;
 
-			try
+			if (message.id == null)
 			{
-				final Optional<IData> data;
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-				if (message.id == null)
-				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				data = Optional.of(worldObject.getData());
+			}
+			else
+			{
+				data = OrbisCore.getProjectManager().findData(message.id);
+			}
 
-					data = Optional.of(worldObject.getData());
-				}
-				else
-				{
-					data = OrbisCore.getProjectManager().findData(message.id);
-				}
-
-				if (data.isPresent() && data.get() instanceof BlueprintData)
+			if (data.isPresent())
+			{
+				if (data.get() instanceof BlueprintData)
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
 					bData.removeEntrance(message.entranceId);
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Data isn't a blueprint", message.id, this.getClass());
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (message.id != null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in project", message.id, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
 			}
 
 			return null;
@@ -137,22 +142,22 @@ public class PacketRemoveEntrance implements IMessage
 				return null;
 			}
 
-			try
+			final Optional<IData> data;
+
+			if (message.id == null)
 			{
-				final Optional<IData> data;
+				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
 
-				if (message.id == null)
-				{
-					final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				data = Optional.of(worldObject.getData());
+			}
+			else
+			{
+				data = OrbisCore.getProjectManager().findData(message.id);
+			}
 
-					data = Optional.of(worldObject.getData());
-				}
-				else
-				{
-					data = OrbisCore.getProjectManager().findData(message.id);
-				}
-
-				if (data.isPresent() && data.get() instanceof BlueprintData)
+			if (data.isPresent())
+			{
+				if (data.get() instanceof BlueprintData)
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
@@ -175,10 +180,18 @@ public class PacketRemoveEntrance implements IMessage
 						}
 					}
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Data isn't a blueprint", message.id, this.getClass());
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (message.id != null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in project", message.id, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
 			}
 
 			return null;

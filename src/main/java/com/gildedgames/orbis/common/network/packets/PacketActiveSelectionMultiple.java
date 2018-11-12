@@ -16,11 +16,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-import java.util.List;
+import java.util.Set;
 
 public class PacketActiveSelectionMultiple implements IMessage
 {
-	private List<BlockPos> multiplePositions;
+	private Set<BlockPos> multiplePositions;
 
 	private IShape shape;
 
@@ -31,7 +31,7 @@ public class PacketActiveSelectionMultiple implements IMessage
 
 	}
 
-	public PacketActiveSelectionMultiple(final IShape shape, List<BlockPos> multiplePositions)
+	public PacketActiveSelectionMultiple(final IShape shape, Set<BlockPos> multiplePositions)
 	{
 		this.shape = shape;
 		this.multiplePositions = multiplePositions;
@@ -52,7 +52,7 @@ public class PacketActiveSelectionMultiple implements IMessage
 		final NBTFunnel funnel = new NBTFunnel(tag);
 
 		funnel.set("shape", this.shape);
-		funnel.setList("p", this.multiplePositions, NBTFunnel.POS_SETTER);
+		funnel.setSet("p", this.multiplePositions, NBTFunnel.POS_SETTER);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -69,7 +69,7 @@ public class PacketActiveSelectionMultiple implements IMessage
 
 			final IShape shape = message.funnel.get(player.world, "shape");
 
-			List<BlockPos> multiplePositions = message.funnel.getList("p", NBTFunnel.POS_GETTER);
+			Set<BlockPos> multiplePositions = message.funnel.getSet("p", NBTFunnel.POS_GETTER);
 
 			final PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 			final ISelectionInput selectionInput = playerOrbis.selectionInputs().getCurrentSelectionInput();

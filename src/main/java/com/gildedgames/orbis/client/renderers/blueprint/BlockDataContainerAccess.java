@@ -35,6 +35,11 @@ public class BlockDataContainerAccess implements IBlockAccess
 		Arrays.fill(this.lightvalues, -1);
 	}
 
+	public IBlockAccess getWorld()
+	{
+		return this.world;
+	}
+
 	@Override
 	public TileEntity getTileEntity(final BlockPos pos)
 	{

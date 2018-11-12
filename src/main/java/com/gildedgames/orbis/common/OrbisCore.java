@@ -5,6 +5,7 @@ import com.gildedgames.orbis.common.capabilities.CapabilityManagerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.data.BlueprintNode;
 import com.gildedgames.orbis.common.items.ItemBlockPalette;
+import com.gildedgames.orbis.common.items.OrbisItemMetadata;
 import com.gildedgames.orbis.common.network.CommandActivateDesignerGamemode;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketSendDataCachePool;
@@ -21,10 +22,7 @@ import com.gildedgames.orbis.common.variables.post_resolve_actions.PostResolveAc
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
 import com.gildedgames.orbis.common.world_actions.impl.*;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis.common.world_objects.WorldRegion;
-import com.gildedgames.orbis.common.world_objects.WorldShape;
+import com.gildedgames.orbis.common.world_objects.*;
 import com.gildedgames.orbis_api.IOHelper;
 import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.block.BlockDataWithConditions;
@@ -77,9 +75,9 @@ public class OrbisCore
 
 	public static final String MOD_ID = "orbis";
 
-	public static final String MOD_VERSION = "1.12.2-1.0.13";
+	public static final String MOD_VERSION = "1.12.2-1.0.14";
 
-	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.11,)";
+	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.12,)";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
@@ -298,6 +296,11 @@ public class OrbisCore
 
 		IOHelper.register(s, 24, PostResolveActionApplyLootTable.class);
 		IOHelper.register(s, 25, GuiVarProjectFile.class);
+
+		IOHelper.register(s, 26, OrbisItemMetadata.class);
+		IOHelper.register(s, 27, GhostBlockDataContainer.class);
+
+		IOHelper.register(s, 28, WorldActionGenerateGhostBlockDataContainer.class);
 
 		OrbisAPI.services().io().register(s);
 	}

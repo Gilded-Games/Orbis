@@ -2,8 +2,6 @@ package com.gildedgames.orbis.common.network.packets.blueprints;
 
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
@@ -81,20 +79,21 @@ public class PacketBlueprintSetCurrentScheduleLayer extends PacketMultipleParts
 				return null;
 			}
 
-			try
+			final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+
+			if (worldObject instanceof Blueprint)
 			{
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				final Blueprint b = (Blueprint) worldObject;
 
-				if (worldObject instanceof Blueprint)
-				{
-					final Blueprint b = (Blueprint) worldObject;
-
-					b.setCurrentScheduleLayerIndex(message.scheduleLayerIndex);
-				}
+				b.setCurrentScheduleLayerIndex(message.scheduleLayerIndex);
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (worldObject == null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("World object isn't a Blueprint", message.worldObjectId, this.getClass());
 			}
 
 			return null;
@@ -111,26 +110,27 @@ public class PacketBlueprintSetCurrentScheduleLayer extends PacketMultipleParts
 				return null;
 			}
 
-			try
+			final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+
+			if (worldObject instanceof Blueprint)
 			{
-				final IWorldObject worldObject = WorldObjectManager.get(player.world).getObject(message.worldObjectId);
+				final Blueprint b = (Blueprint) worldObject;
 
-				if (worldObject instanceof Blueprint)
+				b.setCurrentScheduleLayerIndex(message.scheduleLayerIndex);
+
+				if (player.world.getMinecraftServer().isDedicatedServer())
 				{
-					final Blueprint b = (Blueprint) worldObject;
-
-					b.setCurrentScheduleLayerIndex(message.scheduleLayerIndex);
-
-					if (player.world.getMinecraftServer().isDedicatedServer())
-					{
-						OrbisCore.network()
-								.sendPacketToAllPlayers(new PacketBlueprintSetCurrentScheduleLayer(message.worldObjectId, message.scheduleLayerIndex));
-					}
+					OrbisCore.network()
+							.sendPacketToAllPlayers(new PacketBlueprintSetCurrentScheduleLayer(message.worldObjectId, message.scheduleLayerIndex));
 				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else if (worldObject == null)
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Blueprint doesn't exist in the world", message.worldObjectId, this.getClass());
+			}
+			else
+			{
+				OrbisCore.LOGGER.error("World object isn't a Blueprint", message.worldObjectId, this.getClass());
 			}
 
 			return null;

@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Set;
 
 public interface IShapeSelector
 {
@@ -22,6 +22,6 @@ public interface IShapeSelector
 
 	void onSelect(PlayerOrbis playerOrbis, IShape selectedShape, World world, @Nullable BlockPos start, @Nullable BlockPos end);
 
-	void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, List<BlockPos> multiplePositions);
+	void onSelectMultiple(PlayerOrbis playerOrbis, IShape selectedShape, World world, Set<BlockPos> multiplePositions);
 
 }

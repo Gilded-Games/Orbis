@@ -6,8 +6,6 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.framework.FrameworkData;
@@ -37,21 +35,18 @@ public class OrbisClientCaches
 						@Override
 						public Optional<RenderFrameworkEditing> load(final IDataIdentifier id)
 						{
-							try
+							final Optional<FrameworkData> data = OrbisCore.getProjectManager().findData(id);
+
+							if (data.isPresent())
 							{
-								final Optional<FrameworkData> data = OrbisCore.getProjectManager().findData(id);
+								final RenderFrameworkEditing framework = new RenderFrameworkEditing(
+										new Framework(Minecraft.getMinecraft().world, data.get()));
 
-								if (data.isPresent())
-								{
-									final RenderFrameworkEditing framework = new RenderFrameworkEditing(
-											new Framework(Minecraft.getMinecraft().world, data.get()));
-
-									return Optional.of(framework);
-								}
+								return Optional.of(framework);
 							}
-							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
+							else
 							{
-								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.FRAMEWORK_RENDER_CACHE: ", e);
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.FRAMEWORK_RENDER_CACHE: ", id);
 							}
 
 							return Optional.empty();
@@ -69,22 +64,19 @@ public class OrbisClientCaches
 						@Override
 						public Optional<RenderBlueprintBlocks> load(final IDataIdentifier id)
 						{
-							try
+							final Optional<BlueprintData> data = OrbisCore.getProjectManager().findData(id);
+
+							if (data.isPresent())
 							{
-								final Optional<BlueprintData> data = OrbisCore.getProjectManager().findData(id);
+								final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
+										new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, data.get()),
+										Minecraft.getMinecraft().world);
 
-								if (data.isPresent())
-								{
-									final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
-											new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, data.get()),
-											Minecraft.getMinecraft().world);
-
-									return Optional.of(blueprint);
-								}
+								return Optional.of(blueprint);
 							}
-							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
+							else
 							{
-								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_RENDER_CACHE: ", e);
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_RENDER_CACHE: ", id);
 							}
 
 							return Optional.empty();
@@ -101,30 +93,26 @@ public class OrbisClientCaches
 						@Override
 						public Optional<BlockDataContainer[]> load(final IDataIdentifier id)
 						{
-							try
+							final Optional<BlueprintStackerData> data = OrbisCore.getProjectManager().findData(id);
+
+							if (data.isPresent())
 							{
-								final Optional<BlueprintStackerData> data = OrbisCore.getProjectManager().findData(id);
+								BlockDataContainer[] bdc = new BlockDataContainer[data.get().getSegments().length];
 
-								if (data.isPresent())
+								Random rand = new Random();
+
+								for (int i = 0; i < data.get().getSegments().length; i++)
 								{
-									BlockDataContainer[] bdc = new BlockDataContainer[data.get().getSegments().length];
+									BlockDataContainer container = data.get().get(Minecraft.getMinecraft().world, rand, i);
 
-									Random rand = new Random();
-
-									for (int i = 0; i < data.get().getSegments().length; i++)
-									{
-										BlockDataContainer container = data.get().get(Minecraft.getMinecraft().world, rand, i);
-
-										bdc[i] = container;
-									}
-
-									return Optional.of(bdc);
+									bdc[i] = container;
 								}
 
+								return Optional.of(bdc);
 							}
-							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
+							else
 							{
-								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_BDC_CACHE: ", e);
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_BDC_CACHE: ", id);
 							}
 
 							return Optional.empty();
@@ -141,25 +129,22 @@ public class OrbisClientCaches
 						@Override
 						public Optional<RenderBlueprintBlocks> load(final IDataIdentifier id)
 						{
-							try
+							final Optional<BlueprintStackerData> data = OrbisCore.getProjectManager().findData(id);
+
+							if (data.isPresent())
 							{
-								final Optional<BlueprintStackerData> data = OrbisCore.getProjectManager().findData(id);
+								BlockDataContainer container = data.get()
+										.get(Minecraft.getMinecraft().world, new Random(), data.get().getSegments().length);
 
-								if (data.isPresent())
-								{
-									BlockDataContainer container = data.get()
-											.get(Minecraft.getMinecraft().world, new Random(), data.get().getSegments().length);
+								final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
+										new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, new BlueprintData(container)),
+										Minecraft.getMinecraft().world);
 
-									final RenderBlueprintBlocks blueprint = new RenderBlueprintBlocks(
-											new Blueprint(Minecraft.getMinecraft().world, BlockPos.ORIGIN, new BlueprintData(container)),
-											Minecraft.getMinecraft().world);
-
-									return Optional.of(blueprint);
-								}
+								return Optional.of(blueprint);
 							}
-							catch (final OrbisMissingProjectException | OrbisMissingDataException e)
+							else
 							{
-								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_RENDER_CACHE: ", e);
+								OrbisCore.LOGGER.error("Missing in OrbisClientCaches.BLUEPRINT_STACKER_RENDER_CACHE: ", id);
 							}
 
 							return Optional.empty();

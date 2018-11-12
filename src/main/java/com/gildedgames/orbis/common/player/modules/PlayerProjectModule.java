@@ -3,11 +3,12 @@ package com.gildedgames.orbis.common.player.modules;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
+
+import java.util.Optional;
 
 public class PlayerProjectModule extends PlayerOrbisModule
 {
@@ -55,13 +56,15 @@ public class PlayerProjectModule extends PlayerOrbisModule
 
 		if (id != null)
 		{
-			try
+			Optional<IProject> project = OrbisCore.getProjectManager().findProject(id);
+
+			if (project.isPresent())
 			{
-				OrbisCore.getProjectManager().findProject(id).ifPresent(project -> this.currentProject = project);
+				this.currentProject = project.get();
 			}
-			catch (final OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Project could not be read back in project module", id);
 			}
 		}
 	}

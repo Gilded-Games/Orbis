@@ -23,7 +23,7 @@ public class WorldActionFilter extends WorldActionBase
 
 	private boolean schedules;
 
-	private BlockDataContainer oldContent;
+	private BlockDataContainer history, oldState, newState;
 
 	private WorldActionFilter()
 	{
@@ -42,7 +42,7 @@ public class WorldActionFilter extends WorldActionBase
 	{
 		super.redo(player, world);
 
-		this.oldContent = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
+		this.history = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
 
 		final ICreationData creationData = new CreationDataOrbis(world, player.getEntity()).seed(this.getSeed()).placesVoid(true);
 
@@ -50,6 +50,33 @@ public class WorldActionFilter extends WorldActionBase
 
 		this.filter.apply(null, this.shapeToFilter, creationData.pos(this.shapeToFilter.getBoundingBox().getMin()),
 				player.powers().getFillPower().getFilterOptions());
+
+		//this.oldState = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
+
+		/*if (this.history == null)
+		{
+
+		}
+		else
+		{
+			DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+
+			BlockDataContainer currentState = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
+			BlockDataContainer difference = BlueprintHelper.fetchDifferenceBetween(this.oldState, this.newState);
+
+			primer.create(this.newState, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()).placesVoid(true));
+
+			for (BlockPos.MutableBlockPos pos : BlockPos
+					.getAllInBoxMutable(BlockPos.ORIGIN, new BlockPos(currentState.getWidth() - 1, currentState.getHeight() - 1, currentState.getLength() - 1)))
+			{
+				IBlockState differenceState = difference.getBlockState(pos);
+
+				if (differenceState != Blocks.STRUCTURE_VOID.getDefaultState() && currentState.getBlockState(pos) != differenceState)
+				{
+					world.setBlockState(pos.add(this.shapeToFilter.getBoundingBox().getMin()), this.oldState.getBlockState(pos));
+				}
+			}
+		}*/
 	}
 
 	@Override
@@ -57,9 +84,14 @@ public class WorldActionFilter extends WorldActionBase
 	{
 		super.undo(player, world);
 
+		//this.newState = BlueprintHelper.fetchBlocksInside(this.shapeToFilter, world);
+
+		//BlockDataContainer difference = BlueprintHelper.fetchDifferenceBetween(this.oldState, this.newState);
+
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.oldContent, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()).placesVoid(true));
+		primer.create(this.history, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()).placesVoid(true));
+		//primer.create(difference, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()));
 	}
 
 	@Override
@@ -91,6 +123,5 @@ public class WorldActionFilter extends WorldActionBase
 		this.filter = funnel.get("f");
 		this.shapeToFilter = funnel.get("s");
 		this.schedules = tag.getBoolean("sc");
-
 	}
 }

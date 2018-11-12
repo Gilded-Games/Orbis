@@ -3,8 +3,6 @@ package com.gildedgames.orbis.common.network.packets.projects;
 import com.gildedgames.orbis.client.gui.GuiLoadData;
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingDataException;
-import com.gildedgames.orbis_api.core.exceptions.OrbisMissingProjectException;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
 import com.gildedgames.orbis_api.network.NetworkUtils;
@@ -85,42 +83,43 @@ public class PacketDeleteFile extends PacketMultipleParts
 				return null;
 			}
 
-			try
+			final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
+
+			if (project.isPresent())
 			{
-				final Optional<IProject> project = OrbisCore.getProjectManager().findProject(message.project);
+				Optional<UUID> id = project.get().getCache().getDataId(message.location);
 
-				if (project.isPresent())
+				if (id.isPresent())
 				{
-					Optional<UUID> id = project.get().getCache().getDataId(message.location);
+					project.get().getCache().removeData(id.get());
 
-					if (id.isPresent())
+					final File file = new File(project.get().getLocationAsFile(), message.location);
+
+					if (file.delete())
 					{
-						project.get().getCache().removeData(id.get());
-
-						final File file = new File(project.get().getLocationAsFile(), message.location);
-
-						if (file.delete())
+						if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveData)
 						{
-							if (Minecraft.getMinecraft().currentScreen instanceof GuiSaveData)
-							{
-								final GuiSaveData viewProjects = (GuiSaveData) Minecraft.getMinecraft().currentScreen;
+							final GuiSaveData viewProjects = (GuiSaveData) Minecraft.getMinecraft().currentScreen;
 
-								viewProjects.refreshNavigator();
-							}
+							viewProjects.refreshNavigator();
+						}
 
-							if (Minecraft.getMinecraft().currentScreen instanceof GuiLoadData)
-							{
-								final GuiLoadData loadBlueprints = (GuiLoadData) Minecraft.getMinecraft().currentScreen;
+						if (Minecraft.getMinecraft().currentScreen instanceof GuiLoadData)
+						{
+							final GuiLoadData loadBlueprints = (GuiLoadData) Minecraft.getMinecraft().currentScreen;
 
-								loadBlueprints.refreshNavigator();
-							}
+							loadBlueprints.refreshNavigator();
 						}
 					}
 				}
+				else
+				{
+					OrbisCore.LOGGER.error("Could not find UUID for data location", message.project, this.getClass());
+				}
 			}
-			catch (OrbisMissingDataException | OrbisMissingProjectException e)
+			else
 			{
-				OrbisCore.LOGGER.error(e);
+				OrbisCore.LOGGER.error("Could not find project", message.project, this.getClass());
 			}
 
 			return null;
