@@ -16,7 +16,6 @@ import org.ajoberstar.grgit.*
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-ext.config = loadConfig(file('build.properties'))
 ext.repo = Grgit.open()
 
 allprojects {
@@ -24,7 +23,7 @@ allprojects {
 	targetCompatibility = 1.8
 }
 
-version = "${config.mod_version}"
+version = "${mod_version}"
 group = "com.gildedgames"
 archivesBaseName = "orbis"
 
@@ -33,12 +32,20 @@ dependencies {
 }
 
 jar {
+	dependsOn(':OrbisAPI:build')
 	from sourceSets.main.output
+	manifest {
+		attributes 'ContainedDeps': "${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar"
+	}
+	from("OrbisAPI/build/libs") {
+		include("${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar")
+	}
+	classifier = 'universal'
 }
 
 minecraft {
-	version = config.forge_version
-	mappings = config.forge_mappings
+	version = forge_version
+	mappings = forge_mappings
 
 	runDir = "run"
 }
@@ -68,14 +75,6 @@ idea {
 // See https://github.com/MinecraftForge/Srg2Source/issues/10
 minecraft {
 	makeObfSourceJar = false
-}
-
-static def loadConfig(File config) {
-	def props = new Properties()
-	config.withInputStream {
-		stream -> props.load(stream)
-	}
-	return new ConfigSlurper().parse(props)
 }
 
 artifacts {
