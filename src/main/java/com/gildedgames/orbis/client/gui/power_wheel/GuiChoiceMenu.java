@@ -10,10 +10,14 @@ import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiElement;
 import com.gildedgames.orbis_api.client.rect.Dim2D;
 import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.util.InputHelper;
+import com.hrznstudio.roadworks.api.RoadworksAPI;
+import com.hrznstudio.roadworks.api.input.Controller;
+import com.hrznstudio.roadworks.api.input.ControllerManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 
 public class GuiChoiceMenu extends GuiElement
 {
@@ -117,16 +121,43 @@ public class GuiChoiceMenu extends GuiElement
 	{
 		final Pos2D center = Pos2D.flush(this.viewer().getScreenWidth() / 2, this.viewer().getScreenHeight() / 2);
 
-		final float dx = center.x() - InputHelper.getMouseX();
-		final float dy = center.y() - InputHelper.getMouseY();
+
+		float dx = center.x() - InputHelper.getMouseX();
+		float dy = center.y() - InputHelper.getMouseY();
+
+		Controller controller = null;
+		if(RoadworksAPI.isAvailable())
+		{
+			ControllerManager manager = RoadworksAPI.getInstance().getControllerManager();
+			if (manager.getActiveController().isPresent())
+			{
+				controller = manager.getActiveController().get();
+				if (controller.isConnected())
+				{
+					dx = 0 - controller.getAxis(Controller.Axis.X, Controller.Stick.LEFT);
+					dy = controller.getAxis(Controller.Axis.Y, Controller.Stick.LEFT);
+				}
+			}
+		}
 
 		final float degrees = (float) (Math.toDegrees(Math.atan2(dy, dx))) - 90;
 
 		this.arrow.dim().mod().degrees(degrees).flush();
 
-		final float distance = (float) Math
-				.sqrt((center.x() - InputHelper.getMouseX()) * (center.x() - InputHelper.getMouseX()) + (center.y() - InputHelper.getMouseY()) * (center.y()
-						- InputHelper.getMouseY()));
+		Vector2f test = new Vector2f(dx,dy);
+
+		test.scale(30);
+		test.negate();
+		final float distance;
+		if(controller!=null)
+		{
+			distance=(float) Math
+					.sqrt((test.x) * (test.x) + (test.y) * (test.y));
+		} else {
+			distance=(float) Math
+					.sqrt((center.x() - InputHelper.getMouseX()) * (center.x() - InputHelper.getMouseX()) + (center.y() - InputHelper.getMouseY()) * (center.y()
+							- InputHelper.getMouseY()));
+		}
 
 		double closestDist = Double.MAX_VALUE;
 
@@ -135,14 +166,30 @@ public class GuiChoiceMenu extends GuiElement
 		for (final Choice choice : this.choices)
 		{
 			final GuiTexture icon = choice.getIcon();
-
-			final double choiceDist = Math.sqrt((icon.dim().centerX() - InputHelper.getMouseX()) * (icon.dim().centerX() - InputHelper.getMouseX())
-					+ (icon.dim().centerY() - InputHelper.getMouseY()) * (icon.dim().centerY() - InputHelper.getMouseY()));
-
-			if (choiceDist < closestDist)
+			if (controller != null)
 			{
-				closestDist = choiceDist;
-				closestChoice = choice;
+
+				final double choiceDist = Math.sqrt(
+						(choice.getIcon().dim().centerX()-(center.x()+test.x))*
+								(choice.getIcon().dim().centerX()-(center.x()+test.x)) +
+								(choice.getIcon().dim().centerY()-(center.y()+test.y))*
+										(choice.getIcon().dim().centerY()-(center.y()+test.y)));
+
+				if (choiceDist < closestDist)
+				{
+					closestDist = choiceDist;
+					closestChoice = choice;
+				}
+			}else
+			{
+				final double choiceDist = Math.sqrt((icon.dim().centerX() - InputHelper.getMouseX()) * (icon.dim().centerX() - InputHelper.getMouseX())
+						+ (icon.dim().centerY() - InputHelper.getMouseY()) * (icon.dim().centerY() - InputHelper.getMouseY()));
+
+				if (choiceDist < closestDist)
+				{
+					closestDist = choiceDist;
+					closestChoice = choice;
+				}
 			}
 		}
 
@@ -160,14 +207,21 @@ public class GuiChoiceMenu extends GuiElement
 			this.choiceName.setText(null);
 
 			this.hoveredChoice = null;
-		}
-		else
+		} else
 		{
 			this.choiceName.setText(new Text(new TextComponentString(this.hoveredChoice.name()), 1.0F));
 
-			if (Mouse.isButtonDown(0))
+			if(controller!=null){
+				if (controller.isDown(Controller.Button.A))
+				{
+					closestChoice.onSelect(PlayerOrbis.get(this.viewer().mc().player));
+				}
+			}else
 			{
-				closestChoice.onSelect(PlayerOrbis.get(this.viewer().mc().player));
+				if (Mouse.isButtonDown(0))
+				{
+					closestChoice.onSelect(PlayerOrbis.get(this.viewer().mc().player));
+				}
 			}
 
 			for (final Choice choice : this.choices)
@@ -177,8 +231,7 @@ public class GuiChoiceMenu extends GuiElement
 				if (choice == closestChoice)
 				{
 					icon.dim().mod().scale(SELECTED_SCALE).flush();
-				}
-				else
+				} else
 				{
 					icon.dim().mod().scale(NORMAL_SCALE).flush();
 				}

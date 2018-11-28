@@ -27,8 +27,20 @@ version = "${mod_version}"
 group = "com.gildedgames"
 archivesBaseName = "orbis"
 
+
+repositories {
+	mavenCentral()
+	maven {
+		url 'https://repo.spongepowered.org/maven/'
+	}
+}
+
 dependencies {
+	provided files('roadworks/roadworks-sdk-forge-0.0.1-api.jar')
     compile project(":OrbisAPI")
+	compile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+		transitive = false
+	}
 }
 
 jar {

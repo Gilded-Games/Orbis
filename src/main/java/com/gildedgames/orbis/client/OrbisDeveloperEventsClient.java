@@ -30,6 +30,10 @@ import com.gildedgames.orbis_api.util.RotationHelp;
 import com.gildedgames.orbis_api.world.IWorldObject;
 import com.gildedgames.orbis_api.world.WorldObjectManager;
 import com.gildedgames.orbis_api.world.WorldObjectUtils;
+import com.hrznstudio.roadworks.api.RoadworksAPI;
+import com.hrznstudio.roadworks.api.input.Controller;
+import com.hrznstudio.roadworks.api.input.ControllerEvent;
+import com.hrznstudio.roadworks.api.input.ControllerManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -72,6 +76,8 @@ public class OrbisDeveloperEventsClient
 
 	private static boolean prevDimSet;
 
+	private static boolean guiOpen;
+
 	@SubscribeEvent
 	public static void modelBakeEvent(final ModelBakeEvent event)
 	{
@@ -91,7 +97,20 @@ public class OrbisDeveloperEventsClient
 			}
 		}
 	}
-
+	@SubscribeEvent()
+	public static void controllerButtonEvent(final ControllerEvent.Button event) {
+		Controller controller = null;
+		ControllerManager manager = RoadworksAPI.getInstance().getControllerManager();
+		if (manager.getActiveController().isPresent())
+		{
+			controller = manager.getActiveController().get();
+		}
+		if(event.getController()==controller) {
+			if(event.getButton()== Controller.Button.DPAD_UP&&event.isPressed()) {
+				guiOpen=!guiOpen;
+			}
+		}
+	}
 	@SubscribeEvent
 	public static void onGuiOpen(final GuiOpenEvent event)
 	{
@@ -163,6 +182,11 @@ public class OrbisDeveloperEventsClient
 	}
 
 	@SubscribeEvent
+	public static void onClienTick(final GuiScreenEvent.KeyboardInputEvent event)
+	{
+	}
+
+	@SubscribeEvent
 	public static void onClienTick(final TickEvent.ClientTickEvent event)
 	{
 		final Minecraft mc = FMLClientHandler.instance().getClient();
@@ -226,6 +250,7 @@ public class OrbisDeveloperEventsClient
 					}
 				}
 
+
 				if (OrbisKeyBindings.keyBindDelete.isPressed())
 				{
 					if (select.getSelectedRegion() != null)
@@ -248,7 +273,13 @@ public class OrbisDeveloperEventsClient
 					}
 				}
 
-				if (Keyboard.isKeyDown(OrbisKeyBindings.keyBindFindPower.getKeyCode()))
+				boolean controller = false;
+				if(RoadworksAPI.isAvailable()) {
+					controller=RoadworksAPI.getInstance().getControllerManager().getActiveController().isPresent();
+				}
+				if(!controller)
+					guiOpen=Keyboard.isKeyDown(OrbisKeyBindings.keyBindFindPower.getKeyCode());
+				if(guiOpen)
 				{
 					if (current == null)
 					{
