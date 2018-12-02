@@ -47,7 +47,7 @@ public class BlocksOrbis
 
 		private void register(final String registryName, final Block block)
 		{
-			block.setUnlocalizedName(OrbisCore.MOD_ID + "." + registryName);
+			block.setTranslationKey(OrbisCore.MOD_ID + "." + registryName);
 
 			block.setRegistryName(OrbisCore.MOD_ID, registryName);
 			this.registry.register(block);
@@ -56,7 +56,7 @@ public class BlocksOrbis
 
 			item = new ItemBlock(block);
 
-			item.setRegistryName(OrbisCore.MOD_ID, registryName).setUnlocalizedName(OrbisCore.MOD_ID + "." + registryName);
+			item.setRegistryName(OrbisCore.MOD_ID, registryName).setTranslationKey(OrbisCore.MOD_ID + "." + registryName);
 
 			ITEM_BLOCKS.add(item);
 		}

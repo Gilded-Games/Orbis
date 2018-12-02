@@ -32,7 +32,7 @@ public class ItemModelsOrbis
 
 	private static void registerItemModels(final Item item, final String path)
 	{
-		final ModelResourceLocation resource = new ModelResourceLocation(OrbisCore.getResourcePath(path), "inventory");
+		final ModelResourceLocation resource = new ModelResourceLocation(OrbisCore.getPath(path), "inventory");
 
 		ModelLoader.setCustomModelResourceLocation(item, 0, resource);
 	}

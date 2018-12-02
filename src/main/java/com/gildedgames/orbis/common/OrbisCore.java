@@ -191,11 +191,11 @@ public class OrbisCore
 			if (data != null)
 			{
 				dataCache = new DataCachePool(
-						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/cache/"));
+						new File(Minecraft.getMinecraft().gameDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/cache/"));
 			}
 			else
 			{
-				dataCache = new DataCachePool(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/cache/"));
+				dataCache = new DataCachePool(new File(Minecraft.getMinecraft().gameDir, "/orbis/local/cache/"));
 			}
 		}
 
@@ -244,7 +244,7 @@ public class OrbisCore
 		return new ResourceLocation(OrbisCore.MOD_ID, name);
 	}
 
-	public static String getResourcePath(final String name)
+	public static String getPath(final String name)
 	{
 		return (OrbisCore.MOD_ID + ":") + name;
 	}

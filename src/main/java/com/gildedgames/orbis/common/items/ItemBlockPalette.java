@@ -88,7 +88,7 @@ public class ItemBlockPalette extends Item implements ModelRegisterCallback
 				ItemStack blockStack = new ItemStack(block.getBlockState().getBlock(), 1,
 						block.getBlockState().getBlock().getMetaFromState(block.getBlockState()));
 
-				String blockName = I18n.format(Item.getItemFromBlock(block.getBlockState().getBlock()).getUnlocalizedName(blockStack) + ".name");
+				String blockName = I18n.format(Item.getItemFromBlock(block.getBlockState().getBlock()).getTranslationKey(blockStack) + ".name");
 
 				tooltip.add(
 						MathHelper.floor(block.getReplaceCondition().getWeight()) + " " + blockName);

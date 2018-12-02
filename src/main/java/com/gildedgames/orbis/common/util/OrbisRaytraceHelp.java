@@ -145,7 +145,7 @@ public class OrbisRaytraceHelp
 		Vec3d lookVec = player.getLookVec();
 
 		final Vec3d startPos = getPositionEyes(1.0F, player);
-		final Vec3d endPos = startPos.addVector(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
+		final Vec3d endPos = startPos.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
 
 		RayTraceResult blockRaytrace = raytraceLocateObject(player, startPos, endPos,
 				(world, pos, prevPos) ->

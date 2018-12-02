@@ -23,7 +23,7 @@ public class ItemModelBuilder
 
 	public ItemModelBuilder add(int meta, String path)
 	{
-		this.registrations.put(meta, new ModelResourceLocation(OrbisCore.getResourcePath(
+		this.registrations.put(meta, new ModelResourceLocation(OrbisCore.getPath(
 				this.rootFolder != null ? this.rootFolder + path : path), "inventory"));
 
 		return this;

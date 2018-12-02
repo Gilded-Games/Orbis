@@ -33,7 +33,7 @@ repositories {
 		url 'https://repo.spongepowered.org/maven/'
 	}
 	maven {
-		url "https://hrznstudio.com/maven/release/"
+		url "https://hrznstudio.com/maven/snapshot/"
 	}
 }
 
@@ -46,9 +46,12 @@ configurations {
 }
 
 dependencies {
-	shadeProvided 'com.hrznstudio.roadworks:roadworks-sdk-forge:0.0.1.5:api'
-	//runtime 'com.hrznstudio.roadworks:roadworks-sdk-forge:0.0.1.5'
+	shadeProvided 'com.hrznstudio.roadworks:roadworks-sdk-forge:0.0.1.2:api'
+	runtime 'com.hrznstudio.roadworks:roadworks-sdk-forge:0.0.1.2:deobf'
     compile project(":OrbisAPI")
+	runtime('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+		transitive = false
+	}
 }
 
 jar {
