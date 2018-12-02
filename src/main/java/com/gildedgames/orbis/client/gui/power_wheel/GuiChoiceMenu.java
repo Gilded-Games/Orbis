@@ -126,7 +126,7 @@ public class GuiChoiceMenu extends GuiElement
 		float dy = center.y() - InputHelper.getMouseY();
 
 		Controller controller = null;
-		if(RoadworksAPI.isAvailable())
+		if (RoadworksAPI.isAvailable())
 		{
 			ControllerManager manager = RoadworksAPI.getInstance().getControllerManager();
 			if (manager.getActiveController().isPresent())
@@ -144,17 +144,17 @@ public class GuiChoiceMenu extends GuiElement
 
 		this.arrow.dim().mod().degrees(degrees).flush();
 
-		Vector2f test = new Vector2f(dx,dy);
-
-		test.scale(30);
-		test.negate();
+		Vector2f cursor = new Vector2f(dx, dy);
+		cursor.scale(30);
+		cursor.negate();
 		final float distance;
-		if(controller!=null)
+		if (controller != null)
 		{
-			distance=(float) Math
-					.sqrt((test.x) * (test.x) + (test.y) * (test.y));
-		} else {
-			distance=(float) Math
+			distance = (float) Math
+					.sqrt((cursor.x) * (cursor.x) + (cursor.y) * (cursor.y));
+		} else
+		{
+			distance = (float) Math
 					.sqrt((center.x() - InputHelper.getMouseX()) * (center.x() - InputHelper.getMouseX()) + (center.y() - InputHelper.getMouseY()) * (center.y()
 							- InputHelper.getMouseY()));
 		}
@@ -170,17 +170,17 @@ public class GuiChoiceMenu extends GuiElement
 			{
 
 				final double choiceDist = Math.sqrt(
-						(choice.getIcon().dim().centerX()-(center.x()+test.x))*
-								(choice.getIcon().dim().centerX()-(center.x()+test.x)) +
-								(choice.getIcon().dim().centerY()-(center.y()+test.y))*
-										(choice.getIcon().dim().centerY()-(center.y()+test.y)));
+						(choice.getIcon().dim().centerX() - (center.x() + cursor.x)) *
+								(choice.getIcon().dim().centerX() - (center.x() + cursor.x)) +
+								(choice.getIcon().dim().centerY() - (center.y() + cursor.y)) *
+										(choice.getIcon().dim().centerY() - (center.y() + cursor.y)));
 
 				if (choiceDist < closestDist)
 				{
 					closestDist = choiceDist;
 					closestChoice = choice;
 				}
-			}else
+			} else
 			{
 				final double choiceDist = Math.sqrt((icon.dim().centerX() - InputHelper.getMouseX()) * (icon.dim().centerX() - InputHelper.getMouseX())
 						+ (icon.dim().centerY() - InputHelper.getMouseY()) * (icon.dim().centerY() - InputHelper.getMouseY()));
@@ -211,12 +211,13 @@ public class GuiChoiceMenu extends GuiElement
 		{
 			this.choiceName.setText(new Text(new TextComponentString(this.hoveredChoice.name()), 1.0F));
 
-			if(controller!=null){
+			if (controller != null)
+			{
 				if (controller.isDown(Controller.Button.A))
 				{
 					closestChoice.onSelect(PlayerOrbis.get(this.viewer().mc().player));
 				}
-			}else
+			} else
 			{
 				if (Mouse.isButtonDown(0))
 				{

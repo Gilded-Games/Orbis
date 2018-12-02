@@ -97,20 +97,25 @@ public class OrbisDeveloperEventsClient
 			}
 		}
 	}
+
 	@SubscribeEvent()
-	public static void controllerButtonEvent(final ControllerEvent.Button event) {
+	public static void controllerButtonEvent(final ControllerEvent.Button event)
+	{
 		Controller controller = null;
 		ControllerManager manager = RoadworksAPI.getInstance().getControllerManager();
 		if (manager.getActiveController().isPresent())
 		{
 			controller = manager.getActiveController().get();
 		}
-		if(event.getController()==controller) {
-			if(event.getButton()== Controller.Button.DPAD_UP&&event.isPressed()) {
-				guiOpen=!guiOpen;
+		if (event.getController() == controller)
+		{
+			if (event.getButton() == Controller.Button.DPAD_UP && event.isPressed())
+			{
+				guiOpen = !guiOpen;
 			}
 		}
 	}
+
 	@SubscribeEvent
 	public static void onGuiOpen(final GuiOpenEvent event)
 	{
@@ -179,11 +184,6 @@ public class OrbisDeveloperEventsClient
 				event.setCanceled(true);
 			}
 		}
-	}
-
-	@SubscribeEvent
-	public static void onClienTick(final GuiScreenEvent.KeyboardInputEvent event)
-	{
 	}
 
 	@SubscribeEvent

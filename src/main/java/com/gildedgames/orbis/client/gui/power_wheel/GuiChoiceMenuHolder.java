@@ -18,20 +18,17 @@ import com.gildedgames.orbis_api.client.rect.Pos2D;
 import com.gildedgames.orbis_api.util.InputHelper;
 import com.hrznstudio.roadworks.api.RoadworksAPI;
 import com.hrznstudio.roadworks.api.input.Controller;
-import com.hrznstudio.roadworks.api.input.ControllerEvent;
-import com.hrznstudio.roadworks.api.input.ControllerManager;
+import com.hrznstudio.roadworks.api.input.IAdvancedGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
-@Mod.EventBusSubscriber(modid = OrbisCore.MOD_ID)
-public class GuiChoiceMenuHolder extends GuiViewer
+public class GuiChoiceMenuHolder extends GuiViewer implements IAdvancedGui
 {
 	private final static ResourceLocation CHOICE_BAR = OrbisCore.getResource("godmode/overlay/choice_tab_bar.png");
 
@@ -293,86 +290,85 @@ public class GuiChoiceMenuHolder extends GuiViewer
 		this.right.state().setCanBeTopHoverElement(true);
 	}
 
-	@SubscribeEvent
-	public static void controllerButtonEvent(ControllerEvent.Button event)
+	@Override
+	public boolean onButtonPress(Controller controller, Controller.Button button)
 	{
-		GuiChoiceMenuHolder gui = null;
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChoiceMenuHolder)
+		boolean bl = button == Controller.Button.BUMPER_LEFT;
+		boolean br = button == Controller.Button.BUMPER_RIGHT;
+		if (bl || br)
 		{
-			gui = (GuiChoiceMenuHolder) Minecraft.getMinecraft().currentScreen;
-		}
-		if (gui == null)
-			return;
-		ControllerManager manager = RoadworksAPI.getInstance().getControllerManager();
-		if (manager.getActiveController().isPresent())
-		{
-			Controller controller = manager.getActiveController().get();
-			if (event.getController() == controller)
+			int currentIndex = choicePageIndex;
+			int maxIndex = tabs.length - 1;
+			int minIndex = 0;
+			int nextIndex = currentIndex;
+			if (br)
 			{
-				if (event.isPressed())
-				{
-					int currentIndex = choicePageIndex;
-					int maxIndex = gui.tabs.length - 1;
-					int minIndex = 0;
-					int nextIndex = currentIndex;
-					if (event.getButton() == Controller.Button.BUMPER_RIGHT)
-					{
-						nextIndex++;
-						if (currentIndex > maxIndex)
-							nextIndex = minIndex;
-					} else if (event.getButton() == Controller.Button.BUMPER_LEFT)
-					{
-						nextIndex--;
-						if (currentIndex < minIndex)
-							nextIndex = maxIndex;
-					}
-					if (nextIndex != currentIndex)
-					{
-						gui.setCurrentPage(nextIndex);
-					}
-
-					if (event.getButton() == Controller.Button.MENU)
-					{
-						OrbisCore.network().sendPacketToServer(new PacketTeleportOrbis());
-					}
-
-					if (event.getButton() == Controller.Button.DPAD_RIGHT)
-					{
-						gui.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
-						gui.left.setResourceLocation(LEFT_PLACEMENT_MODE_UNPRESSED);
-
-						OrbisCore.network().sendPacketToServer(new PacketSetScheduling(true));
-						PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(true);
-					}
-					if (event.getButton() == Controller.Button.DPAD_LEFT)
-					{
-						gui.left.setResourceLocation(LEFT_PLACEMENT_MODE);
-						gui.right.setResourceLocation(RIGHT_PLACEMENT_MODE_UNPRESSED);
-
-						OrbisCore.network().sendPacketToServer(new PacketSetScheduling(false));
-						PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(false);
-					}
-					if (event.getButton() == Controller.Button.X)
-					{
-						EntityPlayer player = Minecraft.getMinecraft().player;
-						if (player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS)
-						{
-							OrbisCore.network().sendPacketToServer(
-									new PacketOpenGui(OrbisGuiHandler.ORBIS_SETTINGS, player.getPosition().getX(), player.getPosition().getY(),
-											player.getPosition().getZ()));
-						}
-					}
-					if (event.getButton() == Controller.Button.B)
-					{
-						EntityPlayer player = Minecraft.getMinecraft().player;
-
-						OrbisCore.network().sendPacketToServer(
-								new PacketOpenGui(OrbisGuiHandler.CREATION_SETTINGS, player.getPosition().getX(), player.getPosition().getY(),
-										player.getPosition().getZ()));
-					}
-				}
+				nextIndex++;
+				if (currentIndex > maxIndex)
+					nextIndex = minIndex;
+			} else
+			{
+				nextIndex--;
+				if (currentIndex < minIndex)
+					nextIndex = maxIndex;
+			}
+			if (nextIndex != currentIndex)
+			{
+				this.setCurrentPage(nextIndex);
+				return true;
 			}
 		}
+		if (button == Controller.Button.MENU)
+		{
+			OrbisCore.network().sendPacketToServer(new PacketTeleportOrbis());
+			return true;
+		}
+
+		if (button == Controller.Button.DPAD_RIGHT)
+		{
+			this.right.setResourceLocation(RIGHT_PLACEMENT_MODE);
+			this.left.setResourceLocation(LEFT_PLACEMENT_MODE_UNPRESSED);
+
+			OrbisCore.network().sendPacketToServer(new PacketSetScheduling(true));
+			PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(true);
+			return true;
+		}
+		if (button == Controller.Button.DPAD_LEFT)
+		{
+			this.left.setResourceLocation(LEFT_PLACEMENT_MODE);
+			this.right.setResourceLocation(RIGHT_PLACEMENT_MODE_UNPRESSED);
+
+			OrbisCore.network().sendPacketToServer(new PacketSetScheduling(false));
+			PlayerOrbis.get(Minecraft.getMinecraft().player).powers().setScheduling(false);
+			return true;
+		}
+		if (button == Controller.Button.X)
+		{
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (player.world.provider.getDimensionType() == WorldProviderOrbis.ORBIS)
+			{
+				OrbisCore.network().sendPacketToServer(
+						new PacketOpenGui(OrbisGuiHandler.ORBIS_SETTINGS, player.getPosition().getX(), player.getPosition().getY(),
+								player.getPosition().getZ()));
+				return true;
+			}
+		}
+		if (button == Controller.Button.B)
+		{
+			EntityPlayer player = Minecraft.getMinecraft().player;
+
+			OrbisCore.network().sendPacketToServer(
+					new PacketOpenGui(OrbisGuiHandler.CREATION_SETTINGS, player.getPosition().getX(), player.getPosition().getY(),
+							player.getPosition().getZ()));
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onButtonRelease(Controller controller, Controller.Button button)
+	{
+		return false;
 	}
 
 	@Override
