@@ -27,28 +27,49 @@ version = "${mod_version}"
 group = "com.gildedgames"
 archivesBaseName = "orbis"
 
-
 repositories {
 	mavenCentral()
 	maven {
 		url 'https://repo.spongepowered.org/maven/'
 	}
+	maven {
+		url "https://hrznstudio.com/maven/release/"
+	}
+}
+
+configurations {
+	shadeProvided
+	shade
+
+	provided.extendsFrom shadeProvided
+	compile.extendsFrom shade
 }
 
 dependencies {
-	provided files('roadworks/roadworks-sdk-forge-0.0.1-api.jar')
+	shadeProvided 'com.hrznstudio.roadworks:roadworks-sdk-forge:0.0.1.5:api'
+	//runtime 'com.hrznstudio.roadworks:roadworks-sdk-forge:0.0.1.5'
     compile project(":OrbisAPI")
-	compile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
-		transitive = false
-	}
 }
 
 jar {
 	dependsOn(':OrbisAPI:build')
 	from sourceSets.main.output
-	manifest {
-		attributes 'ContainedDeps': "${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar"
+	configurations.shade.each { dep ->
+		from(project.zipTree(dep)) {
+			exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+		}
 	}
+	configurations.shadeProvided.each { dep ->
+		from(project.zipTree(dep)) {
+			exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+		}
+	}
+	manifest.mainAttributes(
+			"Built-By": System.properties['user.name'],
+			"Created-By": "${System.properties['java.vm.version']} (${System.properties['java.vm.vendor']})",
+			"Maven-Artifact": "$group:$archivesBaseName:$version",
+			"ContainedDeps": "${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar"
+	)
 	from("OrbisAPI/build/libs") {
 		include("${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar")
 	}
