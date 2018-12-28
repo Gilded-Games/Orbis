@@ -50,7 +50,7 @@ public class ItemsOrbis
 
 		private void register(final String registryName, final Item item)
 		{
-			item.setUnlocalizedName(OrbisCore.MOD_ID + "." + registryName);
+			item.setTranslationKey(OrbisCore.MOD_ID + "." + registryName);
 
 			item.setRegistryName(OrbisCore.MOD_ID, registryName);
 			this.registry.register(item);
@@ -65,7 +65,7 @@ public class ItemsOrbis
 		private void register(final ItemBlock item)
 		{
 			item.setRegistryName(Objects.requireNonNull(item.getBlock().getRegistryName()));
-			item.setUnlocalizedName(item.getBlock().getUnlocalizedName());
+			item.setTranslationKey(item.getBlock().getTranslationKey());
 			this.registry.register(item);
 		}
 	}

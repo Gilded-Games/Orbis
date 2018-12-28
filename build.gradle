@@ -8,15 +8,10 @@ buildscript {
 	}
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-		classpath 'org.ajoberstar:grgit:2.1.1'
 	}
 }
 
-import org.ajoberstar.grgit.*
-
 apply plugin: 'net.minecraftforge.gradle.forge'
-
-ext.repo = Grgit.open()
 
 allprojects {
 	sourceCompatibility = 1.8
@@ -91,4 +86,7 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     outputFile = jar.archivePath
 }
 
-build.dependsOn signJar
+
+if (System.getenv("GRADLE_BUILD_SIGNED") == 'true') {
+	build.dependsOn signJar
+}

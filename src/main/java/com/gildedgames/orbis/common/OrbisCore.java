@@ -77,7 +77,7 @@ public class OrbisCore
 
 	public static final String MOD_VERSION = "1.12.2-1.0.14";
 
-	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[1.12.2-1.1.12,)";
+	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[0.1.0,)";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
@@ -191,11 +191,11 @@ public class OrbisCore
 			if (data != null)
 			{
 				dataCache = new DataCachePool(
-						new File(Minecraft.getMinecraft().mcDataDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/cache/"));
+						new File(Minecraft.getMinecraft().gameDir, "/orbis/servers/" + data.serverIP.replace(":", "_") + "/cache/"));
 			}
 			else
 			{
-				dataCache = new DataCachePool(new File(Minecraft.getMinecraft().mcDataDir, "/orbis/local/cache/"));
+				dataCache = new DataCachePool(new File(Minecraft.getMinecraft().gameDir, "/orbis/local/cache/"));
 			}
 		}
 
