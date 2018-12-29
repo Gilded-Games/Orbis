@@ -92,7 +92,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		Optional<BlueprintData> data = OrbisAPI.services().getProjectManager().findData(id);
 
-		data.ifPresent(blueprintData -> funnel.set("metadata", new OrbisItemMetadata(blueprintData.getMetadata().getName(), blueprintData)));
+		data.ifPresent(blueprintData -> funnel.set("metadata", new OrbisItemMetadata(blueprintData.getMetadata().getName(), new Region(blueprintData))));
 	}
 
 	public static IDataIdentifier getBlueprintId(final ItemStack stack)

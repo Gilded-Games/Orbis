@@ -42,7 +42,7 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 		try
 		{
 			if (Files.getAttribute(Paths.get(file.getPath()), "dos:hidden") == Boolean.TRUE || extension.equals(METADATA_EXTENSION) || FilenameUtils
-					.getName(file.getPath()).equals("project_data.json"))
+					.getName(file.getPath()).equals("project_data.json") || FilenameUtils.getName(file.getPath()).endsWith("project_index.txt"))
 			{
 				return null;
 			}
