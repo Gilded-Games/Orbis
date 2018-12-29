@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.player.godmode.selection_types.ISelectionType;
+import com.gildedgames.orbis.player.designer_mode.ISelectionType;
+import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 
 public class GuiChoiceMenuSelectionTypes extends GuiChoiceMenu
 {
@@ -11,14 +11,17 @@ public class GuiChoiceMenuSelectionTypes extends GuiChoiceMenu
 	{
 		super();
 
-		this.choices = new Choice[playerOrbis.selectionTypes().array().length];
+		this.choices = new Choice[playerOrbis.selectionTypes().getSelectionTypes().size()];
 
-		for (int i = 0; i < playerOrbis.selectionTypes().array().length; i++)
+		int i = 0;
+
+		for (ISelectionType selectionType : playerOrbis.selectionTypes().getSelectionTypes())
 		{
-			final ISelectionType selectionType = playerOrbis.selectionTypes().array()[i];
 			final Choice choice = new SelectionTypeChoice(selectionType, selectionType.getClient().displayName());
 
 			this.choices[i] = choice;
+
+			i++;
 		}
 	}
 
@@ -37,7 +40,7 @@ public class GuiChoiceMenuSelectionTypes extends GuiChoiceMenu
 		@Override
 		public void onSelect(final PlayerOrbis playerOrbis)
 		{
-			playerOrbis.selectionTypes().setCurrentSelectionType(this.selectionType.getClass());
+			playerOrbis.selectionTypes().setCurrentSelectionType(this.selectionType);
 		}
 
 		@Override

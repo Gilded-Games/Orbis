@@ -5,15 +5,21 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
 import com.gildedgames.orbis.common.network.packets.PacketChangeSelectionType;
 import com.gildedgames.orbis.common.player.godmode.selection_types.*;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.player.designer_mode.ISelectionType;
+import com.gildedgames.orbis.player.modules.ISelectionTypesModule;
+import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class PlayerSelectionTypesModule extends PlayerOrbisModule
+public class PlayerSelectionTypesModule extends PlayerOrbisModule implements ISelectionTypesModule
 {
-	private final ISelectionType[] selectionTypes;
+	private final LinkedHashMap<UUID, ISelectionType> uniqueIdToSelectionType = Maps.newLinkedHashMap();
+
+	private final Map<ISelectionType, UUID> selectionTypeToUUID = Maps.newHashMap();
 
 	private final SelectionTypeCuboid cuboid;
 
@@ -29,7 +35,9 @@ public class PlayerSelectionTypesModule extends PlayerOrbisModule
 
 	private final SelectionTypeDome dome;
 
-	private int currentSelectionTypeIndex;
+	private UUID currentUniqueId;
+
+	private ISelectionType currentSelecionType;
 
 	public PlayerSelectionTypesModule(final PlayerOrbis playerOrbis)
 	{
@@ -43,17 +51,15 @@ public class PlayerSelectionTypesModule extends PlayerOrbisModule
 		this.cylinder = new SelectionTypeCylinder();
 		this.dome = new SelectionTypeDome();
 
-		final Collection<ISelectionType> selectionTypes = new ArrayList<>();
+		this.putSelectionType(UUID.fromString("3ebaf976-501c-431f-8335-0f178e1cb9a2"), this.cuboid);
+		this.putSelectionType(UUID.fromString("5fd73afe-29d5-412a-ae2c-e22eb2b984e1"), this.sphere);
+		this.putSelectionType(UUID.fromString("9303e161-7f9b-45a0-8261-8480b914b97a"), this.line);
+		this.putSelectionType(UUID.fromString("fd33b5ea-1b59-4d58-b41f-751d11951dbb"), this.pyramid);
+		this.putSelectionType(UUID.fromString("7fe62bce-250a-4dbc-83b8-630f1fd86dcd"), this.cylinder);
+		this.putSelectionType(UUID.fromString("acb9094d-6917-40f5-9bc9-6d02eafc6e69"), this.cone);
+		this.putSelectionType(UUID.fromString("b7c55d01-07b5-4e71-b0fb-8eda0d8c2a56"), this.dome);
 
-		selectionTypes.add(this.cuboid);
-		selectionTypes.add(this.sphere);
-		selectionTypes.add(this.line);
-		selectionTypes.add(this.pyramid);
-		selectionTypes.add(this.cylinder);
-		selectionTypes.add(this.cone);
-		selectionTypes.add(this.dome);
-
-		this.selectionTypes = selectionTypes.toArray(new ISelectionType[selectionTypes.size()]);
+		this.currentUniqueId = this.selectionTypeToUUID.get(this.cuboid);
 	}
 
 	public SelectionTypeDome getDome()
@@ -91,73 +97,89 @@ public class PlayerSelectionTypesModule extends PlayerOrbisModule
 		return this.line;
 	}
 
+	@Override
+	public void putSelectionType(UUID uniqueId, ISelectionType selectionType)
+	{
+		this.uniqueIdToSelectionType.put(uniqueId, selectionType);
+		this.selectionTypeToUUID.put(selectionType, uniqueId);
+	}
+
+	@Override
+	public void init()
+	{
+		this.setCurrentSelectionType(this.currentUniqueId);
+	}
+
+	@Override
 	public ISelectionType getCurrentSelectionType()
 	{
-		return this.selectionTypes[this.currentSelectionTypeIndex];
+		return this.currentSelecionType;
 	}
 
-	public void setCurrentSelectionType(final Class<? extends ISelectionType> clazz)
+	@Override
+	public void setCurrentSelectionType(ISelectionType selectionType)
 	{
-		int foundIndex = -1;
-
-		for (int i = 0; i < this.selectionTypes.length; i++)
-		{
-			final ISelectionType s = this.selectionTypes[i];
-
-			if (clazz.isAssignableFrom(s.getClass()))
-			{
-				foundIndex = i;
-				break;
-			}
-		}
-
-		if (foundIndex != -1)
-		{
-			this.currentSelectionTypeIndex = foundIndex;
-
-			if (this.getWorld().isRemote)
-			{
-				OrbisCore.network().sendPacketToServer(new PacketChangeSelectionType(this.currentSelectionTypeIndex));
-			}
-		}
-	}
-
-	public void setCurrentSelectionType(int powerIndex)
-	{
-		this.currentSelectionTypeIndex = powerIndex;
+		this.currentUniqueId = this.selectionTypeToUUID.get(selectionType);
+		this.currentSelecionType = selectionType;
 
 		if (this.getWorld().isRemote)
 		{
-			OrbisCore.network().sendPacketToServer(new PacketChangeSelectionType(this.currentSelectionTypeIndex));
+			OrbisCore.network().sendPacketToServer(new PacketChangeSelectionType(this.currentUniqueId));
 		}
 	}
 
-	public int getSelectionTypeIndex(final Class<? extends ISelectionType> clazz)
+	@Override
+	public void setCurrentSelectionType(UUID uniqueId)
 	{
-		int foundIndex = -1;
-
-		for (int i = 0; i < this.selectionTypes.length; i++)
+		if (!this.uniqueIdToSelectionType.containsKey(uniqueId))
 		{
-			final ISelectionType s = this.selectionTypes[i];
-
-			if (clazz.isAssignableFrom(s.getClass()))
-			{
-				foundIndex = i;
-				break;
-			}
+			OrbisCore.LOGGER
+					.error("A unique id was provided when setting the current selection type that doesn't exist in the selection types module! Ignoring.");
+			return;
 		}
 
-		return foundIndex;
+		this.currentUniqueId = uniqueId;
+		this.currentSelecionType = this.uniqueIdToSelectionType.get(this.currentUniqueId);
+
+		if (this.getWorld().isRemote)
+		{
+			OrbisCore.network().sendPacketToServer(new PacketChangeSelectionType(this.currentUniqueId));
+		}
 	}
 
-	public boolean isCurrentSelectionType(final ISelectionType selectionType)
+	@Override
+	public ISelectionType getSelectionType(UUID uniqueId)
 	{
-		return this.getCurrentSelectionType() == selectionType;
+		return this.uniqueIdToSelectionType.get(uniqueId);
 	}
 
-	public ISelectionType[] array()
+	@Override
+	public UUID getUniqueId(ISelectionType selectionType)
 	{
-		return this.selectionTypes;
+		return this.selectionTypeToUUID.get(selectionType);
+	}
+
+	@Override
+	public void removeSelectionType(UUID uniqueId)
+	{
+		if (this.selectionTypeToUUID.size() <= 1)
+		{
+			throw new IllegalStateException("Tried to remove a selection type from the player module when the amount of selection types is 1 or less.");
+		}
+
+		ISelectionType type = this.uniqueIdToSelectionType.remove(uniqueId);
+		this.selectionTypeToUUID.remove(type);
+
+		if (this.currentUniqueId.equals(uniqueId))
+		{
+			this.setCurrentSelectionType(this.selectionTypeToUUID.values().iterator().next());
+		}
+	}
+
+	@Override
+	public Collection<ISelectionType> getSelectionTypes()
+	{
+		return this.uniqueIdToSelectionType.values();
 	}
 
 	@Override
@@ -169,27 +191,20 @@ public class PlayerSelectionTypesModule extends PlayerOrbisModule
 	@Override
 	public void write(final NBTTagCompound tag)
 	{
-		final NBTTagCompound modules = new NBTTagCompound();
-
-		for (final ISelectionType s : this.selectionTypes)
-		{
-			s.write(modules);
-		}
-
-		tag.setTag("selectionTypes", modules);
-		tag.setInteger("currentSelectionTypeIndex", this.currentSelectionTypeIndex);
+		tag.setUniqueId("currentUniqueId", this.currentUniqueId);
 	}
 
 	@Override
 	public void read(final NBTTagCompound tag)
 	{
-		final NBTTagCompound modules = tag.getCompoundTag("selectionTypes");
-
-		for (final ISelectionType s : this.selectionTypes)
+		if (tag.hasUniqueId("currentUniqueId"))
 		{
-			s.read(modules);
-		}
+			UUID uniqueId = tag.getUniqueId("currentUniqueId");
 
-		this.currentSelectionTypeIndex = tag.getInteger("currentSelectionTypeIndex");
+			if (uniqueId != null)
+			{
+				this.currentUniqueId = uniqueId;
+			}
+		}
 	}
 }

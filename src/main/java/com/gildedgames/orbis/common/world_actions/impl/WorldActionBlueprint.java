@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.block.BlockDataContainer;
 import com.gildedgames.orbis_api.core.CreationData;
 import com.gildedgames.orbis_api.core.ICreationData;
@@ -117,7 +117,7 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		IDataIdentifier id = funnel.get("d");
 
-		Optional<IData> data = OrbisAPI.services().getProjectManager().findData(id);
+		Optional<IData> data = OrbisLib.services().getProjectManager().findData(id);
 
 		if (data.isPresent())
 		{
@@ -125,7 +125,7 @@ public class WorldActionBlueprint extends WorldActionBase
 		}
 		else
 		{
-			OrbisAPI.LOGGER.error("Could not find project from blueprint action", id);
+			OrbisLib.LOGGER.error("Could not find project from blueprint action", id);
 		}
 
 		this.pos = funnel.getPos("p");

@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.containers;
 
-import com.gildedgames.orbis.common.capabilities.player.IPlayerOrbis;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
+import com.gildedgames.orbis.player.IPlayerOrbis;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.ContainerPlayer;

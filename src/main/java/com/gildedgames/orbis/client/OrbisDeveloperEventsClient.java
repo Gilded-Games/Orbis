@@ -22,7 +22,7 @@ import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.block.BlockFilter;
 import com.gildedgames.orbis_api.block.BlockFilterHelper;
 import com.gildedgames.orbis_api.data.region.Region;
@@ -279,8 +279,9 @@ public class OrbisDeveloperEventsClient
 		}
 		else if (player == null && world == null && (!mc.isIntegratedServerRunning() || mc.getIntegratedServer() == null))
 		{
-			OrbisAPI.services().stopProjectManager();
+			OrbisLib.services().stopProjectManager();
 			OrbisCore.stopDataCache();
+			OrbisCore.PROXY.stopDataPackManager();
 		}
 	}
 
@@ -415,7 +416,7 @@ public class OrbisDeveloperEventsClient
 		}
 		else if (player == null && world == null && (!mc.isIntegratedServerRunning() || mc.getIntegratedServer() == null))
 		{
-			OrbisAPI.services().stopProjectManager();
+			OrbisLib.services().stopProjectManager();
 			CHUNK_RENDERER_MANAGER.unload();
 		}
 

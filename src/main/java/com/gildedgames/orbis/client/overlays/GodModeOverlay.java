@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.overlays;
 
+import com.gildedgames.orbis.client.ISelectionTypeClient;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.client.godmode.selection_inputs.ISelectionInputClient;
-import com.gildedgames.orbis.client.godmode.selection_types.ISelectionTypeClient;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis_api.util.InputHelper;

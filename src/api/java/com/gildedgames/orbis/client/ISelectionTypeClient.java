@@ -1,4 +1,4 @@
-package com.gildedgames.orbis.client.godmode.selection_types;
+package com.gildedgames.orbis.client;
 
 import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
 

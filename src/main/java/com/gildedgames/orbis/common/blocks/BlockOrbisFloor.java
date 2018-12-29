@@ -3,7 +3,7 @@ package com.gildedgames.orbis.common.blocks;
 import com.gildedgames.orbis.client.ModelRegisterCallback;
 import com.gildedgames.orbis.client.model.ModelOrbisFloor;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -45,7 +45,7 @@ public class BlockOrbisFloor extends Block implements ModelRegisterCallback
 	@Nonnull
 	public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity)
 	{
-		if (OrbisAPI.isClient() && ModelOrbisFloor.currentMimicBlock != null)
+		if (OrbisLib.isClient() && ModelOrbisFloor.currentMimicBlock != null)
 		{
 			return ModelOrbisFloor.currentMimicBlock.getBlock().getSoundType(ModelOrbisFloor.currentMimicBlock, world, pos, entity);
 		}
@@ -55,7 +55,7 @@ public class BlockOrbisFloor extends Block implements ModelRegisterCallback
 	@Override
 	public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
 	{
-		if (OrbisAPI.isClient() && ModelOrbisFloor.currentMimicBlock != null)
+		if (OrbisLib.isClient() && ModelOrbisFloor.currentMimicBlock != null)
 		{
 			return ModelOrbisFloor.currentMimicBlock.getBlock().canRenderInLayer(ModelOrbisFloor.currentMimicBlock, layer);
 		}
@@ -95,6 +95,7 @@ public class BlockOrbisFloor extends Block implements ModelRegisterCallback
 	@Override
 	public void registerModel()
 	{
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(new ResourceLocation(OrbisCore.MOD_ID, "orbis_floor"), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0,
+				new ModelResourceLocation(new ResourceLocation(OrbisCore.MOD_ID, "orbis_floor"), "inventory"));
 	}
 }

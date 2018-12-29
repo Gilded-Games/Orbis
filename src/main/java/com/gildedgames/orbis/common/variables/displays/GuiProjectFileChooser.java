@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.variables.displays;
 
 import com.gildedgames.orbis.common.variables.GuiVarProjectFile;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.util.GuiText;
 import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
@@ -69,7 +69,7 @@ public class GuiProjectFileChooser extends GuiElement
 		this.dataIdentifier = dataIdentifier;
 
 		this.dataIdentifierText.setText(new Text(new TextComponentString(
-				"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisAPI.services().getProjectManager().findMetadata(this.dataIdentifier))),
+				"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisLib.services().getProjectManager().findMetadata(this.dataIdentifier))),
 				1.0F));
 	}
 
@@ -87,7 +87,7 @@ public class GuiProjectFileChooser extends GuiElement
 
 		this.dataIdentifierText = new GuiText(Dim2D.build().y(30).flush(),
 				new Text(new TextComponentString(
-						"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisAPI.services().getProjectManager().findMetadata(this.dataIdentifier))),
+						"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisLib.services().getProjectManager().findMetadata(this.dataIdentifier))),
 						1.0F));
 
 		this.context().addChildren(this.button, this.dataIdentifierText);

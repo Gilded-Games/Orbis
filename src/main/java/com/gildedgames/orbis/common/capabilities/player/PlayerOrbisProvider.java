@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.capabilities.player;
 
 import com.gildedgames.orbis.common.OrbisCapabilities;
+import com.gildedgames.orbis.player.IPlayerOrbis;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;

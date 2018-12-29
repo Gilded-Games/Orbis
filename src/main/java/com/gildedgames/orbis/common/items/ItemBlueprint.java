@@ -11,7 +11,7 @@ import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddBlueprint;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprint;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.data.DataCondition;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
@@ -90,7 +90,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		funnel.set("blueprint_id", id);
 
-		Optional<BlueprintData> data = OrbisAPI.services().getProjectManager().findData(id);
+		Optional<BlueprintData> data = OrbisLib.services().getProjectManager().findData(id);
 
 		data.ifPresent(blueprintData -> funnel.set("metadata", new OrbisItemMetadata(blueprintData.getMetadata().getName(), blueprintData)));
 	}
@@ -118,7 +118,7 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 
 		final IDataIdentifier id = funnel.get("blueprint_id");
 
-		return OrbisAPI.services().getProjectManager().findData(id);
+		return OrbisLib.services().getProjectManager().findData(id);
 	}
 
 	@SideOnly(Side.CLIENT)

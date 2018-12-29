@@ -31,6 +31,12 @@ dependencies {
     compile project(":OrbisAPI")
 }
 
+sourceSets {
+    api {
+        java { srcDir "src/api/java" }
+    }
+}
+
 jar {
 	dependsOn(':OrbisAPI:build')
 	from sourceSets.main.output
@@ -77,8 +83,10 @@ minecraft {
 	makeObfSourceJar = false
 }
 
-artifacts {
-	archives jar
+task apiJar(type: Jar) {
+    classifier = "api"
+
+    from sourceSets.api.output
 }
 
 task signJar(type: SignJar, dependsOn: reobfJar) {
@@ -89,6 +97,11 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
 
     inputFile = jar.archivePath
     outputFile = jar.archivePath
+}
+
+artifacts {
+    archives jar
+    archives apiJar
 }
 
 build.dependsOn signJar

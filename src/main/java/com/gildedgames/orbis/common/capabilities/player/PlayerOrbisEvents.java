@@ -1,6 +1,7 @@
 package com.gildedgames.orbis.common.capabilities.player;
 
 import com.gildedgames.orbis.common.OrbisCapabilities;
+import com.gildedgames.orbis.player.IPlayerOrbis;
 import net.minecraft.nbt.NBTBase;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -10,7 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber()
 public class PlayerOrbisEvents

@@ -1,7 +1,6 @@
 package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
 import io.netty.buffer.ByteBuf;

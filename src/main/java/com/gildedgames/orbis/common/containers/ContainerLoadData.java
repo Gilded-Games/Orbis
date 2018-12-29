@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.containers;
 
-import com.gildedgames.orbis.common.capabilities.player.IPlayerOrbis;
 import com.gildedgames.orbis.common.containers.inventory.InventoryBasicExpandable;
 import com.gildedgames.orbis.common.containers.slots.SlotForge;
 import com.gildedgames.orbis.common.items.ItemBlueprint;
 import com.gildedgames.orbis.common.items.ItemBlueprintPalette;
 import com.gildedgames.orbis.common.network.NetworkingOrbis;
 import com.gildedgames.orbis.common.network.packets.gui.PacketBlueprintStackerInterface;
+import com.gildedgames.orbis.player.IPlayerOrbis;
 import com.gildedgames.orbis_api.client.gui.data.list.IListNavigator;
 import com.gildedgames.orbis_api.client.gui.data.list.ListNavigator;
 import com.gildedgames.orbis_api.util.mc.SlotHashed;

@@ -5,7 +5,7 @@ import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProjec
 import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
@@ -84,9 +84,9 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 		this.directoryViewer.dim().mod().width(this.getScreenWidth() - this.directoryViewer.dim().x() - 20).flush();
 		this.directoryViewer.dim().mod().height(this.getScreenHeight() - this.directoryViewer.dim().y() - 20).flush();
 
-		if (!OrbisAPI.services().getProjectManager().getLocation().exists())
+		if (!OrbisLib.services().getProjectManager().getLocation().exists())
 		{
-			if (!OrbisAPI.services().getProjectManager().getLocation().mkdirs())
+			if (!OrbisLib.services().getProjectManager().getLocation().mkdirs())
 			{
 				throw new RuntimeException("Project manager file could not be created!");
 			}
@@ -96,7 +96,7 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 
 		this.directoryViewer.setDisplayBackdrop(false);
 
-		this.directoryViewer.getNavigator().openDirectory(OrbisAPI.services().getProjectManager().getLocation());
+		this.directoryViewer.getNavigator().openDirectory(OrbisLib.services().getProjectManager().getLocation());
 
 		this.directoryViewer.getNavigator()
 				.injectDirectories(OrbisCore.getProjectManager().getLocation(), OrbisCore.getProjectManager().getExtraProjectSourceFolders());

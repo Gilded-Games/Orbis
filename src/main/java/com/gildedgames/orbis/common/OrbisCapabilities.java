@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common;
 
 import com.gildedgames.orbis.common.capabilities.chunk_renderer.IChunkRendererCapability;
-import com.gildedgames.orbis.common.capabilities.player.IPlayerOrbis;
+import com.gildedgames.orbis.player.IPlayerOrbis;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 

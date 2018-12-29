@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.world.orbis_instance;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.util.mc.BlockPosDimension;
 import com.gildedgames.orbis_api.world.instances.IInstanceHandler;
 import com.gildedgames.orbis_api.world.instances.IPlayerInstances;
@@ -54,7 +54,7 @@ public class OrbisInstanceHandler
 
 	public void teleportBack(final EntityPlayerMP player)
 	{
-		final IPlayerInstances hook = OrbisAPI.instances().getPlayer(player);
+		final IPlayerInstances hook = OrbisLib.instances().getPlayer(player);
 
 		if (hook.getInstance() != null)
 		{

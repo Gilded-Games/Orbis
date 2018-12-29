@@ -14,6 +14,8 @@ import com.gildedgames.orbis.common.world_actions.IWorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLog;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogClient;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
+import com.gildedgames.orbis.player.IPlayerOrbis;
+import com.gildedgames.orbis.player.modules.ISelectionTypesModule;
 import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
 import com.gildedgames.orbis_api.data.pathway.IEntrance;
 import com.gildedgames.orbis_api.data.region.IShape;
@@ -271,7 +273,8 @@ public class PlayerOrbis implements IPlayerOrbis
 		return this.godPowerModule;
 	}
 
-	public PlayerSelectionTypesModule selectionTypes()
+	@Override
+	public ISelectionTypesModule selectionTypes()
 	{
 		return this.selectionTypeModule;
 	}

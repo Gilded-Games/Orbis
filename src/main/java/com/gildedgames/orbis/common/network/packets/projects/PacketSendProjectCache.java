@@ -2,7 +2,7 @@ package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.data.management.*;
 import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
@@ -107,8 +107,8 @@ public class PacketSendProjectCache extends PacketMultipleParts
 
 						String extension = FilenameUtils.getExtension(dataLoc.get());
 
-						Optional<IDataLoader<IProject>> dataLoader = OrbisAPI.services().getProjectManager().getDataLoaderForExtension(extension);
-						Optional<IMetadataLoader<IProject>> metadataLoader = OrbisAPI.services().getProjectManager()
+						Optional<IDataLoader<IProject>> dataLoader = OrbisLib.services().getProjectManager().getDataLoaderForExtension(extension);
+						Optional<IMetadataLoader<IProject>> metadataLoader = OrbisLib.services().getProjectManager()
 								.getMetadataLoaderForExtension(extension);
 
 						if (!dataLoader.isPresent() || !metadataLoader.isPresent())
@@ -123,7 +123,7 @@ public class PacketSendProjectCache extends PacketMultipleParts
 						}
 						catch (IOException e)
 						{
-							OrbisAPI.LOGGER.error("Failed to write data to project directory", data, e);
+							OrbisLib.LOGGER.error("Failed to write data to project directory", data, e);
 						}
 					}
 				}

@@ -9,7 +9,7 @@ import com.gildedgames.orbis.common.containers.ContainerLoadData;
 import com.gildedgames.orbis.common.items.*;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.client.gui.data.Text;
 import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
@@ -299,7 +299,7 @@ public class GuiLoadData extends GuiViewer implements IDirectoryNavigatorListene
 					}
 					else
 					{
-						OrbisAPI.LOGGER.error("Could not find data in GuiLoadData", id);
+						OrbisLib.LOGGER.error("Could not find data in GuiLoadData", id);
 					}
 				}
 			}

@@ -2,7 +2,7 @@ package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.data.management.IProject;
 import com.gildedgames.orbis_api.network.NetworkUtils;
 import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
@@ -30,7 +30,7 @@ public class PacketSendProjectListing extends PacketMultipleParts
 	{
 		OrbisCore.getProjectManager().refreshCache();
 
-		this.projects = new ArrayList<>(OrbisAPI.services().getProjectManager().getCachedProjects());
+		this.projects = new ArrayList<>(OrbisLib.services().getProjectManager().getCachedProjects());
 
 		this.projects.removeIf(IProject::isModProject);
 

@@ -188,7 +188,7 @@ public class RenderShape implements IWorldRenderer
 
 		final AxisAlignedBB bounds = new AxisAlignedBB(minX - stretch, minY - stretch, minZ - stretch, maxX + stretch, maxY + stretch, maxZ + stretch);
 
-		if (!this.shape.contains(minX - 1, minY, minZ))
+		if (!this.shape.contains(minX - 1, minY, minZ) || minX - 1 < this.getBoundingBox().getMin().getX())
 		{
 			buffer.pos(bounds.minX, bounds.minY, bounds.minZ).endVertex();
 			buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).endVertex();
@@ -203,7 +203,7 @@ public class RenderShape implements IWorldRenderer
 			buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).endVertex();
 		}
 
-		if (!this.shape.contains(minX + 1, minY, minZ))
+		if (!this.shape.contains(minX + 1, minY, minZ) || minX + 1 > this.getBoundingBox().getMax().getX())
 		{
 			buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).endVertex();
 			buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).endVertex();
@@ -218,7 +218,7 @@ public class RenderShape implements IWorldRenderer
 			buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).endVertex();
 		}
 
-		if (!this.shape.contains(minX, minY, minZ - 1))
+		if (!this.shape.contains(minX, minY, minZ - 1) || minZ - 1 < this.getBoundingBox().getMin().getZ())
 		{
 			buffer.pos(bounds.minX, bounds.minY, bounds.minZ).endVertex();
 			buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).endVertex();
@@ -233,7 +233,7 @@ public class RenderShape implements IWorldRenderer
 			buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).endVertex();
 		}
 
-		if (!this.shape.contains(minX, minY, minZ + 1))
+		if (!this.shape.contains(minX, minY, minZ + 1) || minZ + 1 > this.getBoundingBox().getMax().getZ())
 		{
 			buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).endVertex();
 			buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).endVertex();
@@ -248,7 +248,7 @@ public class RenderShape implements IWorldRenderer
 			buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).endVertex();
 		}
 
-		if (!this.shape.contains(minX, minY - 1, minZ))
+		if (!this.shape.contains(minX, minY - 1, minZ) || minY - 1 < this.getBoundingBox().getMin().getY())
 		{
 			buffer.pos(bounds.minX, bounds.minY, bounds.minZ).endVertex();
 			buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).endVertex();
@@ -263,7 +263,7 @@ public class RenderShape implements IWorldRenderer
 			buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).endVertex();
 		}
 
-		if (!this.shape.contains(minX, minY + 1, minZ))
+		if (!this.shape.contains(minX, minY + 1, minZ) || minY + 1 > this.getBoundingBox().getMax().getY())
 		{
 			buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).endVertex();
 			buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).endVertex();

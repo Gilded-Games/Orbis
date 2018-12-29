@@ -1,5 +1,6 @@
-package com.gildedgames.orbis.common.capabilities.player;
+package com.gildedgames.orbis.player;
 
+import com.gildedgames.orbis.player.modules.ISelectionTypesModule;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -11,6 +12,8 @@ import net.minecraftforge.event.entity.living.LivingEvent;
  */
 public interface IPlayerOrbis
 {
+	ISelectionTypesModule selectionTypes();
+
 	void onUpdate(LivingEvent.LivingUpdateEvent event);
 
 	World getWorld();

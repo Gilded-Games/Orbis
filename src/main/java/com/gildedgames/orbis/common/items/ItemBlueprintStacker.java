@@ -8,7 +8,7 @@ import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlueprintStacker;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintStackerData;
 import com.gildedgames.orbis_api.data.management.IDataIdentifier;
 import com.gildedgames.orbis_api.util.io.NBTFunnel;
@@ -90,7 +90,7 @@ public class ItemBlueprintStacker extends Item implements ModelRegisterCallback,
 
 		final IDataIdentifier id = funnel.get("stacker_id");
 
-		return OrbisAPI.services().getProjectManager().findData(id);
+		return OrbisLib.services().getProjectManager().findData(id);
 	}
 
 	@SideOnly(Side.CLIENT)

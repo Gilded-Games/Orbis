@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.gui.util.directory.nodes;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis_api.OrbisLib;
 import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNodeFactory;
 import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
 import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
@@ -49,16 +49,16 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 		}
 		catch (final IOException e)
 		{
-			OrbisAPI.LOGGER.error(e);
+			OrbisLib.LOGGER.error(e);
 		}
 
 		if (file.isDirectory())
 		{
 			if (OrbisProjectManager.isProjectDirectory(file))
 			{
-				OrbisAPI.services().getProjectManager().refreshCache();
+				OrbisLib.services().getProjectManager().refreshCache();
 
-				final Optional<IProject> project = OrbisAPI.services().getProjectManager().findProject(file.getName());
+				final Optional<IProject> project = OrbisLib.services().getProjectManager().findProject(file.getName());
 
 				if (project.isPresent())
 				{
@@ -69,7 +69,7 @@ public class OrbisNavigatorNodeFactory implements IDirectoryNodeFactory
 				}
 				else
 				{
-					OrbisAPI.LOGGER.error("Project couldn't be found in cache, skipping node!", file.getName());
+					OrbisLib.LOGGER.error("Project couldn't be found in cache, skipping node!", file.getName());
 				}
 			}
 			else
