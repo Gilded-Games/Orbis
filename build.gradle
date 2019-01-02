@@ -72,8 +72,15 @@ minecraft {
 	makeObfSourceJar = false
 }
 
+task jarNoEmbed(type: Jar) {
+	dependsOn(':OrbisAPI:build')
+	from sourceSets.main.output
+	classifier = 'noembed'
+}
+
 artifacts {
 	archives jar
+	archives jarNoEmbed
 }
 
 task signJar(type: SignJar, dependsOn: reobfJar) {
