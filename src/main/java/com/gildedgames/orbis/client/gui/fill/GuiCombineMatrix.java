@@ -187,4 +187,19 @@ public class GuiCombineMatrix extends GuiViewer
 			Minecraft.getMinecraft().displayGuiScreen(new GuiInventory(this.mc.player));
 		}
 	}
+
+	public GuiAbstractButton getForgeButton()
+	{
+		return forgeButton;
+	}
+
+	public GuiTexture getMatrix()
+	{
+		return matrix;
+	}
+
+	public GuiTexture getFlow()
+	{
+		return flow;
+	}
 }
