@@ -33,17 +33,17 @@ repositories {
 dependencies {
     deobfProvided "mezz.jei:jei_1.12.2:4.14.4.257:api"
     runtime "mezz.jei:jei_1.12.2:4.14.4.257"
-    compile project(":OrbisAPI")
+    compile project(":OrbisLib")
 }
 
 jar {
-	dependsOn(':OrbisAPI:build')
+	dependsOn(':OrbisLib:build')
 	from sourceSets.main.output
 	manifest {
-		attributes 'ContainedDeps': "${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar"
+		attributes 'ContainedDeps': "${project(":OrbisLib").mod_name}-${project(":OrbisLib").mod_version}.jar"
 	}
-	from("OrbisAPI/build/libs") {
-		include("${project(":OrbisAPI").mod_name}-${project(":OrbisAPI").mod_version}.jar")
+	from("OrbisLib/build/libs") {
+		include("${project(":OrbisLib").mod_name}-${project(":OrbisLib").mod_version}.jar")
 	}
 	classifier = 'universal'
 }
@@ -83,7 +83,7 @@ minecraft {
 }
 
 task jarNoEmbed(type: Jar) {
-	dependsOn(':OrbisAPI:build')
+	dependsOn(':OrbisLib:build')
 	from sourceSets.main.output
 	classifier = 'noembed'
 }
