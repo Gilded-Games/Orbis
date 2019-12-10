@@ -23,21 +23,21 @@ import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstance;
 import com.gildedgames.orbis.common.world.orbis_instance.OrbisInstanceHandler;
 import com.gildedgames.orbis.common.world_actions.impl.*;
 import com.gildedgames.orbis.common.world_objects.*;
-import com.gildedgames.orbis_api.IOHelper;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.block.BlockDataWithConditions;
-import com.gildedgames.orbis_api.block.BlockFilterHelper;
-import com.gildedgames.orbis_api.block.BlockFilterLayer;
-import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis_api.data.management.IDataCachePool;
-import com.gildedgames.orbis_api.data.management.IProjectManager;
-import com.gildedgames.orbis_api.data.management.impl.DataCache;
-import com.gildedgames.orbis_api.data.management.impl.DataCachePool;
-import com.gildedgames.orbis_api.network.INetworkMultipleParts;
-import com.gildedgames.orbis_api.util.io.IClassSerializer;
-import com.gildedgames.orbis_api.util.io.SimpleSerializer;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis.lib.IOHelper;
+import com.gildedgames.orbis.lib.OrbisLib;
+import com.gildedgames.orbis.lib.block.BlockDataWithConditions;
+import com.gildedgames.orbis.lib.block.BlockFilterHelper;
+import com.gildedgames.orbis.lib.block.BlockFilterLayer;
+import com.gildedgames.orbis.lib.client.gui.data.Text;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis.lib.data.management.IDataCachePool;
+import com.gildedgames.orbis.lib.data.management.IProjectManager;
+import com.gildedgames.orbis.lib.data.management.impl.DataCache;
+import com.gildedgames.orbis.lib.data.management.impl.DataCachePool;
+import com.gildedgames.orbis.lib.network.INetworkMultipleParts;
+import com.gildedgames.orbis.lib.util.io.IClassSerializer;
+import com.gildedgames.orbis.lib.util.io.SimpleSerializer;
+import com.gildedgames.orbis.lib.world.WorldObjectManager;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
@@ -77,7 +77,7 @@ public class OrbisCore
 
 	public static final String MOD_VERSION = "0.1.0";
 
-	public static final String MOD_DEPENDENCIES = "required-after:orbis_api@[0.1.0,)";
+	public static final String MOD_DEPENDENCIES = "required-after:orbis-lib@[0.2.0,)";
 
 	public static final Logger LOGGER = LogManager.getLogger("Orbis");
 
@@ -118,7 +118,7 @@ public class OrbisCore
 
 	public static IProjectManager getProjectManager()
 	{
-		return OrbisAPI.services().getProjectManager();
+		return OrbisLib.services().getProjectManager();
 	}
 
 	@SubscribeEvent
@@ -302,7 +302,7 @@ public class OrbisCore
 
 		IOHelper.register(s, 28, WorldActionGenerateGhostBlockDataContainer.class);
 
-		OrbisAPI.services().io().register(s);
+		OrbisLib.services().io().register(s);
 	}
 
 	@Mod.EventHandler
@@ -348,7 +348,7 @@ public class OrbisCore
 
 		if (OrbisCore.CONFIG.useExperimentalFeatures())
 		{
-			OrbisAPI.services().enableScanAndCacheProjectsOnStartup(true);
+			OrbisLib.services().enableScanAndCacheProjectsOnStartup(true);
 		}
 
 		NetworkingOrbis.preInit();
@@ -371,7 +371,7 @@ public class OrbisCore
 	{
 		if (OrbisCore.CONFIG.useExperimentalFeatures())
 		{
-			OrbisAPI.services().stopProjectManager();
+			OrbisLib.services().stopProjectManager();
 		}
 
 		stopDataCache();
@@ -388,7 +388,7 @@ public class OrbisCore
 	{
 		if (OrbisCore.CONFIG.useExperimentalFeatures())
 		{
-			OrbisAPI.services().startProjectManager();
+			OrbisLib.services().startProjectManager();
 		}
 
 		startDataCache();

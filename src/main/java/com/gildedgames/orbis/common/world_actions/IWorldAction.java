@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.world_actions;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis_api.util.mc.NBT;
+import com.gildedgames.orbis.lib.util.mc.NBT;
 import net.minecraft.world.World;
 
 public interface IWorldAction extends NBT

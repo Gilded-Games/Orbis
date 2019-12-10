@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.containers;
 
-import com.gildedgames.orbis_api.util.mc.SlotHashed;
+import com.gildedgames.orbis.lib.util.mc.SlotHashed;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 

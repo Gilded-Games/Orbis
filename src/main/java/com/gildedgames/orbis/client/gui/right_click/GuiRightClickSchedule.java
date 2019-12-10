@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.client.gui.right_click;
 
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.client.gui.data.IDropdownElement;
-import com.gildedgames.orbis_api.client.gui.util.GuiDropdownList;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.data.schedules.ISchedule;
+import com.gildedgames.orbis.lib.client.gui.data.IDropdownElement;
+import com.gildedgames.orbis.lib.client.gui.util.GuiDropdownList;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.IGuiContext;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
+import com.gildedgames.orbis.lib.data.schedules.ISchedule;
 import net.minecraft.client.Minecraft;
 
 import java.io.IOException;

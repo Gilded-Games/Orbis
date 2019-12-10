@@ -2,7 +2,7 @@ package com.gildedgames.orbis.common.network.packets.gui;
 
 import com.gildedgames.orbis.common.containers.ContainerEditBlueprintPostGen;
 import com.gildedgames.orbis.common.containers.SlotGroup;
-import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;

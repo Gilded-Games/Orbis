@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.renderers.blueprint;
 
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.block.BlockData;
-import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis.lib.block.BlockData;
+import com.gildedgames.orbis.lib.util.RegionHelp;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

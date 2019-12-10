@@ -1,15 +1,15 @@
 package com.gildedgames.orbis.client.gui;
 
-import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.util.GuiText;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiViewer;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.util.InputHelper;
+import com.gildedgames.orbis.lib.client.gui.data.Text;
+import com.gildedgames.orbis.lib.client.gui.util.GuiText;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.IGuiContext;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.IGuiViewer;
+import com.gildedgames.orbis.lib.client.gui.util.vanilla.GuiButtonVanilla;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
+import com.gildedgames.orbis.lib.client.rect.Pos2D;
+import com.gildedgames.orbis.lib.util.InputHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentTranslation;
 

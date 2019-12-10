@@ -4,9 +4,9 @@ import com.gildedgames.orbis.client.renderers.blueprint.BlockDataContainerAccess
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerBlueprint;
 import com.gildedgames.orbis.common.world_objects.GhostBlockDataContainer;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.util.mc.BlockUtil;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.util.mc.BlockUtil;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

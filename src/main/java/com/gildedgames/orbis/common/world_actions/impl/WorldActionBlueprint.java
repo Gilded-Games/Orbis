@@ -1,20 +1,20 @@
 package com.gildedgames.orbis.common.world_actions.impl;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.CreationData;
-import com.gildedgames.orbis_api.core.ICreationData;
-import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.management.IDataIdentifier;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis_api.processing.DataPrimer;
-import com.gildedgames.orbis_api.util.BlueprintHelper;
-import com.gildedgames.orbis_api.util.RotationHelp;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.OrbisLib;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.core.CreationData;
+import com.gildedgames.orbis.lib.core.ICreationData;
+import com.gildedgames.orbis.lib.core.baking.BakedBlueprint;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.lib.data.management.IData;
+import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.lib.processing.DataPrimer;
+import com.gildedgames.orbis.lib.util.BlueprintHelper;
+import com.gildedgames.orbis.lib.util.RotationHelp;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -76,9 +76,7 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		BakedBlueprint baked = new BakedBlueprint(this.data, this.creationData);
 
-		baked.bake();
-
-		primer.create(baked);
+		primer.place(baked);
 	}
 
 	@Override
@@ -117,7 +115,7 @@ public class WorldActionBlueprint extends WorldActionBase
 
 		IDataIdentifier id = funnel.get("d");
 
-		Optional<IData> data = OrbisAPI.services().getProjectManager().findData(id);
+		Optional<IData> data = OrbisLib.services().getProjectManager().findData(id);
 
 		if (data.isPresent())
 		{
@@ -125,7 +123,7 @@ public class WorldActionBlueprint extends WorldActionBase
 		}
 		else
 		{
-			OrbisAPI.LOGGER.error("Could not find project from blueprint action", id);
+			OrbisLib.LOGGER.error("Could not find project from blueprint action", id);
 		}
 
 		this.pos = funnel.getPos("p");

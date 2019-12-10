@@ -5,7 +5,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
 import com.gildedgames.orbis.common.network.packets.PacketChangeSelectionType;
 import com.gildedgames.orbis.common.player.godmode.selection_types.*;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.lib.OrbisLib;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;

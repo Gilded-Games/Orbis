@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.util;
 
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.gildedgames.orbis.client.renderers.AirSelectionRenderer;
 import net.minecraft.client.Minecraft;
 

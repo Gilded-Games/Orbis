@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.schedules.IBlueprint;
-import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
-import com.gildedgames.orbis_api.data.schedules.IPositionRecordListener;
-import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis_api.world.IWorldObject;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.data.schedules.IBlueprint;
+import com.gildedgames.orbis.lib.data.schedules.IPositionRecord;
+import com.gildedgames.orbis.lib.data.schedules.IPositionRecordListener;
+import com.gildedgames.orbis.lib.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.lib.world.IWorldObject;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.state.IBlockState;

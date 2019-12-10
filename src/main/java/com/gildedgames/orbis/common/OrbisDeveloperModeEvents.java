@@ -5,8 +5,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockDestroy;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionBlockPlace;
-import com.gildedgames.orbis_api.block.BlockData;
-import com.gildedgames.orbis_api.block.BlockInstance;
+import com.gildedgames.orbis.lib.block.BlockData;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.*;
 import net.minecraft.entity.player.EntityPlayer;
@@ -146,8 +145,7 @@ public class OrbisDeveloperModeEvents
 
 		BlockData blockData = teData == null ? new BlockData(state) : new BlockData(state, teData);
 
-		BlockInstance instance = new BlockInstance(blockData, pos);
-		playerOrbis.getWorldActionLog(WorldActionLogs.BLOCKS).apply(world, new WorldActionBlockDestroy(instance));
+		playerOrbis.getWorldActionLog(WorldActionLogs.BLOCKS).apply(world, new WorldActionBlockDestroy(blockData, pos));
 	}
 
 	@SubscribeEvent
@@ -181,10 +179,7 @@ public class OrbisDeveloperModeEvents
 		BlockData before = beforeTe == null ? new BlockData(beforeState) : new BlockData(beforeState, beforeTe);
 		BlockData after = afterTe == null ? new BlockData(afterState) : new BlockData(afterState, afterTe);
 
-		BlockInstance beforeInstance = new BlockInstance(before, pos);
-		BlockInstance afterInstance = new BlockInstance(after, pos);
-
-		playerOrbis.getWorldActionLog(WorldActionLogs.BLOCKS).apply(world, new WorldActionBlockPlace(beforeInstance, afterInstance));
+		playerOrbis.getWorldActionLog(WorldActionLogs.BLOCKS).apply(world, new WorldActionBlockPlace(before, after, pos));
 	}
 
 	/**

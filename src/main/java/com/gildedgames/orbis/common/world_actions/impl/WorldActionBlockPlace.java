@@ -3,17 +3,20 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.util.CreationDataOrbis;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
-import com.gildedgames.orbis_api.block.BlockInstance;
-import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis_api.processing.DataPrimer;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.block.BlockData;
+import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.lib.processing.DataPrimer;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WorldActionBlockPlace implements IWorldAction
 {
 
-	private BlockInstance before, after;
+	private BlockData before, after;
+
+	private BlockPos pos;
 
 	private CreationDataOrbis creationData;
 
@@ -22,10 +25,11 @@ public class WorldActionBlockPlace implements IWorldAction
 
 	}
 
-	public WorldActionBlockPlace(BlockInstance before, BlockInstance after)
+	public WorldActionBlockPlace(BlockData before, BlockData after, BlockPos pos)
 	{
 		this.before = before;
 		this.after = after;
+		this.pos = pos;
 	}
 
 	@Override
@@ -34,7 +38,7 @@ public class WorldActionBlockPlace implements IWorldAction
 		if (this.creationData == null)
 		{
 			this.creationData = new CreationDataOrbis(world);
-			this.creationData.schedules(false);
+			this.creationData.schedules(false).pos(this.pos);
 		}
 		else
 		{
@@ -43,8 +47,7 @@ public class WorldActionBlockPlace implements IWorldAction
 		}
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
-
-		primer.create(this.after, this.creationData);
+		primer.setBlockInWorld(this.after, this.creationData);
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class WorldActionBlockPlace implements IWorldAction
 		if (this.creationData == null)
 		{
 			this.creationData = new CreationDataOrbis(world);
-			this.creationData.schedules(false);
+			this.creationData.schedules(false).pos(this.pos);
 		}
 
 		this.creationData.world(world);
@@ -62,7 +65,7 @@ public class WorldActionBlockPlace implements IWorldAction
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.before, this.creationData);
+		primer.setBlockInWorld(this.before, this.creationData);
 	}
 
 	@Override
@@ -84,6 +87,7 @@ public class WorldActionBlockPlace implements IWorldAction
 
 		funnel.set("b", this.before);
 		funnel.set("a", this.after);
+		funnel.setPos("p", this.pos);
 	}
 
 	@Override
@@ -93,5 +97,6 @@ public class WorldActionBlockPlace implements IWorldAction
 
 		this.before = funnel.get("b");
 		this.after = funnel.get("a");
+		this.pos = funnel.getPos("p");
 	}
 }

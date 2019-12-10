@@ -2,17 +2,17 @@ package com.gildedgames.orbis.common.world_objects;
 
 import com.gildedgames.orbis.client.renderers.framework.RenderFrameworkEditing;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.framework.FrameworkData;
-import com.gildedgames.orbis_api.data.framework.FrameworkNode;
-import com.gildedgames.orbis_api.data.framework.IFrameworkDataListener;
-import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis_api.data.pathway.PathwayData;
-import com.gildedgames.orbis_api.data.region.*;
-import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.IWorldObject;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.lib.data.framework.FrameworkData;
+import com.gildedgames.orbis.lib.data.framework.FrameworkNode;
+import com.gildedgames.orbis.lib.data.framework.IFrameworkDataListener;
+import com.gildedgames.orbis.lib.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.lib.data.pathway.PathwayData;
+import com.gildedgames.orbis.lib.data.region.*;
+import com.gildedgames.orbis.lib.util.RegionHelp;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.world.IWorldObject;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
@@ -21,10 +21,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Framework extends AbstractRegion implements IWorldObject, IColored, IMutableRegion, IRotateable, IFrameworkDataListener
 {
@@ -326,5 +323,10 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	public void onAddIntersection(PathwayData pathway1, PathwayData pathway2, BlueprintData blueprint)
 	{
 		this.isDirty = true;
+	}
+
+	@Override
+	public Iterator<BlockPos.MutableBlockPos> iterator() {
+		return BlockPos.getAllInBoxMutable(this.min, this.max).iterator();
 	}
 }

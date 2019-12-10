@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.capabilities.chunk_renderer;
 
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.data.region.Region;
+import com.gildedgames.orbis.lib.util.RegionHelp;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;

@@ -3,7 +3,7 @@ package com.gildedgames.orbis.common.player.godmode;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
-import com.gildedgames.orbis_api.util.mc.NBT;
+import com.gildedgames.orbis.lib.util.mc.NBT;
 import net.minecraft.entity.player.EntityPlayer;
 
 public interface IGodPower<C extends IGodPowerClient> extends NBT

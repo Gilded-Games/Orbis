@@ -1,13 +1,13 @@
 package orbis_core.data.framework;
 
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.framework.FrameworkData;
-import com.gildedgames.orbis_api.data.framework.FrameworkEdge;
-import com.gildedgames.orbis_api.data.framework.FrameworkNode;
-import com.gildedgames.orbis_api.data.framework.Graph;
-import com.gildedgames.orbis_api.data.pathway.PathwayData;
-import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.lib.data.framework.FrameworkData;
+import com.gildedgames.orbis.lib.data.framework.FrameworkEdge;
+import com.gildedgames.orbis.lib.data.framework.FrameworkNode;
+import com.gildedgames.orbis.lib.data.framework.Graph;
+import com.gildedgames.orbis.lib.data.pathway.PathwayData;
+import com.gildedgames.orbis.lib.data.region.Region;
 import net.minecraft.util.math.BlockPos;
 import orbis_core.data.BlueprintDataset;
 

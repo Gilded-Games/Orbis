@@ -2,8 +2,8 @@ package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.WorldShape;
-import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis.lib.world.WorldObjectManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

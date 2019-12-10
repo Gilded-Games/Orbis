@@ -6,12 +6,12 @@ import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketRemoveSchedule;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.core.tree.INode;
-import com.gildedgames.orbis_api.core.tree.LayerLink;
-import com.gildedgames.orbis_api.data.schedules.ISchedule;
-import com.gildedgames.orbis_api.data.schedules.IScheduleLayer;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis.lib.core.tree.INode;
+import com.gildedgames.orbis.lib.core.tree.LayerLink;
+import com.gildedgames.orbis.lib.data.schedules.ISchedule;
+import com.gildedgames.orbis.lib.data.schedules.IScheduleLayer;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.world.WorldObjectManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 

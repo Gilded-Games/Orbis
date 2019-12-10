@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.gui.util;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Rect;
+import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
+import com.gildedgames.orbis.lib.client.rect.Rect;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiTab extends GuiElement

@@ -1,15 +1,15 @@
 package com.gildedgames.orbis.common.variables;
 
 import com.gildedgames.orbis.common.variables.displays.GuiProjectFileChooser;
-import com.gildedgames.orbis_api.client.gui.data.DropdownElementWithData;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.core.variables.IGuiVar;
-import com.gildedgames.orbis_api.core.variables.IGuiVarCompareExpression;
-import com.gildedgames.orbis_api.core.variables.IGuiVarMutateExpression;
-import com.gildedgames.orbis_api.core.variables.displays.GuiVarDisplay;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.management.IDataIdentifier;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.client.gui.data.DropdownElementWithData;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
+import com.gildedgames.orbis.lib.core.variables.IGuiVar;
+import com.gildedgames.orbis.lib.core.variables.IGuiVarCompareExpression;
+import com.gildedgames.orbis.lib.core.variables.IGuiVarMutateExpression;
+import com.gildedgames.orbis.lib.core.variables.displays.GuiVarDisplay;
+import com.gildedgames.orbis.lib.data.management.IData;
+import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 

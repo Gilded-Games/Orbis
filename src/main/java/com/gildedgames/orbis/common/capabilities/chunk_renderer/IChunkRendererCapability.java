@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.capabilities.chunk_renderer;
 
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.util.mc.NBT;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.util.mc.NBT;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import net.minecraft.world.World;
 
 import java.util.List;

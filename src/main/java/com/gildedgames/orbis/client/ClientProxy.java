@@ -4,7 +4,7 @@ import com.gildedgames.orbis.client.model.FakeOrbisFloorWorld;
 import com.gildedgames.orbis.client.model.ModelOrbisFloor;
 import com.gildedgames.orbis.common.CommonProxy;
 import com.gildedgames.orbis.common.blocks.BlocksOrbis;
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.lib.OrbisLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -33,7 +33,7 @@ public class ClientProxy extends CommonProxy
 
 		OrbisKeyBindings.init();
 
-		OrbisAPI.services().lootTableCache().attachReloadListener();
+		OrbisLib.services().lootTableCache().attachReloadListener();
 	}
 
 	@Override

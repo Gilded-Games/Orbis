@@ -2,20 +2,22 @@ package com.gildedgames.orbis.common.world_objects;
 
 import com.gildedgames.orbis.client.renderers.RenderGhostBlockDataContainer;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.region.*;
-import com.gildedgames.orbis_api.util.RegionHelp;
-import com.gildedgames.orbis_api.util.RotationHelp;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.world.IWorldObject;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.data.management.IData;
+import com.gildedgames.orbis.lib.data.region.*;
+import com.gildedgames.orbis.lib.util.RegionHelp;
+import com.gildedgames.orbis.lib.util.RotationHelp;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.world.IWorldObject;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.Iterator;
 
 public class GhostBlockDataContainer extends AbstractRegion implements IMutableRegion, IRotateable, IWorldObject, IColored
 {
@@ -287,5 +289,10 @@ public class GhostBlockDataContainer extends AbstractRegion implements IMutableR
 		}
 
 		return false;
+	}
+
+	@Override
+	public Iterator<BlockPos.MutableBlockPos> iterator() {
+		return BlockPos.getAllInBoxMutable(this.min, this.max).iterator();
 	}
 }

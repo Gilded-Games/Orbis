@@ -3,15 +3,16 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
 import com.gildedgames.orbis.common.world_objects.GhostBlockDataContainer;
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.CreationData;
-import com.gildedgames.orbis_api.core.ICreationData;
-import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis_api.processing.DataPrimer;
-import com.gildedgames.orbis_api.util.BlueprintHelper;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.core.CreationData;
+import com.gildedgames.orbis.lib.core.ICreationData;
+import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.lib.processing.DataPrimer;
+import com.gildedgames.orbis.lib.util.BlueprintHelper;
+import com.gildedgames.orbis.lib.world.WorldObjectManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WorldActionGenerateGhostBlockDataContainer implements IWorldAction
@@ -59,7 +60,7 @@ public class WorldActionGenerateGhostBlockDataContainer implements IWorldAction
 			this.creationData.pos(this.ghostBlockDataContainer.getMin()).world(world).rotation(rotation);
 		}
 
-		primer.create(this.ghostBlockDataContainer, this.ghostBlockDataContainer.getBlockDataContainer(), this.creationData, null);
+		primer.copyBlocksIntoWorld(BlockPos.ORIGIN, this.ghostBlockDataContainer.getBlockDataContainer(), this.ghostBlockDataContainer, null, this.creationData);
 		WorldObjectManager.get(world).removeObject(this.ghostBlockDataContainer);
 	}
 

@@ -1,17 +1,17 @@
 package com.gildedgames.orbis.common.variables.displays;
 
 import com.gildedgames.orbis.common.variables.GuiVarProjectFile;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.client.gui.data.Text;
-import com.gildedgames.orbis_api.client.gui.util.GuiText;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Rect;
-import com.gildedgames.orbis_api.client.rect.RectModifier;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.management.IDataIdentifier;
+import com.gildedgames.orbis.lib.OrbisLib;
+import com.gildedgames.orbis.lib.client.gui.data.Text;
+import com.gildedgames.orbis.lib.client.gui.util.GuiText;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis.lib.client.gui.util.vanilla.GuiButtonVanilla;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
+import com.gildedgames.orbis.lib.client.rect.Rect;
+import com.gildedgames.orbis.lib.client.rect.RectModifier;
+import com.gildedgames.orbis.lib.data.management.IData;
+import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextComponentString;
 
@@ -69,7 +69,7 @@ public class GuiProjectFileChooser extends GuiElement
 		this.dataIdentifier = dataIdentifier;
 
 		this.dataIdentifierText.setText(new Text(new TextComponentString(
-				"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisAPI.services().getProjectManager().findMetadata(this.dataIdentifier))),
+				"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisLib.services().getProjectManager().findMetadata(this.dataIdentifier))),
 				1.0F));
 	}
 
@@ -87,7 +87,7 @@ public class GuiProjectFileChooser extends GuiElement
 
 		this.dataIdentifierText = new GuiText(Dim2D.build().y(30).flush(),
 				new Text(new TextComponentString(
-						"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisAPI.services().getProjectManager().findMetadata(this.dataIdentifier))),
+						"Chosen: " + (this.dataIdentifier == null ? "None" : OrbisLib.services().getProjectManager().findMetadata(this.dataIdentifier))),
 						1.0F));
 
 		this.context().addChildren(this.button, this.dataIdentifierText);

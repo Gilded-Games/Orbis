@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis_api.data.schedules.IPositionRecord;
+import com.gildedgames.orbis.lib.data.schedules.IPositionRecord;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;

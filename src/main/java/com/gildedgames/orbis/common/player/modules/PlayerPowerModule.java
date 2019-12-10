@@ -64,6 +64,7 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		powers.add(this.selectPower);
 		powers.add(this.spectatorPower);
 		powers.add(this.blueprintPower);
+		powers.add(this.entrancePower);
 
 		this.powers = powers.toArray(new IGodPower[powers.size()]);
 	}

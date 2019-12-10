@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.util;
 
-import com.gildedgames.orbis_api.data.region.IColored;
-import com.gildedgames.orbis_api.data.region.IDimensions;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis.lib.data.region.IColored;
+import com.gildedgames.orbis.lib.data.region.IDimensions;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.data.region.Region;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 

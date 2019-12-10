@@ -22,14 +22,14 @@ import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionFilter;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.block.BlockFilter;
-import com.gildedgames.orbis_api.block.BlockFilterHelper;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.util.RotationHelp;
-import com.gildedgames.orbis_api.world.IWorldObject;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
+import com.gildedgames.orbis.lib.OrbisLib;
+import com.gildedgames.orbis.lib.block.BlockFilter;
+import com.gildedgames.orbis.lib.block.BlockFilterHelper;
+import com.gildedgames.orbis.lib.data.region.Region;
+import com.gildedgames.orbis.lib.util.RotationHelp;
+import com.gildedgames.orbis.lib.world.IWorldObject;
+import com.gildedgames.orbis.lib.world.WorldObjectManager;
+import com.gildedgames.orbis.lib.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -279,7 +279,7 @@ public class OrbisDeveloperEventsClient
 		}
 		else if (player == null && world == null && (!mc.isIntegratedServerRunning() || mc.getIntegratedServer() == null))
 		{
-			OrbisAPI.services().stopProjectManager();
+			OrbisLib.services().stopProjectManager();
 			OrbisCore.stopDataCache();
 		}
 	}
@@ -415,7 +415,7 @@ public class OrbisDeveloperEventsClient
 		}
 		else if (player == null && world == null && (!mc.isIntegratedServerRunning() || mc.getIntegratedServer() == null))
 		{
-			OrbisAPI.services().stopProjectManager();
+			OrbisLib.services().stopProjectManager();
 			CHUNK_RENDERER_MANAGER.unload();
 		}
 

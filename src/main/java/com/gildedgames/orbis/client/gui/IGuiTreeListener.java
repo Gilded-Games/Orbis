@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.gui;
 
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
-import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.core.tree.INode;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis.lib.client.rect.Pos2D;
+import com.gildedgames.orbis.lib.core.tree.INode;
 
 public interface IGuiTreeListener<DATA, LINK, BUTTON extends GuiElement>
 {

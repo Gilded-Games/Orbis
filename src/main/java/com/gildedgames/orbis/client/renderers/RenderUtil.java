@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.renderers;
 
-import com.gildedgames.orbis_api.data.region.IDimensions;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.util.RegionHelp;
+import com.gildedgames.orbis.lib.data.region.IDimensions;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.util.RegionHelp;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.common.containers.slots;
 
-import com.gildedgames.orbis_api.OrbisAPI;
+import com.gildedgames.orbis.lib.OrbisLib;
 import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.PacketSetItemStack;

@@ -2,15 +2,15 @@ package com.gildedgames.orbis.common.world_actions.impl;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.util.CreationDataOrbis;
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.block.BlockFilter;
-import com.gildedgames.orbis_api.core.CreationData;
-import com.gildedgames.orbis_api.core.ICreationData;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis_api.processing.DataPrimer;
-import com.gildedgames.orbis_api.util.BlueprintHelper;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.block.BlockFilter;
+import com.gildedgames.orbis.lib.core.CreationData;
+import com.gildedgames.orbis.lib.core.ICreationData;
+import com.gildedgames.orbis.lib.data.region.IShape;
+import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.lib.processing.DataPrimer;
+import com.gildedgames.orbis.lib.util.BlueprintHelper;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -89,8 +89,9 @@ public class WorldActionFilter extends WorldActionBase
 		//BlockDataContainer difference = BlueprintHelper.fetchDifferenceBetween(this.oldState, this.newState);
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
+		CreationData creationData = new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()).placesVoid(true);
 
-		primer.create(this.history, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()).placesVoid(true));
+		primer.create(this.history, creationData, this.shapeToFilter.getShapeData(), creationData.getPos());
 		//primer.create(difference, new CreationData(world).pos(this.shapeToFilter.getBoundingBox().getMin()));
 	}
 

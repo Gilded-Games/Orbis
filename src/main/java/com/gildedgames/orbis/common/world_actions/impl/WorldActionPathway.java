@@ -3,18 +3,18 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerPathway;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.core.CreationData;
-import com.gildedgames.orbis_api.core.ICreationData;
-import com.gildedgames.orbis_api.core.baking.BakedBlueprint;
-import com.gildedgames.orbis_api.core.world_objects.BlueprintRegion;
-import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayNode;
-import com.gildedgames.orbis_api.data.framework.generation.searching.PathwayProblem;
-import com.gildedgames.orbis_api.data.framework.generation.searching.StepAStar;
-import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis_api.processing.DataPrimer;
-import com.gildedgames.orbis_api.util.BlueprintHelper;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.core.CreationData;
+import com.gildedgames.orbis.lib.core.ICreationData;
+import com.gildedgames.orbis.lib.core.baking.BakedBlueprint;
+import com.gildedgames.orbis.lib.core.world_objects.BlueprintRegion;
+import com.gildedgames.orbis.lib.data.framework.generation.searching.PathwayNode;
+import com.gildedgames.orbis.lib.data.framework.generation.searching.PathwayProblem;
+import com.gildedgames.orbis.lib.data.framework.generation.searching.StepAStar;
+import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.lib.processing.DataPrimer;
+import com.gildedgames.orbis.lib.util.BlueprintHelper;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -80,9 +80,7 @@ public class WorldActionPathway implements IWorldAction
 
 			BakedBlueprint baked = new BakedBlueprint(n.getData(), this.creationData);
 
-			baked.bake();
-
-			primer.create(baked);
+			primer.place(baked);
 		}
 	}
 

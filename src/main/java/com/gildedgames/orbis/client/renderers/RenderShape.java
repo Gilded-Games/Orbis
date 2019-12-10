@@ -1,13 +1,13 @@
 package com.gildedgames.orbis.client.renderers;
 
 import com.gildedgames.orbis.client.OrbisKeyBindings;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.data.shapes.AbstractShape;
-import com.gildedgames.orbis_api.world.IWorldObject;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
-import com.gildedgames.orbis_api.world.WorldObjectManager;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.data.region.IShape;
+import com.gildedgames.orbis.lib.data.region.Region;
+import com.gildedgames.orbis.lib.data.shapes.AbstractShape;
+import com.gildedgames.orbis.lib.world.IWorldObject;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.world.WorldObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

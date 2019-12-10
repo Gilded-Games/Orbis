@@ -5,22 +5,22 @@ import com.gildedgames.orbis.client.gui.util.directory.nodes.NavigatorNodeProjec
 import com.gildedgames.orbis.client.gui.util.directory.nodes.OrbisNavigatorNodeFactory;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.network.packets.projects.PacketRequestProjectListing;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.client.gui.data.directory.DirectoryNavigator;
-import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigator;
-import com.gildedgames.orbis_api.client.gui.data.directory.IDirectoryNavigatorListener;
-import com.gildedgames.orbis_api.client.gui.data.directory.INavigatorNode;
-import com.gildedgames.orbis_api.client.gui.util.GuiText;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiElement;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.GuiViewer;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiContext;
-import com.gildedgames.orbis_api.client.gui.util.gui_library.IGuiViewer;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanilla;
-import com.gildedgames.orbis_api.client.gui.util.vanilla.GuiButtonVanillaToggled;
-import com.gildedgames.orbis_api.client.rect.Dim2D;
-import com.gildedgames.orbis_api.client.rect.Pos2D;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.management.IProject;
+import com.gildedgames.orbis.lib.OrbisLib;
+import com.gildedgames.orbis.lib.client.gui.data.directory.DirectoryNavigator;
+import com.gildedgames.orbis.lib.client.gui.data.directory.IDirectoryNavigator;
+import com.gildedgames.orbis.lib.client.gui.data.directory.IDirectoryNavigatorListener;
+import com.gildedgames.orbis.lib.client.gui.data.directory.INavigatorNode;
+import com.gildedgames.orbis.lib.client.gui.util.GuiText;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiElement;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.GuiViewer;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.IGuiContext;
+import com.gildedgames.orbis.lib.client.gui.util.gui_library.IGuiViewer;
+import com.gildedgames.orbis.lib.client.gui.util.vanilla.GuiButtonVanilla;
+import com.gildedgames.orbis.lib.client.gui.util.vanilla.GuiButtonVanillaToggled;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
+import com.gildedgames.orbis.lib.client.rect.Pos2D;
+import com.gildedgames.orbis.lib.data.management.IData;
+import com.gildedgames.orbis.lib.data.management.IProject;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
@@ -84,9 +84,9 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 		this.directoryViewer.dim().mod().width(this.getScreenWidth() - this.directoryViewer.dim().x() - 20).flush();
 		this.directoryViewer.dim().mod().height(this.getScreenHeight() - this.directoryViewer.dim().y() - 20).flush();
 
-		if (!OrbisAPI.services().getProjectManager().getLocation().exists())
+		if (!OrbisLib.services().getProjectManager().getLocation().exists())
 		{
-			if (!OrbisAPI.services().getProjectManager().getLocation().mkdirs())
+			if (!OrbisLib.services().getProjectManager().getLocation().mkdirs())
 			{
 				throw new RuntimeException("Project manager file could not be created!");
 			}
@@ -96,7 +96,7 @@ public class GuiViewProjects extends GuiViewer implements IDirectoryNavigatorLis
 
 		this.directoryViewer.setDisplayBackdrop(false);
 
-		this.directoryViewer.getNavigator().openDirectory(OrbisAPI.services().getProjectManager().getLocation());
+		this.directoryViewer.getNavigator().openDirectory(OrbisLib.services().getProjectManager().getLocation());
 
 		this.directoryViewer.getNavigator()
 				.injectDirectories(OrbisCore.getProjectManager().getLocation(), OrbisCore.getProjectManager().getExtraProjectSourceFolders());

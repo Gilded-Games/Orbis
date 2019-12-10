@@ -3,9 +3,9 @@ package com.gildedgames.orbis.common.player.modules;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
-import com.gildedgames.orbis_api.data.management.IProject;
-import com.gildedgames.orbis_api.data.management.IProjectIdentifier;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.data.management.IProject;
+import com.gildedgames.orbis.lib.data.management.IProjectIdentifier;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Optional;

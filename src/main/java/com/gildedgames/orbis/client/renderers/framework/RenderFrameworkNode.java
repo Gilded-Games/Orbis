@@ -2,10 +2,10 @@ package com.gildedgames.orbis.client.renderers.framework;
 
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.world_objects.Framework;
-import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis_api.data.region.IRegion;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.world.IWorldRenderer;
+import com.gildedgames.orbis.lib.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.lib.data.region.IRegion;
+import com.gildedgames.orbis.lib.data.region.Region;
+import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;

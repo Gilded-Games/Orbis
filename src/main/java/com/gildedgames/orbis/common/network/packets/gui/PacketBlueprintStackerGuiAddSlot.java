@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.network.packets.gui;
 
 import com.gildedgames.orbis.common.containers.ContainerLoadData;
-import com.gildedgames.orbis_api.network.instances.MessageHandlerServer;
-import com.gildedgames.orbis_api.util.mc.SlotHashed;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;
+import com.gildedgames.orbis.lib.util.mc.SlotHashed;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

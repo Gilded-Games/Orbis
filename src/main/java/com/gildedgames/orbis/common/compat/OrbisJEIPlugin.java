@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.compat;
 
 import com.gildedgames.orbis.client.gui.fill.GuiCombineMatrix;
-import com.gildedgames.orbis_api.client.gui.util.GuiAbstractButton;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.lib.client.gui.util.GuiAbstractButton;
+import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;

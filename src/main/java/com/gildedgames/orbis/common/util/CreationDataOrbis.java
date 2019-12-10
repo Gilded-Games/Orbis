@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.util;
 
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
-import com.gildedgames.orbis_api.core.CreationData;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
+import com.gildedgames.orbis.lib.core.CreationData;
+import com.gildedgames.orbis.lib.world.WorldObjectUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ public class CreationDataOrbis extends CreationData
 	}
 
 	@Override
-	public boolean shouldCreate(final IBlockState data, final BlockPos pos)
+	public boolean shouldCreate(final BlockPos pos)
 	{
 		if (this.getWorld().provider.getDimensionType() == WorldProviderOrbis.ORBIS)
 		{

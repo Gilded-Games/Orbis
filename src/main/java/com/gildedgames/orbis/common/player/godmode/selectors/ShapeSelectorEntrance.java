@@ -7,11 +7,13 @@ import com.gildedgames.orbis.common.util.ColoredRegion;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddEntrance;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis_api.data.framework.interfaces.EnumFacingMultiple;
-import com.gildedgames.orbis_api.data.pathway.Entrance;
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.data.region.Region;
-import com.gildedgames.orbis_api.world.WorldObjectUtils;
+import com.gildedgames.orbis.lib.data.framework.interfaces.EnumFacingMultiple;
+import com.gildedgames.orbis.lib.data.pathway.Entrance;
+import com.gildedgames.orbis.lib.data.region.IShape;
+import com.gildedgames.orbis.lib.data.region.Region;
+import com.gildedgames.orbis.lib.world.WorldObjectUtils;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -77,9 +79,20 @@ public class ShapeSelectorEntrance implements IShapeSelector
 			r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
 
 			ColoredRegion entrance = new ColoredRegion(r).setColor(GodPowerEntranceClient.SHAPE_COLOR);
+			EntityPlayer entity = playerOrbis.getEntity();
+
+			System.out.println(entity.rotationPitch);
+
+			EnumFacingMultiple facing;
+
+			if (entity.rotationPitch > 65 || entity.rotationPitch < -65) {
+				facing = entity.rotationPitch > 65 ? EnumFacingMultiple.DOWN : EnumFacingMultiple.UP;
+			} else {
+				facing = EnumFacingMultiple.getFromMultiple(entity.getHorizontalFacing());
+			}
 
 			playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
-					.apply(world, new WorldActionAddEntrance(b, new Entrance(entrance, null, EnumFacingMultiple.NORTH)));
+					.apply(world, new WorldActionAddEntrance(b, new Entrance(entrance, null, facing)));
 		}
 	}
 

@@ -1,12 +1,12 @@
 package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.data.management.IData;
-import com.gildedgames.orbis_api.data.management.IDataCache;
-import com.gildedgames.orbis_api.network.NetworkUtils;
-import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
-import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.data.management.IData;
+import com.gildedgames.orbis.lib.data.management.IDataCache;
+import com.gildedgames.orbis.lib.network.NetworkUtils;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis.lib.network.util.PacketMultipleParts;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

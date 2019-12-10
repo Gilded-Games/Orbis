@@ -2,12 +2,12 @@ package com.gildedgames.orbis.common.network.packets.projects;
 
 import com.gildedgames.orbis.client.gui.GuiSaveData;
 import com.gildedgames.orbis.common.OrbisCore;
-import com.gildedgames.orbis_api.OrbisAPI;
-import com.gildedgames.orbis_api.data.management.IProject;
-import com.gildedgames.orbis_api.network.NetworkUtils;
-import com.gildedgames.orbis_api.network.instances.MessageHandlerClient;
-import com.gildedgames.orbis_api.network.util.PacketMultipleParts;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.OrbisLib;
+import com.gildedgames.orbis.lib.data.management.IProject;
+import com.gildedgames.orbis.lib.network.NetworkUtils;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis.lib.network.util.PacketMultipleParts;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -30,7 +30,7 @@ public class PacketSendProjectListing extends PacketMultipleParts
 	{
 		OrbisCore.getProjectManager().refreshCache();
 
-		this.projects = new ArrayList<>(OrbisAPI.services().getProjectManager().getCachedProjects());
+		this.projects = new ArrayList<>(OrbisLib.services().getProjectManager().getCachedProjects());
 
 		this.projects.removeIf(IProject::isModProject);
 

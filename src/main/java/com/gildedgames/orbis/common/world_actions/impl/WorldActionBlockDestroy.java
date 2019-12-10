@@ -3,17 +3,20 @@ package com.gildedgames.orbis.common.world_actions.impl;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.util.CreationDataOrbis;
 import com.gildedgames.orbis.common.world_actions.IWorldAction;
-import com.gildedgames.orbis_api.block.BlockInstance;
-import com.gildedgames.orbis_api.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis_api.processing.DataPrimer;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.block.BlockData;
+import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
+import com.gildedgames.orbis.lib.processing.DataPrimer;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WorldActionBlockDestroy implements IWorldAction
 {
 
-	private BlockInstance instance;
+	private BlockData data;
+
+	private BlockPos pos;
 
 	private CreationDataOrbis creationData;
 
@@ -22,15 +25,16 @@ public class WorldActionBlockDestroy implements IWorldAction
 
 	}
 
-	public WorldActionBlockDestroy(BlockInstance instance)
+	public WorldActionBlockDestroy(BlockData data, BlockPos pos)
 	{
-		this.instance = instance;
+		this.data = data;
+		this.pos = pos;
 	}
 
 	@Override
 	public void redo(PlayerOrbis player, World world)
 	{
-		world.setBlockToAir(this.instance.getPos());
+		world.setBlockToAir(this.pos);
 	}
 
 	@Override
@@ -39,7 +43,7 @@ public class WorldActionBlockDestroy implements IWorldAction
 		if (this.creationData == null)
 		{
 			this.creationData = new CreationDataOrbis(world);
-			this.creationData.schedules(false);
+			this.creationData.schedules(false).pos(this.pos);
 		}
 		else
 		{
@@ -49,7 +53,7 @@ public class WorldActionBlockDestroy implements IWorldAction
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(world));
 
-		primer.create(this.instance, this.creationData);
+		primer.setBlockInWorld(this.data.getBlockState(), this.data.getTileEntity(), this.creationData.getPos(), this.creationData);
 	}
 
 	@Override
@@ -69,7 +73,8 @@ public class WorldActionBlockDestroy implements IWorldAction
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		funnel.set("i", this.instance);
+		funnel.set("i", this.data);
+		funnel.setPos("p", this.pos);
 	}
 
 	@Override
@@ -77,6 +82,7 @@ public class WorldActionBlockDestroy implements IWorldAction
 	{
 		NBTFunnel funnel = new NBTFunnel(tag);
 
-		this.instance = funnel.get("i");
+		this.data = funnel.get("i");
+		this.pos = funnel.getPos("p");
 	}
 }

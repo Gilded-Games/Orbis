@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.player.godmode.selection_types;
 
-import com.gildedgames.orbis_api.data.region.IShape;
-import com.gildedgames.orbis_api.data.shapes.LineShape;
+import com.gildedgames.orbis.lib.data.region.IShape;
+import com.gildedgames.orbis.lib.data.shapes.LineShape;
 import com.gildedgames.orbis.client.godmode.selection_types.ISelectionTypeClient;
 import com.gildedgames.orbis.client.godmode.selection_types.SelectionTypeClientLine;
 import com.gildedgames.orbis.common.OrbisCore;

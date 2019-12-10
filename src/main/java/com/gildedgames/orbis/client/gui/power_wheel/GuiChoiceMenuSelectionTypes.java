@@ -1,6 +1,6 @@
 package com.gildedgames.orbis.client.gui.power_wheel;
 
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selection_types.ISelectionType;
 

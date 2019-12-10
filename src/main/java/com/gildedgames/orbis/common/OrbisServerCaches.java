@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common;
 
-import com.gildedgames.orbis_api.data.blueprint.BlueprintDataPalette;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintDataPalette;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

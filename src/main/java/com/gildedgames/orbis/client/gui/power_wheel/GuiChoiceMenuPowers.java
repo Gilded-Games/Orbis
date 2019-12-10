@@ -4,7 +4,13 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
-import com.gildedgames.orbis_api.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.common.player.modules.PlayerPowerModule;
+import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class GuiChoiceMenuPowers extends GuiChoiceMenu
 {
@@ -13,11 +19,15 @@ public class GuiChoiceMenuPowers extends GuiChoiceMenu
 	{
 		super();
 
-		this.choices = new Choice[playerOrbis.powers().array().length - (OrbisCore.CONFIG.useExperimentalFeatures() ? 0 : 1)];
+		boolean experimental = OrbisCore.CONFIG.useExperimentalFeatures();
 
-		for (int i = 0; i < playerOrbis.powers().array().length - (OrbisCore.CONFIG.useExperimentalFeatures() ? 0 : 1); i++)
+		Predicate<IGodPower> filter = (p) -> experimental || (p != playerOrbis.powers().getBlueprintPower() && p != playerOrbis.powers().getEntrancePower());
+		List<IGodPower> filteredPowers = Arrays.stream(playerOrbis.powers().array()).filter(filter).collect(Collectors.toList());
+		this.choices = new Choice[filteredPowers.size()];
+
+		for (int i = 0; i < filteredPowers.size(); i++)
 		{
-			final IGodPower power = playerOrbis.powers().array()[i];
+			final IGodPower power = filteredPowers.get(i);
 			final GuiChoiceMenu.Choice choice = new PowerChoice(power, power.getClientHandler().displayName());
 
 			this.choices[i] = choice;

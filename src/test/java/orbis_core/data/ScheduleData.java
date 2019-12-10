@@ -1,11 +1,11 @@
 package orbis_core.data;
 
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.framework.FrameworkData;
-import com.gildedgames.orbis_api.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis_api.data.pathway.IEntrance;
-import com.gildedgames.orbis_api.data.pathway.PathwayData;
-import com.gildedgames.orbis_api.data.region.IMutableRegion;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.lib.data.framework.FrameworkData;
+import com.gildedgames.orbis.lib.data.framework.interfaces.IFrameworkNode;
+import com.gildedgames.orbis.lib.data.pathway.IEntrance;
+import com.gildedgames.orbis.lib.data.pathway.PathwayData;
+import com.gildedgames.orbis.lib.data.region.IMutableRegion;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;

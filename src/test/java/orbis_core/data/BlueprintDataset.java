@@ -1,9 +1,9 @@
 package orbis_core.data;
 
-import com.gildedgames.orbis_api.block.BlockDataContainer;
-import com.gildedgames.orbis_api.data.blueprint.BlueprintData;
-import com.gildedgames.orbis_api.data.pathway.PathwayData;
-import com.gildedgames.orbis_api.data.region.Region;
+import com.gildedgames.orbis.lib.block.BlockDataContainer;
+import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
+import com.gildedgames.orbis.lib.data.pathway.PathwayData;
+import com.gildedgames.orbis.lib.data.region.Region;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;

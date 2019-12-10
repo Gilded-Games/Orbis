@@ -5,7 +5,7 @@ import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;
 import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlaceChunksAsGhostRegions;
 import com.gildedgames.orbis.common.network.packets.creation_settings.PacketSetPlacesAirBlocks;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PlayerCreationSettingsModule extends PlayerOrbisModule

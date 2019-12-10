@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.common.items;
 
-import com.gildedgames.orbis_api.data.region.IDimensions;
-import com.gildedgames.orbis_api.util.io.NBTFunnel;
-import com.gildedgames.orbis_api.util.mc.NBT;
+import com.gildedgames.orbis.lib.data.region.IDimensions;
+import com.gildedgames.orbis.lib.util.io.NBTFunnel;
+import com.gildedgames.orbis.lib.util.mc.NBT;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class OrbisItemMetadata implements NBT

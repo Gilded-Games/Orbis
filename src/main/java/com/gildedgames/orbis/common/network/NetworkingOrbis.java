@@ -10,8 +10,8 @@ import com.gildedgames.orbis.common.network.packets.framework.PacketRemoveNode;
 import com.gildedgames.orbis.common.network.packets.gui.*;
 import com.gildedgames.orbis.common.network.packets.projects.*;
 import com.gildedgames.orbis.common.network.packets.world_actions.*;
-import com.gildedgames.orbis_api.network.INetworkMultipleParts;
-import com.gildedgames.orbis_api.network.NetworkMultipleParts;
+import com.gildedgames.orbis.lib.network.INetworkMultipleParts;
+import com.gildedgames.orbis.lib.network.NetworkMultipleParts;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
