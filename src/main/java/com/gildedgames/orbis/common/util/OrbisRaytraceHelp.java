@@ -47,7 +47,9 @@ public class OrbisRaytraceHelp
 			WorldObjectUtils.getIntersectingShape(world, pos)
 					.filter(Blueprint.class::isInstance)
 					.map(Blueprint.class::cast)
-					.flatMap(b -> RegionHelp.findIntersecting(b.getData().entrances(), b.getPos(), pos));
+					.flatMap(b -> b.getData().getEntrance() != null ?
+							RegionHelp.findIntersecting(b.getData().getEntrance(), b.getPos(), pos) :
+							Optional.empty());
 
 	private static final List<Class<? extends IWorldObject>> blueprintClass;
 

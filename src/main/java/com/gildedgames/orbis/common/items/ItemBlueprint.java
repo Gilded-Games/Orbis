@@ -6,6 +6,7 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.items.util.ItemStackInput;
 import com.gildedgames.orbis.common.network.packets.blueprints.PacketAddSchedule;
+import com.gildedgames.orbis.common.network.packets.blueprints.PacketGenerateBlueprintNetwork;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_actions.WorldActionLogs;
 import com.gildedgames.orbis.common.world_actions.impl.WorldActionAddBlueprint;
@@ -19,8 +20,10 @@ import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
 import com.gildedgames.orbis.lib.data.management.IDataMetadata;
 import com.gildedgames.orbis.lib.data.management.IProject;
 import com.gildedgames.orbis.lib.data.region.Region;
+import com.gildedgames.orbis.lib.data.schedules.ISchedule;
 import com.gildedgames.orbis.lib.data.schedules.ScheduleBlueprint;
-import com.gildedgames.orbis.lib.util.RegionHelp;
+import com.gildedgames.orbis.lib.data.schedules.ScheduleEntranceHolder;
+import com.gildedgames.orbis.lib.util.RotationHelp;
 import com.gildedgames.orbis.lib.util.io.NBTFunnel;
 import com.gildedgames.orbis.lib.world.WorldObjectUtils;
 import net.minecraft.client.Minecraft;
@@ -43,6 +46,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.Optional;
@@ -212,7 +216,9 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 			return;
 		}
 
-		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && playerOrbis.powers().getBlueprintPower().getPlacingBlueprint() != null && playerOrbis.powers()
+		BlueprintData data = playerOrbis.powers().getBlueprintPower().getPlacingBlueprint();
+
+		if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && data != null && playerOrbis.powers()
 				.getCurrentPower()
 				.canInteractWithItems(playerOrbis))
 		{
@@ -220,62 +226,80 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 			{
 				return;
 			}
+
 			playerOrbis.getEntity().swingArm(EnumHand.MAIN_HAND);
 			playerOrbis.getEntity().getCooldownTracker().setCooldown(this, 4);
+
 			final BlockPos pos = OrbisRaytraceHelp.raytraceNoSnapping(playerOrbis.getEntity());
 
 			if (!pos.equals(playerOrbis.powers().getBlueprintPower().getPrevPlacingPos()))
 			{
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
-				final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
-				final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
-				BlueprintData data = playerOrbis.powers().getBlueprintPower().getPlacingBlueprint();
+				if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
+					this.generateNetwork(playerOrbis, data);
+				} else {
+					this.generateBlueprint(playerOrbis, world, data);
+				}
+			}
+		}
+	}
 
-				if (playerOrbis.powers().isScheduling())
+	private void generateNetwork(PlayerOrbis playerOrbis, BlueprintData data) {
+		final BlockPos createPos = playerOrbis.raytraceNoSnapping();
+
+		OrbisCore.network()
+				.sendPacketToServer(new PacketGenerateBlueprintNetwork(data.getMetadata().getIdentifier(), createPos));
+	}
+
+	private void generateBlueprint(PlayerOrbis playerOrbis, World world, BlueprintData data) {
+		final BlockPos createPos = playerOrbis.raytraceNoSnapping();
+		final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
+
+		if (playerOrbis.powers().isScheduling() || playerOrbis.powers().isEntrance())
+		{
+			Region scheduleBounds = new Region(RotationHelp.regionFromCenter(createPos, data, rotation));
+			Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, scheduleBounds);
+
+			if (b != null)
+			{
+				if (b.getCurrentScheduleLayerNode() != null)
 				{
-					BlueprintDataPalette palette = new BlueprintDataPalette();
-					DataCondition condition = new DataCondition();
+					scheduleBounds.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
 
-					palette.add(playerOrbis.powers().getBlueprintPower().getPlacingBlueprint(), condition);
+					boolean shouldAddEntrance = playerOrbis.powers().isEntrance() && data.getEntrance() != null;
+					ISchedule schedule;
 
-					Region r = new Region(palette.getLargestDim());
-					RegionHelp.translate(r, createPos);
+					if (shouldAddEntrance) {
+						schedule = new ScheduleEntranceHolder("", data.getMetadata().getIdentifier(), scheduleBounds, rotation);
+					} else {
+						BlueprintDataPalette palette = new BlueprintDataPalette();
+						palette.add(data, new DataCondition());
 
-					Blueprint b = WorldObjectUtils.getIntersectingShape(world, Blueprint.class, r);
+						schedule = new ScheduleBlueprint("", palette, scheduleBounds, rotation);
+					}
 
-					if (b != null)
+					if (!Minecraft.getMinecraft().isIntegratedServerRunning())
 					{
-						if (b.getCurrentScheduleLayerNode() != null)
-						{
-							r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
-							r.subtract(r.getWidth() / 2, 0, r.getLength() / 2);
-
-							ScheduleBlueprint scheduleBlueprint = new ScheduleBlueprint("", palette, r);
-
-							if (!Minecraft.getMinecraft().isIntegratedServerRunning())
-							{
-								OrbisCore.network()
-										.sendPacketToDimension(new PacketAddSchedule(b, scheduleBlueprint, b.getCurrentScheduleLayerIndex()),
-												world.provider.getDimension());
-							}
-							else
-							{
-								b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(scheduleBlueprint, b);
-							}
-						}
+						OrbisCore.network()
+								.sendPacketToDimension(new PacketAddSchedule(b, schedule, b.getCurrentScheduleLayerIndex()),
+										world.provider.getDimension());
 					}
 					else
 					{
-						playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionAddBlueprint(createPos));
+						b.getCurrentScheduleLayerNode().getData().getScheduleRecord().addSchedule(schedule, b);
 					}
 				}
-				else
-				{
-					playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
-							.apply(world, new WorldActionBlueprint(data, createPos));
-				}
 			}
+			else
+			{
+				playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL).apply(world, new WorldActionAddBlueprint(createPos));
+			}
+		}
+		else
+		{
+			playerOrbis.getWorldActionLog(WorldActionLogs.NORMAL)
+					.apply(world, new WorldActionBlueprint(data, createPos));
 		}
 	}
 

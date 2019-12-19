@@ -122,6 +122,8 @@ public class NetworkingOrbis
 
 		network.reg(PacketSetEntranceTriggerId.HandlerServer.class, PacketSetEntranceTriggerId.class,
 				Side.SERVER);
+		network.reg(PacketGenerateBlueprintNetwork.HandlerServer.class, PacketGenerateBlueprintNetwork.class,
+				Side.SERVER);
 
 		// C L I E N T
 		network.reg(PacketDeveloperMode.HandlerClient.class, PacketDeveloperMode.class, Side.CLIENT);

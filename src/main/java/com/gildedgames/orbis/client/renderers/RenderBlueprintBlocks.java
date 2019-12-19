@@ -110,9 +110,9 @@ public class RenderBlueprintBlocks implements IWorldRenderer
 			w.unlock();
 		}
 
-		if (displayEntrances)
+		if (displayEntrances && this.blueprint.getData().getEntrance() != null)
 		{
-			this.blueprint.getData().entrances().forEach(this::cacheEntrance);
+			this.cacheEntrance(this.blueprint.getData().getEntrance());
 		}
 	}
 

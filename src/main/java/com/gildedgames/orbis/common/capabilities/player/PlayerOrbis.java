@@ -60,6 +60,8 @@ public class PlayerOrbis implements IPlayerOrbis
 
 	private final PlayerCreationSettingsModule creationSettingsModule;
 
+	private final PlayerBlueprintNetworkModule blueprintNetworkModule;
+
 	private final List<PlayerOrbisModule> modules = Lists.newArrayList();
 
 	private final List<PlayerOrbisObserver> observers = Lists.newArrayList();
@@ -101,6 +103,7 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.projectModule = null;
 		this.selectionInputModule = null;
 		this.creationSettingsModule = null;
+		this.blueprintNetworkModule = null;
 
 		this.stagedOrbisSettingsInventory = new StagedInventory<>(this.getEntity(), () -> new InventoryBlockForge(this.getEntity(), 1),
 				m -> PlayerOrbis.get(m).getStagedOrbisSettingsInventory(), "orbisSettings");
@@ -115,12 +118,14 @@ public class PlayerOrbis implements IPlayerOrbis
 		this.projectModule = new PlayerProjectModule(this);
 		this.selectionInputModule = new PlayerSelectionInputModule(this);
 		this.creationSettingsModule = new PlayerCreationSettingsModule(this);
+		this.blueprintNetworkModule = new PlayerBlueprintNetworkModule(this);
 
 		this.modules.add(this.godPowerModule);
 		this.modules.add(this.selectionTypeModule);
 		this.modules.add(this.projectModule);
 		this.modules.add(this.selectionInputModule);
 		this.modules.add(this.creationSettingsModule);
+		this.modules.add(this.blueprintNetworkModule);
 
 		this.stagedOrbisSettingsInventory = new StagedInventory<>(this.getEntity(), () -> new InventoryBlockForge(this.getEntity(), 1),
 				m -> PlayerOrbis.get(m).getStagedOrbisSettingsInventory(), "orbisSettings");
@@ -249,6 +254,10 @@ public class PlayerOrbis implements IPlayerOrbis
 				(EntityPlayerMP) other.getEntity());
 		OrbisCore.network().sendPacketToPlayer(new PacketStagedInventoryChanged(this, this.getStagedOrbisSettingsInventory()),
 				(EntityPlayerMP) other.getEntity());
+	}
+
+	public PlayerBlueprintNetworkModule blueprintNetworks() {
+		return this.blueprintNetworkModule;
 	}
 
 	public PlayerSelectionInputModule selectionInputs()

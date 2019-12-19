@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -166,7 +167,9 @@ public class ItemBlueprintPalette extends Item implements ModelRegisterCallback,
 						r.subtract(b.getPos().getX(), b.getPos().getY(), b.getPos().getZ());
 						r.subtract(r.getWidth() / 2, 0, r.getLength() / 2);
 
-						ScheduleBlueprint scheduleBlueprint = new ScheduleBlueprint("", palette, r);
+						Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
+
+						ScheduleBlueprint scheduleBlueprint = new ScheduleBlueprint("", palette, r, rotation);
 
 						if (!Minecraft.getMinecraft().isIntegratedServerRunning())
 						{

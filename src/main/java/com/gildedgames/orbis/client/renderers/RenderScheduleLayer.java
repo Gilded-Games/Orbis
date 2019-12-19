@@ -58,6 +58,24 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 		layer.getData().getScheduleRecord().getSchedules(ScheduleRegion.class).forEach(this::cacheScheduleRegion);
 		layer.getData().getScheduleRecord().getSchedules(ScheduleBlueprint.class).forEach(this::cacheScheduleBlueprint);
+		layer.getData().getScheduleRecord().getSchedules(ScheduleEntranceHolder.class).forEach(this::cacheScheduleBlueprint);
+	}
+
+	private void cacheScheduleBlueprint(ScheduleEntranceHolder schedule)
+	{
+		final Lock w = this.lock.writeLock();
+		w.lock();
+
+		try
+		{
+			RenderSchedule r = RenderSchedule.create(this.parentObject, schedule);
+
+			this.subRenderers.add(r);
+		}
+		finally
+		{
+			w.unlock();
+		}
 	}
 
 	private void cacheScheduleBlueprint(ScheduleBlueprint schedule)
@@ -67,7 +85,7 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 		try
 		{
-			RenderScheduleBlueprint r = new RenderScheduleBlueprint(this.parentObject, schedule);
+			RenderSchedule r = RenderSchedule.create(this.parentObject, schedule);
 
 			this.subRenderers.add(r);
 		}
@@ -214,7 +232,12 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 			{
 				ScheduleBlueprint scheduleBlueprint = (ScheduleBlueprint) schedule;
 
-				r = new RenderScheduleBlueprint(this.parentObject, scheduleBlueprint);
+				r = RenderSchedule.create(this.parentObject, scheduleBlueprint);
+			}
+			else if (schedule instanceof ScheduleEntranceHolder) {
+				ScheduleEntranceHolder scheduleEntrance = (ScheduleEntranceHolder) schedule;
+
+				r = RenderSchedule.create(this.parentObject, scheduleEntrance);
 			}
 
 			if (r instanceof IFocusedRender)
@@ -224,7 +247,9 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 				focused.setFocused(this.isFocused);
 			}
 
-			this.subRenderers.add(r);
+			if (r != null) {
+				this.subRenderers.add(r);
+			}
 		}
 		finally
 		{

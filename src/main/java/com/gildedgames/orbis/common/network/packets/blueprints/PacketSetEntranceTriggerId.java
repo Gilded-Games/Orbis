@@ -5,7 +5,6 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.lib.data.management.IData;
 import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
-import com.gildedgames.orbis.lib.data.pathway.IEntrance;
 import com.gildedgames.orbis.lib.network.NetworkUtils;
 import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;
@@ -29,35 +28,26 @@ public class PacketSetEntranceTriggerId implements IMessage
 
 	private String triggerId;
 
-	private int entranceId = -1;
-
 	public PacketSetEntranceTriggerId()
 	{
 
 	}
 
-	public PacketSetEntranceTriggerId(IDataIdentifier id, int entranceId, String triggerId)
+	public PacketSetEntranceTriggerId(IDataIdentifier id, String triggerId)
 	{
 		this.id = id;
-
-		this.entranceId = entranceId;
-
 		this.triggerId = triggerId;
 	}
 
-	public PacketSetEntranceTriggerId(Blueprint blueprint, IEntrance entrance, String triggerId)
+	public PacketSetEntranceTriggerId(Blueprint blueprint, String triggerId)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
-
-		this.entranceId = blueprint.getData().getEntranceId(entrance);
-
 		this.triggerId = triggerId;
 	}
 
-	public PacketSetEntranceTriggerId(int worldObjectId, int entranceId, String triggerId)
+	public PacketSetEntranceTriggerId(int worldObjectId, String triggerId)
 	{
 		this.worldObjectId = worldObjectId;
-		this.entranceId = entranceId;
 
 		this.triggerId = triggerId;
 	}
@@ -71,7 +61,6 @@ public class PacketSetEntranceTriggerId implements IMessage
 		this.worldObjectId = tag.getInteger("worldObjectId");
 		this.id = funnel.get("id");
 
-		this.entranceId = tag.getInteger("entranceId");
 		this.triggerId = tag.getString("triggerId");
 	}
 
@@ -84,7 +73,6 @@ public class PacketSetEntranceTriggerId implements IMessage
 		tag.setInteger("worldObjectId", this.worldObjectId);
 		funnel.set("id", this.id);
 
-		tag.setInteger("entranceId", this.entranceId);
 		tag.setString("triggerId", this.triggerId);
 
 		ByteBufUtils.writeTag(buf, tag);
@@ -113,13 +101,13 @@ public class PacketSetEntranceTriggerId implements IMessage
 				data = OrbisCore.getProjectManager().findData(message.id);
 			}
 
-			if (data.isPresent() && data.get() instanceof BlueprintData)
+			if (data.isPresent())
 			{
 				if (data.get() instanceof BlueprintData)
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
-					bData.getEntrance(message.entranceId).setTriggerId(message.triggerId);
+					bData.getEntrance().setTriggerId(message.triggerId);
 				}
 				else
 				{
@@ -168,7 +156,7 @@ public class PacketSetEntranceTriggerId implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
-					bData.getEntrance(message.entranceId).setTriggerId(message.triggerId);
+					bData.getEntrance().setTriggerId(message.triggerId);
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -180,12 +168,12 @@ public class PacketSetEntranceTriggerId implements IMessage
 						if (message.id == null)
 						{
 							OrbisCore.network().sendPacketToAllPlayers(
-									new PacketSetEntranceTriggerId(message.worldObjectId, message.entranceId, message.triggerId));
+									new PacketSetEntranceTriggerId(message.worldObjectId, message.triggerId));
 						}
 						else
 						{
 							OrbisCore.network()
-									.sendPacketToAllPlayers(new PacketSetEntranceTriggerId(message.id, message.entranceId, message.triggerId));
+									.sendPacketToAllPlayers(new PacketSetEntranceTriggerId(message.id, message.triggerId));
 						}
 					}
 				}

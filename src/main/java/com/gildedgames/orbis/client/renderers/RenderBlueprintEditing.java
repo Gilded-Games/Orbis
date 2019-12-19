@@ -62,7 +62,9 @@ public class RenderBlueprintEditing
 				}
 			}
 
-			this.blueprint.getData().entrances().forEach(this::onAddEntrance);
+			if (this.blueprint.getData().getEntrance() != null) {
+				this.onAddEntrance(this.blueprint.getData().getEntrance());
+			}
 
 			this.renderShape = new RenderShape(this.blueprint);
 

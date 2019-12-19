@@ -46,7 +46,7 @@ public class BlueprintNode implements IFrameworkNode
 		this.data = data;
 		this.values = Lists.newArrayList(data);
 
-		this.maxEntrances = this.data.entrances().size();
+		//this.maxEntrances = this.data.getEntrance().size(); TODO: Entrances
 	}
 
 	public BlueprintNode(BlueprintDataPalette palette)
@@ -118,7 +118,7 @@ public class BlueprintNode implements IFrameworkNode
 
 		if (this.data != null)
 		{
-			this.maxEntrances = this.data.entrances().size();
+			//this.maxEntrances = this.data.getEntrance().size(); TODO: Entrances
 			this.values = Lists.newArrayList(this.data);
 		}
 		else

@@ -27,37 +27,24 @@ public class PacketRemoveEntrance implements IMessage
 
 	private int worldObjectId;
 
-	private int entranceId = -1;
-
-	private NBTFunnel funnel;
-
 	public PacketRemoveEntrance()
 	{
 
 	}
 
-	public PacketRemoveEntrance(IDataIdentifier id, int entranceId)
+	public PacketRemoveEntrance(IDataIdentifier id)
 	{
 		this.id = id;
-		this.entranceId = entranceId;
 	}
 
-	public PacketRemoveEntrance(IDataIdentifier id, Entrance entrance)
-	{
-		this.id = id;
-		this.entranceId = entrance.getDataParent().getEntranceId(entrance);
-	}
-
-	public PacketRemoveEntrance(Blueprint blueprint, Entrance entrance)
+	public PacketRemoveEntrance(Blueprint blueprint)
 	{
 		this.worldObjectId = WorldObjectManager.get(blueprint.getWorld()).getID(blueprint);
-		this.entranceId = blueprint.getData().getEntranceId(entrance);
 	}
 
-	public PacketRemoveEntrance(int worldObjectId, int scheduleId)
+	public PacketRemoveEntrance(int worldObjectId)
 	{
 		this.worldObjectId = worldObjectId;
-		this.entranceId = scheduleId;
 	}
 
 	@Override
@@ -68,7 +55,6 @@ public class PacketRemoveEntrance implements IMessage
 
 		this.worldObjectId = tag.getInteger("worldObjectId");
 		this.id = funnel.get("id");
-		this.entranceId = tag.getInteger("entranceId");
 	}
 
 	@Override
@@ -79,7 +65,6 @@ public class PacketRemoveEntrance implements IMessage
 
 		tag.setInteger("worldObjectId", this.worldObjectId);
 		funnel.set("id", this.id);
-		tag.setInteger("entranceId", this.entranceId);
 
 		ByteBufUtils.writeTag(buf, tag);
 	}
@@ -112,7 +97,7 @@ public class PacketRemoveEntrance implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
-					bData.removeEntrance(message.entranceId);
+					bData.clearEntrance();
 				}
 				else
 				{
@@ -161,7 +146,7 @@ public class PacketRemoveEntrance implements IMessage
 				{
 					final BlueprintData bData = (BlueprintData) data.get();
 
-					bData.removeEntrance(message.entranceId);
+					bData.clearEntrance();
 
 					// TODO: Send just to people who have downloaded this project
 					// Should probably make it so IProjects track what players have
@@ -172,11 +157,11 @@ public class PacketRemoveEntrance implements IMessage
 					{
 						if (message.id == null)
 						{
-							OrbisCore.network().sendPacketToAllPlayers(new PacketRemoveEntrance(message.worldObjectId, message.entranceId));
+							OrbisCore.network().sendPacketToAllPlayers(new PacketRemoveEntrance(message.worldObjectId));
 						}
 						else
 						{
-							OrbisCore.network().sendPacketToAllPlayers(new PacketRemoveEntrance(message.id, message.entranceId));
+							OrbisCore.network().sendPacketToAllPlayers(new PacketRemoveEntrance(message.id));
 						}
 					}
 				}

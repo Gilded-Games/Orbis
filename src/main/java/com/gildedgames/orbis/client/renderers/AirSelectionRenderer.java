@@ -4,6 +4,7 @@ import com.gildedgames.orbis.client.OrbisKeyBindings;
 import com.gildedgames.orbis.client.godmode.IGodPowerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerCreative;
+import com.gildedgames.orbis.common.player.godmode.IGodPower;
 import com.gildedgames.orbis.common.player.godmode.selectors.IShapeSelector;
 import com.gildedgames.orbis.common.util.OrbisRaytraceHelp;
 import com.gildedgames.orbis.common.world_objects.Framework;
@@ -82,14 +83,19 @@ public class AirSelectionRenderer
 			playerInside = obj.getShape().contains(x, y, z) || obj.getShape().contains(x, MathHelper.floor(entity.posY + entity.height), z);
 		}
 
-		boolean scheduleHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getSelectPower() && playerOrbis
-				.powers().isScheduling() && playerOrbis.getSelectedSchedule() != null;
-		boolean blueprintHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getBlueprintPower()
+		IGodPower power = playerOrbis.powers().getCurrentPower();
+
+		boolean scheduleHoverPossible =
+				(power == playerOrbis.powers().getSelectPower() && playerOrbis.powers().isScheduling())
+				|| power == playerOrbis.powers().getEntrancePower();
+
+		boolean scheduleHover = scheduleHoverPossible && playerOrbis.getSelectedSchedule() != null;
+		boolean blueprintHover = power == playerOrbis.powers().getBlueprintPower()
 				&& playerOrbis.getSelectedRegion() != null && !playerInside;
-		boolean entranceHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getEntrancePower() && playerOrbis.getSelectedEntrance() != null;
+		boolean entranceHover = power == playerOrbis.powers().getEntrancePower() && playerOrbis.getSelectedEntrance() != null;
 		boolean frameworkHover =
-				playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower() && playerOrbis.getSelectedRegion() != null && !playerInside;
-		boolean nodeHover = playerOrbis.powers().getCurrentPower() == playerOrbis.powers().getFrameworkPower() && playerOrbis.getSelectedNode() != null;
+				power == playerOrbis.powers().getFrameworkPower() && playerOrbis.getSelectedRegion() != null && !playerInside;
+		boolean nodeHover = power == playerOrbis.powers().getFrameworkPower() && playerOrbis.getSelectedNode() != null;
 
 		if (!playerOrbis.inDeveloperMode() || scheduleHover || blueprintHover || entranceHover || nodeHover || frameworkHover)
 		{
@@ -98,7 +104,7 @@ public class AirSelectionRenderer
 
 		final BlockPos airRaytrace = playerOrbis.raytraceNoSnapping();
 
-		if (!(playerOrbis.powers().getCurrentPower() instanceof GodPowerCreative))
+		if (!(power instanceof GodPowerCreative))
 		{
 			//Minecraft.getMinecraft().objectMouseOver = new RayTraceResult(mc.player, mc.player.getLook(1.0F));
 		}
@@ -115,7 +121,7 @@ public class AirSelectionRenderer
 			renderRegion.boxAlpha = fadeMax;
 		}
 
-		final IGodPowerClient powerClient = playerOrbis.powers().getCurrentPower().getClientHandler();
+		final IGodPowerClient powerClient = power.getClientHandler();
 
 		final boolean has3DCursor =
 				powerClient.has3DCursor(playerOrbis) || playerOrbis.getEntity().getHeldItemMainhand().getItem() instanceof IShapeSelector;

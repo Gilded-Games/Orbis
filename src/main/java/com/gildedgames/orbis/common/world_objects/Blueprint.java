@@ -124,8 +124,9 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Nonnull
 	public Optional<IEntrance> findIntersectingEntrance(IShape s)
 	{
-		for (IEntrance e : this.getData().entrances())
-		{
+		IEntrance e = this.getData().getEntrance();
+
+		if (e != null) {
 			int minX = e.getBounds().getMin().getX() + this.getPos().getX();
 			int minY = e.getBounds().getMin().getY() + this.getPos().getY();
 			int minZ = e.getBounds().getMin().getZ() + this.getPos().getZ();
@@ -149,8 +150,9 @@ public class Blueprint extends BlueprintRegion implements IWorldObject, IColored
 	@Nonnull
 	public Optional<IEntrance> findIntersectingEntrance(BlockPos pos)
 	{
-		for (IEntrance e : this.getData().entrances())
-		{
+		IEntrance e = this.getData().getEntrance();
+
+		if (e != null) {
 			int minX = e.getBounds().getMin().getX() + this.getPos().getX();
 			int minY = e.getBounds().getMin().getY() + this.getPos().getY();
 			int minZ = e.getBounds().getMin().getZ() + this.getPos().getZ();

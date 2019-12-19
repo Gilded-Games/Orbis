@@ -21,7 +21,7 @@ public class FrameworkDataset
 
 	public static BlueprintData getPathwayB(PathwayData pathway)
 	{
-		if (pathwayB == null || pathwayB.entrances().get(0).toConnectTo() != pathway)
+		if (pathwayB == null || pathwayB.getEntrance().toConnectTo() != pathway)
 		{
 			BlueprintData b1 = new BlueprintData(new BlockDataContainer(10, 2, 15));
 

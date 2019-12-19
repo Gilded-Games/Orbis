@@ -526,7 +526,7 @@ public class GuiEditEntrance extends GuiViewer implements IDropdownHolder
 		if (this.saveButton.state().isHoveredAndTopElement() && mouseButton == 0)
 		{
 			OrbisCore.network().sendPacketToServer(
-					new PacketSetEntranceTriggerId(this.blueprint, this.entrance,
+					new PacketSetEntranceTriggerId(this.blueprint,
 							this.triggerId.getInner().getText()));
 		}
 	}

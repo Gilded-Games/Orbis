@@ -29,13 +29,13 @@ public class WorldActionAddEntrance implements IWorldAction
 	@Override
 	public void redo(PlayerOrbis player, World world)
 	{
-		this.blueprint.getData().addEntrance(this.entrance);
+		this.blueprint.getData().setEntrance(this.entrance);
 	}
 
 	@Override
 	public void undo(PlayerOrbis player, World world)
 	{
-		this.blueprint.getData().removeEntrance(this.entrance);
+		this.blueprint.getData().clearEntrance();
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.gildedgames.orbis.client.godmode;
 
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickElements;
 import com.gildedgames.orbis.client.gui.right_click.GuiRightClickEntrance;
+import com.gildedgames.orbis.client.gui.right_click.GuiRightClickSchedule;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.world_objects.Blueprint;
@@ -9,9 +10,11 @@ import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.lib.client.rect.Dim2D;
 import com.gildedgames.orbis.lib.data.pathway.Entrance;
 import com.gildedgames.orbis.lib.data.region.IShape;
+import com.gildedgames.orbis.lib.data.schedules.ISchedule;
 import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
@@ -53,7 +56,9 @@ public class GodPowerEntranceClient implements IGodPowerClient
 	@Override
 	public boolean has3DCursor(final PlayerOrbis playerOrbis)
 	{
-		return true;
+		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+
+		return held.isEmpty();
 	}
 
 	@Override
@@ -77,6 +82,10 @@ public class GodPowerEntranceClient implements IGodPowerClient
 	@Override
 	public Object raytraceObject(PlayerOrbis playerOrbis)
 	{
+		if (playerOrbis.getSelectedSchedule() != null) {
+			return playerOrbis.getSelectedSchedule();
+		}
+
 		return playerOrbis.getSelectedEntrance();
 	}
 
@@ -96,6 +105,22 @@ public class GodPowerEntranceClient implements IGodPowerClient
 				{
 					Minecraft.getMinecraft()
 							.displayGuiScreen(new GuiRightClickEntrance((Blueprint) worldObject, entrance));
+
+					return false;
+				}
+			}
+		}
+		else if (foundObject instanceof ISchedule)
+		{
+			IShape worldObject = playerOrbis.getSelectedRegion();
+			ISchedule schedule = (ISchedule) foundObject;
+
+			if (entity.world.isRemote && worldObject instanceof Blueprint)
+			{
+				if (System.currentTimeMillis() - GuiRightClickElements.lastCloseTime > 200)
+				{
+					Minecraft.getMinecraft()
+							.displayGuiScreen(new GuiRightClickSchedule((Blueprint) worldObject, schedule));
 
 					return false;
 				}

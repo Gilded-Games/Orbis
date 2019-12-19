@@ -12,8 +12,8 @@ import com.gildedgames.orbis.lib.data.pathway.Entrance;
 import com.gildedgames.orbis.lib.data.region.IShape;
 import com.gildedgames.orbis.lib.data.region.Region;
 import com.gildedgames.orbis.lib.world.WorldObjectUtils;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -46,7 +46,9 @@ public class ShapeSelectorEntrance implements IShapeSelector
 	@Override
 	public boolean isSelectorActive(final PlayerOrbis playerOrbis, final World world)
 	{
-		return true;
+		final ItemStack held = playerOrbis.getEntity().getHeldItemMainhand();
+
+		return held.isEmpty();
 	}
 
 	@Override
@@ -80,8 +82,6 @@ public class ShapeSelectorEntrance implements IShapeSelector
 
 			ColoredRegion entrance = new ColoredRegion(r).setColor(GodPowerEntranceClient.SHAPE_COLOR);
 			EntityPlayer entity = playerOrbis.getEntity();
-
-			System.out.println(entity.rotationPitch);
 
 			EnumFacingMultiple facing;
 

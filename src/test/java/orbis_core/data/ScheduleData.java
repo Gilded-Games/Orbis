@@ -31,9 +31,10 @@ public class ScheduleData implements IFrameworkNode
 	//TODO: This might not be correct.
 	public int getMaxEdges()
 	{
-		return this.blueprints.stream()
-				.mapToInt(b -> b.entrances().size())
-				.max().getAsInt();
+		return 0;
+//		return this.blueprints.stream()
+//				.mapToInt(b -> b.getEntrance().size())
+//				.max().getAsInt(); TODO: Entrances
 	}
 
 	@Override
@@ -55,10 +56,10 @@ public class ScheduleData implements IFrameworkNode
 		List<PathwayData> pathways = new ArrayList<>();
 		for (BlueprintData b : this.blueprints)
 		{
-			for (IEntrance e : b.entrances())
-			{
-				pathways.add(e.toConnectTo());
-			}
+//			for (IEntrance e : b.getEntrance()) TODO: Entrance
+//			{
+//				pathways.add(e.toConnectTo());
+//			}
 		}
 		return pathways;
 	}

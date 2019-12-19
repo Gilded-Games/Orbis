@@ -76,7 +76,7 @@ public class GuiRightClickElements
 			@Override
 			public void onClick(final GuiDropdownList list, final EntityPlayer player)
 			{
-				OrbisCore.network().sendPacketToServer(new PacketRemoveEntrance(blueprint, entrance));
+				OrbisCore.network().sendPacketToServer(new PacketRemoveEntrance(blueprint));
 			}
 		};
 	}
