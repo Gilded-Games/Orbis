@@ -26,7 +26,8 @@ public class PlayerBlueprintNetworkModule extends PlayerOrbisModule
 		super(playerOrbis);
 	}
 
-	public void addNewNetwork(IDataIdentifier id, BlockPos pos) {
+	public void addNewNetwork(IDataIdentifier id, BlockPos pos)
+	{
 		BlueprintNetworkData network =
 				new BlueprintNetworkData(5,
 						Lists.newArrayList(id),
@@ -35,7 +36,8 @@ public class PlayerBlueprintNetworkModule extends PlayerOrbisModule
 						Collections.emptyList());
 
 		DataPrimer primer = new DataPrimer(new BlockAccessExtendedWrapper(this.getWorld()));
-		BlueprintNetworkGenerator generator = new BlueprintNetworkGenerator(network, new CreationData(this.getWorld()).pos(pos), (r, c, z) -> {}, primer::place);
+		BlueprintNetworkGenerator generator = new BlueprintNetworkGenerator(network, new CreationData(this.getWorld()).pos(pos), (r, c, z) -> {
+		}, primer::place);
 
 		this.generators.add(generator);
 	}
@@ -43,7 +45,8 @@ public class PlayerBlueprintNetworkModule extends PlayerOrbisModule
 	@Override
 	public void onUpdate()
 	{
-		if (this.getPlayer().getEntity().ticksExisted % 3 == 0) {
+		if (this.getPlayer().getEntity().ticksExisted % 3 == 0)
+		{
 			this.generators.removeIf(BlueprintNetworkGenerator::step);
 		}
 	}

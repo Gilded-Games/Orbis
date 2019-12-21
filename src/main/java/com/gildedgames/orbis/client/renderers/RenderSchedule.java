@@ -44,14 +44,18 @@ public class RenderSchedule<T extends ISchedule> implements IWorldRenderer
 	private Region bb;
 
 	private IWorldObject parentObject;
+
 	private Collection<IDataIdentifier> dataIdsToRender;
+
 	private Rotation rotation;
 
-	public static RenderSchedule<ScheduleBlueprint> create(IWorldObject parentObject, final ScheduleBlueprint schedule) {
+	public static RenderSchedule<ScheduleBlueprint> create(IWorldObject parentObject, final ScheduleBlueprint schedule)
+	{
 		return new RenderSchedule<>(parentObject, schedule, schedule.getPalette().getIDs(), schedule.getColor(), schedule.getRotation());
 	}
 
-	public static RenderSchedule<ScheduleEntranceHolder> create(IWorldObject parentObject, final ScheduleEntranceHolder schedule) {
+	public static RenderSchedule<ScheduleEntranceHolder> create(IWorldObject parentObject, final ScheduleEntranceHolder schedule)
+	{
 		Set<IDataIdentifier> id = Collections.singleton(schedule.getEntranceHolder());
 		return new RenderSchedule<>(parentObject, schedule, id, schedule.getColor(), schedule.getRotation());
 	}
@@ -117,7 +121,8 @@ public class RenderSchedule<T extends ISchedule> implements IWorldRenderer
 		PlayerOrbis playerOrbis = PlayerOrbis.get(Minecraft.getMinecraft().player);
 		IGodPower power = playerOrbis.powers().getCurrentPower();
 
-		if (playerOrbis.getSelectedSchedule() == this.schedule && (power == playerOrbis.powers().getSelectPower() || power == playerOrbis.powers().getEntrancePower()))
+		if (playerOrbis.getSelectedSchedule() == this.schedule && (power == playerOrbis.powers().getSelectPower() || power == playerOrbis.powers()
+				.getEntrancePower()))
 		{
 			boolean refresh = this.renderShape.boxAlpha == 0.25F;
 
@@ -180,10 +185,10 @@ public class RenderSchedule<T extends ISchedule> implements IWorldRenderer
 			OrbisCore.LOGGER.error(e);
 		}
 
-
 	}
 
-	private void renderBlueprint(boolean useCamera, float partialTicks, RenderBlueprintBlocks blueprint) {
+	private void renderBlueprint(boolean useCamera, float partialTicks, RenderBlueprintBlocks blueprint)
+	{
 		final double offsetPlayerX = this.mc.player.lastTickPosX + (this.mc.player.posX - this.mc.player.lastTickPosX) * partialTicks;
 		final double offsetPlayerY = this.mc.player.lastTickPosY + (this.mc.player.posY - this.mc.player.lastTickPosY) * partialTicks;
 		final double offsetPlayerZ = this.mc.player.lastTickPosZ + (this.mc.player.posZ - this.mc.player.lastTickPosZ) * partialTicks;

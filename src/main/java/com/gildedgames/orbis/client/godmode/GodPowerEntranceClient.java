@@ -82,7 +82,8 @@ public class GodPowerEntranceClient implements IGodPowerClient
 	@Override
 	public Object raytraceObject(PlayerOrbis playerOrbis)
 	{
-		if (playerOrbis.getSelectedSchedule() != null) {
+		if (playerOrbis.getSelectedSchedule() != null)
+		{
 			return playerOrbis.getSelectedSchedule();
 		}
 

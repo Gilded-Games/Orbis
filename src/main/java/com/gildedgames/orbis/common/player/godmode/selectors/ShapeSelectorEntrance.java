@@ -85,9 +85,12 @@ public class ShapeSelectorEntrance implements IShapeSelector
 
 			EnumFacingMultiple facing;
 
-			if (entity.rotationPitch > 65 || entity.rotationPitch < -65) {
+			if (entity.rotationPitch > 65 || entity.rotationPitch < -65)
+			{
 				facing = entity.rotationPitch > 65 ? EnumFacingMultiple.DOWN : EnumFacingMultiple.UP;
-			} else {
+			}
+			else
+			{
 				facing = EnumFacingMultiple.getFromMultiple(entity.getHorizontalFacing());
 			}
 

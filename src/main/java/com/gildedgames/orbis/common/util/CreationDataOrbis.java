@@ -3,7 +3,6 @@ package com.gildedgames.orbis.common.util;
 import com.gildedgames.orbis.common.world.orbis_instance.WorldProviderOrbis;
 import com.gildedgames.orbis.lib.core.CreationData;
 import com.gildedgames.orbis.lib.world.WorldObjectUtils;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

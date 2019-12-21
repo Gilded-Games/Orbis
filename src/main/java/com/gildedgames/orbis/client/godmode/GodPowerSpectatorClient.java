@@ -1,10 +1,10 @@
 package com.gildedgames.orbis.client.godmode;
 
-import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.lib.client.rect.Dim2D;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.GodPowerSpectator;
+import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
 import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;

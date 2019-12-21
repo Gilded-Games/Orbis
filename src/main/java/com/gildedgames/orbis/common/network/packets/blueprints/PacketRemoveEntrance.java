@@ -5,7 +5,6 @@ import com.gildedgames.orbis.common.world_objects.Blueprint;
 import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.lib.data.management.IData;
 import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
-import com.gildedgames.orbis.lib.data.pathway.Entrance;
 import com.gildedgames.orbis.lib.network.NetworkUtils;
 import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;

@@ -15,35 +15,40 @@ import java.util.UUID;
 
 public class DungeonViewer
 {
-    public DungeonViewer() {
+	public DungeonViewer()
+	{
 
-    }
+	}
 
-    @SubscribeEvent
-    public void drawScreen(GuiOpenEvent event) {
-        if (event.getGui() instanceof GuiInventory) {
-            Optional<IProject> project = OrbisLib.services().getProjectManager().findProject("test");
+	@SubscribeEvent
+	public void drawScreen(GuiOpenEvent event)
+	{
+		if (event.getGui() instanceof GuiInventory)
+		{
+			Optional<IProject> project = OrbisLib.services().getProjectManager().findProject("test");
 
-            if (project.isPresent()) {
-                Optional<UUID> id = project.get().getCache().getDataId("networktest.blueprint");
+			if (project.isPresent())
+			{
+				Optional<UUID> id = project.get().getCache().getDataId("networktest.blueprint");
 
-                if (id.isPresent()) {
-                    Optional<BlueprintData> data = project.get().getCache().getData(id.get());
+				if (id.isPresent())
+				{
+					Optional<BlueprintData> data = project.get().getCache().getData(id.get());
 
-                    data.ifPresent(blueprintData -> {
-                        BlueprintNetworkData network =
-                                new BlueprintNetworkData(5,
-                                        Lists.newArrayList(blueprintData.getMetadata().getIdentifier()),
-                                        Collections.emptyList(),
-                                        Collections.emptyList(),
-                                        Collections.emptyList());
+					data.ifPresent(blueprintData -> {
+						BlueprintNetworkData network =
+								new BlueprintNetworkData(5,
+										Lists.newArrayList(blueprintData.getMetadata().getIdentifier()),
+										Collections.emptyList(),
+										Collections.emptyList(),
+										Collections.emptyList());
 
-                        //event.setGui(new GuiBlueprintNetworkViewer(network));
-                    });
-                }
-            }
+						//event.setGui(new GuiBlueprintNetworkViewer(network));
+					});
+				}
+			}
 
-        }
-    }
+		}
+	}
 
 }

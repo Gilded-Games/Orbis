@@ -1,34 +1,16 @@
 package com.gildedgames.orbis.common.network.packets.blueprints;
 
-import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.common.world_objects.Blueprint;
-import com.gildedgames.orbis.lib.core.CreationData;
-import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
-import com.gildedgames.orbis.lib.data.blueprint.BlueprintNetworkData;
-import com.gildedgames.orbis.lib.data.management.IData;
 import com.gildedgames.orbis.lib.data.management.IDataIdentifier;
-import com.gildedgames.orbis.lib.data.schedules.ISchedule;
 import com.gildedgames.orbis.lib.network.NetworkUtils;
-import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;
-import com.gildedgames.orbis.lib.processing.BlockAccessExtendedWrapper;
-import com.gildedgames.orbis.lib.processing.BlueprintNetworkGenerator;
-import com.gildedgames.orbis.lib.processing.DataPrimer;
 import com.gildedgames.orbis.lib.util.io.NBTFunnel;
-import com.gildedgames.orbis.lib.world.IWorldObject;
-import com.gildedgames.orbis.lib.world.WorldObjectManager;
-import com.gildedgames.orbis.lib.world.WorldObjectUtils;
-import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-
-import java.util.Collections;
-import java.util.Optional;
 
 public class PacketGenerateBlueprintNetwork implements IMessage
 {
@@ -82,7 +64,8 @@ public class PacketGenerateBlueprintNetwork implements IMessage
 
 			PlayerOrbis playerOrbis = PlayerOrbis.get(player);
 
-			if (playerOrbis != null) {
+			if (playerOrbis != null)
+			{
 				playerOrbis.blueprintNetworks().addNewNetwork(message.id, message.pos);
 			}
 

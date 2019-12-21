@@ -13,59 +13,59 @@ import javax.annotation.Nullable;
 
 public class FakeOrbisFloorWorld implements IBlockAccess
 {
-    private IBlockState state;
+	private IBlockState state;
 
-    public FakeOrbisFloorWorld(IBlockState state)
-    {
-        this.state = state;
-    }
+	public FakeOrbisFloorWorld(IBlockState state)
+	{
+		this.state = state;
+	}
 
-    @Nullable
-    @Override
-    public TileEntity getTileEntity(BlockPos pos)
-    {
-        return null;
-    }
+	@Nullable
+	@Override
+	public TileEntity getTileEntity(BlockPos pos)
+	{
+		return null;
+	}
 
-    @Override
-    public int getCombinedLight(BlockPos pos, int lightValue)
-    {
-        return 0;
-    }
+	@Override
+	public int getCombinedLight(BlockPos pos, int lightValue)
+	{
+		return 0;
+	}
 
-    @Override
-    public IBlockState getBlockState(BlockPos pos)
-    {
-        return state;
-    }
+	@Override
+	public IBlockState getBlockState(BlockPos pos)
+	{
+		return state;
+	}
 
-    @Override
-    public boolean isAirBlock(BlockPos pos)
-    {
-        return state.getBlock().isAir(state, this, pos);
-    }
+	@Override
+	public boolean isAirBlock(BlockPos pos)
+	{
+		return state.getBlock().isAir(state, this, pos);
+	}
 
-    @Override
-    public Biome getBiome(BlockPos pos)
-    {
-        return Biomes.PLAINS;
-    }
+	@Override
+	public Biome getBiome(BlockPos pos)
+	{
+		return Biomes.PLAINS;
+	}
 
-    @Override
-    public int getStrongPower(BlockPos pos, EnumFacing direction)
-    {
-        return 0;
-    }
+	@Override
+	public int getStrongPower(BlockPos pos, EnumFacing direction)
+	{
+		return 0;
+	}
 
-    @Override
-    public WorldType getWorldType()
-    {
-        return WorldType.DEFAULT;
-    }
+	@Override
+	public WorldType getWorldType()
+	{
+		return WorldType.DEFAULT;
+	}
 
-    @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default)
-    {
-        return state.isSideSolid(this, pos, side);
-    }
+	@Override
+	public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default)
+	{
+		return state.isSideSolid(this, pos, side);
+	}
 }

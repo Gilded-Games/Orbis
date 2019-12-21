@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.network.packets;
 
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
-import com.gildedgames.orbis.lib.core.baking.BakedBlueprint;
 import com.gildedgames.orbis.lib.core.CreationData;
 import com.gildedgames.orbis.lib.core.ICreationData;
+import com.gildedgames.orbis.lib.core.baking.BakedBlueprint;
 import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.lib.data.region.IRegion;
 import com.gildedgames.orbis.lib.network.NetworkUtils;

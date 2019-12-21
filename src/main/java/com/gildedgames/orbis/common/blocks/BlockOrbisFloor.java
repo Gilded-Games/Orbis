@@ -95,6 +95,7 @@ public class BlockOrbisFloor extends Block implements ModelRegisterCallback
 	@Override
 	public void registerModel()
 	{
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(new ResourceLocation(OrbisCore.MOD_ID, "orbis_floor"), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0,
+				new ModelResourceLocation(new ResourceLocation(OrbisCore.MOD_ID, "orbis_floor"), "inventory"));
 	}
 }

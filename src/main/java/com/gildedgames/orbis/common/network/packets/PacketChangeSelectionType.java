@@ -1,9 +1,9 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
-import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selection_types.ISelectionType;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerServer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

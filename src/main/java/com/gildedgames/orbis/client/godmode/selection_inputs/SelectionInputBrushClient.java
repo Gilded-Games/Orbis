@@ -1,11 +1,11 @@
 package com.gildedgames.orbis.client.godmode.selection_inputs;
 
-import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
-import com.gildedgames.orbis.lib.client.rect.Dim2D;
 import com.gildedgames.orbis.client.renderers.RenderShape;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.player.godmode.selection_input.ISelectionInput;
+import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
+import com.gildedgames.orbis.lib.client.rect.Dim2D;
 import com.gildedgames.orbis.lib.world.IWorldObject;
 import com.gildedgames.orbis.lib.world.IWorldRenderer;
 import com.google.common.collect.Lists;

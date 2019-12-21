@@ -292,7 +292,8 @@ public class GhostBlockDataContainer extends AbstractRegion implements IMutableR
 	}
 
 	@Override
-	public Iterator<BlockPos.MutableBlockPos> iterator() {
+	public Iterator<BlockPos.MutableBlockPos> iterator()
+	{
 		return BlockPos.getAllInBoxMutable(this.min, this.max).iterator();
 	}
 }

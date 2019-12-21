@@ -1,6 +1,5 @@
 package com.gildedgames.orbis.common.player.modules;
 
-import com.gildedgames.orbis.lib.OrbisLib;
 import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbisModule;

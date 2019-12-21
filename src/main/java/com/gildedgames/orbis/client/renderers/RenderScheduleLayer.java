@@ -234,7 +234,8 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 
 				r = RenderSchedule.create(this.parentObject, scheduleBlueprint);
 			}
-			else if (schedule instanceof ScheduleEntranceHolder) {
+			else if (schedule instanceof ScheduleEntranceHolder)
+			{
 				ScheduleEntranceHolder scheduleEntrance = (ScheduleEntranceHolder) schedule;
 
 				r = RenderSchedule.create(this.parentObject, scheduleEntrance);
@@ -247,7 +248,8 @@ public class RenderScheduleLayer implements IWorldRenderer, IScheduleRecordListe
 				focused.setFocused(this.isFocused);
 			}
 
-			if (r != null) {
+			if (r != null)
+			{
 				this.subRenderers.add(r);
 			}
 		}

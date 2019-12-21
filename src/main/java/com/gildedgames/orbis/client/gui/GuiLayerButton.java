@@ -28,7 +28,7 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 
 	private GuiLayerEditor editor;
 
-	private boolean selected,previousState;
+	private boolean selected, previousState;
 
 	public GuiLayerButton(GuiLayerEditor editor, Rect rect, INode<IScheduleLayer, LayerLink> scheduleNode)
 	{
@@ -52,7 +52,7 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 
 		this.hidden.listenOnPress((ticked) ->
 		{
-			if (selected && !ticked)
+			if (this.selected && !ticked)
 			{
 				this.hidden.setTicked(true);
 				return;
@@ -80,14 +80,14 @@ public class GuiLayerButton extends GuiButtonVanilla implements IScheduleLayerLi
 	{
 		if (!flag)
 		{
-			selected = false;
-			this.hidden.setTicked(previousState);
+			this.selected = false;
+			this.hidden.setTicked(this.previousState);
 			this.hidden.setTickedTexture(TICK_BOX_EYE);
 		}
 		else
 		{
-			selected = true;
-			previousState = this.hidden.isTicked();
+			this.selected = true;
+			this.previousState = this.hidden.isTicked();
 			this.hidden.setTicked(true);
 			this.hidden.setTickedTexture(TICK_BOX_EYE_SELECTED);
 		}

@@ -256,7 +256,8 @@ public class PlayerOrbis implements IPlayerOrbis
 				(EntityPlayerMP) other.getEntity());
 	}
 
-	public PlayerBlueprintNetworkModule blueprintNetworks() {
+	public PlayerBlueprintNetworkModule blueprintNetworks()
+	{
 		return this.blueprintNetworkModule;
 	}
 

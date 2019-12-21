@@ -7,7 +7,6 @@ import com.gildedgames.orbis.lib.block.BlockFilter;
 import com.gildedgames.orbis.lib.block.BlockFilterHelper;
 import com.gildedgames.orbis.lib.core.CreationData;
 import com.gildedgames.orbis.lib.core.ICreationData;
-import com.gildedgames.orbis.lib.core.baking.BakedBlueprint;
 import com.gildedgames.orbis.lib.data.region.IRegion;
 import com.gildedgames.orbis.lib.data.region.IShape;
 import com.gildedgames.orbis.lib.data.region.Region;

@@ -1,8 +1,8 @@
 package com.gildedgames.orbis.client.godmode;
 
+import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
 import com.gildedgames.orbis.lib.world.IWorldRenderer;
-import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;

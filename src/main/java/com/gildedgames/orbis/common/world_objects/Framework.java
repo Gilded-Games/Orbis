@@ -326,7 +326,8 @@ public class Framework extends AbstractRegion implements IWorldObject, IColored,
 	}
 
 	@Override
-	public Iterator<BlockPos.MutableBlockPos> iterator() {
+	public Iterator<BlockPos.MutableBlockPos> iterator()
+	{
 		return BlockPos.getAllInBoxMutable(this.min, this.max).iterator();
 	}
 }

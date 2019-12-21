@@ -62,7 +62,8 @@ public class RenderBlueprintEditing
 				}
 			}
 
-			if (this.blueprint.getData().getEntrance() != null) {
+			if (this.blueprint.getData().getEntrance() != null)
+			{
 				this.onAddEntrance(this.blueprint.getData().getEntrance());
 			}
 

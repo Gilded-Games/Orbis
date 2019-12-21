@@ -236,23 +236,28 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 			{
 				playerOrbis.powers().getBlueprintPower().setPrevPlacingPos(pos);
 
-				if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LMENU))
+				{
 					this.generateNetwork(playerOrbis, data);
-				} else {
+				}
+				else
+				{
 					this.generateBlueprint(playerOrbis, world, data);
 				}
 			}
 		}
 	}
 
-	private void generateNetwork(PlayerOrbis playerOrbis, BlueprintData data) {
+	private void generateNetwork(PlayerOrbis playerOrbis, BlueprintData data)
+	{
 		final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 
 		OrbisCore.network()
 				.sendPacketToServer(new PacketGenerateBlueprintNetwork(data.getMetadata().getIdentifier(), createPos));
 	}
 
-	private void generateBlueprint(PlayerOrbis playerOrbis, World world, BlueprintData data) {
+	private void generateBlueprint(PlayerOrbis playerOrbis, World world, BlueprintData data)
+	{
 		final BlockPos createPos = playerOrbis.raytraceNoSnapping();
 		final Rotation rotation = playerOrbis.powers().getBlueprintPower().getPlacingRotation();
 
@@ -270,9 +275,12 @@ public class ItemBlueprint extends Item implements ModelRegisterCallback, ItemSt
 					boolean shouldAddEntrance = playerOrbis.powers().isEntrance() && data.getEntrance() != null;
 					ISchedule schedule;
 
-					if (shouldAddEntrance) {
+					if (shouldAddEntrance)
+					{
 						schedule = new ScheduleEntranceHolder("", data.getMetadata().getIdentifier(), scheduleBounds, rotation);
-					} else {
+					}
+					else
+					{
 						BlueprintDataPalette palette = new BlueprintDataPalette();
 						palette.add(data, new DataCondition());
 

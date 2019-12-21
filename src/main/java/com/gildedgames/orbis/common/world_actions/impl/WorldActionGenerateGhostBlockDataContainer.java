@@ -60,7 +60,8 @@ public class WorldActionGenerateGhostBlockDataContainer implements IWorldAction
 			this.creationData.pos(this.ghostBlockDataContainer.getMin()).world(world).rotation(rotation);
 		}
 
-		primer.copyBlocksIntoWorld(BlockPos.ORIGIN, this.ghostBlockDataContainer.getBlockDataContainer(), this.ghostBlockDataContainer, null, this.creationData);
+		primer.copyBlocksIntoWorld(BlockPos.ORIGIN, this.ghostBlockDataContainer.getBlockDataContainer(), this.ghostBlockDataContainer, null,
+				this.creationData);
 		WorldObjectManager.get(world).removeObject(this.ghostBlockDataContainer);
 	}
 

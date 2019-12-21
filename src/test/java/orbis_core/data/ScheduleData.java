@@ -3,7 +3,6 @@ package orbis_core.data;
 import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.lib.data.framework.FrameworkData;
 import com.gildedgames.orbis.lib.data.framework.interfaces.IFrameworkNode;
-import com.gildedgames.orbis.lib.data.pathway.IEntrance;
 import com.gildedgames.orbis.lib.data.pathway.PathwayData;
 import com.gildedgames.orbis.lib.data.region.IMutableRegion;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,9 +31,9 @@ public class ScheduleData implements IFrameworkNode
 	public int getMaxEdges()
 	{
 		return 0;
-//		return this.blueprints.stream()
-//				.mapToInt(b -> b.getEntrance().size())
-//				.max().getAsInt(); TODO: Entrances
+		//		return this.blueprints.stream()
+		//				.mapToInt(b -> b.getEntrance().size())
+		//				.max().getAsInt(); TODO: Entrances
 	}
 
 	@Override
@@ -56,10 +55,10 @@ public class ScheduleData implements IFrameworkNode
 		List<PathwayData> pathways = new ArrayList<>();
 		for (BlueprintData b : this.blueprints)
 		{
-//			for (IEntrance e : b.getEntrance()) TODO: Entrance
-//			{
-//				pathways.add(e.toConnectTo());
-//			}
+			//			for (IEntrance e : b.getEntrance()) TODO: Entrance
+			//			{
+			//				pathways.add(e.toConnectTo());
+			//			}
 		}
 		return pathways;
 	}

@@ -1,7 +1,7 @@
 package com.gildedgames.orbis.common.network.packets;
 
-import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
+import com.gildedgames.orbis.lib.network.instances.MessageHandlerClient;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

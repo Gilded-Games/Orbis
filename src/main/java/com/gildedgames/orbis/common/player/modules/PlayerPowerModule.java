@@ -134,11 +134,13 @@ public class PlayerPowerModule extends PlayerOrbisModule
 		return this.powers[this.currentPowerIndex];
 	}
 
-	public boolean isEntrance() {
+	public boolean isEntrance()
+	{
 		return this.getCurrentPower() == this.getEntrancePower();
 	}
 
-	public boolean isBlueprint() {
+	public boolean isBlueprint()
+	{
 		return this.getCurrentPower() == this.getBlueprintPower();
 	}
 

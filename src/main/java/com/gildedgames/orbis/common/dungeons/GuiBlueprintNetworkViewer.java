@@ -15,34 +15,42 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.BlockPos;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 
 public class GuiBlueprintNetworkViewer extends GuiViewerNoContainer
 {
-	private static class NodeToPaint {
+	private static class NodeToPaint
+	{
 		private IRegion region;
+
 		private int color, zLevel;
 
-		public NodeToPaint(IRegion region, int color, int zLevel) {
+		public NodeToPaint(IRegion region, int color, int zLevel)
+		{
 			this.region = region;
 			this.color = color;
 			this.zLevel = zLevel;
 		}
 
-		public int getColor() {
-			return color;
+		public int getColor()
+		{
+			return this.color;
 		}
 
-		public IRegion getRegion() {
-			return region;
+		public IRegion getRegion()
+		{
+			return this.region;
 		}
 
-		public Integer getZLevel() {
+		public Integer getZLevel()
+		{
 			return this.zLevel;
 		}
 	}
 
 	private BlueprintNetworkData data;
+
 	private BlueprintNetworkGenerator generator;
 
 	private List<NodeToPaint> nodesToPaint = Lists.newArrayList();
@@ -66,7 +74,8 @@ public class GuiBlueprintNetworkViewer extends GuiViewerNoContainer
 	}
 
 	@Override
-	public void build(IGuiContext context) {
+	public void build(IGuiContext context)
+	{
 	}
 
 	@Override
@@ -76,12 +85,14 @@ public class GuiBlueprintNetworkViewer extends GuiViewerNoContainer
 
 		this.drawBackground(0xc2beb4);
 
-		for (NodeToPaint node : this.nodesToPaint) {
+		for (NodeToPaint node : this.nodesToPaint)
+		{
 			this.paintRegion(node.getRegion(), node.getColor());
 		}
 	}
 
-	private void paintRegion(IRegion region, int color) {
+	private void paintRegion(IRegion region, int color)
+	{
 		BlockPos min = region.getMin();
 		int minX = min.getX();
 		int minY = min.getZ();
@@ -101,11 +112,16 @@ public class GuiBlueprintNetworkViewer extends GuiViewerNoContainer
 	{
 		super.keyTyped(typedChar, keyCode);
 
-		if (this.generator == null) {
+		if (this.generator == null)
+		{
 			this.nodesToPaint.clear();
-			this.generator = new BlueprintNetworkGenerator(this.data, new CreationData(Minecraft.getMinecraft().world), this.painter, (n, p) -> {});
-		} else {
-			if (this.generator.step()) {
+			this.generator = new BlueprintNetworkGenerator(this.data, new CreationData(Minecraft.getMinecraft().world), this.painter, (n, p) -> {
+			});
+		}
+		else
+		{
+			if (this.generator.step())
+			{
 				this.generator = null;
 			}
 		}

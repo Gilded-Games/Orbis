@@ -87,7 +87,7 @@ public class AirSelectionRenderer
 
 		boolean scheduleHoverPossible =
 				(power == playerOrbis.powers().getSelectPower() && playerOrbis.powers().isScheduling())
-				|| power == playerOrbis.powers().getEntrancePower();
+						|| power == playerOrbis.powers().getEntrancePower();
 
 		boolean scheduleHover = scheduleHoverPossible && playerOrbis.getSelectedSchedule() != null;
 		boolean blueprintHover = power == playerOrbis.powers().getBlueprintPower()

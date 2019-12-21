@@ -4,7 +4,6 @@ import com.gildedgames.orbis.common.OrbisCore;
 import com.gildedgames.orbis.common.capabilities.player.PlayerOrbis;
 import com.gildedgames.orbis.common.network.packets.PacketChangePower;
 import com.gildedgames.orbis.common.player.godmode.IGodPower;
-import com.gildedgames.orbis.common.player.modules.PlayerPowerModule;
 import com.gildedgames.orbis.lib.client.gui.util.GuiTexture;
 
 import java.util.Arrays;

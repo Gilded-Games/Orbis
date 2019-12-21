@@ -16,7 +16,6 @@ import com.gildedgames.orbis.common.world_objects.Framework;
 import com.gildedgames.orbis.lib.data.blueprint.BlueprintData;
 import com.gildedgames.orbis.lib.data.blueprint.BlueprintDataPalette;
 import com.gildedgames.orbis.lib.data.framework.FrameworkNode;
-import com.gildedgames.orbis.lib.data.region.IShape;
 import com.gildedgames.orbis.lib.util.RegionHelp;
 import com.gildedgames.orbis.lib.world.WorldObjectUtils;
 import net.minecraft.entity.player.EntityPlayer;
